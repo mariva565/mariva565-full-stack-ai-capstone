@@ -1,0 +1,84 @@
+<svg width="900" height="520" viewBox="0 0 900 520" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="900" y2="520" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#E9F6FF">
+        <animate attributeName="stop-color" values="#E9F6FF;#EDE9FF;#FFEED8;#E9F6FF" dur="11s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="52%" stop-color="#EDE9FF">
+        <animate attributeName="stop-color" values="#EDE9FF;#FFEED8;#E9F6FF;#EDE9FF" dur="11s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="100%" stop-color="#FFEED8">
+        <animate attributeName="stop-color" values="#FFEED8;#E9F6FF;#EDE9FF;#FFEED8" dur="11s" repeatCount="indefinite"/>
+      </stop>
+    </linearGradient>
+    <linearGradient id="button" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#7C3AED"/>
+      <stop offset="1" stop-color="#0EA5E9"/>
+    </linearGradient>
+  </defs>
+  <rect width="900" height="520" rx="22" fill="url(#bg)"/>
+
+  <rect x="160" y="48" width="252" height="424" rx="34" fill="#111827"/>
+  <rect x="176" y="68" width="220" height="384" rx="24" fill="#FFFFFF"/>
+  <rect x="488" y="48" width="252" height="424" rx="34" fill="#111827"/>
+  <rect x="504" y="68" width="220" height="384" rx="24" fill="#FFFFFF"/>
+
+  <circle cx="286" cy="86" r="4" fill="#94A3B8"/>
+  <circle cx="614" cy="86" r="4" fill="#94A3B8"/>
+
+  <g>
+    <rect x="194" y="112" width="184" height="42" rx="12" fill="#EEF2FF"/>
+    <text x="208" y="138" fill="#3730A3" font-family="'Trebuchet MS', 'Segoe UI', sans-serif" font-size="18" font-weight="700">
+      Login Screen
+    </text>
+  </g>
+  <rect x="194" y="172" width="184" height="26" rx="8" fill="#F8FAFC"/>
+  <rect x="194" y="206" width="184" height="26" rx="8" fill="#F8FAFC"/>
+  <rect x="194" y="240" width="184" height="26" rx="8" fill="#F8FAFC"/>
+  <rect x="194" y="284" width="112" height="34" rx="10" fill="url(#button)" fill-opacity="0.18"/>
+  <rect x="194" y="284" width="12" height="34" rx="10" fill="url(#button)" opacity="0.8">
+    <animate attributeName="width" values="12;112;12" dur="4s" repeatCount="indefinite"/>
+  </rect>
+
+  <g>
+    <rect x="522" y="112" width="184" height="42" rx="12" fill="#ECFEFF"/>
+    <text x="534" y="138" fill="#0F766E" font-family="'Trebuchet MS', 'Segoe UI', sans-serif" font-size="18" font-weight="700">
+      Courses List
+    </text>
+  </g>
+
+  <g>
+    <rect x="522" y="172" width="184" height="84" rx="12" fill="#F8FAFC"/>
+    <rect x="538" y="188" width="120" height="10" rx="5" fill="#E2E8F0"/>
+    <rect x="538" y="206" width="156" height="10" rx="5" fill="#E2E8F0"/>
+    <rect x="538" y="224" width="98" height="10" rx="5" fill="#E2E8F0"/>
+    <animate attributeName="opacity" values="1;1;0;0;0;1" dur="9s" repeatCount="indefinite"/>
+  </g>
+
+  <g>
+    <rect x="522" y="172" width="184" height="84" rx="12" fill="#EFF6FF"/>
+    <rect x="538" y="188" width="98" height="10" rx="5" fill="#DBEAFE"/>
+    <rect x="538" y="206" width="160" height="10" rx="5" fill="#DBEAFE"/>
+    <rect x="538" y="224" width="132" height="10" rx="5" fill="#DBEAFE"/>
+    <text x="538" y="248" fill="#1D4ED8" font-family="'Trebuchet MS', 'Segoe UI', sans-serif" font-size="14" font-weight="700">
+      Course Details
+    </text>
+    <animate attributeName="opacity" values="0;0;1;1;1;0" dur="9s" repeatCount="indefinite"/>
+  </g>
+
+  <g>
+    <rect x="522" y="268" width="184" height="84" rx="12" fill="#F8FAFC"/>
+    <rect x="538" y="286" width="152" height="10" rx="5" fill="#E2E8F0"/>
+    <rect x="538" y="304" width="128" height="10" rx="5" fill="#E2E8F0"/>
+    <rect x="538" y="322" width="106" height="10" rx="5" fill="#E2E8F0"/>
+  </g>
+
+  <rect x="522" y="364" width="100" height="30" rx="10" fill="#0EA5E9" fill-opacity="0.16"/>
+  <rect x="522" y="364" width="20" height="30" rx="10" fill="#0EA5E9" fill-opacity="0.46">
+    <animate attributeName="x" values="522;602;522" dur="3.8s" repeatCount="indefinite"/>
+  </rect>
+
+  <text x="48" y="486" fill="#334155" font-family="'Trebuchet MS', 'Segoe UI', sans-serif" font-size="20">
+    Mobile flow pulse: login -> courses -> details
+  </text>
+</svg>

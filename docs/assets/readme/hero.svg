@@ -1,0 +1,91 @@
+<svg width="1280" height="420" viewBox="0 0 1280 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="-140" y1="20" x2="1420" y2="450" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FF7A59">
+        <animate attributeName="stop-color" values="#FF7A59;#FF4E88;#7A5CFF;#17C2B5;#FF7A59" dur="14s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="42%" stop-color="#7A5CFF">
+        <animate attributeName="stop-color" values="#7A5CFF;#17C2B5;#FF7A59;#FF4E88;#7A5CFF" dur="14s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="100%" stop-color="#17C2B5">
+        <animate attributeName="stop-color" values="#17C2B5;#FF7A59;#FF4E88;#7A5CFF;#17C2B5" dur="14s" repeatCount="indefinite"/>
+      </stop>
+    </linearGradient>
+    <linearGradient id="shine" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0"/>
+      <stop offset="0.5" stop-color="#FFFFFF" stop-opacity="0.42"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#FFFFFF" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0.08"/>
+    </linearGradient>
+    <filter id="blur" x="-220" y="-220" width="1820" height="920" filterUnits="userSpaceOnUse">
+      <feGaussianBlur stdDeviation="48"/>
+    </filter>
+  </defs>
+
+  <rect width="1280" height="420" rx="28" fill="url(#bg)"/>
+
+  <g opacity="0.78">
+    <rect x="-300" y="0" width="360" height="420" fill="url(#shine)">
+      <animate attributeName="x" values="-300;1320" dur="9s" repeatCount="indefinite"/>
+    </rect>
+  </g>
+
+  <g filter="url(#blur)">
+    <circle cx="1090" cy="72" r="122" fill="#FFFFFF" fill-opacity="0.4">
+      <animate attributeName="cy" values="72;94;72" dur="7s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="205" cy="360" r="154" fill="#FFE082" fill-opacity="0.32">
+      <animate attributeName="cx" values="205;230;205" dur="10s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="865" cy="322" r="124" fill="#99F6E4" fill-opacity="0.34">
+      <animate attributeName="cy" values="322;300;322" dur="8s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+
+  <rect x="42" y="36" width="252" height="38" rx="19" fill="#0F172A" fill-opacity="0.34"/>
+  <text x="168" y="61" fill="#FFFFFF" font-family="'Trebuchet MS', 'Segoe UI', sans-serif" font-size="18" text-anchor="middle" letter-spacing="1.4">
+    FULL STACK CAPSTONE
+  </text>
+
+  <text x="68" y="176" fill="#FFFFFF" font-family="'Trebuchet MS', 'Segoe UI', sans-serif" font-size="74" font-weight="700">
+    StudyHub v2
+  </text>
+  <text x="72" y="228" fill="#F8FAFC" font-family="'Trebuchet MS', 'Segoe UI', sans-serif" font-size="28" font-weight="600">
+    Learn. Organize. Ship.
+  </text>
+  <text x="72" y="267" fill="#F1F5F9" font-family="'Trebuchet MS', 'Segoe UI', sans-serif" font-size="22">
+    Next.js + Neon + Drizzle + Expo
+  </text>
+
+  <g transform="translate(72,305)">
+    <rect width="328" height="50" rx="12" fill="#0F172A" fill-opacity="0.28"/>
+    <text x="164" y="32" fill="#FFFFFF" font-family="'Trebuchet MS', 'Segoe UI', sans-serif" font-size="22" text-anchor="middle">
+      Web + Mobile + API in One Repo
+    </text>
+  </g>
+
+  <g transform="translate(920,228)">
+    <rect width="300" height="148" rx="20" fill="url(#glass)" stroke="#FFFFFF" stroke-opacity="0.55"/>
+    <text x="150" y="42" fill="#FFFFFF" font-family="'Trebuchet MS', 'Segoe UI', sans-serif" font-size="24" text-anchor="middle" font-weight="700">
+      Delivery Pulse
+    </text>
+
+    <rect x="26" y="62" width="248" height="16" rx="8" fill="#0F172A" fill-opacity="0.26"/>
+    <rect x="26" y="62" width="28" height="16" rx="8" fill="#FFFFFF" fill-opacity="0.75">
+      <animate attributeName="width" values="28;192;120;220;28" dur="8s" repeatCount="indefinite"/>
+    </rect>
+
+    <rect x="26" y="88" width="248" height="16" rx="8" fill="#0F172A" fill-opacity="0.26"/>
+    <rect x="26" y="88" width="74" height="16" rx="8" fill="#FFFFFF" fill-opacity="0.7">
+      <animate attributeName="width" values="74;156;224;90;74" dur="9s" repeatCount="indefinite"/>
+    </rect>
+
+    <rect x="26" y="114" width="248" height="16" rx="8" fill="#0F172A" fill-opacity="0.26"/>
+    <rect x="26" y="114" width="44" height="16" rx="8" fill="#FFFFFF" fill-opacity="0.75">
+      <animate attributeName="width" values="44;138;206;174;44" dur="10s" repeatCount="indefinite"/>
+    </rect>
+  </g>
+</svg>
