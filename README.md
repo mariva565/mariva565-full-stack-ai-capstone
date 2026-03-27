@@ -1,6 +1,4 @@
-<p align="center">
-  <img src="docs/assets/readme/hero.svg" width="100%" alt="StudyHub v2 animated hero banner" />
-</p>
+<!-- Hero banner — will be added when UI is ready -->
 
 <p align="center">
   <b>Full-stack LMS capstone for SoftUni "Full Stack Apps with AI"</b>
@@ -28,26 +26,12 @@
   <a href="#project-details"><img src="https://img.shields.io/badge/Docs-Project%20Details-FF9F43?style=flat-square" alt="Project details" /></a>
 </p>
 
-## Animated Showcase
+## Live Demo
 
 - Live Web App: `TBD`
 - Mobile Demo (Expo): `TBD`
-- Video Walkthrough: `TBD`
 
-<table>
-  <tr>
-    <td width="50%" valign="top">
-      <h3>Web App Preview</h3>
-      <img src="docs/assets/readme/web-preview.svg" alt="Animated web flow preview" />
-      <p>Animated SVG flow for register -> dashboard -> course details.</p>
-    </td>
-    <td width="50%" valign="top">
-      <h3>Mobile App Preview</h3>
-      <img src="docs/assets/readme/mobile-preview.svg" alt="Animated mobile flow preview" />
-      <p>Animated SVG flow for login -> courses -> details.</p>
-    </td>
-  </tr>
-</table>
+<!-- Screenshots and animated previews will be added when UI is ready -->
 
 ## Progress Roadmap
 
@@ -111,11 +95,11 @@ MVP:
 - 7 responsive web screens
 - 3 mobile screens
 
-Optional after MVP:
-- Cloudflare R2 uploads
-- AI summarize/quiz/chat
-- Notes + PDF export
-- Contact flow
+Planned (after MVP core):
+- Cloudflare R2 file uploads
+- AI summarize/quiz/chat (Gemini API)
+- Notes with sharing, pinning, PDF export
+- Contact form
 </details>
 
 <details>
@@ -187,7 +171,7 @@ Requirements:
 Install:
 ```bash
 npm install
-copy .env.example .env
+cp .env.example .env
 ```
 
 Run web:
