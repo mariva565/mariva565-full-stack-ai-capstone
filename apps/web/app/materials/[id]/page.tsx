@@ -1,15 +1,15 @@
 import { ScreenPlaceholder } from "@/components/screen-placeholder";
+import { use } from "react";
 
 type MaterialPageProps = {
-  params: {
-    id: string;
-  };
+  params: Promise<{ id: string }>;
 };
 
 export default function MaterialPage({ params }: MaterialPageProps) {
+  const { id } = use(params);
   return (
     <ScreenPlaceholder
-      title={`Material View/Edit (${params.id})`}
+      title={`Material View/Edit (${id})`}
       description="Placeholder for viewing and editing a learning material."
     />
   );

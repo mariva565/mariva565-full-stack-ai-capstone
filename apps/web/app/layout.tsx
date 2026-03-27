@@ -4,7 +4,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "StudyHub v2",
-  description: "Learning management system capstone"
+  description: "Learning management system capstone",
 };
 
 type RootLayoutProps = {
@@ -13,8 +13,8 @@ type RootLayoutProps = {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="en">
-      <body>{children}</body>
+    <html lang="en" className="dark">
+      <body className="min-h-screen">{children}</body>
     </html>
   );
 }
