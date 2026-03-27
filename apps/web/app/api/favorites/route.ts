@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
       .values({ userId: auth.user.sub, materialId })
       .returning();
 
-    await logActivity(auth.user.sub, "add_favorite", materialId);
+    await logActivity(auth.user.sub, "add_favorite", materialId, { materialId });
 
     return NextResponse.json({ favorite: fav }, { status: 201 });
   } catch {
@@ -87,7 +87,7 @@ export async function DELETE(request: NextRequest) {
     );
   }
 
-  await logActivity(auth.user.sub, "remove_favorite", Number(materialId));
+  await logActivity(auth.user.sub, "remove_favorite", Number(materialId), { materialId: Number(materialId) });
 
   return NextResponse.json({ message: "Removed from favorites" });
 }

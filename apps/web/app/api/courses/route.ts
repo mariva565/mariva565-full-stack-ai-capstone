@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
     })
     .returning();
 
-  await logActivity(auth.user.sub, "create_course", course.id);
+  await logActivity(auth.user.sub, "create_course", course.id, { title: course.title });
 
   return NextResponse.json({ course }, { status: 201 });
 }

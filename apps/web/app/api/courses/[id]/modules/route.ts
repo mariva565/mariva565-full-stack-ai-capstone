@@ -48,7 +48,7 @@ export async function POST(request: NextRequest, { params }: Ctx) {
     })
     .returning();
 
-  await logActivity(auth.user.sub, "create_module", mod.id);
+  await logActivity(auth.user.sub, "create_module", mod.id, { title: mod.title, courseId: Number(id) });
 
   return NextResponse.json({ module: mod }, { status: 201 });
 }

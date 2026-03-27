@@ -51,7 +51,7 @@ export async function POST(request: NextRequest, { params }: Ctx) {
     })
     .returning();
 
-  await logActivity(auth.user.sub, "create_material", material.id);
+  await logActivity(auth.user.sub, "create_material", material.id, { title: material.title, type: material.materialType });
 
   return NextResponse.json({ material }, { status: 201 });
 }

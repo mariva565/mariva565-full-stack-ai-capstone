@@ -59,7 +59,7 @@ export async function PUT(request: NextRequest, { params }: Ctx) {
     );
   }
 
-  await logActivity(auth.user.sub, "update_material", updated.id);
+  await logActivity(auth.user.sub, "update_material", updated.id, { title: updated.title });
 
   return NextResponse.json({ material: updated });
 }
@@ -75,7 +75,7 @@ export async function DELETE(request: NextRequest, { params }: Ctx) {
     .where(
       and(eq(materials.id, Number(id)), eq(materials.createdBy, auth.user.sub))
     )
-    .returning({ id: materials.id });
+    .returning({ id: materials.id, title: materials.title });
 
   if (!deleted) {
     return NextResponse.json(
@@ -84,7 +84,7 @@ export async function DELETE(request: NextRequest, { params }: Ctx) {
     );
   }
 
-  await logActivity(auth.user.sub, "delete_material", deleted.id);
+  await logActivity(auth.user.sub, "delete_material", deleted.id, { title: deleted.title });
 
   return NextResponse.json({ message: "Material deleted" });
 }

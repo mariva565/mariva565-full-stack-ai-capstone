@@ -50,13 +50,25 @@
   - Commit + push: `feat(crud): courses, modules, materials CRUD with favorites and activity logging`
   - Обновихме AGENTS.md с code quality правила и handoff инструкции
 
+- **Фаза 4** — завършена:
+  - `PUT /api/auth/me` — profile update (name, avatarUrl) с activity logging
+  - Profile страница — avatar display (initials fallback), edit name/avatar, read-only email/date
+  - Admin API: `GET /api/admin/users`, `PUT /api/admin/users/:id` (role change), `DELETE /api/admin/users/:id`
+  - Admin API: `GET /api/admin/materials`, `DELETE /api/admin/materials/:id`
+  - Admin API: `GET /api/admin/activity-logs` (с limit param)
+  - Admin panel: 3 таба (Users, Materials, Activity Logs)
+  - Users tab: role dropdown, delete user с cascade cleanup
+  - Materials tab: показва course/author, admin delete
+  - Activity tab: последни действия с user info и details JSON
+  - Всички компоненти разделени (<300 lines): `components/admin/{users,materials,activity}-tab.tsx`
+  - Self-protection: admin не може да изтрие себе си или да смени своята роля
+  - Build ✅
+
 **Commit count:** 8 (target: 15+)
 **Commit days:** 1 (target: 3+)
 
-**Текуща фаза:** Фаза 4 — Profile + Admin Panel (не е започната)
+**Текуща фаза:** Фаза 5 — Mobile App (не е започната)
 
 **Следващи стъпки:**
-- Profile страница (name/avatar edit)
-- Admin panel: users tab, courses tab, activity logs tab
-- Admin API endpoints с role checks
+- Expo app: Login, Courses List, Course Details (3 екрана)
 - `.env` трябва да е копиран и в `apps/web/.env` за build да работи

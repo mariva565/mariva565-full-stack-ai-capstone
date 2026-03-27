@@ -32,7 +32,7 @@ export async function PUT(request: NextRequest, { params }: Ctx) {
     );
   }
 
-  await logActivity(auth.user.sub, "update_module", updated.id);
+  await logActivity(auth.user.sub, "update_module", updated.id, { title: updated.title });
 
   return NextResponse.json({ module: updated });
 }
@@ -46,7 +46,7 @@ export async function DELETE(request: NextRequest, { params }: Ctx) {
   const [deleted] = await db
     .delete(modules)
     .where(and(eq(modules.id, Number(id)), eq(modules.createdBy, auth.user.sub)))
-    .returning({ id: modules.id });
+    .returning({ id: modules.id, title: modules.title });
 
   if (!deleted) {
     return NextResponse.json(
@@ -55,7 +55,7 @@ export async function DELETE(request: NextRequest, { params }: Ctx) {
     );
   }
 
-  await logActivity(auth.user.sub, "delete_module", deleted.id);
+  await logActivity(auth.user.sub, "delete_module", deleted.id, { title: deleted.title });
 
   return NextResponse.json({ message: "Module deleted" });
 }
