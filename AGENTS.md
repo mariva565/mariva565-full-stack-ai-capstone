@@ -57,13 +57,31 @@ Every schema change MUST use Drizzle migrations. Migration SQL scripts must be c
 
 ## Key Rules
 
+### Security
 - All API endpoints must validate auth (JWT) server-side
 - Admin actions must check role === 'admin' server-side
 - No sensitive data in error responses
 - Sanitize user input before rendering
-- Use Tailwind for styling (no inline styles)
+- Never commit `.env` or secrets — only `.env.example` with placeholders
+- Error responses use `{ code, message }` format — no stack traces
+
+### Code Quality
+- **Max 300 lines per file** — split early if approaching limit
+- **Max 60 lines per function** — extract helpers proactively
 - Components in separate files (no monolithic page files)
 - TypeScript strict mode
+- API error contract: `{ code: string, message: string }`
+
+### Styling
+- Use Tailwind for all styling — **zero inline styles** (`style=`, `.style`, `cssText`)
+- **Responsive from day 1:** every component uses `sm:`, `md:`, `lg:` breakpoints
+- **Dark mode from day 1:** every color class has a `dark:` variant
+- Tailwind dark mode strategy: `class` (set on `<html>`)
+
+### Handoff
+- Update `docs/dev-log.md` at end of each session
+- Update `docs/implementation-plan.md` status when a phase completes
+- New chat prompt: "Read `docs/dev-log.md` and `docs/implementation-plan.md` and continue from current phase."
 
 ## Legacy Reference
 

@@ -26,15 +26,24 @@
   - Commit + push: `feat(db): add Drizzle schema with 6 tables and Neon integration`
   - Сменихме Neon паролата (старата е невалидна)
 
-**Commit count:** 5 (target: 15+)
+- **Фаза 2** — завършена:
+  - `lib/db.ts` — Drizzle client с Neon
+  - `lib/jwt.ts` — sign/verify JWT с jose (Edge-compatible)
+  - `lib/auth.ts` — bcrypt password hashing
+  - `middleware.ts` — JWT guard за защитени routes + admin-only paths
+  - 4 API endpoints: register, login, logout, me
+  - Login + Register страници (responsive + dark mode)
+  - Tailwind dark mode включен (class strategy)
+  - Тествано: login ✅, register ✅, /me ✅, build ✅, browser ✅
+  - Commit + push: `feat(auth): JWT auth with register, login, logout and role-aware middleware`
+
+**Commit count:** 6 (target: 15+)
 **Commit days:** 1 (target: 3+)
 
-**Текуща фаза:** Фаза 2 — Auth + JWT (не е започната)
+**Текуща фаза:** Фаза 3 — Core CRUD (не е започната)
 
 **Следващи стъпки:**
-- `lib/db.ts` — Drizzle client instance
-- `lib/jwt.ts` — sign/verify JWT
-- `lib/auth.ts` — password hashing
-- `middleware.ts` — JWT guard за защитени routes
-- Auth API endpoints (register, login, logout, me)
-- Login + Register web pages
+- CRUD endpoints за courses, modules, materials
+- Favorites endpoints
+- Activity logging
+- Dashboard, Course Details, Material View/Edit страници
