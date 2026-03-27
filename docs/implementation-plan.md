@@ -292,6 +292,7 @@ id, user_id (FK→users), action_type, target_id, details (JSON), created_at
 **Цел:** Пълна repo документация
 
 - [ ] README: описание + роли + screenshots
+- [ ] README visual pack (hero + animated previews + badges + collapsible sections)
 - [ ] Архитектура и ключови папки
 - [ ] DB диаграма (Mermaid/dbdiagram)
 - [ ] Local setup guide
@@ -371,6 +372,15 @@ GEMINI_API_KEY=
 - [ ] Contact страница/форма
 - [ ] Notes + PDF export
 - [ ] UI polish анимации и допълнителни UX детайли
+
+---
+
+## README Visual Pack (да не забравим)
+
+- [ ] Анимиран hero banner (SVG или GIF)
+- [ ] Анимирани preview блокове за Web и Mobile flow
+- [ ] Стилни badges + progress roadmap секция
+- [ ] Collapsible `details` секции за clean и подреден README
 
 ---
 
