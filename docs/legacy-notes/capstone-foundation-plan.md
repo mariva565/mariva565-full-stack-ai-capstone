@@ -1,5 +1,10 @@
 ﻿# Capstone Foundation Playbook (Internal Brainstorm)
 
+> Archive note (2026-03-27):
+> This file is kept for historical brainstorming only.
+> Active execution plan is docs/implementation-plan.md.
+> Do not copy legacy Vanilla JS code; use this document only for ideas and checklists.
+
 ## 1) Purpose
 This file is a single source of truth for early brainstorming and fast project setup.
 Goals:
@@ -450,3 +455,4 @@ Use this section as the main scoring tracker during implementation.
 - Every DB schema change must ship with a Drizzle migration.
 - Keep documentation updated in the same day as technical changes.
 - Track score impact per commit in PR notes or commit message body.
+

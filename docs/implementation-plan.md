@@ -1,41 +1,45 @@
-# StudyHub v2 — Пълен план за действие (Handoff документ)
+﻿# StudyHub v2 — План за изпълнение (Assignment-Locked)
 
-> **Последна актуализация:** 2026-03-27
-> **Срок:** средата на май 2026
+> **Последна актуализация:** 2026-03-27  
+> **Срок:** средата на май 2026  
 > **Статус:** ⏳ Фаза 0 — не е започната
 
 ---
 
-## Handoff инструкции (за нови чатове / друго IDE)
+## Handoff инструкции
 
 При започване на нов чат, кажи:
 > "Работя по StudyHub v2 капстоун проект. Прочети `docs/implementation-plan.md` и продължи от текущата фаза."
 
-Текущата фаза и статусът на всяка стъпка се намират в секция **"Текущ статус"** по-долу.
+---
+
+## MVP Rubric Lock (задължително)
+
+Този документ е заключен по заданието. Първо изпълняваме минимума за оценяване, после optional функционалности.
+
+- [ ] Monorepo: `apps/web` + `apps/mobile` + `packages/shared`
+- [ ] Next.js (web + API routes), Expo (mobile), Neon + Drizzle
+- [ ] JWT auth: register/login/logout + роли `user/admin`
+- [ ] Server-side auth check за всички защитени API
+- [ ] Server-side admin role checks за admin действия
+- [ ] 6 таблици (точно по AGENTS.md)
+- [ ] Drizzle migrations committed в GitHub
+- [ ] 7 web екрана (responsive)
+- [ ] 3 mobile екрана
+- [ ] Admin panel (users + content moderation)
+- [ ] Live deployment + demo credentials
+- [ ] 15+ commits в 3+ различни дни
 
 ---
 
-## Проект: StudyHub v2
+## Проект
 
-Пренаписване на StudyHub (LMS за бележки и учебни материали) с нов стек.
-Курс: "Full Stack Apps with AI" @ SoftUni.
+StudyHub v2 е LMS за организиране на учебни материали.
 
-**Стар проект за справка:** `C:\Users\mariy\Projects\Visual-Studio-Capstone-Project-StudyHub-interface-v3`
-**Ново репо:** `https://github.com/mariva565/mariva565-full-stack-ai-capstone`
+**Стар проект (само визуална/логическа справка):**  
+`C:\Users\mariy\Projects\Visual-Studio-Capstone-Project-StudyHub-interface-v3`
 
----
-
-## Взети решения
-
-| Тема | Решение |
-|---|---|
-| MFA | ❌ Пропускаме — усложнява тестването от журито |
-| AI provider | ✅ Google Gemini API (безплатен tier) — ключът вече съществува |
-| Deployment | ✅ Vercel (най-добра поддръжка за Next.js) |
-| Storage | ✅ Cloudflare R2 (10GB безплатно) |
-| PDF → Notes | ⏳ Оставяме за края ако остане време |
-| Дизайн | ⏳ Ще се реши по-късно (лилава тема от стария проект — под въпрос) |
-| File uploads | ✅ PDF + документи към материали |
+**Важно:** Не копираме Vanilla JS код. Пренаписваме в React + TypeScript.
 
 ---
 
@@ -43,102 +47,86 @@
 
 | Слой | Технология |
 |---|---|
-| Frontend Web | Next.js 14 + React + TypeScript + Tailwind CSS |
-| Backend API | Next.js API Routes |
+| Frontend Web | Next.js + React + TypeScript + Tailwind CSS |
+| Backend API | Next.js API Routes (RESTful) |
 | Database | Neon serverless PostgreSQL + Drizzle ORM |
-| Auth | JWT (custom — без Auth.js) |
+| Auth | JWT (custom) |
 | Mobile | React Native + Expo |
-| Storage | Cloudflare R2 |
-| AI | Google Gemini API (gemini-1.5-flash) |
-| Deploy | Vercel |
+| Deploy | Vercel или Netlify |
+| Optional | Cloudflare R2, AI функции |
 
 ---
 
-## Архитектура: Монорепо
+## Архитектура (монорепо)
 
-```
-capstone/                        ← root (текущата папка)
+```text
+capstone/
 ├── apps/
-│   ├── web/                     ← Next.js app (API + уеб клиент)
-│   │   ├── app/                 ← App Router
-│   │   │   ├── api/             ← REST API endpoints
-│   │   │   ├── (auth)/          ← login, register
-│   │   │   ├── dashboard/       ← courses list
-│   │   │   ├── courses/[id]/    ← course details
-│   │   │   ├── materials/[id]/  ← material view/edit
-│   │   │   ├── notes/           ← notes
-│   │   │   ├── profile/         ← profile
-│   │   │   ├── contact/         ← contact form
-│   │   │   └── admin/           ← admin panel
+│   ├── web/                  ← Next.js (API + web client)
+│   │   ├── app/
+│   │   │   ├── api/
+│   │   │   ├── register/
+│   │   │   ├── login/
+│   │   │   ├── dashboard/
+│   │   │   ├── courses/[id]/
+│   │   │   ├── materials/[id]/
+│   │   │   ├── profile/
+│   │   │   └── admin/
 │   │   ├── components/
-│   │   ├── lib/                 ← jwt, db, gemini, r2 helpers
+│   │   ├── lib/
 │   │   └── middleware.ts
-│   └── mobile/                  ← Expo app
+│   └── mobile/               ← Expo app
 │       └── app/
-│           ├── index.tsx         ← Courses list
-│           ├── course/[id].tsx   ← Course details
-│           └── profile.tsx       ← Profile
+│           ├── login.tsx
+│           ├── index.tsx
+│           └── course/[id].tsx
 ├── packages/
-│   └── shared/                  ← Споделени TypeScript типове
+│   └── shared/               ← shared types/utils/api client
 ├── drizzle/
-│   ├── schema.ts                ← DB schema (Drizzle)
-│   └── migrations/              ← SQL миграции (задължително в GitHub)
+│   ├── schema.ts
+│   └── migrations/
 ├── docs/
 ├── AGENTS.md
-├── package.json                 ← npm workspaces root
 └── README.md
 ```
 
 ---
 
-## Database Schema (7 таблици)
+## Database Schema (6 таблици, Drizzle ORM)
 
 ### users
-```
-id, email, name, password_hash, role (user | admin),
-avatar_url, created_at
+```text
+id, email, name, password_hash, role (user/admin), avatar_url, created_at
 ```
 
 ### courses
-```
-id, title, description, created_by (→ users),
-is_public, created_at
+```text
+id, title, description, created_by (FK→users), is_public, status, created_at
 ```
 
 ### modules
-```
-id, course_id (→ courses), title, order_index, created_at
+```text
+id, course_id (FK→courses), title, order_index, created_by (FK→users)
 ```
 
 ### materials
-```
-id, module_id (→ modules), title, content,
-type (text | link | file), file_url,
-created_by (→ users), is_pinned, created_at
+```text
+id, module_id (FK→modules), title, content, material_type, file_url, tags, created_by (FK→users)
 ```
 
-### notes
-```
-id, user_id (→ users), title, content,
-material_id (→ materials, nullable),
-is_shared, is_pinned, pdf_url, created_at
-```
-
-### contact_messages
-```
-id, user_id (→ users, nullable), name, email,
-message, created_at
+### favorites
+```text
+id, user_id (FK→users), material_id (FK→materials), created_at
 ```
 
 ### activity_logs
-```
-id, user_id (→ users), action, entity_type,
-entity_id, details (JSON), created_at
+```text
+id, user_id (FK→users), action_type, target_id, details (JSON), created_at
 ```
 
 ---
 
-## API Endpoints
+## API Endpoints (MVP)
 
 ### Auth
 - `POST /api/auth/register`
@@ -166,39 +154,22 @@ entity_id, details (JSON), created_at
 - `PUT    /api/materials/:id`
 - `DELETE /api/materials/:id`
 
-### Notes
-- `GET    /api/notes`
-- `POST   /api/notes`
-- `PUT    /api/notes/:id`
-- `DELETE /api/notes/:id`
-- `POST   /api/notes/:id/pin`
-- `POST   /api/notes/:id/share`
-- `POST   /api/notes/:id/export-pdf`  ← Notes → PDF
-
-### Storage
-- `POST   /api/upload`               ← Upload file → R2, returns URL
-- `DELETE /api/upload/:key`
-
-### AI (Gemini)
-- `POST   /api/ai/chat`              ← Chat асистент
-- `POST   /api/ai/summarize`         ← Summarize material
-- `POST   /api/ai/quiz`              ← Generate quiz от material
-
-### Contact
-- `POST   /api/contact`
+### Favorites
+- `GET    /api/favorites`
+- `POST   /api/favorites`
+- `DELETE /api/favorites/:id`
 
 ### Admin
 - `GET    /api/admin/users`
 - `PUT    /api/admin/users/:id/role`
 - `DELETE /api/admin/users/:id`
-- `GET    /api/admin/courses`
-- `DELETE /api/admin/courses/:id`
+- `GET    /api/admin/materials`
+- `DELETE /api/admin/materials/:id`
 - `GET    /api/admin/activity-logs`
-- `GET    /api/admin/contact-messages`
 
 ---
 
-## Уеб екрани (8 екрана)
+## Уеб екрани (7 задължителни, responsive)
 
 | # | Екран | Път | Достъп |
 |---|---|---|---|
@@ -207,203 +178,155 @@ entity_id, details (JSON), created_at
 | 3 | Dashboard | `/dashboard` | login |
 | 4 | Course Details | `/courses/[id]` | login |
 | 5 | Material View/Edit | `/materials/[id]` | login |
-| 6 | Notes | `/notes` | login |
-| 7 | Profile | `/profile` | login |
-| 8 | Contact | `/contact` | публичен |
-| 9 | Admin Panel | `/admin` | admin |
+| 6 | Profile | `/profile` | login |
+| 7 | Admin Panel | `/admin` | admin |
 
 ---
 
-## Мобилни екрани (3 екрана — Expo)
+## Мобилни екрани (3 задължителни, Expo)
 
 | # | Екран | Файл |
 |---|---|---|
-| 1 | Courses List | `app/index.tsx` |
-| 2 | Course Details | `app/course/[id].tsx` |
-| 3 | Profile | `app/profile.tsx` |
+| 1 | Login | `app/login.tsx` |
+| 2 | Courses List | `app/index.tsx` |
+| 3 | Course Details | `app/course/[id].tsx` |
 
-Мобилното се свързва към същия Next.js backend.
-
----
-
-## Admin Panel функции
-
-- Таб **Users**: виж всички, смени роля (user ↔ admin), изтрий
-- Таб **Courses**: виж всички, изтрий
-- Таб **Activity Logs**: виж последните действия
-- Таб **Contact Messages**: виж входящите съобщения
+Мобилното приложение използва същия Next.js backend API.
 
 ---
 
-## AI функции (Gemini 1.5 Flash — безплатен)
+## Security и Quality Gates (blocking)
 
-| Функция | Тригер | Описание |
-|---|---|---|
-| Chat асистент | FAB бутон (всяка страница) | Чат с AI, настроен за програмисти |
-| Summarize | Бутон в Material View | Обобщава съдържанието на материала |
-| Quiz | Бутон в Material View | Генерира 5 въпроса от материала |
-
----
-
-## Фази на разработка
-
-### ФАЗА 0 — Монорепо + DB Setup
-**Цел:** Работещо скеле, свързано с Neon DB
-
-- [ ] `package.json` с npm workspaces (root)
-- [ ] `apps/web` — Next.js 14 с TypeScript + Tailwind
-- [ ] `apps/mobile` — Expo с TypeScript
-- [ ] `packages/shared` — споделени типове
-- [ ] Neon DB акаунт + connection string
-- [ ] `drizzle/schema.ts` — пълна схема (7 таблици)
-- [ ] Drizzle config + първа миграция
-- [ ] `.env.example` файл
-- [ ] Commit: "feat: monorepo setup with Next.js, Expo and Drizzle schema"
+- [ ] Всички API endpoints валидират JWT server-side
+- [ ] Всички admin endpoints валидират `role === 'admin'` server-side
+- [ ] Няма sensitive данни в error responses
+- [ ] User input се sanitize-ва преди render
+- [ ] Tailwind only: без inline styles
+- [ ] TypeScript strict mode е включен
+- [ ] Компонентите са в отделни файлове (без монолитни page файлове)
+- [ ] Всяка schema промяна минава през Drizzle migration
 
 ---
 
-### ФАЗА 1 — Auth (JWT)
-**Цел:** Register, Login, Logout, защитени routes
+## Фази на разработка (MVP-first)
 
-- [ ] `lib/jwt.ts` — sign, verify JWT
-- [ ] `lib/auth.ts` — hashPassword, verifyPassword (bcrypt)
-- [ ] `middleware.ts` — JWT middleware за защитени routes
-- [ ] API: `POST /api/auth/register`
-- [ ] API: `POST /api/auth/login`
-- [ ] API: `POST /api/auth/logout`
-- [ ] API: `GET /api/auth/me`
-- [ ] Уеб: Register страница
-- [ ] Уеб: Login страница
-- [ ] Seed: admin@studyhub.dev / admin123, user@studyhub.dev / user123
-- [ ] Commit: "feat: JWT auth — register, login, logout"
+### ФАЗА 0 — Monorepo Bootstrap
+**Цел:** Работещо скеле за web + mobile + shared
+
+- [ ] root `package.json` с workspaces
+- [ ] `apps/web` (Next.js + TS + Tailwind)
+- [ ] `apps/mobile` (Expo + TS)
+- [ ] `packages/shared` (types + helpers)
+- [ ] `.env.example`
+- [ ] Commit: `chore: bootstrap monorepo with web, mobile and shared`
 
 ---
 
-### ФАЗА 2 — Courses + Modules + Materials CRUD
-**Цел:** Основната функционалност
+### ФАЗА 1 — DB Schema + Drizzle Migrations
+**Цел:** 6 таблици и първа migration в Git
 
-- [ ] API: CRUD за courses
-- [ ] API: CRUD за modules
-- [ ] API: CRUD за materials
-- [ ] Activity logging при всяко действие
-- [ ] Уеб: Dashboard (courses list)
-- [ ] Уеб: Course Details (modules → materials)
-- [ ] Уеб: Material View/Edit
-- [ ] Commit: "feat: courses, modules, materials CRUD"
+- [ ] `drizzle/schema.ts` по модела от този документ
+- [ ] Drizzle config
+- [ ] Initial SQL migration
+- [ ] Seed за demo users (admin/user)
+- [ ] Commit: `feat(db): add studyhub schema with 6 tables`
 
 ---
 
-### ФАЗА 3 — Notes + Storage (Cloudflare R2)
-**Цел:** Бележки, качване на файлове, PDF export
+### ФАЗА 2 — Auth + Access Control
+**Цел:** Register/Login/Logout + guards
 
-- [ ] Cloudflare R2 bucket setup
-- [ ] `lib/r2.ts` — upload, delete helpers
-- [ ] API: `POST /api/upload`
-- [ ] Файлов upload в Material form
-- [ ] API: CRUD за notes
-- [ ] Notes: pin, share функции
-- [ ] `lib/pdf.ts` — Notes → PDF (с `jspdf`)
-- [ ] API: `POST /api/notes/:id/export-pdf`
-- [ ] Уеб: Notes страница
-- [ ] Commit: "feat: notes, file upload (R2), PDF export"
+- [ ] JWT sign/verify helpers
+- [ ] Password hashing (bcrypt/argon2)
+- [ ] Auth endpoints
+- [ ] Middleware/guards за защитени web routes
+- [ ] API auth checks на server-side
+- [ ] Commit: `feat(auth): jwt auth with role-aware guards`
 
 ---
 
-### ФАЗА 4 — AI функции (Gemini)
-**Цел:** Chat, Summarize, Quiz
+### ФАЗА 3 — Core CRUD (Courses/Modules/Materials/Favorites)
+**Цел:** Основният LMS flow
 
-- [ ] `lib/gemini.ts` — Gemini API клиент
-- [ ] API: `POST /api/ai/chat`
-- [ ] API: `POST /api/ai/summarize`
-- [ ] API: `POST /api/ai/quiz`
-- [ ] Уеб: Chat widget (FAB)
-- [ ] Уеб: Summarize бутон в Material View
-- [ ] Уеб: Quiz генератор в Material View
-- [ ] Rate limiting за AI endpoints
-- [ ] Commit: "feat: Gemini AI — chat, summarize, quiz"
+- [ ] CRUD endpoints за courses/modules/materials
+- [ ] Favorites endpoints
+- [ ] Activity logging
+- [ ] Dashboard, Course Details, Material View/Edit
+- [ ] Commit: `feat(core): implement courses modules materials and favorites`
 
 ---
 
-### ФАЗА 5 — Admin Panel
-**Цел:** Пълен admin интерфейс
+### ФАЗА 4 — Profile + Admin Panel
+**Цел:** Пълен ролеви контрол
 
-- [ ] API: admin endpoints (users, courses, logs, contact)
-- [ ] Уеб: Admin Panel страница (4 таба)
-- [ ] Role guard — само admin може да достъпи `/admin`
-- [ ] Commit: "feat: admin panel — users, courses, logs"
-
----
-
-### ФАЗА 6 — Contact Form + Profile
-**Цел:** Останалите уеб екрани
-
-- [ ] API: `POST /api/contact`
-- [ ] Уеб: Contact страница
-- [ ] Уеб: Profile страница (редакция на name, avatar)
-- [ ] Commit: "feat: contact form and profile page"
+- [ ] Profile страница (name/avatar)
+- [ ] Admin panel: users + content moderation + logs
+- [ ] Admin role checks на endpoint ниво
+- [ ] Commit: `feat(admin): add user management and moderation`
 
 ---
 
-### ФАЗА 7 — Mobile App (Expo)
-**Цел:** 3 работещи мобилни екрана
+### ФАЗА 5 — Mobile App (3 screens)
+**Цел:** Login + Courses List + Course Details
 
-- [ ] Expo настройка — API base URL към Vercel
-- [ ] Shared auth token (AsyncStorage)
-- [ ] Екран 1: Login
-- [ ] Екран 2: Courses List
-- [ ] Екран 3: Course Details
-- [ ] Commit: "feat: mobile app — login, courses, course details"
+- [ ] Expo API integration
+- [ ] Auth token storage
+- [ ] 3 задължителни екрана
+- [ ] Commit: `feat(mobile): add login courses list and course details`
 
 ---
 
-### ФАЗА 8 — Deployment (Vercel + Neon)
-**Цел:** Работещ live проект
+### ФАЗА 6 — Deployment + Demo Access
+**Цел:** Live проект за жури
 
-- [ ] Vercel проект — свързан с GitHub repo
-- [ ] Environment variables в Vercel
-- [ ] Neon production DB — `drizzle-kit push`
-- [ ] Vercel deploy — тест на всички endpoints
-- [ ] Demo credentials работят
-- [ ] Commit: "feat: production deployment on Vercel"
-
----
-
-### ФАЗА 9 — Документация
-**Цел:** Пълна документация в GitHub
-
-- [ ] README.md — описание, screenshots, tech stack
-- [ ] DB schema диаграма (dbdiagram.io или Mermaid)
-- [ ] Local development setup guide
-- [ ] API reference (основните endpoints)
-- [ ] AGENTS.md — актуализиран
-- [ ] Commit: "docs: complete project documentation"
+- [ ] Deploy на Vercel/Netlify
+- [ ] Environment variables в хостинга
+- [ ] Production DB migration
+- [ ] Smoke test на основните потоци
+- [ ] Demo credentials валидни
+- [ ] Commit: `feat(deploy): publish production build with demo access`
 
 ---
 
-### ФАЗА 10 — Polish (ако остане време)
-- [ ] PDF → Notes (парсване на PDF)
-- [ ] Лилава тема / mascot от стария проект
-- [ ] Анимации, transitions
-- [ ] Допълнителни commits за да стигнем 20+
+### ФАЗА 7 — Documentation + Final Hardening
+**Цел:** Пълна repo документация
+
+- [ ] README: описание + роли + screenshots
+- [ ] Архитектура и ключови папки
+- [ ] DB диаграма (Mermaid/dbdiagram)
+- [ ] Local setup guide
+- [ ] API summary
+- [ ] Commit: `docs: finalize architecture setup and api documentation`
+
+---
+
+## Commit Plan (15+ commits, 3+ дни)
+
+| Ден | Дата | Фокус | Цел комити |
+|---|---|---|---|
+| Ден 1 | 2026-03-27 | Фаза 0 + Фаза 1 | 5 |
+| Ден 2 | 2026-03-30 | Фаза 2 + Фаза 3 + част от Фаза 4 | 6 |
+| Ден 3 | 2026-03-31 | Фаза 4/5/6/7 | 5 |
+| **Общо** |  |  | **16+** |
 
 ---
 
 ## Scoring Tracker (100 точки)
 
-| Критерий | Макс | Как го покриваме | Фаза |
+| Критерий | Макс | Как покриваме | Фаза |
 |---|---|---|---|
-| GitHub Commits (15+) | 15 | ~20 комита, 1 на фаза + | всички |
-| Commit Days (3+) | 15 | работа в различни дни | всички |
-| Architecture | 5 | монорепо, REST API, Expo | 0 |
-| Backend API | 7 | auth + CRUD + AI endpoints | 1-5 |
-| Database (4+) | 8 | 7 таблици + миграции | 0 |
-| Auth & Security | 5 | JWT + роли + middleware | 1 |
-| Web Screens (5+) | 10 | 9 екрана | 1-6 |
-| Admin Panel | 10 | 4 таба, role guard | 5 |
-| Mobile (3+) | 9 | 3 екрана | 7 |
-| Deployment | 10 | Vercel + Neon | 8 |
-| Documentation | 6 | README + schema | 9 |
-| **Общо** | **100** | | |
+| GitHub Commits (15+) | 15 | 16+ комита по календар | всички |
+| Commit Days (3+) | 15 | 3 отделни дати | всички |
+| Architecture | 5 | Monorepo + REST + Expo | 0 |
+| Backend API | 7 | Auth + CRUD + Admin endpoints | 2-4 |
+| Database | 8 | 6 таблици + Drizzle migrations | 1 |
+| Auth & Security | 5 | JWT + server-side guards + role checks | 2 |
+| Web Screens | 10 | 7 responsive екрана | 3-4 |
+| Admin Panel | 10 | Users + moderation + logs | 4 |
+| Mobile App | 9 | 3 API-integrated екрана | 5 |
+| Deployment | 10 | Live URL + demo access | 6 |
+| Documentation | 6 | README + architecture + DB + setup | 7 |
+| **Общо** | **100** |  |  |
 
 ---
 
@@ -416,18 +339,18 @@ DATABASE_URL=postgresql://...neon.tech/studyhub
 # JWT
 JWT_SECRET=...
 
-# Gemini AI
-GEMINI_API_KEY=...
-
-# Cloudflare R2
-R2_ACCOUNT_ID=...
-R2_ACCESS_KEY_ID=...
-R2_SECRET_ACCESS_KEY=...
-R2_BUCKET_NAME=studyhub-files
-R2_PUBLIC_URL=https://...r2.dev
-
 # App
 NEXT_PUBLIC_API_URL=https://...vercel.app
+
+# Optional: Cloudflare R2
+R2_ACCOUNT_ID=
+R2_ACCESS_KEY_ID=
+R2_SECRET_ACCESS_KEY=
+R2_BUCKET_NAME=
+R2_PUBLIC_URL=
+
+# Optional: AI
+GEMINI_API_KEY=
 ```
 
 ---
@@ -441,17 +364,26 @@ NEXT_PUBLIC_API_URL=https://...vercel.app
 
 ---
 
+## Optional Backlog (след MVP)
+
+- [ ] Cloudflare R2 file uploads за материали
+- [ ] AI: summarize/quiz/chat
+- [ ] Contact страница/форма
+- [ ] Notes + PDF export
+- [ ] UI polish анимации и допълнителни UX детайли
+
+---
+
 ## Текущ статус
 
 | Фаза | Статус |
 |---|---|
-| Фаза 0: Монорепо + DB | ⏳ Не е започната |
-| Фаза 1: Auth | ⏳ Не е започната |
-| Фаза 2: CRUD | ⏳ Не е започната |
-| Фаза 3: Notes + Storage | ⏳ Не е започната |
-| Фаза 4: AI | ⏳ Не е започната |
-| Фаза 5: Admin | ⏳ Не е започната |
-| Фаза 6: Contact + Profile | ⏳ Не е започната |
-| Фаза 7: Mobile | ⏳ Не е започната |
-| Фаза 8: Deployment | ⏳ Не е започната |
-| Фаза 9: Docs | ⏳ Не е започната |
+| Фаза 0: Bootstrap | ⏳ Не е започната |
+| Фаза 1: DB + Migrations | ⏳ Не е започната |
+| Фаза 2: Auth + Guards | ⏳ Не е започната |
+| Фаза 3: Core CRUD + Favorites | ⏳ Не е започната |
+| Фаза 4: Profile + Admin | ⏳ Не е започната |
+| Фаза 5: Mobile | ⏳ Не е започната |
+| Фаза 6: Deployment | ⏳ Не е започната |
+| Фаза 7: Docs | ⏳ Не е започната |
+
