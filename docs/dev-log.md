@@ -37,13 +37,26 @@
   - Тествано: login ✅, register ✅, /me ✅, build ✅, browser ✅
   - Commit + push: `feat(auth): JWT auth with register, login, logout and role-aware middleware`
 
-**Commit count:** 6 (target: 15+)
+- **Фаза 3** — завършена:
+  - `lib/api-utils.ts` — requireAuth + requireAdmin helpers
+  - `lib/activity.ts` — logActivity helper
+  - API: full CRUD за courses, modules, materials
+  - API: favorites (add/list/remove) с unique constraint
+  - Dashboard страница — list courses, create, delete
+  - Course Details страница — modules с materials, add/delete
+  - Material View/Edit страница — view, edit, delete
+  - Всички страници responsive + dark mode
+  - Build ✅
+  - Commit + push: `feat(crud): courses, modules, materials CRUD with favorites and activity logging`
+  - Обновихме AGENTS.md с code quality правила и handoff инструкции
+
+**Commit count:** 8 (target: 15+)
 **Commit days:** 1 (target: 3+)
 
-**Текуща фаза:** Фаза 3 — Core CRUD (не е започната)
+**Текуща фаза:** Фаза 4 — Profile + Admin Panel (не е започната)
 
 **Следващи стъпки:**
-- CRUD endpoints за courses, modules, materials
-- Favorites endpoints
-- Activity logging
-- Dashboard, Course Details, Material View/Edit страници
+- Profile страница (name/avatar edit)
+- Admin panel: users tab, courses tab, activity logs tab
+- Admin API endpoints с role checks
+- `.env` трябва да е копиран и в `apps/web/.env` за build да работи
