@@ -1,0 +1,21 @@
+{
+  "name": "studyhub-v2",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:web": "npm --workspace @studyhub/web run dev",
+    "build:web": "npm --workspace @studyhub/web run build",
+    "lint:web": "npm --workspace @studyhub/web run lint",
+    "typecheck:web": "npm --workspace @studyhub/web run typecheck",
+    "dev:mobile": "npm --workspace @studyhub/mobile run start",
+    "typecheck:mobile": "npm --workspace @studyhub/mobile run typecheck",
+    "typecheck:shared": "npm --workspace @studyhub/shared run typecheck"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
