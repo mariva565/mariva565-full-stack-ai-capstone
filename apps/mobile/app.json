@@ -7,10 +7,21 @@
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "plugins": [
-      "expo-router"
+      "expo-router",
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "updates": {
+      "enabled": false
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "1908016d-5259-43b9-ab21-17dd2320e3a9"
+      }
+    },
+    "owner": "mariva"
   }
 }

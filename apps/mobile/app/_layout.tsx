@@ -1,4 +1,4 @@
-import { Stack, useRouter, useSegments } from "expo-router";
+import { Stack, useRouter, useSegments, useRootNavigationState } from "expo-router";
 import { useEffect } from "react";
 import { AuthProvider, useAuth } from "../lib/auth-context";
 import { ActivityIndicator, View } from "react-native";
@@ -7,9 +7,11 @@ function AuthGate() {
   const { user, isLoading } = useAuth();
   const segments = useSegments();
   const router = useRouter();
+  const navigationState = useRootNavigationState();
 
   useEffect(() => {
     if (isLoading) return;
+    if (!navigationState?.key) return;
 
     const onLoginScreen = segments[0] === "login";
 
@@ -18,7 +20,7 @@ function AuthGate() {
     } else if (user && onLoginScreen) {
       router.replace("/");
     }
-  }, [user, isLoading, segments]);
+  }, [user, isLoading, segments, navigationState?.key]);
 
   if (isLoading) {
     return (
