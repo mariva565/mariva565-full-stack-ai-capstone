@@ -213,66 +213,66 @@ id, user_id (FK→users), action_type, target_id, details (JSON), created_at
 ### ФАЗА 0 — Monorepo Bootstrap
 **Цел:** Работещо скеле за web + mobile + shared
 
-- [ ] root `package.json` с workspaces
-- [ ] `apps/web` (Next.js + TS + Tailwind)
-- [ ] `apps/mobile` (Expo + TS)
-- [ ] `packages/shared` (types + helpers)
-- [ ] `.env.example`
-- [ ] Commit: `chore: bootstrap monorepo with web, mobile and shared`
+- [x] root `package.json` с workspaces
+- [x] `apps/web` (Next.js + TS + Tailwind)
+- [x] `apps/mobile` (Expo + TS)
+- [x] `packages/shared` (types + helpers)
+- [x] `.env.example`
+- [x] Commit: `chore: bootstrap monorepo with web, mobile and shared`
 
 ---
 
 ### ФАЗА 1 — DB Schema + Drizzle Migrations
 **Цел:** 6 таблици и първа migration в Git
 
-- [ ] `drizzle/schema.ts` по модела от този документ
-- [ ] Drizzle config
-- [ ] Initial SQL migration
-- [ ] Seed за demo users (admin/user)
-- [ ] Commit: `feat(db): add studyhub schema with 6 tables`
+- [x] `drizzle/schema.ts` по модела от този документ
+- [x] Drizzle config
+- [x] Initial SQL migration
+- [x] Seed за demo users (admin/user)
+- [x] Commit: `feat(db): add Drizzle schema with 6 tables and Neon integration`
 
 ---
 
 ### ФАЗА 2 — Auth + Access Control
 **Цел:** Register/Login/Logout + guards
 
-- [ ] JWT sign/verify helpers
-- [ ] Password hashing (bcrypt/argon2)
-- [ ] Auth endpoints
-- [ ] Middleware/guards за защитени web routes
-- [ ] API auth checks на server-side
-- [ ] Commit: `feat(auth): jwt auth with role-aware guards`
+- [x] JWT sign/verify helpers
+- [x] Password hashing (bcrypt)
+- [x] Auth endpoints
+- [x] Middleware/guards за защитени web routes
+- [x] API auth checks на server-side
+- [x] Commit: `feat(auth): JWT auth with register, login, logout and role-aware middleware`
 
 ---
 
 ### ФАЗА 3 — Core CRUD (Courses/Modules/Materials/Favorites)
 **Цел:** Основният LMS flow
 
-- [ ] CRUD endpoints за courses/modules/materials
-- [ ] Favorites endpoints
-- [ ] Activity logging
-- [ ] Dashboard, Course Details, Material View/Edit
-- [ ] Commit: `feat(core): implement courses modules materials and favorites`
+- [x] CRUD endpoints за courses/modules/materials
+- [x] Favorites endpoints
+- [x] Activity logging
+- [x] Dashboard, Course Details, Material View/Edit
+- [x] Commit: `feat(crud): courses, modules, materials CRUD with favorites and activity logging`
 
 ---
 
 ### ФАЗА 4 — Profile + Admin Panel
 **Цел:** Пълен ролеви контрол
 
-- [ ] Profile страница (name/avatar)
-- [ ] Admin panel: users + content moderation + logs
-- [ ] Admin role checks на endpoint ниво
-- [ ] Commit: `feat(admin): add user management and moderation`
+- [x] Profile страница (name/avatar)
+- [x] Admin panel: users + content moderation + logs
+- [x] Admin role checks на endpoint ниво
+- [x] Commit: `feat(admin): profile page, admin panel with user management and moderation`
 
 ---
 
 ### ФАЗА 5 — Mobile App (3 screens)
 **Цел:** Login + Courses List + Course Details
 
-- [ ] Expo API integration
-- [ ] Auth token storage
-- [ ] 3 задължителни екрана
-- [ ] Commit: `feat(mobile): add login courses list and course details`
+- [x] Expo API integration
+- [x] Auth token storage (expo-secure-store)
+- [x] 3 задължителни екрана (Login, Courses List, Course Details)
+- [x] Commit: `feat(mobile): add login courses list and course details screens`
 
 ---
 

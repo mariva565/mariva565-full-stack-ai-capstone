@@ -89,11 +89,19 @@
   - Fix: explicit `jsx: "react-jsx"` в mobile tsconfig (VS Code IDE compatibility)
   - Web build ✅, Mobile typecheck ✅
 
-**Commit count:** 8 (target: 15+)
+- CORS headers добавени в middleware за cross-origin API достъп (mobile web preview)
+- Тествано: Expo web preview ✅ (login → courses list → course details с модули и материали)
+- Expo Go на физическо устройство: "failed to download remote update" — за разследване по-късно
+- Commit + push: `feat(mobile): add login, courses list and course details screens`
+
+**Commit count:** 9 (target: 15+)
 **Commit days:** 2 (target: 3+)
 
-**Текуща фаза:** Фаза 5 завършена
+**Текуща фаза:** Фаза 5 завършена, Фаза 6 отложена
+
+**Решение:** Deployment (Фаза 6) се отлага. Причина: безплатни планове на Netlify/Vercel — при всеки commit се deploy-ва и кредитите ще свършат. Първо ошлайфваме UI, после deploy-ваме наведнъж.
 
 **Следващи стъпки:**
-- Фаза 6: Deployment (Vercel + production DB migration + demo access)
+- UI polish и ошлайфване на уеб екраните
+- Фаза 6: Deployment (когато UI е готов)
 - Фаза 7: Documentation (README + architecture + DB diagram)

@@ -14,7 +14,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/Status-In%20Progress-F59E0B?style=flat-square" alt="Status in progress" />
-  <img src="https://img.shields.io/badge/MVP%20Roadmap-13%25-0EA5E9?style=flat-square" alt="MVP roadmap progress 13 percent" />
+  <img src="https://img.shields.io/badge/MVP%20Roadmap-75%25-0EA5E9?style=flat-square" alt="MVP roadmap progress 75 percent" />
   <img src="https://img.shields.io/badge/Commits-15%2B%20Target-22C55E?style=flat-square" alt="Commit target 15 plus" />
   <img src="https://img.shields.io/badge/TypeScript-Strict%20Mode-1D4ED8?style=flat-square" alt="TypeScript strict mode" />
 </p>
@@ -35,16 +35,16 @@
 
 ## Progress Roadmap
 
-`MVP delivery pulse: [###.......] 13% (1/8 phases complete)`
+`MVP delivery pulse: [######....] 75% (6/8 phases complete)`
 
 | Phase | Scope | Status |
 |---|---|---|
 | Phase 0 | Monorepo bootstrap | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
-| Phase 1 | DB schema + Drizzle migrations | ![Planned](https://img.shields.io/badge/Planned-64748B?style=flat-square) |
-| Phase 2 | Auth + JWT guards | ![Planned](https://img.shields.io/badge/Planned-64748B?style=flat-square) |
-| Phase 3 | Courses/modules/materials CRUD + favorites | ![Planned](https://img.shields.io/badge/Planned-64748B?style=flat-square) |
-| Phase 4 | Profile + admin panel | ![Planned](https://img.shields.io/badge/Planned-64748B?style=flat-square) |
-| Phase 5 | Mobile API integration | ![Planned](https://img.shields.io/badge/Planned-64748B?style=flat-square) |
+| Phase 1 | DB schema + Drizzle migrations | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
+| Phase 2 | Auth + JWT guards | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
+| Phase 3 | Courses/modules/materials CRUD + favorites | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
+| Phase 4 | Profile + admin panel | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
+| Phase 5 | Mobile app (3 screens) | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
 | Phase 6 | Deployment (Vercel/Netlify) | ![Planned](https://img.shields.io/badge/Planned-64748B?style=flat-square) |
 | Phase 7 | Docs + demo polish | ![Planned](https://img.shields.io/badge/Planned-64748B?style=flat-square) |
 
