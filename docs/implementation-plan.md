@@ -384,6 +384,43 @@ GEMINI_API_KEY=
 
 ---
 
+---
+
+## Фаза UI Polish + Feature Parity (активна)
+
+> Последна актуализация: 2026-03-28
+> Концепция: StudyHub е **личен бележник** за нещо, което учиш. Не е курс за завършване.
+
+### Работен план (страница по страница)
+
+| # | Страница / Задача | Статус | Описание |
+|---|---|---|---|
+| 1 | **Home page** | ⏳ Не започната | Hero + Features + FAQ; split на компоненти (`components/home/`) |
+| 2 | **Materials `[id]`** | ⏳ Не започната | Тагове (display + edit), Pin бутон, тип иконки, filter All/Files/Links/Notes, sort |
+| 3 | **Course Details `[id]`** | ⏳ Не започната | Добавяне на материал с тип dropdown, подобрен списък |
+| 4 | **Dashboard** | ⏳ Не започната | Pinned секция, search/filter по тагове |
+| 5 | **Sharing** | ⏳ Не започната | Нова таблица `shares`, "Shared with Me" tab, share бутон |
+| 6 | **UI компоненти** | ⏳ Не започната | ConfirmModal (замества confirm()), Toast notifications, Spinner |
+| 7 | **Mobile** | ⏳ Блокирана | Expo Go гърми на физически телефон; Android емулатор се инсталира |
+
+### Правила за имплементация
+- Всеки файл < 300 реда (без монолити)
+- Tailwind only, без inline styles
+- Dark mode от ден 1 на всеки компонент
+- Shared UI компоненти в `components/ui/`
+- Page-specific компоненти в `components/<page-name>/`
+
+### Анализ на v1 (справка)
+V1 (Vanilla JS) живее на Vercel. Ключови функции за репликиране:
+- Тагове — pill badges на материали, comma-separated edit
+- Pin — иконка на карта, pinned sidebar секция
+- Material types — file / link / note с цветни иконки
+- Filter + sort на materials списъка
+- "Shared with Me" tab
+- Search в materials
+
+---
+
 ## Текущ статус
 
 | Фаза | Статус |

@@ -105,3 +105,129 @@
 - UI polish и ошлайфване на уеб екраните
 - Фаза 6: Deployment (когато UI е готов)
 - Фаза 7: Documentation (README + architecture + DB diagram)
+
+### Session 3 (Expo Go stability investigation)
+
+**What we did:**
+- Investigated Expo Go startup crash: "failed to download remote update" on physical device.
+- Ran `npx expo-doctor`; initial failure showed missing required peer dependency `expo-constants` (required by `expo-router`).
+- Installed SDK-compatible dependency with `npx expo install expo-constants` (resolved to `~17.1.8`).
+- Re-ran `npx expo-doctor --verbose`: **17/17 checks passed**.
+- Ran `npx expo install --check`: dependencies reported **up to date**.
+- Verified there are **no canary versions** in `package.json` or `package-lock.json` (`NO_CANARY_MATCHES`).
+
+**Notes:**
+- The canary mention seen during doctor run was for temporary `expo-doctor` execution package (`npx`), not a project dependency.
+- Current mobile dependency state is compatible with Expo SDK 53.
+
+### Session 4 (Mobile script ergonomics)
+
+**What we did:**
+- Added mobile-local scripts so tunnel/LAN startup works directly from `apps/mobile` shell.
+- New scripts in `apps/mobile/package.json`:
+  - `dev:mobile:tunnel` -> `expo start --tunnel -c`
+  - `dev:mobile:lan` -> `expo start --host lan -c`
+- Verified script availability with `npm run --workspace=@studyhub/mobile`.
+
+**Result:**
+- `PS apps/mobile> npm run dev:mobile:tunnel` now works from the mobile folder.
+
+### Session 5 (Tunnel timeout + mobile API base hardening)
+
+**Issue observed:**
+- `expo start --tunnel -c` failed with `CommandError: ngrok tunnel took too long to connect`.
+
+**What we changed in code:**
+- Reworked `apps/mobile/lib/api.ts` to remove hardcoded LAN IP.
+- API base URL now resolves in this order:
+  1. `EXPO_PUBLIC_API_URL` (if provided)
+  2. Expo dev host (auto-detected from `expoConfig.hostUri`)
+  3. Platform fallback (`10.0.2.2` for Android emulator / localhost for others)
+- Added `EXPO_PUBLIC_API_URL` placeholder to `.env.example`.
+
+**Why:**
+- Tunnel failures are usually network-level (ngrok/VPN/firewall), but mobile API calls should not depend on manually edited LAN IP and should adapt automatically.
+
+### Session 6 (Android USB fallback fully wired)
+
+**What we did:**
+- Added USB-based mobile startup scripts to avoid ngrok tunnel dependency:
+  - root: `dev:mobile:usb`, `dev:mobile:android:usb`
+  - mobile: `usb:reverse`, `dev:mobile:usb`, `android:usb`
+- Added `apps/mobile/scripts/usb-reverse.js`:
+  - auto-detects `adb` from PATH, `ANDROID_SDK_ROOT`/`ANDROID_HOME`, Android SDK default path, and Winget install path
+  - starts ADB server
+  - applies `adb reverse` for required ports (`8081`, `3000`, `19000-19002`)
+  - returns clear error when no Android device is detected
+- Updated README with Android USB fallback usage steps.
+- Installed Android SDK Platform-Tools (`Google.PlatformTools`) via Winget to provide `adb`.
+
+**Validation:**
+- Scripts are listed in both root and mobile workspaces.
+- `usb:reverse` now runs and reaches device detection (fails with clear message when no USB device is connected).
+
+### Session 7 (SDK 54 compatibility recovery + simplified USB launch)
+
+**Goal:**
+- Resolve Expo Go incompatibility (`Expo Go SDK 54` vs project `SDK 53`) and stop prolonged setup loop.
+
+**What we did:**
+- Upgraded mobile workspace to Expo SDK 54 stack (`expo ~54`, RN/React/Router aligned).
+- Resolved dependency conflicts (`@types/react` override and clean reinstall path).
+- Performed full clean reinstall to remove mixed SDK 53/54 artifacts.
+- Verified with `expo-doctor --verbose`: **17/17 checks passed**.
+- Started USB localhost workflow and confirmed:
+  - Metro listening on `:8081`
+  - ADB reverse mappings active (`8081`, `3000`, `19000-19002`)
+  - Expo Go launch intent sent to device (`exp://127.0.0.1:8081`)
+
+**Result:**
+- Project is now SDK 54 compatible and launched through USB localhost flow.
+
+### Session 8 (Runtime 500 stabilization)
+
+**Issue:**
+- Expo Go showed a red screen with runtime `500` after initial app load.
+
+**Root cause found:**
+- A stale `next start` process was occupying port `3000`.
+- New `dev:web` then started on `3001`, while mobile API client still targeted `http://localhost:3000` via USB reverse.
+- Mobile app requests were hitting the wrong backend process.
+
+**Fix applied:**
+- Stopped stale Next.js processes.
+- Relaunched web dev server and confirmed it runs on `http://localhost:3000`.
+- Confirmed Metro on `http://localhost:8081`.
+- Re-applied ADB reverse mappings and relaunched Expo Go URL (`exp://127.0.0.1:8081`).
+
+**Result:**
+- Correct port alignment restored (`web=3000`, `metro=8081`).
+
+### Session 9 (Structured mobile handoff created)
+
+**What we added:**
+- New detailed handoff/playbook document for phone testing:
+  - `docs/mobile-phone-testing-handoff.md`
+- README updated:
+  - Expo badge updated to SDK 54
+  - Added explicit link to the mobile phone testing playbook
+
+**Purpose:**
+- Prevent repeated setup loops and preserve a deterministic mobile testing path for next sessions.
+
+### Session 10 (Expo Go deep investigation + UI планиране)
+
+**Expo Go — root cause идентифициран:**
+- Махнахме `eas.projectId` и `owner` от `app.json` (причиняваха OTA update check към EAS сървъри).
+- Махнахме deprecated `expo-router/babel` от `babel.config.js`.
+- Потвърдено: телефонът достига Metro (bundle се изтегля за 93ms кеширано).
+- Дори минимален "Hello World" layout гърми → проблемът е в Expo Go app-а на устройството, не в кода.
+- **Решение:** Инсталиран Android Studio + емулатор (Pixel 8, API 37, изтегля се). Ще се ползва вместо физически телефон.
+
+**UI планиране — анализ на v1:**
+- Прегледан живия v1 проект за справка.
+- Идентифицирани липсващи функции в v2 спрямо v1.
+- Уточнена концепцията: StudyHub е **личен бележник**, не курс за завършване → progress tracking не е подходящ.
+
+**Следващи стъпки — работен план:**
+- Виж секция "Фаза UI Polish + Feature Parity" в `docs/implementation-plan.md`.

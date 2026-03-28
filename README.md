@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="https://nextjs.org/"><img src="https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=nextdotjs" alt="Next.js" /></a>
-  <a href="https://expo.dev/"><img src="https://img.shields.io/badge/Expo-53-1E1B4B?style=for-the-badge&logo=expo" alt="Expo" /></a>
+  <a href="https://expo.dev/"><img src="https://img.shields.io/badge/Expo-54-1E1B4B?style=for-the-badge&logo=expo" alt="Expo" /></a>
   <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-Strict-2563EB?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" /></a>
   <a href="https://orm.drizzle.team/"><img src="https://img.shields.io/badge/Drizzle-ORM-B7EA00?style=for-the-badge" alt="Drizzle ORM" /></a>
   <a href="https://neon.tech/"><img src="https://img.shields.io/badge/Neon-PostgreSQL-00B894?style=for-the-badge" alt="Neon" /></a>
@@ -189,6 +189,23 @@ Alternative mobile connection modes:
 ```bash
 npm run dev:mobile:tunnel
 npm run dev:mobile:lan
+npm run dev:mobile:usb
+```
+
+Detailed phone testing playbook:
+- `docs/mobile-phone-testing-handoff.md`
+
+Android USB fallback (when tunnel/LAN fail):
+```bash
+# 1) Enable USB debugging on your Android phone and connect via USB
+# 2) Verify ADB is available
+adb version
+
+# 3) Start web API (separate terminal)
+npm run dev:web
+
+# 4) Start Expo through USB reverse
+npm run dev:mobile:android:usb
 ```
 
 ## Demo Credentials

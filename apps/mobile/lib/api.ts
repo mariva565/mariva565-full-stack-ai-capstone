@@ -1,17 +1,36 @@
 import * as SecureStore from "expo-secure-store";
+import Constants from "expo-constants";
 import { Platform } from "react-native";
 
 const TOKEN_KEY = "studyhub_token";
 
-// LAN IP for physical devices, localhost for web/simulators
-const LAN_IP = "192.168.1.9";
+function getDevHostFromExpo(): string | null {
+  const hostUri = Constants.expoConfig?.hostUri;
+  if (!hostUri) {
+    return null;
+  }
+  const host = hostUri.split(":")[0];
+  return host || null;
+}
 
-const API_BASE =
-  Platform.OS === "web"
-    ? "http://localhost:3000"
-    : Platform.OS === "android"
-      ? "http://10.0.2.2:3000"
-      : `http://${LAN_IP}:3000`;
+function getDefaultApiBase(): string {
+  if (Platform.OS === "web") {
+    return "http://localhost:3000";
+  }
+
+  const devHost = getDevHostFromExpo();
+  if (devHost) {
+    return `http://${devHost}:3000`;
+  }
+
+  if (Platform.OS === "android") {
+    return "http://10.0.2.2:3000";
+  }
+
+  return "http://localhost:3000";
+}
+
+const API_BASE = process.env.EXPO_PUBLIC_API_URL ?? getDefaultApiBase();
 
 // --- Token management ---
 
