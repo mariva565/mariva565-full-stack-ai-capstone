@@ -57,9 +57,9 @@ export async function POST(request: NextRequest) {
       role: newUser.role,
     });
 
-    // Set cookie and return
+    // Set cookie and return (token also in body for mobile clients)
     const response = NextResponse.json(
-      { message: "Registration successful", user: { id: newUser.id, email: newUser.email, role: newUser.role } },
+      { message: "Registration successful", token, user: { id: newUser.id, email: newUser.email, role: newUser.role } },
       { status: 201 }
     );
 

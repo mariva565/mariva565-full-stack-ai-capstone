@@ -67,8 +67,33 @@
 **Commit count:** 8 (target: 15+)
 **Commit days:** 1 (target: 3+)
 
-**Текуща фаза:** Фаза 5 — Mobile App (не е започната)
+---
+
+## 2026-03-28
+
+### Сесия 2
+
+**Какво направихме:**
+
+- **Фаза 5** — завършена (Mobile App, 3 екрана):
+  - Backend: добавихме Bearer token поддръжка в `requireAuth` (cookie + Authorization header)
+  - Backend: login/register API-та вече връщат `token` в response body (за mobile storage)
+  - `lib/api.ts` — API клиент с SecureStore за token persistence, platform-aware base URL
+  - `lib/auth-context.tsx` — AuthProvider с auto-login check, login/logout
+  - `app/_layout.tsx` — AuthGate: автоматичен redirect към login/courses
+  - **Login екран** — email/password форма, error handling, demo credentials hint
+  - **Courses List екран** — FlatList с pull-to-refresh, course cards с status badge, welcome bar, logout
+  - **Course Details екран** — course info card, expandable modules, lazy-loaded materials с type icons и tags
+  - Инсталирахме `expo-secure-store` за secure token storage
+  - Fix: `@types/react` override в root `package.json` (deduplicate 19.0.14 vs 19.0.4 от react-native)
+  - Fix: explicit `jsx: "react-jsx"` в mobile tsconfig (VS Code IDE compatibility)
+  - Web build ✅, Mobile typecheck ✅
+
+**Commit count:** 8 (target: 15+)
+**Commit days:** 2 (target: 3+)
+
+**Текуща фаза:** Фаза 5 завършена
 
 **Следващи стъпки:**
-- Expo app: Login, Courses List, Course Details (3 екрана)
-- `.env` трябва да е копиран и в `apps/web/.env` за build да работи
+- Фаза 6: Deployment (Vercel + production DB migration + demo access)
+- Фаза 7: Documentation (README + architecture + DB diagram)

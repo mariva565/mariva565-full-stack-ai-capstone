@@ -388,12 +388,12 @@ GEMINI_API_KEY=
 
 | Фаза | Статус |
 |---|---|
-| Фаза 0: Bootstrap | ⏳ Не е започната |
-| Фаза 1: DB + Migrations | ⏳ Не е започната |
-| Фаза 2: Auth + Guards | ⏳ Не е започната |
-| Фаза 3: Core CRUD + Favorites | ⏳ Не е започната |
-| Фаза 4: Profile + Admin | ⏳ Не е започната |
-| Фаза 5: Mobile | ⏳ Не е започната |
+| Фаза 0: Bootstrap | ✅ Завършена |
+| Фаза 1: DB + Migrations | ✅ Завършена |
+| Фаза 2: Auth + Guards | ✅ Завършена |
+| Фаза 3: Core CRUD + Favorites | ✅ Завършена |
+| Фаза 4: Profile + Admin | ✅ Завършена |
+| Фаза 5: Mobile | ✅ Завършена |
 | Фаза 6: Deployment | ⏳ Не е започната |
 | Фаза 7: Docs | ⏳ Не е започната |
 

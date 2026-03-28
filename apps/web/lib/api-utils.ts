@@ -2,13 +2,20 @@ import { NextRequest, NextResponse } from "next/server";
 import { verifyToken, type JwtPayload } from "./jwt";
 
 /**
- * Extract and verify the JWT from request cookies.
- * Returns the payload or a 401 response.
+ * Extract and verify the JWT from request cookies or Authorization header.
+ * Supports both cookie-based auth (web) and Bearer token auth (mobile).
  */
 export async function requireAuth(
   request: NextRequest
 ): Promise<{ user: JwtPayload } | { error: NextResponse }> {
-  const token = request.cookies.get("token")?.value;
+  // Try cookie first, then Authorization: Bearer header
+  let token = request.cookies.get("token")?.value;
+  if (!token) {
+    const authHeader = request.headers.get("authorization");
+    if (authHeader?.startsWith("Bearer ")) {
+      token = authHeader.slice(7);
+    }
+  }
 
   if (!token) {
     return {
