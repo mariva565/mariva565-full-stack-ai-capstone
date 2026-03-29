@@ -395,7 +395,7 @@ GEMINI_API_KEY=
 
 | # | Страница / Задача | Статус | Описание |
 |---|---|---|---|
-| 1 | **Home page** | ⏳ Не започната | Hero + Features + FAQ; split на компоненти (`components/home/`) |
+| 1 | **Home page** | 🔜 Следваща | Hero + Features + FAQ; split на компоненти (`components/home/`) |
 | 2 | **Materials `[id]`** | ⏳ Не започната | Тагове (display + edit), Pin бутон, тип иконки, filter All/Files/Links/Notes, sort |
 | 3 | **Course Details `[id]`** | ⏳ Не започната | Добавяне на материал с тип dropdown, подобрен списък |
 | 4 | **Dashboard** | ⏳ Не започната | Pinned секция, search/filter по тагове |

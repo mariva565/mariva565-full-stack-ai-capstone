@@ -263,3 +263,4 @@
 
 **Следващи стъпки — работен план:**
 - Виж секция "Фаза UI Polish + Feature Parity" в `docs/implementation-plan.md`.
+- Следващата задача: **Home page** (hero + features + faq, split компоненти).
