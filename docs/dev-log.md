@@ -351,3 +351,36 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 - Page files remain within 300-line rule:
   - `apps/web/app/courses/[id]/page.tsx` = 300 lines
   - `apps/web/app/materials/[id]/page.tsx` = 258 lines
+
+### Session 13 (Dashboard redesign + pinned parity)
+
+**What we implemented:**
+- Rebuilt `apps/web/app/dashboard/page.tsx` with a new dashboard layout and behavior:
+  - Hero section with workspace summary cards (courses, drafts, pinned)
+  - Course search + status filter (`all/draft/published`)
+  - New course form integrated in-page
+  - `ConfirmModal` used for course deletion (removed browser `confirm()` here)
+  - Toast feedback on create/delete errors and success
+- Added dashboard UI components:
+  - `apps/web/components/dashboard/dashboard-hero.tsx`
+  - `apps/web/components/dashboard/create-course-form.tsx`
+  - `apps/web/components/dashboard/course-filters.tsx`
+  - `apps/web/components/dashboard/course-card.tsx`
+  - `apps/web/components/dashboard/pinned-sidebar.tsx`
+  - `apps/web/components/dashboard/pinned-material-item.tsx`
+- Extended favorites API for pinned sidebar context:
+  - `apps/web/app/api/favorites/route.ts`
+  - GET now includes `tags`, `module`, and `course` context fields for each pinned material.
+
+**Stability work done during this session:**
+- Resolved stale/invalid build artifacts issue (`Cannot find module './496.js'`) by:
+  1. stopping active dev server
+  2. clearing `apps/web/.next`
+  3. running a clean production build
+  4. restarting `next dev` on `localhost:3000`
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck` PASS
+- `npm.cmd --workspace @studyhub/web run build` PASS (clean build after cache reset)
+- `http://localhost:3000/dashboard` returns `200` after restart
+- Web dev server is running on `localhost:3000` (PID changed after clean restart)

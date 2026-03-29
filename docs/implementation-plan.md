@@ -398,7 +398,7 @@ GEMINI_API_KEY=
 | 1 | **Home page** | ✅ Завършена | Hero + Features + FAQ; split на компоненти (`components/home/`) |
 | 2 | **Materials `[id]`** | ✅ Завършена (v1 parity pass) | Тагове (display + edit), Pin бутон, типове, filter All/Files/Links/Notes, sort |
 | 3 | **Course Details `[id]`** | ✅ Завършена (v1 parity pass) | Добавяне на материал с type dropdown, тагове, филтър/сорт, pin |
-| 4 | **Dashboard** | ⏳ Не започната | Pinned секция, search/filter по тагове |
+| 4 | **Dashboard** | ✅ Завършена (v1 parity pass) | Pinned секция, search/filter по тагове, status filter, по-ясни course карти |
 | 5 | **Sharing** | ⏳ Не започната | Нова таблица `shares`, "Shared with Me" tab, share бутон |
 | 6 | **UI компоненти** | 🟡 В процес | ConfirmModal/Toast/Spinner добавени; остават confirm() случаи в Dashboard/Admin |
 | 7 | **Mobile** | ⏳ Блокирана | Expo Go гърми на физически телефон; Android емулатор се инсталира |
