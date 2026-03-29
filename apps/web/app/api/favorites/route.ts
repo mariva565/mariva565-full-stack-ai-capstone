@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "../../../lib/db";
-import { favorites, materials } from "../../../../../drizzle/schema";
+import { courses, favorites, materials, modules } from "../../../../../drizzle/schema";
 import { requireAuth } from "../../../lib/api-utils";
 import { logActivity } from "../../../lib/activity";
-import { eq, and } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 
 // GET /api/favorites — list user's favorites
 export async function GET(request: NextRequest) {
@@ -17,10 +17,18 @@ export async function GET(request: NextRequest) {
       createdAt: favorites.createdAt,
       materialTitle: materials.title,
       materialType: materials.materialType,
+      tags: materials.tags,
+      moduleId: modules.id,
+      moduleTitle: modules.title,
+      courseId: courses.id,
+      courseTitle: courses.title,
     })
     .from(favorites)
     .innerJoin(materials, eq(favorites.materialId, materials.id))
-    .where(eq(favorites.userId, auth.user.sub));
+    .innerJoin(modules, eq(materials.moduleId, modules.id))
+    .innerJoin(courses, eq(modules.courseId, courses.id))
+    .where(eq(favorites.userId, auth.user.sub))
+    .orderBy(desc(favorites.createdAt));
 
   return NextResponse.json({ favorites: rows });
 }

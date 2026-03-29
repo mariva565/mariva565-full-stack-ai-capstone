@@ -264,3 +264,90 @@
 **Следващи стъпки — работен план:**
 - Виж секция "Фаза UI Polish + Feature Parity" в `docs/implementation-plan.md`.
 - Следващата задача: **Home page** (hero + features + faq, split компоненти).
+
+---
+
+## 2026-03-29
+
+### Session 11 (Home page + React dedup fix)
+
+**Какво направихме:**
+
+**Home страница — завършена:**
+- `components/home/hero.tsx` — mini-nav + hero с badge, headline, 2 CTA бутона, gradient blob
+- `components/home/features.tsx` — 6 feature карти в responsive grid (1→2→3 колони)
+- `components/home/faq.tsx` — accordion FAQ с 5 въпроса (client component, анимирана + иконка)
+- `app/page.tsx` — 16 реда, само импорти + footer
+- `app/layout.tsx` — премахнат hardcoded `className="dark"` → светла тема по подразбиране
+
+**Бъг: дублиран React instance в монорепо (критичен, блокира build)**
+
+_Симптом:_ `npm run build` гърми с `TypeError: Cannot read properties of null (reading 'useContext')` при prerender на `/404`.
+
+_Root cause:_ npm workspace hoisting конфликт:
+- `apps/mobile` изисква `react@19.1.0` → hoisted на root като `node_modules/react@19.1.0`
+- `apps/web` имаше `react@19.0.0` → npm го инсталира в `apps/web/node_modules/react@19.0.0`
+- `react-dom` се закача към root (19.1.0), но Next.js `_error.js` изпълнява `useContext` с web instance (19.0.0) → `null`
+
+_Fix:_
+1. Синхронизирахме версията: `apps/web/package.json` → `react: "19.1.0"`, `react-dom: "19.1.0"` (точно, без `^`)
+2. Изтрихме всички `node_modules/` и `package-lock.json` от root
+3. `npm install` от нулата → npm deduplica и ползва само root 19.1.0
+
+_Ако се повтори:_
+```bash
+rm -rf node_modules apps/web/node_modules apps/mobile/node_modules package-lock.json
+npm install
+```
+Провери след това:
+```bash
+node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.json').version)}catch(e){console.log('web: deduped OK')}; console.log('root:', require('./node_modules/react/package.json').version)"
+# Трябва: web: deduped OK / root: 19.1.0
+```
+
+**Build ✅ — 26 routes, `/` = 106 kB First Load JS**
+
+### Session 12 (Feature parity pass for Course Details + Material pages)
+
+**What we implemented:**
+- Added shared UI primitives in `apps/web/components/ui/`:
+  - `confirm-modal.tsx` (replaces browser `confirm()`)
+  - `toast.tsx`
+  - `spinner.tsx`
+- Added material/domain helpers:
+  - `apps/web/lib/materials.ts` (type normalization, tag parsing/serialization)
+  - `apps/web/lib/course-materials.ts` (filter/search/sort helpers)
+  - `apps/web/lib/http.ts` (`readErrorMessage`)
+- Refactored Course Details page (`/courses/[id]`) into smaller components:
+  - `components/course/course-workspace-header.tsx`
+  - `components/course/module-list.tsx`
+  - `components/course/module-section.tsx`
+  - `components/course/material-row.tsx`
+- Upgraded `/courses/[id]` functionality:
+  - Material create form supports `type`, `tags`, `fileUrl`
+  - Global material filter: `All / Notes / Links / Files`
+  - Sorting: `Newest / Oldest / Title`
+  - Search across title/content/tags
+  - Pin/unpin from list via `/api/favorites`
+  - Delete module now uses `ConfirmModal`
+  - Toast feedback on create/delete/pin actions
+- Refactored Material page (`/materials/[id]`) into smaller components:
+  - `components/materials/material-editor-form.tsx`
+  - `components/materials/material-view-panel.tsx`
+- Upgraded `/materials/[id]` functionality:
+  - Edit now includes `type`, `tags`, `fileUrl`
+  - Tag pills in read mode
+  - Pin/unpin via `/api/favorites`
+  - Delete now uses `ConfirmModal`
+  - Loading state uses `Spinner`
+  - Success/error feedback via `Toast`
+
+**Quality checks:**
+- `npm.cmd --workspace @studyhub/web run typecheck` PASS
+- `npm.cmd --workspace @studyhub/web run build` PASS
+  - Initial sandboxed build failed with `spawn EPERM`; rerun outside sandbox succeeded.
+
+**Code quality constraints validated:**
+- Page files remain within 300-line rule:
+  - `apps/web/app/courses/[id]/page.tsx` = 300 lines
+  - `apps/web/app/materials/[id]/page.tsx` = 258 lines

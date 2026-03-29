@@ -1,7 +1,20 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+
+import { MaterialEditorForm } from "../../../components/materials/material-editor-form";
+import { MaterialViewPanel } from "../../../components/materials/material-view-panel";
+import { ConfirmModal } from "../../../components/ui/confirm-modal";
+import { Spinner } from "../../../components/ui/spinner";
+import { Toast, type ToastTone } from "../../../components/ui/toast";
+import { readErrorMessage } from "../../../lib/http";
+import {
+  normalizeMaterialType,
+  parseTags,
+  prepareTagsFromInput,
+  type MaterialType,
+} from "../../../lib/materials";
 
 type Material = {
   id: number;
@@ -10,147 +23,236 @@ type Material = {
   materialType: string;
   fileUrl: string | null;
   tags: string | null;
+  createdAt: string;
+};
+
+type ToastState = {
+  tone: ToastTone;
+  message: string;
 };
 
 export default function MaterialPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const [material, setMaterial] = useState<Material | null>(null);
-  const [editing, setEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [materialType, setMaterialType] = useState<MaterialType>("note");
+  const [fileUrl, setFileUrl] = useState("");
+  const [tagsInput, setTagsInput] = useState("");
+  const [isPinned, setIsPinned] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [pinBusy, setPinBusy] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteBusy, setDeleteBusy] = useState(false);
+  const [toast, setToast] = useState<ToastState | null>(null);
 
   useEffect(() => {
-    fetchMaterial();
+    void loadPageData();
   }, [id]);
 
-  async function fetchMaterial() {
-    const res = await fetch(`/api/materials/${id}`);
-    if (res.status === 401) { router.push("/login"); return; }
-    if (!res.ok) { router.push("/dashboard"); return; }
-    const data = await res.json();
-    setMaterial(data.material);
-    setTitle(data.material.title);
-    setContent(data.material.content || "");
+  async function loadMaterial() {
+    const response = await fetch(`/api/materials/${id}`);
+    if (response.status === 401) {
+      router.push("/login");
+      return false;
+    }
+
+    if (!response.ok) {
+      router.push("/dashboard");
+      return false;
+    }
+
+    const data = (await response.json()) as { material: Material };
+    const loadedMaterial = data.material;
+    setMaterial(loadedMaterial);
+    setTitle(loadedMaterial.title);
+    setContent(loadedMaterial.content ?? "");
+    setMaterialType(normalizeMaterialType(loadedMaterial.materialType));
+    setFileUrl(loadedMaterial.fileUrl ?? "");
+    setTagsInput(parseTags(loadedMaterial.tags).join(", "));
+    return true;
+  }
+
+  async function loadPinState() {
+    const response = await fetch("/api/favorites");
+    if (!response.ok) {
+      setIsPinned(false);
+      return;
+    }
+
+    const data = (await response.json()) as { favorites?: { materialId: number }[] };
+    const favoriteSet = new Set((data.favorites ?? []).map((favorite) => favorite.materialId));
+    setIsPinned(favoriteSet.has(Number(id)));
+  }
+
+  async function loadPageData() {
+    setLoading(true);
+    const success = await loadMaterial();
+    if (success) {
+      await loadPinState();
+    }
     setLoading(false);
   }
 
-  async function handleSave(e: React.FormEvent) {
-    e.preventDefault();
-    const res = await fetch(`/api/materials/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title, content }),
-    });
-    if (res.ok) {
-      setEditing(false);
-      fetchMaterial();
-    }
+  function pushToast(message: string, tone: ToastTone) {
+    setToast({ message, tone });
   }
 
-  async function handleDelete() {
-    if (!confirm("Delete this material?")) return;
-    await fetch(`/api/materials/${id}`, { method: "DELETE" });
+  function resetFormFromMaterial(currentMaterial: Material) {
+    setTitle(currentMaterial.title);
+    setContent(currentMaterial.content ?? "");
+    setMaterialType(normalizeMaterialType(currentMaterial.materialType));
+    setFileUrl(currentMaterial.fileUrl ?? "");
+    setTagsInput(parseTags(currentMaterial.tags).join(", "));
+  }
+
+  async function handleSave(event: FormEvent) {
+    event.preventDefault();
+    if (!title.trim()) {
+      pushToast("Title is required.", "error");
+      return;
+    }
+
+    setSaving(true);
+    const response = await fetch(`/api/materials/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title,
+        content,
+        materialType,
+        fileUrl: fileUrl || null,
+        tags: prepareTagsFromInput(tagsInput),
+      }),
+    });
+    setSaving(false);
+
+    if (!response.ok) {
+      pushToast(await readErrorMessage(response, "Could not save material."), "error");
+      return;
+    }
+
+    const data = (await response.json()) as { material: Material };
+    setMaterial(data.material);
+    setIsEditing(false);
+    pushToast("Material updated.", "success");
+  }
+
+  async function handleTogglePin() {
+    if (!material) {
+      return;
+    }
+
+    setPinBusy(true);
+    const response = await fetch(
+      isPinned ? `/api/favorites?materialId=${material.id}` : "/api/favorites",
+      {
+        method: isPinned ? "DELETE" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: isPinned ? undefined : JSON.stringify({ materialId: material.id }),
+      }
+    );
+    setPinBusy(false);
+
+    if (!response.ok) {
+      pushToast(await readErrorMessage(response, "Could not update pin state."), "error");
+      return;
+    }
+
+    setIsPinned((current) => !current);
+    pushToast(isPinned ? "Material unpinned." : "Material pinned.", "success");
+  }
+
+  async function handleDeleteMaterial() {
+    if (!material) {
+      return;
+    }
+
+    setDeleteBusy(true);
+    const response = await fetch(`/api/materials/${material.id}`, { method: "DELETE" });
+    setDeleteBusy(false);
+
+    if (!response.ok) {
+      pushToast(await readErrorMessage(response, "Could not delete material."), "error");
+      return;
+    }
+
     router.push("/dashboard");
   }
 
+  const normalizedTags = useMemo(() => parseTags(material?.tags), [material?.tags]);
+
   if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <p className="text-slate-500 dark:text-slate-400">Loading...</p>
-      </div>
-    );
+    return <Spinner centered label="Loading material..." />;
+  }
+
+  if (!material) {
+    return null;
   }
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
-      <button
-        onClick={() => router.back()}
-        className="text-sm text-brand-500 hover:text-brand-700 dark:text-brand-100"
-      >
-        &larr; Back
-      </button>
+    <>
+      <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
+        <button
+          type="button"
+          onClick={() => router.back()}
+          className="text-sm font-medium text-brand-600 hover:text-brand-700 dark:text-brand-100"
+        >
+          &larr; Back
+        </button>
 
-      {editing ? (
-        <form onSubmit={handleSave} className="mt-4 space-y-4">
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-            className="block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-lg font-bold text-slate-900 focus:border-brand-500 focus:outline-none dark:border-slate-600 dark:bg-slate-800 dark:text-white"
-          />
-          <textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            rows={12}
-            className="block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:border-brand-500 focus:outline-none dark:border-slate-600 dark:bg-slate-800 dark:text-white"
-          />
-          <div className="flex gap-2">
-            <button
-              type="submit"
-              className="rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700"
-            >
-              Save
-            </button>
-            <button
-              type="button"
-              onClick={() => { setEditing(false); setTitle(material!.title); setContent(material!.content || ""); }}
-              className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
-      ) : (
-        <>
-          <div className="mt-4 flex items-start justify-between">
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
-              {material?.title}
-            </h1>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setEditing(true)}
-                className="text-sm font-medium text-brand-500 hover:text-brand-700 dark:text-brand-100"
-              >
-                Edit
-              </button>
-              <button
-                onClick={handleDelete}
-                className="text-sm font-medium text-red-500 hover:text-red-700 dark:text-red-400"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-
-          <span className="mt-1 inline-block rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-600 dark:bg-slate-700 dark:text-slate-300">
-            {material?.materialType}
-          </span>
-
-          {material?.content ? (
-            <div className="mt-6 whitespace-pre-wrap text-slate-700 dark:text-slate-300">
-              {material.content}
-            </div>
+        <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+          {isEditing ? (
+            <MaterialEditorForm
+              title={title}
+              content={content}
+              materialType={materialType}
+              fileUrl={fileUrl}
+              tagsInput={tagsInput}
+              saving={saving}
+              onTitleChange={setTitle}
+              onContentChange={setContent}
+              onMaterialTypeChange={setMaterialType}
+              onFileUrlChange={setFileUrl}
+              onTagsInputChange={setTagsInput}
+              onSubmit={handleSave}
+              onCancel={() => {
+                setIsEditing(false);
+                resetFormFromMaterial(material);
+              }}
+            />
           ) : (
-            <p className="mt-6 text-slate-400">No content yet. Click Edit to add.</p>
+            <MaterialViewPanel
+              title={material.title}
+              materialType={material.materialType}
+              tags={normalizedTags}
+              content={material.content}
+              fileUrl={material.fileUrl}
+              createdAt={material.createdAt}
+              isPinned={isPinned}
+              pinBusy={pinBusy}
+              onTogglePin={handleTogglePin}
+              onEdit={() => setIsEditing(true)}
+              onDelete={() => setShowDeleteModal(true)}
+            />
           )}
+        </div>
+      </div>
 
-          {material?.fileUrl && (
-            <div className="mt-4">
-              <a
-                href={material.fileUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm font-medium text-brand-500 hover:text-brand-700 dark:text-brand-100"
-              >
-                View attached file &rarr;
-              </a>
-            </div>
-          )}
-        </>
-      )}
-    </div>
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        title="Delete material?"
+        description="This action cannot be undone."
+        confirmLabel="Delete material"
+        busy={deleteBusy}
+        onCancel={() => setShowDeleteModal(false)}
+        onConfirm={handleDeleteMaterial}
+      />
+
+      {toast && <Toast message={toast.message} tone={toast.tone} onClose={() => setToast(null)} />}
+    </>
   );
 }

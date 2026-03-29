@@ -1,224 +1,300 @@
 "use client";
-
-import { useEffect, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import Link from "next/link";
+import { CourseWorkspaceHeader } from "../../../components/course/course-workspace-header";
+import { ModuleList } from "../../../components/course/module-list";
+import { ConfirmModal } from "../../../components/ui/confirm-modal";
+import { Spinner } from "../../../components/ui/spinner";
+import { Toast, type ToastTone } from "../../../components/ui/toast";
+import {
+  matchesFilter,
+  matchesSearch,
+  sortMaterials,
+  type CourseMaterial,
+} from "../../../lib/course-materials";
+import { readErrorMessage } from "../../../lib/http";
+import {
+  prepareTagsFromInput,
+  type MaterialFilter,
+  type MaterialSort,
+} from "../../../lib/materials";
+import type { MaterialDraft, ModuleInfo } from "../../../components/course/module-section";
 
-type Course = { id: number; title: string; description: string | null };
-type Module = { id: number; title: string; orderIndex: number };
-type Material = {
+type Course = {
   id: number;
   title: string;
-  materialType: string;
-  content: string | null;
+  description: string | null;
+};
+
+type ToastState = {
+  tone: ToastTone;
+  message: string;
+};
+
+const EMPTY_MATERIAL_DRAFT: MaterialDraft = {
+  title: "",
+  content: "",
+  materialType: "note",
+  fileUrl: "",
+  tags: "",
 };
 
 export default function CourseDetailsPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const [course, setCourse] = useState<Course | null>(null);
-  const [modules, setModules] = useState<Module[]>([]);
-  const [materialsByModule, setMaterialsByModule] = useState<
-    Record<number, Material[]>
-  >({});
+  const [modules, setModules] = useState<ModuleInfo[]>([]);
+  const [materialsByModule, setMaterialsByModule] = useState<Record<number, CourseMaterial[]>>({});
+  const [favoriteMaterialIds, setFavoriteMaterialIds] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showModuleForm, setShowModuleForm] = useState(false);
   const [newModuleTitle, setNewModuleTitle] = useState("");
-  const [addingMaterialFor, setAddingMaterialFor] = useState<number | null>(null);
-  const [matTitle, setMatTitle] = useState("");
-  const [matContent, setMatContent] = useState("");
+  const [moduleToDelete, setModuleToDelete] = useState<number | null>(null);
+  const [deleteBusy, setDeleteBusy] = useState(false);
+  const [activeMaterialFormModuleId, setActiveMaterialFormModuleId] = useState<number | null>(null);
+  const [materialDraft, setMaterialDraft] = useState<MaterialDraft>(EMPTY_MATERIAL_DRAFT);
+  const [pinBusyMaterialId, setPinBusyMaterialId] = useState<number | null>(null);
+  const [filterBy, setFilterBy] = useState<MaterialFilter>("all");
+  const [sortBy, setSortBy] = useState<MaterialSort>("newest");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [toast, setToast] = useState<ToastState | null>(null);
 
   useEffect(() => {
-    fetchCourse();
+    void loadPageData();
   }, [id]);
 
-  async function fetchCourse() {
-    const res = await fetch(`/api/courses/${id}`);
-    if (res.status === 401) { router.push("/login"); return; }
-    if (!res.ok) { router.push("/dashboard"); return; }
-    const data = await res.json();
-    setCourse(data.course);
-
-    const modRes = await fetch(`/api/courses/${id}/modules`);
-    const modData = await modRes.json();
-    setModules(modData.modules || []);
-
-    // Fetch materials for each module
-    const matMap: Record<number, Material[]> = {};
-    for (const mod of modData.modules || []) {
-      const matRes = await fetch(`/api/modules/${mod.id}/materials`);
-      const matData = await matRes.json();
-      matMap[mod.id] = matData.materials || [];
+  async function loadCourseData() {
+    const courseResponse = await fetch(`/api/courses/${id}`);
+    if (courseResponse.status === 401) {
+      router.push("/login");
+      return false;
     }
-    setMaterialsByModule(matMap);
+
+    if (!courseResponse.ok) {
+      router.push("/dashboard");
+      return false;
+    }
+
+    const coursePayload = (await courseResponse.json()) as { course: Course };
+    setCourse(coursePayload.course);
+
+    const modulesResponse = await fetch(`/api/courses/${id}/modules`);
+    const modulesPayload = (await modulesResponse.json()) as { modules?: ModuleInfo[] };
+    const moduleRows = modulesPayload.modules ?? [];
+    setModules(moduleRows);
+
+    const materialPairs = await Promise.all(
+      moduleRows.map(async (moduleRow) => {
+        const materialsResponse = await fetch(`/api/modules/${moduleRow.id}/materials`);
+        const materialsPayload = (await materialsResponse.json()) as { materials?: CourseMaterial[] };
+        return [moduleRow.id, materialsPayload.materials ?? []] as const;
+      })
+    );
+
+    const nextMap: Record<number, CourseMaterial[]> = {};
+    for (const [moduleId, materials] of materialPairs) {
+      nextMap[moduleId] = materials;
+    }
+
+    setMaterialsByModule(nextMap);
+    return true;
+  }
+
+  async function loadFavorites() {
+    const response = await fetch("/api/favorites");
+    if (!response.ok) {
+      setFavoriteMaterialIds([]);
+      return;
+    }
+
+    const data = (await response.json()) as { favorites?: { materialId: number }[] };
+    setFavoriteMaterialIds((data.favorites ?? []).map((favorite) => favorite.materialId));
+  }
+
+  async function loadPageData() {
+    setLoading(true);
+    const success = await loadCourseData();
+    if (success) {
+      await loadFavorites();
+    }
     setLoading(false);
   }
 
-  async function handleAddModule(e: React.FormEvent) {
-    e.preventDefault();
-    if (!newModuleTitle.trim()) return;
-    await fetch(`/api/courses/${id}/modules`, {
+  function pushToast(message: string, tone: ToastTone) {
+    setToast({ message, tone });
+  }
+
+  function updateMaterialDraft(field: keyof MaterialDraft, value: string) {
+    setMaterialDraft((current) => ({
+      ...current,
+      [field]: value,
+    }));
+  }
+
+  function toggleMaterialForm(moduleId: number) {
+    setMaterialDraft(EMPTY_MATERIAL_DRAFT);
+    setActiveMaterialFormModuleId((current) => (current === moduleId ? null : moduleId));
+  }
+
+  async function handleAddModule(event: FormEvent) {
+    event.preventDefault();
+    if (!newModuleTitle.trim()) {
+      return;
+    }
+
+    const response = await fetch(`/api/courses/${id}/modules`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ title: newModuleTitle, orderIndex: modules.length }),
     });
+
+    if (!response.ok) {
+      pushToast(await readErrorMessage(response, "Could not create module."), "error");
+      return;
+    }
+
     setNewModuleTitle("");
-    fetchCourse();
+    setShowModuleForm(false);
+    await loadCourseData();
+    pushToast("Module created.", "success");
   }
 
-  async function handleDeleteModule(moduleId: number) {
-    if (!confirm("Delete this module and all its materials?")) return;
-    await fetch(`/api/modules/${moduleId}`, { method: "DELETE" });
-    fetchCourse();
+  async function confirmDeleteModule() {
+    if (!moduleToDelete) {
+      return;
+    }
+
+    setDeleteBusy(true);
+    const response = await fetch(`/api/modules/${moduleToDelete}`, { method: "DELETE" });
+    setDeleteBusy(false);
+
+    if (!response.ok) {
+      pushToast(await readErrorMessage(response, "Could not delete module."), "error");
+      return;
+    }
+
+    setModuleToDelete(null);
+    await loadCourseData();
+    pushToast("Module deleted.", "success");
   }
 
-  async function handleAddMaterial(moduleId: number, e: React.FormEvent) {
-    e.preventDefault();
-    if (!matTitle.trim()) return;
-    await fetch(`/api/modules/${moduleId}/materials`, {
+  async function handleAddMaterial(moduleId: number, event: FormEvent) {
+    event.preventDefault();
+    if (!materialDraft.title.trim()) {
+      return;
+    }
+
+    const response = await fetch(`/api/modules/${moduleId}/materials`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title: matTitle, content: matContent }),
+      body: JSON.stringify({
+        title: materialDraft.title,
+        content: materialDraft.content,
+        materialType: materialDraft.materialType,
+        fileUrl: materialDraft.fileUrl || null,
+        tags: prepareTagsFromInput(materialDraft.tags),
+      }),
     });
-    setMatTitle("");
-    setMatContent("");
-    setAddingMaterialFor(null);
-    fetchCourse();
+
+    if (!response.ok) {
+      pushToast(await readErrorMessage(response, "Could not create material."), "error");
+      return;
+    }
+
+    setMaterialDraft(EMPTY_MATERIAL_DRAFT);
+    setActiveMaterialFormModuleId(null);
+    await loadCourseData();
+    pushToast("Material created.", "success");
   }
 
-  if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <p className="text-slate-500 dark:text-slate-400">Loading...</p>
-      </div>
+  async function togglePin(materialId: number, isPinned: boolean) {
+    setPinBusyMaterialId(materialId);
+    const response = await fetch(
+      isPinned ? `/api/favorites?materialId=${materialId}` : "/api/favorites",
+      {
+        method: isPinned ? "DELETE" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: isPinned ? undefined : JSON.stringify({ materialId }),
+      }
     );
+    setPinBusyMaterialId(null);
+
+    if (!response.ok) {
+      pushToast(await readErrorMessage(response, "Could not update pin state."), "error");
+      return;
+    }
+
+    await loadFavorites();
+    pushToast(isPinned ? "Material unpinned." : "Material pinned.", "success");
+  }
+
+  const favoriteMaterialSet = useMemo(() => new Set(favoriteMaterialIds), [favoriteMaterialIds]);
+  const processedMaterialsByModule = useMemo(() => {
+    const nextMap: Record<number, CourseMaterial[]> = {};
+
+    for (const [moduleId, materials] of Object.entries(materialsByModule)) {
+      const prepared = materials.filter(
+        (material) => matchesFilter(material, filterBy) && matchesSearch(material, searchQuery)
+      );
+      nextMap[Number(moduleId)] = sortMaterials(prepared, sortBy);
+    }
+
+    return nextMap;
+  }, [filterBy, materialsByModule, searchQuery, sortBy]);
+
+  if (loading) {
+    return <Spinner centered label="Loading course workspace..." />;
+  }
+
+  if (!course) {
+    return null;
   }
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
-      <Link
-        href="/dashboard"
-        className="text-sm text-brand-500 hover:text-brand-700 dark:text-brand-100"
-      >
-        &larr; Back to courses
-      </Link>
-
-      <h1 className="mt-4 text-2xl font-bold text-slate-900 dark:text-white">
-        {course?.title}
-      </h1>
-      {course?.description && (
-        <p className="mt-2 text-slate-600 dark:text-slate-400">
-          {course.description}
-        </p>
-      )}
-
-      {/* Add module form */}
-      <form onSubmit={handleAddModule} className="mt-6 flex gap-2">
-        <input
-          type="text"
-          value={newModuleTitle}
-          onChange={(e) => setNewModuleTitle(e.target.value)}
-          placeholder="New module title"
-          className="flex-1 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-slate-600 dark:bg-slate-700 dark:text-white"
+    <>
+      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+        <CourseWorkspaceHeader
+          title={course.title}
+          description={course.description}
+          searchQuery={searchQuery}
+          sortBy={sortBy}
+          filterBy={filterBy}
+          showModuleForm={showModuleForm}
+          newModuleTitle={newModuleTitle}
+          onSearchQueryChange={setSearchQuery}
+          onSortChange={setSortBy}
+          onFilterChange={setFilterBy}
+          onToggleModuleForm={() => setShowModuleForm((current) => !current)}
+          onModuleTitleChange={setNewModuleTitle}
+          onCreateModule={handleAddModule}
         />
-        <button
-          type="submit"
-          className="rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700"
-        >
-          + Module
-        </button>
-      </form>
 
-      {/* Modules list */}
-      <div className="mt-6 space-y-6">
-        {modules.length === 0 && (
-          <p className="text-slate-500 dark:text-slate-400">
-            No modules yet. Add one above.
-          </p>
-        )}
-
-        {modules.map((mod) => (
-          <div
-            key={mod.id}
-            className="rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800"
-          >
-            <div className="flex items-center justify-between border-b border-slate-200 px-5 py-3 dark:border-slate-700">
-              <h2 className="font-semibold text-slate-900 dark:text-white">
-                {mod.title}
-              </h2>
-              <div className="flex gap-2">
-                <button
-                  onClick={() =>
-                    setAddingMaterialFor(
-                      addingMaterialFor === mod.id ? null : mod.id
-                    )
-                  }
-                  className="text-sm text-brand-500 hover:text-brand-700 dark:text-brand-100"
-                >
-                  + Material
-                </button>
-                <button
-                  onClick={() => handleDeleteModule(mod.id)}
-                  className="text-sm text-red-500 hover:text-red-700 dark:text-red-400"
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-
-            {/* Add material form */}
-            {addingMaterialFor === mod.id && (
-              <form
-                onSubmit={(e) => handleAddMaterial(mod.id, e)}
-                className="space-y-3 border-b border-slate-200 px-5 py-4 dark:border-slate-700"
-              >
-                <input
-                  type="text"
-                  value={matTitle}
-                  onChange={(e) => setMatTitle(e.target.value)}
-                  placeholder="Material title"
-                  required
-                  className="block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-brand-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-white"
-                />
-                <textarea
-                  value={matContent}
-                  onChange={(e) => setMatContent(e.target.value)}
-                  placeholder="Content (optional)"
-                  rows={3}
-                  className="block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-brand-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-white"
-                />
-                <button
-                  type="submit"
-                  className="rounded-lg bg-brand-500 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700"
-                >
-                  Add
-                </button>
-              </form>
-            )}
-
-            {/* Materials list */}
-            <ul className="divide-y divide-slate-100 dark:divide-slate-700">
-              {(materialsByModule[mod.id] || []).map((mat) => (
-                <li key={mat.id} className="px-5 py-3">
-                  <Link
-                    href={`/materials/${mat.id}`}
-                    className="text-sm font-medium text-slate-900 hover:text-brand-500 dark:text-white dark:hover:text-brand-100"
-                  >
-                    {mat.title}
-                  </Link>
-                  <span className="ml-2 text-xs text-slate-500 dark:text-slate-400">
-                    {mat.materialType}
-                  </span>
-                </li>
-              ))}
-              {(materialsByModule[mod.id] || []).length === 0 && (
-                <li className="px-5 py-3 text-sm text-slate-400">
-                  No materials yet
-                </li>
-              )}
-            </ul>
-          </div>
-        ))}
+        <ModuleList
+          modules={modules}
+          materialsByModule={processedMaterialsByModule}
+          activeMaterialFormModuleId={activeMaterialFormModuleId}
+          materialDraft={materialDraft}
+          pinBusyMaterialId={pinBusyMaterialId}
+          favoriteMaterialIds={favoriteMaterialSet}
+          onToggleCreateForm={toggleMaterialForm}
+          onDraftChange={updateMaterialDraft}
+          onSubmitMaterial={handleAddMaterial}
+          onDeleteModule={setModuleToDelete}
+          onTogglePin={togglePin}
+        />
       </div>
-    </div>
+
+      <ConfirmModal
+        isOpen={moduleToDelete !== null}
+        title="Delete module?"
+        description="This action will remove the module and all of its materials."
+        confirmLabel="Delete module"
+        busy={deleteBusy}
+        onCancel={() => setModuleToDelete(null)}
+        onConfirm={confirmDeleteModule}
+      />
+
+      {toast && <Toast message={toast.message} tone={toast.tone} onClose={() => setToast(null)} />}
+    </>
   );
 }

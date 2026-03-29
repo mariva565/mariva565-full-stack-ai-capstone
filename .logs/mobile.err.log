@@ -1,0 +1,7 @@
+npm error Lifecycle script `start` failed with error:
+npm error code 1
+npm error path C:\Users\mariy\Projects\20260327 Capstone\apps\mobile
+npm error workspace @studyhub/mobile@0.1.0
+npm error location C:\Users\mariy\Projects\20260327 Capstone\apps\mobile
+npm error command failed
+npm error command C:\WINDOWS\system32\cmd.exe /d /s /c expo start --localhost -c
