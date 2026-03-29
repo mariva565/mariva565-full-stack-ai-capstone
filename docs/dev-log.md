@@ -215,6 +215,38 @@
 **Purpose:**
 - Prevent repeated setup loops and preserve a deterministic mobile testing path for next sessions.
 
+### Session 10 (Expo Go — РЕШЕНО + UI планиране)
+
+**Expo Go на физически телефон — РАБОТИ. Ето какво беше проблемът:**
+
+**1. Monorepo + Expo Router entry point**
+- Expo търсеше стар `App.js` файл, но проектът е в `apps/mobile` с `expo-router`.
+- Решение: Създадохме `apps/mobile/index.js` с `import "expo-router/entry"` и сменихме `"main": "index.js"` в `package.json`.
+
+**2. Windows Firewall + мрежов профил**
+- WiFi мрежата беше на "Public" → Windows блокираше входящи връзки от телефона.
+- Решение: Сменихме на **Private** + разрешихме Node.js в Firewall при prompt.
+- LAN режимът (`--host lan`) работи след тези промени.
+
+**3. Тунел като fallback**
+- `--tunnel` (ngrok) заобикаля firewall проблемите но е по-бавен и понякога timeout-ва.
+- За стабилна работа: **LAN + Private мрежа** е по-добро от тунел.
+
+**4. API URL**
+- Създадохме `apps/mobile/.env` с `EXPO_PUBLIC_API_URL=http://192.168.1.9:3000`.
+- Metro зарежда `.env` автоматично — потвърдено от `env: export EXPO_PUBLIC_API_URL` в лога.
+
+**5. Сив екран / навигация**
+- `useRootNavigationState()` в `_layout.tsx` изчаква навигацията да се инициализира преди redirect.
+
+**Golden path за следващ път:**
+1. WiFi мрежа на "Private" (еднократна настройка)
+2. `npm run dev:web` (терминал 1)
+3. `npm --workspace @studyhub/mobile run dev:mobile:lan` (терминал 2)
+4. В Expo Go въведи: `exp://192.168.1.9:8081`
+
+---
+
 ### Session 10 (Expo Go deep investigation + UI планиране)
 
 **Expo Go — root cause идентифициран:**
