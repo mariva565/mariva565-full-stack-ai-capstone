@@ -3,10 +3,10 @@
 import { useScrollReveal } from "./use-scroll-reveal";
 
 const STATS = [
-  { value: "6", label: "DB таблици", sub: "Drizzle ORM" },
-  { value: "20+", label: "API endpoints", sub: "RESTful" },
-  { value: "7", label: "Уеб екрана", sub: "Responsive" },
-  { value: "3", label: "Мобилни екрана", sub: "Expo" },
+  { value: "6", label: "DB Tables", sub: "Drizzle ORM" },
+  { value: "20+", label: "API Endpoints", sub: "RESTful" },
+  { value: "7", label: "Web Screens", sub: "Responsive" },
+  { value: "3", label: "Mobile Screens", sub: "Expo" },
 ];
 
 export function HomeStats() {

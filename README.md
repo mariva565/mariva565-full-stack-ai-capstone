@@ -55,6 +55,9 @@
 
 StudyHub v2 is a full rewrite of StudyHub v1 with a modern full-stack architecture.
 The goal is a rubric-first LMS that ships clean backend security, responsive web UI, and mobile parity.
+
+**Architecture Complexity Analogy:**
+This project is architecturally equivalent to a medical data software (e.g., Mobile app for patient photos + Web portals for doctors/patients + Admin panel). It implements the same core pillars: multi-platform access, role-based security, and structured data hierarchy.
 </details>
 
 <details>
@@ -95,11 +98,12 @@ MVP:
 - 7 responsive web screens
 - 3 mobile screens
 
-Planned (after MVP core):
-- Cloudflare R2 file uploads
-- AI summarize/quiz/chat (Gemini API)
-- Notes with sharing, pinning, PDF export
-- Contact form
+Planned (Advanced Features):
+- **Progress Tracking:** Status-based workflow with dashboard completion metrics.
+- **Cloudflare R2:** File/Image uploads (Mobile camera integration).
+- **Sharing & Permissions:** Granular access for materials/notes.
+- **AI Integration:** Summarize/Quiz/Chat powered by Gemini API.
+- **Advanced Security:** 2FA and session hardening.
 </details>
 
 <details>

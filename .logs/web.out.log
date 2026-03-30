@@ -47,3 +47,10 @@
  ○ Compiling / ...
  ✓ Compiled / in 1127ms (990 modules)
  GET / 200 in 1974ms
+ GET / 200 in 112ms
+ ○ Compiling /register ...
+ ✓ Compiled /register in 2.3s (805 modules)
+ GET /register 200 in 2894ms
+ GET / 200 in 2596ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 9.2s (805 modules)

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 type FaqItem = {
   question: string;
@@ -11,9 +12,9 @@ type FaqItem = {
 
 const FAQ_ITEMS: FaqItem[] = [
   {
-    question: "Безплатен ли е StudyHub?",
+    question: "Is Study Hub free to use?",
     answer:
-      "Да, напълно безплатен. Регистрирай се с имейл и парола и веднага можеш да добавяш курсове и материали.",
+      "Yes, absolutely free. Just register with your email and password, and you can start adding courses and materials immediately.",
     iconColor: "bg-brand-100 text-brand-600 dark:bg-brand-900/40 dark:text-brand-300",
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5">
@@ -22,9 +23,9 @@ const FAQ_ITEMS: FaqItem[] = [
     ),
   },
   {
-    question: "Какви видове материали мога да добавям?",
+    question: "What types of materials can I add?",
     answer:
-      "Три вида: Бележка (текст), Файл (линк към файл/облак) и Връзка (URL към ресурс). Всеки тип се визуализира с различна иконка и цвят.",
+      "Three distinct types: Notes (rich text), Files (links to cloud/external files), and Links (URLs). Each type is visually distinguished with unique icons and colors.",
     iconColor: "bg-emerald-100 text-emerald-600 dark:bg-emerald-900/40 dark:text-emerald-300",
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5">
@@ -33,9 +34,9 @@ const FAQ_ITEMS: FaqItem[] = [
     ),
   },
   {
-    question: "Могат ли другите да виждат моите курсове?",
+    question: "Can others see my courses?",
     answer:
-      "Не — всеки потребител вижда само собствените си курсове и материали. Целият достъп е защитен с JWT автентикация.",
+      "No — every user has a private workspace. You can only see your own courses and materials. All access is strictly protected by JWT authentication.",
     iconColor: "bg-rose-100 text-rose-600 dark:bg-rose-900/40 dark:text-rose-300",
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5">
@@ -44,9 +45,9 @@ const FAQ_ITEMS: FaqItem[] = [
     ),
   },
   {
-    question: "Има ли мобилно приложение?",
+    question: "Is there a mobile app?",
     answer:
-      "Да. Мобилното приложение (React Native + Expo) поддържа преглед на курсове, модули и материали, като се свързва към същия backend.",
+      "Yes. Our mobile app (React Native + Expo) allows you to browse courses, modules, and materials on the go, staying perfectly synced with the web version.",
     iconColor: "bg-sky-100 text-sky-600 dark:bg-sky-900/40 dark:text-sky-300",
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5">
@@ -55,9 +56,9 @@ const FAQ_ITEMS: FaqItem[] = [
     ),
   },
   {
-    question: "Как да организирам материалите си?",
+    question: "How should I organize my content?",
     answer:
-      "Създай Курс → добави Модул → добави Материали към модула. Използвай тагове за по-бързо търсене и Favorites за бърз достъп.",
+      "We recommend a simple hierarchy: Create a Course → add Modules → add Materials to those modules. Use tags for filtering and Favorites for instant access.",
     iconColor: "bg-amber-100 text-amber-600 dark:bg-amber-900/40 dark:text-amber-300",
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5">
@@ -71,37 +72,52 @@ function FaqAccordionItem({ item }: { item: FaqItem }) {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:shadow-md dark:border-slate-700 dark:bg-slate-800">
+    <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:border-brand-200 hover:shadow-md dark:border-slate-700 dark:bg-slate-800/50">
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className="flex w-full items-center gap-4 px-6 py-5 text-left"
+        className="flex w-full items-center gap-4 px-6 py-5 text-left transition-colors hover:bg-slate-50 dark:hover:bg-slate-700/30"
         aria-expanded={open ? "true" : "false"}
       >
-        <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${item.iconColor}`}>
+        <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg shadow-sm ${item.iconColor}`}>
           {item.icon}
         </span>
         <span className="flex-1 text-base font-semibold text-slate-900 dark:text-white">
           {item.question}
         </span>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={2}
-          stroke="currentColor"
-          className={`h-5 w-5 shrink-0 text-slate-400 transition-transform duration-300 ${open ? "rotate-180" : ""}`}
+        <motion.div
+          animate={{ rotate: open ? 180 : 0 }}
+          transition={{ type: "spring", stiffness: 200, damping: 15 }}
         >
-          <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-        </svg>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={2}
+            stroke="currentColor"
+            className="h-5 w-5 shrink-0 text-slate-400"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+          </svg>
+        </motion.div>
       </button>
-      <div className={`grid transition-all duration-300 ${open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}>
-        <div className="overflow-hidden">
-          <p className="px-6 pb-5 pl-20 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
-            {item.answer}
-          </p>
-        </div>
-      </div>
+
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3, ease: [0.04, 0.62, 0.23, 0.98] }}
+          >
+            <div className="overflow-hidden">
+              <p className="px-6 pb-6 pl-20 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+                {item.answer}
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
@@ -112,13 +128,13 @@ export function HomeFaq() {
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         <div className="mb-14 text-center">
           <span className="mb-4 inline-block text-sm font-bold uppercase tracking-widest text-brand-500">
-            Подкрепа
+            Support
           </span>
           <h2 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
-            Често задавани въпроси
+            Frequently Asked Questions
           </h2>
           <p className="mx-auto mt-4 max-w-lg text-base text-slate-500 dark:text-slate-400">
-            Всичко, което трябва да знаеш за StudyHub.
+            Everything you need to know about Study Hub.
           </p>
         </div>
 

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { Magnetic } from "../ui/magnetic";
 
 export function HomeHero() {
   const [scrolled, setScrolled] = useState(false);
@@ -81,19 +82,24 @@ export function HomeHero() {
         </p>
 
         <div className="animate-fade-in-up mt-12 flex flex-col items-center gap-4 [animation-delay:450ms] sm:flex-row">
-          <Link
-            href="/register"
-            className="group relative w-full overflow-hidden rounded-full bg-gradient-to-r from-brand-500 via-purple-500 to-cyan-500 bg-[length:200%_200%] px-9 py-4 text-base font-bold text-white shadow-2xl shadow-brand-500/30 transition-all duration-500 hover:bg-[position:100%_100%] hover:-translate-y-1 hover:shadow-brand-400/40 sm:w-auto"
-          >
-            <span className="relative z-10">Започни безплатно</span>
-            <div className="absolute inset-0 -z-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-          </Link>
-          <Link
-            href="/login"
-            className="w-full rounded-full border-2 border-white/10 bg-white/[0.03] px-9 py-4 text-base font-semibold text-white/80 backdrop-blur-md transition-all duration-300 hover:border-white/25 hover:bg-white/[0.08] hover:text-white hover:-translate-y-1 sm:w-auto"
-          >
-            Влез в профила си
-          </Link>
+          <Magnetic strength={0.2}>
+            <Link
+              href="/register"
+              className="group relative w-full overflow-hidden rounded-full bg-gradient-to-r from-brand-500 via-purple-500 to-cyan-500 bg-[length:200%_200%] px-9 py-4 text-base font-bold text-white shadow-2xl shadow-brand-500/30 transition-all duration-500 hover:bg-[position:100%_100%] hover:-translate-y-1 hover:shadow-brand-400/40 sm:w-auto"
+            >
+              <span className="relative z-10">Започни безплатно</span>
+              <div className="absolute inset-0 -z-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+            </Link>
+          </Magnetic>
+          
+          <Magnetic strength={0.15}>
+            <Link
+              href="/login"
+              className="w-full rounded-full border-2 border-white/10 bg-white/[0.03] px-9 py-4 text-base font-semibold text-white/80 backdrop-blur-md transition-all duration-300 hover:border-white/25 hover:bg-white/[0.08] hover:text-white hover:-translate-y-1 sm:w-auto"
+            >
+              Влез в профила си
+            </Link>
+          </Magnetic>
         </div>
       </div>
 

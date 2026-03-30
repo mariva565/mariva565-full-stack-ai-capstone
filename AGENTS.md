@@ -72,11 +72,18 @@ Every schema change MUST use Drizzle migrations. Migration SQL scripts must be c
 - TypeScript strict mode
 - API error contract: `{ code: string, message: string }`
 
-### Styling
-- Use Tailwind for all styling — **zero inline styles** (`style=`, `.style`, `cssText`)
-- **Responsive from day 1:** every component uses `sm:`, `md:`, `lg:` breakpoints
-- **Dark mode from day 1:** every color class has a `dark:` variant
-- Tailwind dark mode strategy: `class` (set on `<html>`)
+### Styling & UI Design (Premium Standards)
+- **Tailwind only**: Use utility classes (zero inline styles).
+- **Dark mode from day 1**: Every component must have a `dark:` variant.
+- **Glassmorphism & Gradients**: Use `backdrop-blur`, semi-transparent backgrounds, and subtle HSL-tailored gradients for a premium feel.
+- **Animations**: Use **Framer Motion** for interactions (hover, entrance, layout transitions).
+- **Modern Typography**: Use Google Fonts like 'Outfit' or 'Inter'.
+- **Visual Parity with v1**: For every page, check the old project for specific UI/UX patterns (colors, shadows, micro-animations) and reconstruct them using these modern technologies.
+
+### Component-First Architecture
+- **Max 300 lines per file**: Extract sub-components to `components/<page-name>/` proactively.
+- **Max 60 lines per function**: Extract logic to helpers or custom hooks.
+- **No Monolithic Pages**: Page files in `app/` should mostly be orchestrators, delegating UI to specialized components.
 
 ### Handoff
 - Update `docs/dev-log.md` at end of each session

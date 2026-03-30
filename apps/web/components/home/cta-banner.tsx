@@ -28,17 +28,17 @@ export function HomeCtaBanner() {
           />
 
           <h2 className="relative text-2xl font-bold text-white sm:text-3xl lg:text-4xl">
-            Готов ли си да организираш ученето си?
+            Ready to master your learning process?
           </h2>
           <p className="relative mx-auto mt-4 max-w-lg text-base text-white/70 sm:text-lg">
-            Присъедини се безплатно и започни да добавяш курсове, модули и
-            материали още днес.
+            Join for free and start organizing your courses, modules, and
+            materials today.
           </p>
           <Link
             href="/register"
             className="group relative mt-8 inline-block overflow-hidden rounded-full bg-white px-8 py-4 text-base font-bold text-brand-700 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl"
           >
-            <span className="relative z-10">Създай безплатен акаунт</span>
+            <span className="relative z-10">Create Free Account</span>
             <div className="absolute inset-0 -z-0 bg-gradient-to-r from-brand-50 to-cyan-50 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
           </Link>
         </div>
