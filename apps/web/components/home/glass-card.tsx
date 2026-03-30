@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Tilt } from "../ui/tilt";
+import { useRef, useCallback } from "react";
 
 interface GlassCardProps {
   icon: string;
@@ -12,6 +12,27 @@ interface GlassCardProps {
 }
 
 export function GlassCard({ icon, title, description, delay = 0 }: GlassCardProps) {
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    const card = cardRef.current;
+    if (!card) return;
+    const rect = card.getBoundingClientRect();
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    const rotateX = (mouseY - centerY) / 10;
+    const rotateY = (centerX - mouseX) / 10;
+    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-12px)`;
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    const card = cardRef.current;
+    if (!card) return;
+    card.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0)";
+  }, []);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -20,52 +41,53 @@ export function GlassCard({ icon, title, description, delay = 0 }: GlassCardProp
       transition={{ duration: 0.6, delay }}
       className="h-full"
     >
-      <Tilt maxRotate={12} scale={1.03}>
-        <div className="relative group h-full p-8 rounded-3xl border border-white/60 dark:border-white/10 bg-white/60 dark:bg-slate-900/40 backdrop-blur-xl shadow-xl transition-all duration-300 hover:shadow-indigo-500/15 overflow-hidden glass-card-hover"
-          onMouseMove={(e) => {
-            const rect = e.currentTarget.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            e.currentTarget.style.setProperty('--mouse-x', `${x}px`);
-            e.currentTarget.style.setProperty('--mouse-y', `${y}px`);
+      <div
+        ref={cardRef}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        className="feature-card group relative h-full p-10 rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-lg hover:shadow-2xl hover:border-indigo-200"
+        style={{
+          transition: "all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)",
+          transformStyle: "preserve-3d",
+        }}
+      >
+        {/* Top gradient accent bar — scaleX(0) → scaleX(1) on hover */}
+        <div
+          className="absolute top-0 left-0 right-0 h-1 rounded-t-2xl bg-gradient-to-r from-indigo-500 via-pink-500 to-cyan-500 origin-left scale-x-0 group-hover:scale-x-100 z-20"
+          style={{ transition: "transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)" }}
+        />
+
+        {/* Gradient overlay on hover (matching original ::before) */}
+        <div
+          className="absolute inset-0 z-0 opacity-0 group-hover:opacity-[0.07] pointer-events-none"
+          style={{
+            background: "linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)",
+            transition: "opacity 0.4s ease",
+          }}
+        />
+
+        {/* Icon — 90×90, scale(1.15) rotate(5deg) + drop-shadow on hover */}
+        <div
+          className="feature-icon-hover relative z-10 mb-6 w-[90px] h-[90px] group-hover:scale-[1.15] group-hover:rotate-[5deg]"
+          style={{
+            transition: "transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.4s ease",
+            filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.1))",
           }}
         >
-          {/* Spotlight Effect Overlay */}
-          <div className="absolute inset-0 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none bg-[radial-gradient(800px_circle_at_var(--mouse-x,50%)_var(--mouse-y,50%),rgba(99,102,241,0.1),transparent_40%)]" 
+          <Image
+            src={`/assets/v1/icons/${icon}`}
+            alt={title}
+            width={90}
+            height={90}
+            className="rounded-3xl"
           />
-
-          {/* Icon with Glossy Squircle Pod (v1 style) */}
-          <div className="relative z-10 mb-8 w-16 h-16 mx-auto">
-            {/* Soft Glow behind pod */}
-            <div className="absolute inset-0 bg-indigo-500/20 blur-2xl rounded-2xl scale-125 opacity-0 group-hover:opacity-100 transition-all duration-500" />
-            
-            <div className="relative w-full h-full rounded-2xl overflow-hidden glass-icon-box bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.92),rgba(237,241,255,0.7)_68%,rgba(219,227,255,0.55))] shadow-[inset_0_1px_0_rgba(255,255,255,0.75),0_10px_22px_rgba(99,102,241,0.12)] border border-white/40 flex items-center justify-center feature-icon-transition">
-              <div className="relative w-full h-full p-2.5">
-                <Image 
-                  src={`/assets/v1/icons/${icon}`} 
-                  alt={title} 
-                  fill
-                  sizes="64px"
-                  className="object-contain mix-blend-multiply contrast-[1.08] saturate-[1.08] drop-shadow-[0_8px_16px_rgba(99,102,241,0.16)] group-hover:scale-115 group-hover:rotate-6 transition-all duration-500"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="relative z-10">
-            <h3 className="text-xl font-bold mb-4 text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors font-handwritten">
-              {title}
-            </h3>
-            
-            <p className="text-slate-600 dark:text-slate-400 leading-relaxed text-sm">
-              {description}
-            </p>
-          </div>
-
-          {/* Decorative hover gradient corner */}
-          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-indigo-500/5 to-transparent rounded-tr-3xl -z-10 group-hover:from-indigo-500/10 transition-all" />
         </div>
-      </Tilt>
+
+        <div className="relative z-10">
+          <h3 className="text-xl font-bold mb-3 text-slate-900">{title}</h3>
+          <p className="text-slate-500 leading-relaxed">{description}</p>
+        </div>
+      </div>
     </motion.div>
   );
 }

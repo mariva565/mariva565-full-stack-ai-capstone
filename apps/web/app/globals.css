@@ -178,6 +178,11 @@
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
+/* Feature card icon hover glow (matching v1) */
+.feature-card:hover .feature-icon-hover {
+  filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.3));
+}
+
 /* Spinner Animation from v1 */
 @keyframes spinner-border {
   to { transform: rotate(360deg); }
