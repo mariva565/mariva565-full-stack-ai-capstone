@@ -6,7 +6,7 @@ export type Milestone = {
   id: number;
   title: string;
   description: string | null;
-  status: "not_started" | "in_progress" | "done";
+  status: "not_started" | "in_progress" | "done" | "idea";
   dueDate: string | null;
   completedAt: string | null;
   orderIndex: number;
@@ -37,9 +37,16 @@ const statusConfig = {
     badge: "bg-slate-500/10 text-slate-400",
     label: "Not Started",
   },
+  idea: {
+    dot: "bg-cyan-400",
+    ring: "ring-cyan-400/30",
+    badge: "bg-cyan-400/10 text-cyan-400",
+    label: "Idea",
+  },
 };
 
 const nextStatus: Record<Milestone["status"], Milestone["status"]> = {
+  idea: "not_started",
   not_started: "in_progress",
   in_progress: "done",
   done: "not_started",
