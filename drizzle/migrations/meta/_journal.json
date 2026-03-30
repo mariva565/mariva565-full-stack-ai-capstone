@@ -8,6 +8,13 @@
       "when": 1774637331393,
       "tag": "0000_init",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1774879466303,
+      "tag": "0001_add-milestones-events",
+      "breakpoints": true
     }
   ]
 }

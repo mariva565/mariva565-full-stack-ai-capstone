@@ -6,6 +6,7 @@ import {
   boolean,
   integer,
   timestamp,
+  date,
   jsonb,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
@@ -87,7 +88,38 @@ export const favorites = pgTable(
   ]
 );
 
-// ─── 6. activity_logs ───────────────────────────────────────
+// ─── 6. milestones ──────────────────────────────────────────
+export const milestones = pgTable("milestones", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description"),
+  status: varchar("status", { length: 20 }).notNull().default("not_started"), // 'not_started' | 'in_progress' | 'done'
+  dueDate: date("due_date"),
+  completedAt: timestamp("completed_at"),
+  orderIndex: integer("order_index").notNull().default(0),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+// ─── 7. events ──────────────────────────────────────────────
+export const events = pgTable("events", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description"),
+  date: date("date").notNull(),
+  type: varchar("type", { length: 20 }).notNull().default("reminder"), // 'deadline' | 'reminder' | 'milestone' | 'exam' | 'personal'
+  color: varchar("color", { length: 7 }), // hex color e.g. '#8b5cf6'
+  courseId: integer("course_id").references(() => courses.id, { onDelete: "set null" }),
+  milestoneId: integer("milestone_id").references(() => milestones.id, { onDelete: "set null" }),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+// ─── 8. activity_logs ───────────────────────────────────────
 export const activityLogs = pgTable("activity_logs", {
   id: serial("id").primaryKey(),
   userId: integer("user_id")

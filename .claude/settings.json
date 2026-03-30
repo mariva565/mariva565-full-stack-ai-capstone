@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd /c/Users/mariy/Projects/\"20260327 Capstone\"/apps/web)",
+      "Bash(npm install:*)",
+      "Bash(npm run:*)",
+      "Bash(node -e \":*)",
+      "Bash(node --input-type=module -e \":*)"
+    ],
+    "additionalDirectories": [
+      "C:\\Users\\mariy\\Projects\\20260327 Capstone\\apps\\web\\app\\api\\milestones"
+    ]
+  }
+}

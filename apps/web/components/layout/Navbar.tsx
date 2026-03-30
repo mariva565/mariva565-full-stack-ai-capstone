@@ -57,7 +57,8 @@ export function Navbar() {
         <div className="hidden lg:flex items-center gap-2">
           <NavLink href="#features">Features</NavLink>
           <NavLink href="#about">About</NavLink>
-          <NavLink href="/how-it-works">How It Works</NavLink>
+          <NavLink href="/calendar">Calendar</NavLink>
+          <NavLink href="/progress">Progress</NavLink>
 
           <Link
             href="/contact"

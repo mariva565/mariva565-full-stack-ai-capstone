@@ -9,6 +9,8 @@ import { CourseFilters, type CourseStatusFilter } from "../../components/dashboa
 import { DashboardHero } from "../../components/dashboard/dashboard-hero";
 import { PinnedSidebar } from "../../components/dashboard/pinned-sidebar";
 import { type PinnedMaterial } from "../../components/dashboard/pinned-material-item";
+import { ProgressWidget } from "../../components/dashboard/progress-widget";
+import { CalendarWidget } from "../../components/dashboard/calendar-widget";
 import { ConfirmModal } from "../../components/ui/confirm-modal";
 import { Spinner } from "../../components/ui/spinner";
 import { Toast, type ToastTone } from "../../components/ui/toast";
@@ -54,6 +56,8 @@ export default function DashboardPage() {
   const [activeTag, setActiveTag] = useState<string | null>(null);
   const [courseToDelete, setCourseToDelete] = useState<number | null>(null);
   const [deleteBusy, setDeleteBusy] = useState(false);
+  const [milestones, setMilestones] = useState<{ id: number; title: string; status: string; dueDate: string | null }[]>([]);
+  const [calendarEvents, setCalendarEvents] = useState<{ id: number; title: string; date: string; type: string }[]>([]);
   const [toast, setToast] = useState<ToastState | null>(null);
 
   useEffect(() => {
@@ -63,9 +67,11 @@ export default function DashboardPage() {
   async function loadDashboardData() {
     setLoading(true);
 
-    const [coursesResponse, favoritesResponse] = await Promise.all([
+    const [coursesResponse, favoritesResponse, milestonesResponse, eventsResponse] = await Promise.all([
       fetch("/api/courses"),
       fetch("/api/favorites"),
+      fetch("/api/milestones"),
+      fetch("/api/events"),
     ]);
 
     if (coursesResponse.status === 401) {
@@ -89,6 +95,16 @@ export default function DashboardPage() {
       setFavorites(favoritesData.favorites ?? []);
     } else {
       setFavorites([]);
+    }
+
+    if (milestonesResponse.ok) {
+      const msData = (await milestonesResponse.json()) as { milestones?: typeof milestones };
+      setMilestones(msData.milestones ?? []);
+    }
+
+    if (eventsResponse.ok) {
+      const evData = (await eventsResponse.json()) as { events?: typeof calendarEvents };
+      setCalendarEvents(evData.events ?? []);
     }
 
     setLoading(false);
@@ -172,6 +188,11 @@ export default function DashboardPage() {
           showCreateForm={showCreateForm}
           onToggleCreateForm={() => setShowCreateForm((current) => !current)}
         />
+
+        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+          <ProgressWidget milestones={milestones} />
+          <CalendarWidget events={calendarEvents} />
+        </div>
 
         {showCreateForm && (
           <CreateCourseForm
