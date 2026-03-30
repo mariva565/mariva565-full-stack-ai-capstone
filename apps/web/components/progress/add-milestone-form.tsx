@@ -16,7 +16,13 @@ export function AddMilestoneForm({ onAdd, busy }: Props) {
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
     if (!title.trim()) return;
-    onAdd({ title: title.trim(), description: description.trim(), dueDate });
+
+    onAdd({
+      title: title.trim(),
+      description: description.trim(),
+      dueDate,
+    });
+
     setTitle("");
     setDescription("");
     setDueDate("");
@@ -27,7 +33,7 @@ export function AddMilestoneForm({ onAdd, busy }: Props) {
     return (
       <button
         onClick={() => setOpen(true)}
-        className="w-full rounded-xl border border-dashed border-slate-600 py-3 text-sm text-slate-400 hover:border-violet-500 hover:text-violet-400 transition-colors"
+        className="w-full rounded-xl border border-dashed border-slate-300 py-3 text-sm text-slate-500 transition-colors hover:border-brand-400 hover:text-brand-600 dark:border-slate-700 dark:text-slate-400 dark:hover:border-brand-500 dark:hover:text-brand-300"
       >
         + Add Milestone
       </button>
@@ -37,14 +43,14 @@ export function AddMilestoneForm({ onAdd, busy }: Props) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="rounded-xl border border-slate-700 bg-slate-800/50 p-4 space-y-3"
+      className="space-y-3 rounded-xl border border-slate-200 bg-white/80 p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900/60"
     >
       <input
         type="text"
         placeholder="Milestone title"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
-        className="w-full rounded-lg border border-slate-600 bg-slate-900 px-3 py-2 text-sm text-white placeholder-slate-500 focus:border-violet-500 focus:outline-none"
+        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-500 focus:border-brand-500 focus:outline-none dark:border-slate-600 dark:bg-slate-900 dark:text-white dark:placeholder-slate-500"
         autoFocus
       />
       <textarea
@@ -52,27 +58,27 @@ export function AddMilestoneForm({ onAdd, busy }: Props) {
         value={description}
         onChange={(e) => setDescription(e.target.value)}
         rows={2}
-        className="w-full rounded-lg border border-slate-600 bg-slate-900 px-3 py-2 text-sm text-white placeholder-slate-500 focus:border-violet-500 focus:outline-none resize-none"
+        className="w-full resize-none rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-500 focus:border-brand-500 focus:outline-none dark:border-slate-600 dark:bg-slate-900 dark:text-white dark:placeholder-slate-500"
       />
       <div className="flex items-center gap-3">
         <input
           type="date"
           value={dueDate}
           onChange={(e) => setDueDate(e.target.value)}
-          className="rounded-lg border border-slate-600 bg-slate-900 px-3 py-2 text-sm text-white focus:border-violet-500 focus:outline-none"
+          className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-brand-500 focus:outline-none dark:border-slate-600 dark:bg-slate-900 dark:text-white"
         />
-        <div className="flex gap-2 ml-auto">
+        <div className="ml-auto flex gap-2">
           <button
             type="button"
             onClick={() => setOpen(false)}
-            className="rounded-lg px-3 py-2 text-sm text-slate-400 hover:text-white transition-colors"
+            className="rounded-lg px-3 py-2 text-sm text-slate-500 transition-colors hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={busy || !title.trim()}
-            className="rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white hover:bg-violet-500 disabled:opacity-50 transition-colors"
+            className="rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-700 disabled:opacity-50"
           >
             {busy ? "Adding..." : "Add"}
           </button>

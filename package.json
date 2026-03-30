@@ -9,6 +9,7 @@
   "scripts": {
     "dev:web": "npm --workspace @studyhub/web run dev",
     "build:web": "npm --workspace @studyhub/web run build",
+    "start:web": "npm --workspace @studyhub/web run start -- --port 3002",
     "lint:web": "npm --workspace @studyhub/web run lint",
     "typecheck:web": "npm --workspace @studyhub/web run typecheck",
     "dev:mobile": "npm --workspace @studyhub/mobile run start",

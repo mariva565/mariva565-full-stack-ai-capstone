@@ -3,15 +3,20 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 50);
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+      if (menuOpen) setMenuOpen(false);
+    };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [menuOpen]);
 
   return (
     <nav
@@ -85,13 +90,71 @@ export function Navbar() {
         </div>
 
         {/* Mobile Toggle */}
-        <button className="lg:hidden text-slate-600">
-          <svg viewBox="0 0 24 24" className="w-6 h-6 fill-current">
-            <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
-          </svg>
+        <button
+          className="lg:hidden rounded-lg p-2 text-slate-600 hover:bg-slate-100 transition-colors"
+          onClick={() => setMenuOpen((prev) => !prev)}
+          aria-label="Toggle menu"
+          aria-expanded={menuOpen}
+        >
+          {menuOpen ? (
+            <svg viewBox="0 0 24 24" className="w-6 h-6 fill-current">
+              <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+            </svg>
+          ) : (
+            <svg viewBox="0 0 24 24" className="w-6 h-6 fill-current">
+              <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
+            </svg>
+          )}
         </button>
       </div>
+
+      {/* Mobile Dropdown */}
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2 }}
+            className="lg:hidden border-t border-white/30 bg-white/80 backdrop-blur-xl px-4 py-4 flex flex-col gap-1"
+          >
+            <MobileNavLink href="#features" onClick={() => setMenuOpen(false)}>Features</MobileNavLink>
+            <MobileNavLink href="#about" onClick={() => setMenuOpen(false)}>About</MobileNavLink>
+            <MobileNavLink href="/calendar" onClick={() => setMenuOpen(false)}>Calendar</MobileNavLink>
+            <MobileNavLink href="/progress" onClick={() => setMenuOpen(false)}>Progress</MobileNavLink>
+            <MobileNavLink href="/contact" onClick={() => setMenuOpen(false)}>Contact</MobileNavLink>
+            <div className="mt-2 flex flex-col gap-2">
+              <Link
+                href="/profile"
+                onClick={() => setMenuOpen(false)}
+                className="rounded-full border-2 border-[#8b5cf6]/30 px-5 py-2.5 text-center text-sm font-semibold text-[#8b5cf6] transition-colors hover:bg-[#8b5cf6]/5"
+              >
+                Profile
+              </Link>
+              <Link
+                href="/dashboard"
+                onClick={() => setMenuOpen(false)}
+                className="btn-gradient-primary !py-2.5 !px-5 text-sm text-center"
+              >
+                Dashboard
+              </Link>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
+  );
+}
+
+function MobileNavLink({ href, onClick, children }: { href: string; onClick: () => void; children: React.ReactNode }) {
+  return (
+    <Link
+      href={href}
+      onClick={onClick}
+      className="rounded-xl px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors"
+    >
+      {children}
+    </Link>
   );
 }
 

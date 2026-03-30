@@ -112,11 +112,12 @@ export default function CalendarPage() {
   );
 
   if (loading && events.length === 0) {
-    return <Spinner centered label="Loading calendar..." />;
+    return <div className="min-h-screen bg-slate-900"><Spinner centered label="Loading calendar..." /></div>;
   }
 
   return (
     <>
+      <div className="min-h-screen bg-slate-900">
       <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
         <Link
           href="/dashboard"
@@ -175,6 +176,7 @@ export default function CalendarPage() {
             />
           )}
         </div>
+      </div>
       </div>
 
       {toast && (

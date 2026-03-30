@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@lottiefiles/dotlottie-react": "^0.18.8",
     "@neondatabase/serverless": "^1.0.2",
     "bcryptjs": "^3.0.3",
     "dotenv": "^17.3.1",

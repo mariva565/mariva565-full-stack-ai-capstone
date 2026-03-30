@@ -384,3 +384,238 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 - `npm.cmd --workspace @studyhub/web run build` PASS (clean build after cache reset)
 - `http://localhost:3000/dashboard` returns `200` after restart
 - Web dev server is running on `localhost:3000` (PID changed after clean restart)
+
+### Session 14 (Next.js runtime chunk recovery and root tracing fix)
+
+**Issue observed:**
+- Runtime error in web app: `Cannot find module './331.js'` from `.next/server/webpack-runtime.js` when opening `/progress`.
+
+**What we changed:**
+- Cleared stale build artifacts in `apps/web/.next`.
+- Updated `apps/web/next.config.ts` to pin monorepo tracing root:
+  - `outputFileTracingRoot: path.join(__dirname, "../../")`
+- This prevents Next from inferring an incorrect root when multiple lockfiles exist on the machine.
+
+**Validation:**
+- `npm.cmd run typecheck:web` PASS
+- `npm.cmd run build:web` PASS (outside sandbox; sandbox run fails with `spawn EPERM`)
+
+**Notes:**
+- Next build warning about workspace root detection is resolved after the tracing root fix.
+- If a similar missing chunk appears again during dev, stop dev server, clear `apps/web/.next`, then restart `next dev`.
+
+### Session 15 (Progress page usability pass, no Trello complexity)
+
+**Goal:**
+- Make `/progress` easier for daily use without turning it into a kanban board.
+
+**What we changed:**
+- Refreshed `apps/web/app/progress/page.tsx` layout and UX:
+  - Added summary KPI cards (total/done/active/overdue/ideas).
+  - Added quick timeline filters: `All`, `Active`, `In Progress`, `Overdue`, `Done`.
+  - Added filter-aware empty states.
+  - Kept one-column workflow behavior but improved desktop ergonomics with two-column composition (timeline + ideas).
+  - Added clearer status/action toast feedback for promote/status update failures and success states.
+- Added new UI components:
+  - `apps/web/components/progress/progress-summary-cards.tsx`
+  - `apps/web/components/progress/timeline-filters.tsx`
+- Improved progress subcomponents for light/dark consistency and readability:
+  - `apps/web/components/progress/progress-bar.tsx`
+  - `apps/web/components/progress/add-milestone-form.tsx`
+  - `apps/web/components/progress/milestone-timeline.tsx`
+  - `apps/web/components/progress/ideas-backlog.tsx`
+- Fixed Ideas delete button text encoding issue (garbled symbol replaced with clear `Delete`).
+
+**API correctness + guardrails:**
+- Fixed milestone creation API to respect incoming `status` (including `idea`), which unblocks proper Ideas Backlog behavior:
+  - `apps/web/app/api/milestones/route.ts`
+- Added server-side status validation (`INVALID_STATUS`) and milestone id validation (`INVALID_ID`) for milestones endpoints:
+  - `apps/web/app/api/milestones/route.ts`
+  - `apps/web/app/api/milestones/[id]/route.ts`
+
+**Validation:**
+- `npm.cmd run typecheck:web` PASS
+- `npm.cmd run build:web` PASS (outside sandbox)
+
+**Notes:**
+- `/progress` file remains under 300 lines after this pass.
+- UX remains intentionally lightweight: no drag/drop, no board semantics.
+- Follow-up tweak: timeline updates now refresh data without re-triggering full-page loading spinner after each action.
+
+### Session 16 (v1-inspired Quick Access for Progress)
+
+**Context:**
+- Used v1 project (`Visual-Studio-Capstone-Project-StudyHub-interface-v3`) as visual/UX reference only (no code reuse), inspired by the compact right-side "Quick Access" pattern.
+
+**What we implemented in v2 `/progress`:**
+- Added a new right-column `Due Soon` card with top upcoming milestone deadlines:
+  - `apps/web/components/progress/due-soon-list.tsx`
+- Added shared progress helpers for cleaner page orchestration:
+  - `apps/web/lib/progress.ts`
+  - moved filter/overdue/status label helpers from page into lib
+- Wired `Due Soon` into page and kept page under file-size limit:
+  - `apps/web/app/progress/page.tsx` now 272 lines
+
+**Validation:**
+- `npm.cmd run typecheck:web` PASS
+- `npm.cmd run build:web` timed out in this environment during verification (no TypeScript errors reported)
+
+### Session 17 (Taskboard-inspired deadline categories in Progress)
+
+**Reference used:**
+- Reviewed `C:\Users\mariy\Projects\Soft-Tech-with-AI\11. Workshop\Taskboard` for deadline UX patterns only (no code copy).
+- Borrowed behavior idea from `project-deadlines`: category-based deadline chips and timeline filtering.
+
+**What was added in StudyHub v2:**
+- New timeline filters in `/progress`:
+  - `Today`
+  - `Next 7 Days`
+- Added reusable due-date classification helpers in:
+  - `apps/web/lib/progress.ts`
+  - categories: `none | overdue | today | next7 | upcoming`
+- Added reusable deadline pill component:
+  - `apps/web/components/progress/deadline-pill.tsx`
+- Applied deadline pill rendering in:
+  - `apps/web/components/progress/milestone-timeline.tsx`
+  - `apps/web/components/progress/due-soon-list.tsx`
+
+**Validation:**
+- `npm.cmd run typecheck:web` PASS
+
+### Session 18 (Premium loader pass)
+
+**What was implemented:**
+- Upgraded the shared `Spinner` UI to a premium loading experience:
+  - gradient atmosphere background when centered
+  - glassmorphism card
+  - animated mascot center element
+  - rotating contextual tips
+  - subtle motion transitions via Framer Motion
+- Added global app-router loading boundary:
+  - `apps/web/app/loading.tsx`
+
+**Files touched:**
+- `apps/web/components/ui/spinner.tsx`
+- `apps/web/app/loading.tsx`
+
+**Validation:**
+- `npm.cmd run typecheck:web` PASS
+
+**Notes:**
+- Current premium loader is fully active for existing page-level `Spinner` use cases and for app-level route loading.
+- Ready for direct Lottie swap once a downloadable `.json` or `.lottie` asset URL/file is provided.
+
+### Session 19 (Premium loader with real Lottie integration)
+
+**What was implemented:**
+- Installed DotLottie React player in web workspace:
+  - `@lottiefiles/dotlottie-react`
+- Added a reusable loader wrapper:
+  - `apps/web/components/ui/lottie-loader.tsx`
+- Updated premium spinner center animation to use local Lottie asset:
+  - `apps/web/components/ui/spinner.tsx`
+  - source: `/public/lottie/loading.lottie`
+- Kept existing premium UX intact:
+  - gradient atmosphere background
+  - glass card
+  - rotating tips with animated transitions
+
+**Validation:**
+- `npm.cmd run typecheck:web` PASS
+
+### Session 20 (Timeline editing + notes + move up/down)
+
+**What was implemented:**
+- Added full inline milestone editing in `/progress` timeline:
+  - edit title
+  - edit notes/description
+  - edit due date
+- Added milestone order controls in expanded row:
+  - `Move up`
+  - `Move down`
+  - changes persist to DB via API (`orderIndex`)
+- Added stronger milestones API validation:
+  - title is trimmed and required on create/update
+  - description is normalized (`"" -> null`)
+  - due date is normalized
+  - `orderIndex` validation (`integer >= 0`)
+- Refactored progress page state into a dedicated hook to keep page/component files within project size limits.
+
+**Files touched:**
+- `apps/web/app/progress/page.tsx`
+- `apps/web/components/progress/use-progress-page-state.ts`
+- `apps/web/components/progress/milestone-timeline.tsx`
+- `apps/web/components/progress/milestone-editor.tsx`
+- `apps/web/app/api/milestones/route.ts`
+- `apps/web/app/api/milestones/[id]/route.ts`
+- `apps/web/lib/progress.ts`
+
+**Validation:**
+- `npm.cmd run typecheck:web` PASS
+
+### Session 21 (Loading screen scale-up)
+
+**What was implemented:**
+- Enlarged centered premium loader to avoid miniature feel:
+  - switched to full-screen container (`min-h-screen`)
+  - increased glass card max width and padding
+  - increased Lottie panel size and animation scale
+  - increased loading title and tip typography
+  - expanded background glow blobs for better visual balance
+
+**Files touched:**
+- `apps/web/components/ui/spinner.tsx`
+
+**Validation:**
+- `npm.cmd run typecheck:web` PASS
+
+### Session 22 (Progress interaction latency optimization)
+
+**Why:**
+- Editing/status/reorder/delete in `/progress` felt slow because each action triggered a full milestones reload request.
+
+**What was implemented:**
+- Optimized `use-progress-page-state` to update local milestone state directly from API responses:
+  - add milestone/idea -> append returned record locally
+  - status/promote/edit -> replace updated record locally
+  - reorder -> optimistic local swap + server sync; fallback reload only on failure
+  - delete -> local removal without full reload
+- Kept initial load behavior unchanged.
+
+**Files touched:**
+- `apps/web/components/progress/use-progress-page-state.ts`
+
+**Validation:**
+- `npm.cmd run typecheck:web` PASS
+
+### Session 23 (Progress request timeout hardening)
+
+**Why:**
+- When dev server/HMR stalls, `/progress` fetches could remain pending too long, leaving users on loading state without clear feedback.
+
+**What was implemented:**
+- Added client-side request timeout wrapper in progress state hook (`12s`) for all milestone requests.
+- Added timeout-specific error messaging toasts (instead of silent long wait).
+- Kept existing optimistic updates from Session 22 intact.
+
+**Files touched:**
+- `apps/web/components/progress/use-progress-page-state.ts`
+
+**Validation:**
+- `npm.cmd run typecheck:web` PASS
+
+### Session 24 (VS Code Next.js debug config for web workspace)
+
+**Why:**
+- Browser console showed `ChunkLoadError` + `ERR_CONNECTION_REFUSED` to `http://localhost:4010/...`, indicating stale client chunks were trying to load from a stopped server/port.
+
+**What was implemented:**
+- Added a dedicated VS Code launch config for Next.js web app in monorepo:
+  - `.vscode/launch.json`
+  - configuration name: `Next.js Debug (web)`
+  - runs `npm run dev` with `cwd` set to `${workspaceFolder}/apps/web`
+  - forces `PORT=3000` for a stable local URL
+  - uses `serverReadyAction` pattern compatible with modern Next.js output (`Local: http://...`)
+
+**Result:**
+- F5 debug startup now consistently opens the running web app on port `3000`, reducing stale-port chunk loading issues during debugging.

@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cmd /c \"taskkill /PID 22032 /F\")",
+      "Bash(powershell -Command \"Stop-Process -Id 22032 -Force\")",
+      "Bash(find C:UsersmariyProjectsVisual-Studio-Capstone-Project-StudyHub-interface-v3/src -type f -name *.html -o -name *.jsx -o -name *.tsx -o -name *.css)"
+    ]
+  }
+}

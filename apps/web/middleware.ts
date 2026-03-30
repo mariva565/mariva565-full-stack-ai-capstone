@@ -59,7 +59,12 @@ export const config = {
     "/dashboard/:path*",
     "/courses/:path*",
     "/materials/:path*",
+    "/modules/:path*",
     "/profile/:path*",
     "/admin/:path*",
+    "/calendar/:path*",
+    "/calendar",
+    "/progress/:path*",
+    "/progress",
   ],
 };
