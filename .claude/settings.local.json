@@ -7,7 +7,11 @@
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3002)",
       "Bash(findstr \"LISTENING\")",
       "Bash(findstr \":3002\")",
-      "Read(//c/Users/mariy/Projects/20260327 Capstone/**)"
+      "Read(//c/Users/mariy/Projects/20260327 Capstone/**)",
+      "Bash(find '/c/Users/mariy/Projects/20260327 Capstone/apps/web/app' -type f \\\\\\(-name *login* -o -name *register* -o -name *auth* \\\\\\))",
+      "Bash(find '/c/Users/mariy/Projects/20260327 Capstone/apps/web/components' -type f \\\\\\(-name *login* -o -name *register* -o -name *auth* \\\\\\))",
+      "Bash(grep -r auth '/c/Users/mariy/Projects/20260327 Capstone/apps/web/components' --include=*.tsx --include=*.ts -l)",
+      "Bash(grep -r \"login\\\\|register\\\\|Login\\\\|Register\" '/c/Users/mariy/Projects/20260327 Capstone/apps/web/components' --include=*.tsx --include=*.ts -l)"
     ]
   }
 }

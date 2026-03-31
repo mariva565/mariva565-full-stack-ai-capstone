@@ -38,7 +38,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-purple-50 flex flex-col p-4 md:p-8 selection:bg-brand-100 selection:text-brand-900 overflow-x-hidden transition-colors duration-500">
       {/* App-Wrapper (Rounded Box Container) */}
-      <main className="flex-1 bg-white rounded-[2.5rem] md:rounded-[4rem] shadow-2xl overflow-hidden relative border border-white/60 flex flex-col">
+      <main className="flex-1 bg-white rounded-[2.5rem] md:rounded-[4rem] shadow-2xl overflow-x-hidden relative border border-white/60 flex flex-col">
         <CursorGlow />
         <ScrollToTop />
         

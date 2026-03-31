@@ -13,8 +13,8 @@ export function HeroContent() {
         transition={{ duration: 0.6 }}
       >
         <span className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-sm font-bold shadow-xl">
-          <span className="flex h-2.5 w-2.5 rounded-full bg-rose-500 animate-pulse shadow-[0_0_10px_rgba(244,63,94,0.8)]" />
-          Version 5.0 is here
+          <span className="flex h-2.5 w-2.5 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_10px_rgba(34,211,238,0.8)]" />
+          v2.0 — Reimagined from Scratch
         </span>
       </motion.div>
 
