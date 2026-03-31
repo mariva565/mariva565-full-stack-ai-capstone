@@ -3,7 +3,7 @@
 import { V1Hero } from "../components/home/v1-hero";
 import { HomeFeatures } from "../components/home/features";
 import { HomeAbout } from "../components/home/about";
-import { HomeStats } from "../components/home/stats";
+// import { HomeStats } from "../components/home/stats"; // Moved to README for jury, will add back later
 import { HomeFaq } from "../components/home/faq";
 import { HomeCtaBanner } from "../components/home/cta-banner";
 import { Navbar } from "../components/layout/Navbar";
@@ -50,7 +50,7 @@ export default function HomePage() {
           <div className="bg-white">
             <HomeFeatures />
             <HomeAbout />
-            <HomeStats />
+            {/* <HomeStats /> */}
             <HomeFaq />
             <HomeCtaBanner />
           </div>

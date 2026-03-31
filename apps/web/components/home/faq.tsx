@@ -82,7 +82,7 @@ function FaqAccordionItem({ item }: { item: FaqItem }) {
         <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg shadow-sm ${item.iconColor}`}>
           {item.icon}
         </span>
-        <span className="flex-1 text-base font-semibold text-slate-900 dark:text-white">
+        <span className="flex-1 text-base font-bold text-slate-900 dark:text-white font-handwritten">
           {item.question}
         </span>
         <motion.div
@@ -127,10 +127,10 @@ export function HomeFaq() {
     <section className="bg-slate-50 py-24 dark:bg-slate-800/50">
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         <div className="mb-14 text-center">
-          <span className="mb-4 inline-block text-sm font-bold uppercase tracking-widest text-brand-500">
+          <span className="mb-4 inline-block text-sm font-bold uppercase tracking-[0.2em] text-indigo-500">
             Support
           </span>
-          <h2 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
+          <h2 className="font-shantell text-3xl font-black tracking-tight text-slate-900 dark:text-white sm:text-4xl lg:text-5xl">
             Frequently Asked Questions
           </h2>
           <p className="mx-auto mt-4 max-w-lg text-base text-slate-500 dark:text-slate-400">

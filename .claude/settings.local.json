@@ -4,7 +4,10 @@
       "Bash(cmd /c \"taskkill /PID 22032 /F\")",
       "Bash(powershell -Command \"Stop-Process -Id 22032 -Force\")",
       "Bash(find C:UsersmariyProjectsVisual-Studio-Capstone-Project-StudyHub-interface-v3/src -type f -name *.html -o -name *.jsx -o -name *.tsx -o -name *.css)",
-      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3002)"
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3002)",
+      "Bash(findstr \"LISTENING\")",
+      "Bash(findstr \":3002\")",
+      "Read(//c/Users/mariy/Projects/20260327 Capstone/**)"
     ]
   }
 }
