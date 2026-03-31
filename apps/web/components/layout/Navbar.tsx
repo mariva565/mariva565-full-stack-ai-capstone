@@ -61,30 +61,20 @@ export function Navbar() {
         <div className="hidden lg:flex items-center gap-2">
           <NavLink href="#features">Features</NavLink>
           <NavLink href="#about">About</NavLink>
-          <NavLink href="/calendar">Calendar</NavLink>
-          <NavLink href="/progress">Progress</NavLink>
+          <NavLink href="#faq">FAQ</NavLink>
 
           <Link
-            href="/contact"
-            className="ml-3 btn btn-outline-primary rounded-full px-6 py-2 text-sm font-semibold border-2 border-[#8b5cf6]/30 text-[#8b5cf6] hover:bg-[#8b5cf6]/5 hover:-translate-y-1 hover:scale-105 hover:border-[#8b5cf6]/50 hover:shadow-[0_12px_20px_-5px_rgba(99,102,241,0.2)] transition-all duration-[400ms] ease-[cubic-bezier(0.175,0.885,0.32,1.275)]"
+            href="/login"
+            className="ml-3 rounded-full border-2 border-[#8b5cf6]/30 px-6 py-2 text-sm font-semibold text-[#8b5cf6] hover:bg-[#8b5cf6]/5 hover:-translate-y-1 hover:scale-105 hover:border-[#8b5cf6]/50 hover:shadow-[0_12px_20px_-5px_rgba(99,102,241,0.2)] transition-all duration-[400ms] ease-[cubic-bezier(0.175,0.885,0.32,1.275)]"
           >
-            Contact
+            Login
           </Link>
 
           <Link
-            href="/profile"
-            className="flex items-center gap-2 btn btn-outline-primary rounded-full px-6 py-2 text-sm font-semibold border-2 border-[#8b5cf6]/30 text-[#8b5cf6] hover:bg-[#8b5cf6]/5 hover:-translate-y-1 hover:scale-105 hover:border-[#8b5cf6]/50 hover:shadow-[0_12px_20px_-5px_rgba(99,102,241,0.2)] transition-all duration-[400ms] ease-[cubic-bezier(0.175,0.885,0.32,1.275)]"
-          >
-            <i className="bi bi-person-fill"></i>
-            Profile
-          </Link>
-
-          <Link
-            href="/dashboard"
+            href="/register"
             className="btn-gradient-primary !py-2.5 !px-6 text-sm shadow-lg"
           >
-            <i className="bi bi-grid-fill"></i>
-            Dashboard
+            Register
           </Link>
         </div>
 
@@ -119,23 +109,21 @@ export function Navbar() {
           >
             <MobileNavLink href="#features" onClick={() => setMenuOpen(false)}>Features</MobileNavLink>
             <MobileNavLink href="#about" onClick={() => setMenuOpen(false)}>About</MobileNavLink>
-            <MobileNavLink href="/calendar" onClick={() => setMenuOpen(false)}>Calendar</MobileNavLink>
-            <MobileNavLink href="/progress" onClick={() => setMenuOpen(false)}>Progress</MobileNavLink>
-            <MobileNavLink href="/contact" onClick={() => setMenuOpen(false)}>Contact</MobileNavLink>
+            <MobileNavLink href="#faq" onClick={() => setMenuOpen(false)}>FAQ</MobileNavLink>
             <div className="mt-2 flex flex-col gap-2">
               <Link
-                href="/profile"
+                href="/login"
                 onClick={() => setMenuOpen(false)}
                 className="rounded-full border-2 border-[#8b5cf6]/30 px-5 py-2.5 text-center text-sm font-semibold text-[#8b5cf6] transition-colors hover:bg-[#8b5cf6]/5"
               >
-                Profile
+                Login
               </Link>
               <Link
-                href="/dashboard"
+                href="/register"
                 onClick={() => setMenuOpen(false)}
                 className="btn-gradient-primary !py-2.5 !px-5 text-sm text-center"
               >
-                Dashboard
+                Register
               </Link>
             </div>
           </motion.div>

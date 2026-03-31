@@ -194,6 +194,21 @@ export function useProgressPageState() {
     }
   }
 
+  async function handleEditIdea(id: number, title: string, description: string): Promise<boolean> {
+    setRowBusyId(id);
+    const updated = await patchMilestone(id, { title, description: description || null });
+    setRowBusyId(null);
+    if (!updated) {
+      setToast({ tone: "error", message: "Could not update idea." });
+      return false;
+    }
+    setAllMilestones((current) =>
+      current.map((item) => (item.id === id ? updated : item))
+    );
+    setToast({ tone: "success", message: "Idea updated." });
+    return true;
+  }
+
   async function handlePromoteIdea(id: number) {
     setRowBusyId(id);
     const updated = await patchMilestone(id, { status: "not_started" });
@@ -340,6 +355,7 @@ export function useProgressPageState() {
     setToast,
     handleAdd,
     handleAddIdea,
+    handleEditIdea,
     handlePromoteIdea,
     handleStatusChange,
     handleUpdateMilestone,

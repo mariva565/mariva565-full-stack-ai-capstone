@@ -5,7 +5,9 @@ import { useRouter } from "next/navigation";
 
 import { CourseCard } from "../../components/dashboard/course-card";
 import { CreateCourseForm } from "../../components/dashboard/create-course-form";
+import { EditCourseModal } from "../../components/dashboard/edit-course-modal";
 import { CourseFilters, type CourseStatusFilter } from "../../components/dashboard/course-filters";
+import { useDashboardCourseEditor } from "../../components/dashboard/use-dashboard-course-editor";
 import { DashboardHero } from "../../components/dashboard/dashboard-hero";
 import { PinnedSidebar } from "../../components/dashboard/pinned-sidebar";
 import { type PinnedMaterial } from "../../components/dashboard/pinned-material-item";
@@ -59,6 +61,20 @@ export default function DashboardPage() {
   const [milestones, setMilestones] = useState<{ id: number; title: string; status: string; dueDate: string | null }[]>([]);
   const [calendarEvents, setCalendarEvents] = useState<{ id: number; title: string; date: string; type: string }[]>([]);
   const [toast, setToast] = useState<ToastState | null>(null);
+  const {
+    courseToEdit,
+    editTitle,
+    editDescription,
+    editBusy,
+    openEditCourse,
+    closeEditCourse,
+    handleEditCourse,
+    setEditTitle,
+    setEditDescription,
+  } = useDashboardCourseEditor({
+    onSaved: loadDashboardData,
+    onToast: (tone, message) => setToast({ tone, message }),
+  });
 
   useEffect(() => {
     void loadDashboardData();
@@ -221,7 +237,12 @@ export default function DashboardPage() {
                 </p>
               )}
               {filteredCourses.map((course) => (
-                <CourseCard key={course.id} course={course} onDelete={setCourseToDelete} />
+                <CourseCard
+                  key={course.id}
+                  course={course}
+                  onEdit={openEditCourse}
+                  onDelete={setCourseToDelete}
+                />
               ))}
             </div>
           </section>
@@ -244,6 +265,17 @@ export default function DashboardPage() {
         busy={deleteBusy}
         onCancel={() => setCourseToDelete(null)}
         onConfirm={confirmDeleteCourse}
+      />
+
+      <EditCourseModal
+        isOpen={courseToEdit !== null}
+        title={editTitle}
+        description={editDescription}
+        busy={editBusy}
+        onTitleChange={setEditTitle}
+        onDescriptionChange={setEditDescription}
+        onSubmit={handleEditCourse}
+        onCancel={closeEditCourse}
       />
 
       {toast && <Toast message={toast.message} tone={toast.tone} onClose={() => setToast(null)} />}

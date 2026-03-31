@@ -11,7 +11,14 @@
       "Bash(find '/c/Users/mariy/Projects/20260327 Capstone/apps/web/app' -type f \\\\\\(-name *login* -o -name *register* -o -name *auth* \\\\\\))",
       "Bash(find '/c/Users/mariy/Projects/20260327 Capstone/apps/web/components' -type f \\\\\\(-name *login* -o -name *register* -o -name *auth* \\\\\\))",
       "Bash(grep -r auth '/c/Users/mariy/Projects/20260327 Capstone/apps/web/components' --include=*.tsx --include=*.ts -l)",
-      "Bash(grep -r \"login\\\\|register\\\\|Login\\\\|Register\" '/c/Users/mariy/Projects/20260327 Capstone/apps/web/components' --include=*.tsx --include=*.ts -l)"
+      "Bash(grep -r \"login\\\\|register\\\\|Login\\\\|Register\" '/c/Users/mariy/Projects/20260327 Capstone/apps/web/components' --include=*.tsx --include=*.ts -l)",
+      "Bash(cp \"c:\\\\Users\\\\mariy\\\\Projects\\\\Visual-Studio-Capstone-Project-StudyHub-interface-v3\\\\src\\\\assets\\\\icons\\\\robot-logo.png\" \"c:\\\\Users\\\\mariy\\\\Projects\\\\20260327 Capstone\\\\apps\\\\web\\\\public\\\\assets\\\\v1\\\\icons\\\\robot-logo.png\")",
+      "Bash(cp \"c:\\\\Users\\\\mariy\\\\Projects\\\\Visual-Studio-Capstone-Project-StudyHub-interface-v3\\\\src\\\\assets\\\\icons\\\\robot-happy.png\" \"c:\\\\Users\\\\mariy\\\\Projects\\\\20260327 Capstone\\\\apps\\\\web\\\\public\\\\assets\\\\v1\\\\icons\\\\robot-happy.png\")",
+      "Bash(cp \"c:\\\\Users\\\\mariy\\\\Projects\\\\Visual-Studio-Capstone-Project-StudyHub-interface-v3\\\\src\\\\assets\\\\mascot-robot.png\" \"c:\\\\Users\\\\mariy\\\\Projects\\\\20260327 Capstone\\\\apps\\\\web\\\\public\\\\assets\\\\v1\\\\mascot-robot.png\")",
+      "Bash(find 'c:/Users/mariy/Projects/20260327 Capstone/apps/web' -type f -name *idea* -o -name *backlog*)",
+      "Bash(grep -r \"ideas\\\\|backlog\" 'c:/Users/mariy/Projects/20260327 Capstone/apps/web/app/api' --include=*.ts --include=*.tsx)",
+      "Bash(xargs grep:*)",
+      "Bash(grep -r ideas 'c:/Users/mariy/Projects/20260327 Capstone/apps/web/app' --include=*.ts --include=*.tsx)"
     ]
   }
 }

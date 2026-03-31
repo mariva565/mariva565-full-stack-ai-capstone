@@ -10,6 +10,7 @@ type Course = {
 
 type CourseCardProps = {
   course: Course;
+  onEdit: (course: Course) => void;
   onDelete: (courseId: number) => void;
 };
 
@@ -24,7 +25,7 @@ function formatStatus(status: string): string {
   return status.charAt(0).toUpperCase() + status.slice(1);
 }
 
-export function CourseCard({ course, onDelete }: CourseCardProps) {
+export function CourseCard({ course, onEdit, onDelete }: CourseCardProps) {
   const statusStyle =
     STATUS_STYLE[course.status] ??
     "bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-200";
@@ -60,6 +61,13 @@ export function CourseCard({ course, onDelete }: CourseCardProps) {
         >
           Open
         </Link>
+        <button
+          type="button"
+          onClick={() => onEdit(course)}
+          className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-700"
+        >
+          Edit
+        </button>
         <button
           type="button"
           onClick={() => onDelete(course.id)}

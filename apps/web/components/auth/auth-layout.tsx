@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { ReactNode } from "react";
 
@@ -18,8 +19,37 @@ export function AuthLayout({ children, variant = "login" }: AuthLayoutProps) {
     ? "0 15px 35px rgba(236, 72, 153, 0.25)"
     : "0 15px 35px rgba(99, 102, 241, 0.25)";
 
+  // v1 mascots: login uses robot-logo, register uses robot-happy
+  const cardMascot = isRegister
+    ? "/assets/v1/icons/robot-happy.png"
+    : "/assets/v1/icons/robot-logo.png";
+
+  // Floating mascot uses mascot-robot (same as v1)
+  const floatingMascot = "/assets/v1/mascot-robot.png";
+
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-12">
+      {/* Back to Home link */}
+      <motion.div
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.4, delay: 0.3 }}
+        className="fixed left-6 top-6 z-50"
+      >
+        <Link
+          href="/"
+          className="group flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold text-slate-600 transition-all hover:-translate-x-0.5 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400"
+          style={{
+            background: "rgba(255, 255, 255, 0.5)",
+            backdropFilter: "blur(12px)",
+            border: "1px solid rgba(255, 255, 255, 0.4)",
+          }}
+        >
+          <span className="transition-transform group-hover:-translate-x-0.5">&larr;</span>
+          Back to Home
+        </Link>
+      </motion.div>
+
       {/* Animated mesh gradient background */}
       <div
         className="pointer-events-none absolute inset-0 -z-10"
@@ -94,7 +124,7 @@ export function AuthLayout({ children, variant = "login" }: AuthLayoutProps) {
             }}
           >
             <Image
-              src="/assets/v1/mascot-transparent-background.png"
+              src={cardMascot}
               alt="StudyHub Mascot"
               width={130}
               height={130}
@@ -145,7 +175,7 @@ export function AuthLayout({ children, variant = "login" }: AuthLayoutProps) {
                 WebkitTextFillColor: "transparent",
               }}
             >
-              Здравей! 👋
+              Здравей!
               <br />
               Приятно учене!
             </p>
@@ -165,7 +195,7 @@ export function AuthLayout({ children, variant = "login" }: AuthLayoutProps) {
             }}
           >
             <Image
-              src="/assets/v1/mascot-transparent-background.png"
+              src={floatingMascot}
               alt="StudyHub Mascot"
               width={130}
               height={130}

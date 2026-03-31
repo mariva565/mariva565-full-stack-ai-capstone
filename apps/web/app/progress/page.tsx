@@ -37,6 +37,7 @@ export default function ProgressPage() {
     setToast,
     handleAdd,
     handleAddIdea,
+    handleEditIdea,
     handlePromoteIdea,
     handleStatusChange,
     handleUpdateMilestone,
@@ -99,6 +100,7 @@ export default function ProgressPage() {
             <IdeasBacklog
               ideas={ideas}
               onAdd={handleAddIdea}
+              onEdit={handleEditIdea}
               onPromote={handlePromoteIdea}
               onDelete={setDeleteId}
               addBusy={ideaBusy}
