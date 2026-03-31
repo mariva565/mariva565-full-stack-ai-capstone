@@ -5,12 +5,12 @@ import { motion } from "framer-motion";
 
 export function HeroMascot() {
   return (
-    <div className="flex-1 relative">
-      <motion.div 
+    <div className="flex-1 relative flex items-center justify-center mt-8 lg:mt-0">
+      <motion.div
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.8, delay: 0.3 }}
-        className="mascot-container relative w-full aspect-square max-w-[500px] mx-auto"
+        className="mascot-container relative w-[120px] h-[120px] sm:w-[200px] sm:h-[200px] md:w-[300px] md:h-[300px] lg:w-[400px] lg:h-[400px] xl:w-[500px] xl:h-[500px] mx-auto"
       >
         {/* Radial Glow behind the mascot (v1 light) */}
         <div 
@@ -23,7 +23,7 @@ export function HeroMascot() {
             src="/assets/v1/mascot-transparent-background.png"
             alt="StudyHub Mascot"
             fill
-            sizes="(max-width: 768px) 100vw, 500px"
+            sizes="(max-width: 640px) 120px, (max-width: 768px) 200px, (max-width: 1024px) 300px, 500px"
             className="object-contain drop-shadow-[0_10px_30px_rgba(30,41,59,0.15)] drop-shadow-[0_0_20px_rgba(99,102,241,0.4)]"
             priority
           />

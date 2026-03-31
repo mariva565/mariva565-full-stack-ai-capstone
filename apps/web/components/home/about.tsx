@@ -284,7 +284,7 @@ export function HomeAbout() {
             </p>
 
             {/* Benefit cards */}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {BENEFITS.map((b) => (
                 <BenefitCard key={b.title} {...b} isInView={isInView} />
               ))}
