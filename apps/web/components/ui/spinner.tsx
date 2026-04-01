@@ -2,7 +2,6 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useMemo, useState } from "react";
-import { LottieLoader } from "./lottie-loader";
 
 type SpinnerProps = {
   label?: string;
@@ -59,8 +58,14 @@ export function Spinner({ label = "Loading your workspace...", centered = false,
         <div className="flex flex-col items-center text-center">
           <div className="relative mb-6 flex h-40 w-40 items-center justify-center rounded-3xl border border-white/60 bg-gradient-to-br from-white to-slate-100 shadow-inner sm:h-44 sm:w-44 dark:border-slate-700 dark:from-slate-800 dark:to-slate-900">
             <div className="pointer-events-none absolute -inset-1 rounded-[1.2rem] bg-gradient-to-br from-brand-200/35 to-cyan-300/35 blur-md dark:from-brand-500/20 dark:to-cyan-500/20" />
-            <div className="relative h-28 w-28 overflow-hidden rounded-2xl sm:h-32 sm:w-32">
-              <LottieLoader className="h-full w-full scale-[1.35]" />
+            <div className="relative flex h-28 w-28 items-center justify-center sm:h-32 sm:w-32">
+              <div className="absolute inset-0 rounded-full border-4 border-brand-100/90 dark:border-slate-700" />
+              <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-brand-500 border-r-cyan-400 animate-spin" />
+              <div className="absolute inset-5 rounded-full bg-gradient-to-br from-brand-100 via-white to-cyan-100 dark:from-slate-800 dark:via-slate-900 dark:to-slate-800" />
+              <div className="absolute h-3 w-3 rounded-full bg-brand-500 shadow-[0_0_22px_rgba(99,102,241,0.55)] animate-pulse" />
+              <div className="absolute bottom-2 rounded-full bg-white/80 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.28em] text-slate-500 dark:bg-slate-800/80 dark:text-slate-300">
+                loading
+              </div>
             </div>
           </div>
 

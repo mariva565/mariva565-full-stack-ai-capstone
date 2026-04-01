@@ -32,9 +32,9 @@ export function EditCourseModal({
       <div
         role="dialog"
         aria-modal="true"
-        className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-slate-700 dark:bg-slate-900"
+        className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 font-poppins shadow-2xl dark:border-cyan-400/10 dark:bg-[radial-gradient(circle_at_82%_16%,rgba(226,232,240,0.14)_0%,rgba(148,163,184,0.08)_18%,rgba(15,23,42,0)_42%),linear-gradient(160deg,rgba(16,24,48,0.95)_0%,rgba(8,16,38,0.95)_58%,rgba(5,12,28,0.98)_100%)]"
       >
-        <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
+        <h2 className="dashboard-panel-title text-xl">
           Edit course
         </h2>
         <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">

@@ -84,7 +84,8 @@ export function MaterialEditorForm({
             Link / File URL
           </label>
           <input
-            type="url"
+            type="text"
+            inputMode="url"
             value={fileUrl}
             onChange={(event) => onFileUrlChange(event.target.value)}
             placeholder="https://..."

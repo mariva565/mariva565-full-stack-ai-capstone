@@ -3,6 +3,7 @@ import { db } from "../../../../../lib/db";
 import { materials } from "../../../../../../../drizzle/schema";
 import { requireAuth } from "../../../../../lib/api-utils";
 import { logActivity } from "../../../../../lib/activity";
+import { normalizeMaterialType, resolveMaterialTitle } from "../../../../../lib/materials";
 import { eq, desc } from "drizzle-orm";
 
 type Ctx = { params: Promise<{ id: string }> };
@@ -30,10 +31,12 @@ export async function POST(request: NextRequest, { params }: Ctx) {
   const { id } = await params;
   const body = await request.json();
   const { title, content, materialType, fileUrl, tags } = body;
+  const normalizedMaterialType = normalizeMaterialType(materialType);
+  const resolvedTitle = resolveMaterialTitle(title, content, normalizedMaterialType, fileUrl);
 
-  if (!title) {
+  if (!resolvedTitle) {
     return NextResponse.json(
-      { code: "MISSING_TITLE", message: "Title is required" },
+      { code: "MISSING_TITLE", message: "Add a title, some content, or a file/link first" },
       { status: 400 }
     );
   }
@@ -42,9 +45,9 @@ export async function POST(request: NextRequest, { params }: Ctx) {
     .insert(materials)
     .values({
       moduleId: Number(id),
-      title,
+      title: resolvedTitle,
       content: content || null,
-      materialType: materialType || "text",
+      materialType: normalizedMaterialType,
       fileUrl: fileUrl || null,
       tags: tags || null,
       createdBy: auth.user.sub,

@@ -1,9 +1,9 @@
 "use client";
 
-import Image from "next/image";
-import Link from "next/link";
 import { motion } from "framer-motion";
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
+import { AuthHeaderControls } from "./auth-header-controls";
+import { AuthCardMascot, AuthFloatingMascot } from "./auth-mascot";
 
 interface AuthLayoutProps {
   children: ReactNode;
@@ -11,207 +11,31 @@ interface AuthLayoutProps {
 }
 
 export function AuthLayout({ children, variant = "login" }: AuthLayoutProps) {
-  const isRegister = variant === "register";
-  const glowColor = isRegister
-    ? "rgba(236, 72, 153, 0.15)"
-    : "rgba(99, 102, 241, 0.15)";
-  const glowHover = isRegister
-    ? "0 15px 35px rgba(236, 72, 153, 0.25)"
-    : "0 15px 35px rgba(99, 102, 241, 0.25)";
-
-  // v1 mascots: login uses robot-logo, register uses robot-happy
-  const cardMascot = isRegister
-    ? "/assets/v1/icons/robot-happy.png"
-    : "/assets/v1/icons/robot-logo.png";
-
-  // Floating mascot uses mascot-robot (same as v1)
-  const floatingMascot = "/assets/v1/mascot-robot.png";
-
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-12">
-      {/* Back to Home link */}
-      <motion.div
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.4, delay: 0.3 }}
-        className="fixed left-6 top-6 z-50"
-      >
-        <Link
-          href="/"
-          className="group flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold text-slate-600 transition-all hover:-translate-x-0.5 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400"
-          style={{
-            background: "rgba(255, 255, 255, 0.5)",
-            backdropFilter: "blur(12px)",
-            border: "1px solid rgba(255, 255, 255, 0.4)",
-          }}
-        >
-          <span className="transition-transform group-hover:-translate-x-0.5">&larr;</span>
-          Back to Home
-        </Link>
-      </motion.div>
+    <div className="relative flex min-h-[100svh] items-center justify-center overflow-x-hidden px-4 py-4 sm:px-6 sm:py-6">
+      <div className="pointer-events-none absolute inset-0 -z-20 bg-[linear-gradient(180deg,#f8fafc_0%,#eef2ff_54%,#fdf2f8_100%)] dark:bg-[linear-gradient(180deg,#0f172a_0%,#1e1b4b_52%,#111827_100%)]" />
+      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+        <div className="absolute -left-20 top-[12%] h-72 w-72 rounded-full bg-indigo-300/20 blur-3xl dark:bg-indigo-500/20" />
+        <div className="absolute left-[12%] bottom-[12%] h-56 w-56 rounded-full bg-cyan-200/25 blur-3xl dark:bg-cyan-500/15" />
+        <div className="absolute -right-16 top-[18%] h-80 w-80 rounded-full bg-fuchsia-200/25 blur-3xl dark:bg-fuchsia-500/15" />
+        <div className="absolute right-[10%] bottom-[10%] h-64 w-64 rounded-full bg-violet-200/20 blur-3xl dark:bg-violet-500/15" />
+      </div>
 
-      {/* Animated mesh gradient background */}
-      <div
-        className="pointer-events-none absolute inset-0 -z-10"
-        style={{
-          background: `
-            radial-gradient(ellipse 80% 60% at 20% 30%, rgba(99, 102, 241, 0.25), transparent),
-            radial-gradient(ellipse 70% 50% at 80% 70%, rgba(165, 180, 252, 0.2), transparent),
-            linear-gradient(180deg, #f8fafc 0%, #eef2ff 50%, #f5f3ff 100%)
-          `,
-          backgroundSize: "200% 200%",
-          animation: "meshGradient 20s ease infinite",
-        }}
-      />
+      <AuthHeaderControls />
 
-      {/* Dark mode background */}
-      <div
-        className="pointer-events-none absolute inset-0 -z-10 hidden dark:block"
-        style={{
-          background: `
-            radial-gradient(ellipse 80% 60% at 20% 30%, rgba(49, 46, 129, 0.4), transparent),
-            radial-gradient(ellipse 70% 50% at 80% 70%, rgba(30, 27, 75, 0.3), transparent),
-            linear-gradient(180deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%)
-          `,
-          backgroundSize: "200% 200%",
-          animation: "meshGradient 20s ease infinite",
-        }}
-      />
-
-      {/* Glassmorphism auth card */}
       <motion.div
         initial={{ opacity: 0, y: 30, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        className="relative w-full max-w-[480px] rounded-[2.5rem] p-8 sm:p-10"
-        style={{
-          background: "rgba(255, 255, 255, 0.4)",
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)",
-          border: "1px solid rgba(255, 255, 255, 0.6)",
-          boxShadow: "0 10px 40px -10px rgba(0, 0, 0, 0.1)",
-        }}
+        className="relative w-full max-w-[440px] rounded-[2.25rem] border border-white/60 bg-white/55 p-6 shadow-[0_20px_50px_-18px_rgba(15,23,42,0.2)] backdrop-blur-[20px] dark:border-white/10 dark:bg-slate-900/55 sm:p-7 lg:p-8"
       >
-        {/* Dark mode card override */}
-        <div
-          className="pointer-events-none absolute inset-0 hidden rounded-[2.5rem] dark:block"
-          style={{
-            background: "rgba(15, 23, 42, 0.5)",
-            border: "1px solid rgba(255, 255, 255, 0.1)",
-          }}
-        />
+        <AuthCardMascot variant={variant} />
 
-        {/* Mascot logo */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.5 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, delay: 0.2, type: "spring", stiffness: 200 }}
-          className="relative z-10 mx-auto mb-6 flex justify-center"
-        >
-          <div
-            className="group relative overflow-hidden rounded-3xl transition-all duration-300 hover:scale-105 hover:-translate-y-1"
-            style={{
-              width: 130,
-              height: 130,
-              border: "4px solid rgba(255, 255, 255, 0.8)",
-              boxShadow: `0 15px 35px ${glowColor}`,
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.boxShadow = glowHover;
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.boxShadow = `0 15px 35px ${glowColor}`;
-            }}
-          >
-            <Image
-              src={cardMascot}
-              alt="StudyHub Mascot"
-              width={130}
-              height={130}
-              className="object-cover"
-              priority
-            />
-          </div>
-        </motion.div>
-
-        {/* Form content */}
-        <div className="relative z-10">
-          {children}
-        </div>
+        <div className="relative z-10">{children}</div>
       </motion.div>
 
-      {/* Floating mascot bottom-right (desktop only) */}
-      <div className="pointer-events-none fixed bottom-5 right-5 z-50 hidden lg:block">
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.8 }}
-          className="relative"
-        >
-          {/* Speech bubble */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0, rotate: -15 }}
-            animate={{ opacity: 1, scale: 1, rotate: 0 }}
-            transition={{
-              duration: 0.7,
-              delay: 1.2,
-              type: "spring",
-              stiffness: 150,
-            }}
-            className="absolute -top-[75px] right-[100px] z-10 max-w-[220px] min-w-[160px] rounded-[50px_50px_50px_10px] px-7 py-4 text-center"
-            style={{
-              background: "linear-gradient(135deg, #fef3c7, #fce7f3, #e0e7ff)",
-              border: "3px solid #6366f1",
-              boxShadow: "5px 5px 0px #ec4899, inset 0 2px 4px rgba(255,255,255,0.6)",
-              animation: "wiggle 3s ease-in-out infinite",
-            }}
-          >
-            <p
-              className="font-shantell text-lg font-extrabold leading-snug"
-              style={{
-                background: "linear-gradient(135deg, #6366f1, #ec4899)",
-                WebkitBackgroundClip: "text",
-                backgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}
-            >
-              Здравей!
-              <br />
-              Приятно учене!
-            </p>
-            <span className="absolute -top-2 right-4 animate-bounce text-lg">✨</span>
-          </motion.div>
-
-          {/* Floating mascot image */}
-          <div
-            className="overflow-hidden rounded-3xl"
-            style={{
-              width: 130,
-              height: 130,
-              border: "3px solid rgba(255, 255, 255, 0.3)",
-              backdropFilter: "blur(12px)",
-              boxShadow: `0 0 30px ${glowColor}, 0 10px 30px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.4)`,
-              animation: "authFloat 3s ease-in-out infinite",
-            }}
-          >
-            <Image
-              src={floatingMascot}
-              alt="StudyHub Mascot"
-              width={130}
-              height={130}
-              className="object-cover"
-            />
-          </div>
-
-          {/* Glow under mascot */}
-          <div
-            className="absolute -bottom-3 left-1/2 -z-10 h-8 w-24 -translate-x-1/2 rounded-full"
-            style={{
-              background: "radial-gradient(ellipse, rgba(6, 182, 212, 0.6), transparent 70%)",
-              animation: "authPulse 2s ease-in-out infinite",
-            }}
-          />
-        </motion.div>
+      <div className="hidden lg:block">
+        <AuthFloatingMascot variant={variant} placement="desktop" />
       </div>
     </div>
   );

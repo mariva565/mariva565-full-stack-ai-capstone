@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import Link from "next/link";
 
 import { MaterialTypePill } from "../materials/material-type-pill";
@@ -22,10 +23,14 @@ export function PinnedMaterialItem({ item }: PinnedMaterialItemProps) {
   const tags = parseTags(item.tags);
 
   return (
-    <li className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-800">
+    <motion.li
+      whileHover={{ y: -5 }}
+      transition={{ type: "spring", stiffness: 260, damping: 22 }}
+      className="rounded-[1.35rem] border border-slate-200/80 bg-white/92 p-4 shadow-sm transition hover:shadow-[0_18px_45px_rgba(15,23,42,0.08)] dark:border-cyan-400/10 dark:bg-slate-950/55 dark:hover:shadow-[0_20px_45px_rgba(6,182,212,0.06)]"
+    >
       <Link
         href={`/materials/${item.materialId}`}
-        className="text-sm font-semibold text-slate-900 hover:text-brand-600 dark:text-white dark:hover:text-brand-100"
+        className="text-base font-semibold text-slate-900 transition-colors hover:text-brand-600 dark:text-white dark:hover:text-brand-100"
       >
         {item.materialTitle}
       </Link>
@@ -41,6 +46,6 @@ export function PinnedMaterialItem({ item }: PinnedMaterialItemProps) {
       </div>
 
       <TagList tags={tags} />
-    </li>
+    </motion.li>
   );
 }

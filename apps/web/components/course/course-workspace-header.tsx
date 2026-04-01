@@ -47,8 +47,11 @@ export function CourseWorkspaceHeader({
       <div className="mt-4 rounded-2xl border border-slate-200 bg-gradient-to-br from-white via-slate-50 to-brand-50 p-6 shadow-sm dark:border-slate-700 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800">
         <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{title}</h1>
         <p className="mt-2 max-w-2xl text-sm text-slate-600 dark:text-slate-300">
-          {description || "Organize your learning materials by modules, tags, and pin status."}
+          {description || "Organize your study notes, links, and files by modules, tags, and pin status."}
         </p>
+        <div className="mt-4 rounded-2xl border border-brand-200/70 bg-white/70 px-4 py-3 text-sm text-slate-600 shadow-sm backdrop-blur dark:border-brand-500/20 dark:bg-slate-800/60 dark:text-slate-300">
+          Text notes are fully usable right now. Create a module, write in <span className="font-semibold text-slate-900 dark:text-white">Content</span>, and save the material even if file uploads are still postponed.
+        </div>
 
         <div className="mt-5 grid gap-3 lg:grid-cols-[2fr_1fr]">
           <input

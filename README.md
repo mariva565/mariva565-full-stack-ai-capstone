@@ -95,12 +95,13 @@ MVP:
 - Courses -> modules -> materials hierarchy
 - Favorites + activity logging
 - Admin panel (users + moderation + logs)
+- Real profile avatar uploads via Cloudflare R2
 - 7 responsive web screens
 - 3 mobile screens
 
 Planned (Advanced Features):
 - **Progress Tracking:** Status-based workflow with dashboard completion metrics.
-- **Cloudflare R2:** File/Image uploads (Mobile camera integration).
+- **Cloudflare R2:** Extend uploads beyond avatars (materials, mobile camera integration).
 - **Sharing & Permissions:** Granular access for materials/notes.
 - **AI Integration:** Summarize/Quiz/Chat powered by Gemini API.
 - **Advanced Security:** 2FA and session hardening.

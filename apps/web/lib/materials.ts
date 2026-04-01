@@ -13,6 +13,20 @@ const MATERIAL_TYPE_ALIASES: Record<string, MaterialType> = {
 };
 
 const TAG_SPLIT_REGEX = /[,;]/;
+const TITLE_PREVIEW_MAX_LENGTH = 80;
+
+function trimToNull(value: string | null | undefined): string | null {
+  const trimmed = value?.trim();
+  return trimmed ? trimmed : null;
+}
+
+function shortenTitle(value: string): string {
+  if (value.length <= TITLE_PREVIEW_MAX_LENGTH) {
+    return value;
+  }
+
+  return `${value.slice(0, TITLE_PREVIEW_MAX_LENGTH - 1).trimEnd()}...`;
+}
 
 export function normalizeMaterialType(
   value: string | null | undefined
@@ -35,6 +49,33 @@ export function materialTypeLabel(type: MaterialType): string {
   }
 
   return "Note";
+}
+
+export function resolveMaterialTitle(
+  title: string | null | undefined,
+  content: string | null | undefined,
+  materialType: string | null | undefined,
+  fileUrl: string | null | undefined
+): string | null {
+  const explicitTitle = trimToNull(title);
+  if (explicitTitle) {
+    return explicitTitle;
+  }
+
+  const firstLine = content
+    ?.split(/\r?\n/)
+    .map((line) => line.trim().replace(/\s+/g, " "))
+    .find(Boolean);
+
+  if (firstLine) {
+    return shortenTitle(firstLine);
+  }
+
+  if (!trimToNull(fileUrl)) {
+    return null;
+  }
+
+  return normalizeMaterialType(materialType) === "file" ? "Uploaded file" : "Saved link";
 }
 
 export function parseTags(tags: string | null | undefined): string[] {

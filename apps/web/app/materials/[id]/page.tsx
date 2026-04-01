@@ -111,7 +111,11 @@ export default function MaterialPage() {
 
   async function handleSave(event: FormEvent) {
     event.preventDefault();
-    if (!title.trim()) {
+    const trimmedTitle = title.trim();
+    const trimmedContent = content.trim();
+    const trimmedFileUrl = fileUrl.trim();
+
+    if (!trimmedTitle) {
       pushToast("Title is required.", "error");
       return;
     }
@@ -121,10 +125,10 @@ export default function MaterialPage() {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        title,
-        content,
+        title: trimmedTitle,
+        content: trimmedContent || null,
         materialType,
-        fileUrl: fileUrl || null,
+        fileUrl: trimmedFileUrl || null,
         tags: prepareTagsFromInput(tagsInput),
       }),
     });

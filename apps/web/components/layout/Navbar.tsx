@@ -34,6 +34,7 @@ export function Navbar() {
               alt="StudyHub Logo"
               width={75}
               height={75}
+              priority
               className="relative z-10 object-contain animate-mascot-float drop-shadow-[0_2px_8px_rgba(99,102,241,0.2)] group-hover:scale-[1.15] group-hover:rotate-[-8deg] transition-all duration-[400ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:drop-shadow-[0_6px_20px_rgba(99,102,241,0.35)] group-hover:brightness-110"
             />
             {/* Mascot glow on hover */}

@@ -12,6 +12,7 @@ type ModuleListProps = {
   favoriteMaterialIds: Set<number>;
   onToggleCreateForm: (moduleId: number) => void;
   onDraftChange: (field: keyof MaterialDraft, value: string) => void;
+  onRenameModule: (moduleId: number, title: string) => Promise<boolean>;
   onSubmitMaterial: (moduleId: number, event: FormEvent) => void;
   onDeleteModule: (moduleId: number) => void;
   onTogglePin: (materialId: number, isPinned: boolean) => void;
@@ -26,6 +27,7 @@ export function ModuleList({
   favoriteMaterialIds,
   onToggleCreateForm,
   onDraftChange,
+  onRenameModule,
   onSubmitMaterial,
   onDeleteModule,
   onTogglePin,
@@ -49,6 +51,7 @@ export function ModuleList({
           favoriteMaterialIds={favoriteMaterialIds}
           onToggleCreateForm={onToggleCreateForm}
           onDraftChange={onDraftChange}
+          onRenameModule={onRenameModule}
           onSubmitMaterial={onSubmitMaterial}
           onDeleteModule={onDeleteModule}
           onTogglePin={onTogglePin}

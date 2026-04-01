@@ -5,15 +5,18 @@ type MaterialTypePillProps = {
 };
 
 const TYPE_STYLES = {
-  note: "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300",
-  link: "bg-sky-100 text-sky-800 dark:bg-sky-900/40 dark:text-sky-300",
-  file: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300",
+  note:
+    "border border-slate-200/80 bg-white/90 text-slate-600 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-300",
+  link:
+    "border border-slate-200/80 bg-white/90 text-slate-600 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-300",
+  file:
+    "border border-slate-200/80 bg-white/90 text-slate-600 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-300",
 } as const;
 
 const TYPE_DOT_STYLES = {
-  note: "bg-amber-500",
-  link: "bg-sky-500",
-  file: "bg-emerald-500",
+  note: "bg-brand-500",
+  link: "bg-cyan-500",
+  file: "bg-slate-400 dark:bg-slate-500",
 } as const;
 
 export function MaterialTypePill({ type }: MaterialTypePillProps) {

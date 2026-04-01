@@ -12,6 +12,19 @@ type MaterialRowProps = {
   onTogglePin: (materialId: number, isPinned: boolean) => void;
 };
 
+function getContentPreview(content: string | null): string | null {
+  const normalized = content?.trim().replace(/\s+/g, " ");
+  if (!normalized) {
+    return null;
+  }
+
+  if (normalized.length <= 160) {
+    return normalized;
+  }
+
+  return `${normalized.slice(0, 157).trimEnd()}...`;
+}
+
 export function MaterialRow({
   material,
   isPinned,
@@ -19,6 +32,7 @@ export function MaterialRow({
   onTogglePin,
 }: MaterialRowProps) {
   const tags = parseTags(material.tags);
+  const preview = getContentPreview(material.content);
 
   return (
     <li className="px-5 py-4">
@@ -38,6 +52,11 @@ export function MaterialRow({
               </span>
             )}
           </div>
+          {preview && (
+            <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">
+              {preview}
+            </p>
+          )}
           <TagList tags={tags} />
         </div>
 

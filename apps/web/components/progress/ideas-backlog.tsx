@@ -53,7 +53,10 @@ export function IdeasBacklog({ ideas, onAdd, onEdit, onPromote, onDelete, addBus
   }
 
   return (
-    <section className="rounded-xl border border-cyan-200 bg-cyan-50/60 p-5 dark:border-cyan-500/20 dark:bg-cyan-500/5">
+    <section
+      id="ideas-backlog"
+      className="rounded-xl border border-cyan-200 bg-cyan-50/60 p-5 dark:border-cyan-500/20 dark:bg-cyan-500/5"
+    >
       <div className="mb-4 flex items-center justify-between">
         <div>
           <h2 className="flex items-center gap-2 text-lg font-semibold text-slate-900 dark:text-white">

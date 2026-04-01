@@ -4,6 +4,7 @@ import { users } from "../../../../../../drizzle/schema";
 import { verifyToken } from "../../../../lib/jwt";
 import { eq } from "drizzle-orm";
 import { logActivity } from "../../../../lib/activity";
+import { deleteAvatarByUrl } from "../../../../lib/r2";
 
 export async function GET(request: NextRequest) {
   const token = request.cookies.get("token")?.value;
@@ -64,12 +65,36 @@ export async function PUT(request: NextRequest) {
     );
   }
 
-  const body = await request.json();
-  const { name, avatarUrl } = body;
+  const body = (await request.json()) as {
+    name?: string;
+    avatarUrl?: string | null;
+  };
+  const updates: { name?: string; avatarUrl?: string | null } = {};
+  const [currentUser] = await db
+    .select({ avatarUrl: users.avatarUrl })
+    .from(users)
+    .where(eq(users.id, payload.sub))
+    .limit(1);
 
-  const updates: Record<string, string> = {};
-  if (typeof name === "string" && name.trim()) updates.name = name.trim();
-  if (typeof avatarUrl === "string") updates.avatarUrl = avatarUrl;
+  if (!currentUser) {
+    return NextResponse.json(
+      { code: "USER_NOT_FOUND", message: "User not found" },
+      { status: 404 }
+    );
+  }
+
+  if (typeof body.name === "string" && body.name.trim()) {
+    updates.name = body.name.trim();
+  }
+
+  if (typeof body.avatarUrl === "string") {
+    const normalizedAvatarUrl = body.avatarUrl.trim();
+    updates.avatarUrl = normalizedAvatarUrl || null;
+  }
+
+  if (body.avatarUrl === null) {
+    updates.avatarUrl = null;
+  }
 
   if (Object.keys(updates).length === 0) {
     return NextResponse.json(
@@ -92,6 +117,18 @@ export async function PUT(request: NextRequest) {
     });
 
   await logActivity(payload.sub, "update_profile", updated.id, { fields: Object.keys(updates) });
+
+  if (
+    Object.prototype.hasOwnProperty.call(updates, "avatarUrl") &&
+    currentUser.avatarUrl &&
+    currentUser.avatarUrl !== updated.avatarUrl
+  ) {
+    try {
+      await deleteAvatarByUrl(currentUser.avatarUrl);
+    } catch (cleanupError) {
+      console.error("Failed to delete replaced avatar from R2:", cleanupError);
+    }
+  }
 
   return NextResponse.json({ user: updated });
 }
