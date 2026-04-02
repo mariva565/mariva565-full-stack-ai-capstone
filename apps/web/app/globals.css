@@ -138,14 +138,21 @@
   .dashboard-script-title,
   .dashboard-panel-title {
     @apply inline-block font-shantell font-extrabold tracking-tight;
-    background-image: linear-gradient(135deg, #0f172a 0%, #312e81 48%, #0f766e 100%);
+    background-image: linear-gradient(135deg, #434c96 0%, #6a60d9 44%, #118b86 100%);
     background-repeat: no-repeat;
     background-size: 100% 100%;
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
     color: transparent;
-    filter: drop-shadow(0 10px 24px rgba(99, 102, 241, 0.12));
+    filter:
+      drop-shadow(0 8px 20px rgba(129, 140, 248, 0.1))
+      drop-shadow(0 0 10px rgba(34, 211, 238, 0.05));
+  }
+
+  .dashboard-script-title {
+    line-height: 1.08;
+    padding-bottom: 0.12em;
   }
 
   .dark .dashboard-script-title,

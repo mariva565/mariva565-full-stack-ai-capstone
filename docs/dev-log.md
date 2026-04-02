@@ -1344,6 +1344,152 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 **Validation:**
 - `npm.cmd --workspace @studyhub/web run typecheck`
 
+### Session 59 (Navbar mascot filled from internal transparency)
+
+**Problem investigated:**
+- The silhouette-backed navbar mascot removed the patch effect, but it still looked like a photographic negative because the whole outer shape was glowing light against the dark header.
+- The real issue was the mascot asset itself: the internal transparent areas needed filling, not the outside silhouette.
+
+**What changed:**
+- `apps/web/public/assets/v1/icons/mascot-logo-navbar-filled.png`
+  - generated a new navbar-specific mascot asset by filling only the internal transparent regions of the original mascot with a soft pearl white treatment
+- `apps/web/components/navbar.tsx`
+  - switched the brand mark to the new internally filled mascot asset
+  - removed the stronger secondary glow treatment and kept only a very restrained ambient glow + shadow
+
+**Why:**
+- The mascot now reads like a normal logo on a dark surface instead of a white-outline cutout or inverted-photo effect.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 60 (Subtle navbar halo pass)
+
+**Problem investigated:**
+- After fixing the mascot transparency, the logo was finally clean, but it could still benefit from a little more separation from the dark header.
+- The user wanted to test a halo again without reintroducing the old patch or negative-photo effect.
+
+**What changed:**
+- `apps/web/components/navbar.tsx`
+  - added one restrained radial cyan-indigo halo layer behind the mascot
+  - kept the existing internal-fill asset and avoided any new white backing plate
+
+**Why:**
+- The mascot now gets a softer premium lift from the header while staying clean and natural.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 61 (Scenic navbar glow pass)
+
+**Problem investigated:**
+- The subtle halo worked, but the user wanted to explore a slightly more scenic presentation.
+
+**What changed:**
+- `apps/web/components/navbar.tsx`
+  - deepened the main halo into a richer cyan-indigo-violet bloom
+  - added two small atmospheric glow pockets to make the mascot feel a bit more stage-lit
+  - kept the mascot asset and overall silhouette unchanged
+
+**Why:**
+- The brand mark now has a touch more drama and presence without falling back into patch-like white backing.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 62 (Dashboard light-mode typography luxury pass)
+
+**Problem investigated:**
+- In light mode, the dashboard handwritten headings still started from a tone that felt too close to near-black.
+- The user wanted the font color to feel a little lighter and more luxurious, closer to the earlier softer pass.
+
+**What changed:**
+- `apps/web/app/globals.css`
+  - lightened the shared `dashboard-script-title` / `dashboard-panel-title` gradient toward softer indigo-lilac-teal tones
+  - softened the light-mode title shadow so the lettering feels less heavy
+- `apps/web/components/dashboard/dashboard-hero.tsx`
+  - softened stat-label and supporting-copy tones in light mode
+  - eased the stat number color away from hard near-black
+- `apps/web/components/dashboard/progress-widget.tsx`
+  - softened the light-mode eyebrow label and supporting-copy tone
+- `apps/web/components/dashboard/quick-idea-capture.tsx`
+  - softened the supporting-copy tone in light mode
+- `apps/web/components/dashboard/calendar-widget.tsx`
+  - softened the light-mode eyebrow label, event title, and date tones
+
+**Why:**
+- The dashboard typography now feels more polished and airy in light mode, without losing readability.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 63 (Script title descender clipping fix)
+
+**Problem investigated:**
+- The handwritten title treatment looked slightly clipped at the bottom on pages like `/profile`.
+- The issue came from the reusable script title treatment not leaving enough breathing room for descenders in the chosen font.
+
+**What changed:**
+- `apps/web/app/globals.css`
+  - added a dedicated `line-height` and a small bottom padding to `.dashboard-script-title`
+
+**Why:**
+- Titles like `My Profile` now keep their handwritten descenders visible instead of looking trimmed at the baseline.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 64 (Profile signature headline + avatar upload honesty pass)
+
+**Problem investigated:**
+- The profile experience still mixed one standard bold name treatment with the newer signature typography language.
+- Avatar upload messaging also sounded more complete than the actual state we want to communicate right now.
+
+**What changed:**
+- `apps/web/components/profile/profile-hero-card.tsx`
+  - moved the main profile hero name onto the shared signature title treatment
+  - replaced the old Cloudflare R2 upload copy with an honest “planned / not finalized yet” message
+- `apps/web/components/profile/profile-details-card.tsx`
+  - updated avatar URL helper copy to say external image links work now
+  - replaced the direct upload action block with a clear `Coming soon` state instead of pretending the flow is final
+- `apps/web/lib/profile.ts`
+  - updated the “photo missing” status description to reflect that direct photo upload is planned, while image URLs already work
+- `apps/web/app/profile/page.tsx`
+  - removed now-unused direct-upload props from the details card wiring
+
+**Why:**
+- The profile page now feels visually more unified and communicates the avatar situation honestly instead of overpromising.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 65 (Cross-chat handoff for adaptation work)
+
+**Current UI state:**
+- Dashboard and Profile already went through the stronger premium/parity adaptation passes.
+- Materials and Course Details have had parity work, but still need another refinement pass before they feel fully settled.
+- Profile typography is now aligned with the shared signature treatment.
+- Direct avatar upload is intentionally marked as planned / coming soon until we choose a reliable final solution.
+
+**Recommended next adaptation target:**
+- **First:** Course Details + Materials refinement pass
+  - revisit module sections, material rows/cards, spacing, action clarity, and empty states
+  - compare against the old product flow again, because the current pages still do not feel fully finished
+- **Second:** Admin Panel adaptation pass
+  - good next large pass after modules/materials feel truly settled
+  - should include visual polish for tabs/cards/tables plus replacing any remaining native `confirm()` flows with `ConfirmModal`
+- **Third:** Public pages follow-up: `How it works` + `Contact`
+  - these should stay visible in the handoff because they still do not exist as dedicated app-router pages
+  - they fit best as part of a later public-site adaptation / polish pass
+- **Fourth:** Sharing / `Shared with Me`
+  - still not started in the active plan
+  - strong parity win because it exists in the old product direction and adds a visible collaboration story
+- **Fifth:** Avatar upload implementation revisit
+  - only after we are ready to commit to a dependable demo-friendly upload/storage path
+
+**Recommended prompt for the next chat:**
+- `Read docs/dev-log.md and docs/implementation-plan.md and continue with the Course Details + Materials refinement pass. Start by auditing the current module/material screens against the old StudyHub flow and list the UI/UX gaps before changing code.`
+
 ### Session 55 (Navbar wordmark and mascot polish)
 
 **Problem investigated:**

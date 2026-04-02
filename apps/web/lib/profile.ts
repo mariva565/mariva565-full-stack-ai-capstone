@@ -80,9 +80,9 @@ export function getProfileStatus(hasAvatar: boolean, hasUnsavedChanges: boolean)
   }
 
   return {
-    label: "Photo missing",
-    description: "Upload a photo or paste an image URL to personalize the workspace.",
-  };
+      label: "Photo missing",
+      description: "Photo upload is planned. For now, paste an image URL or keep the initials-based avatar.",
+    };
 }
 
 export function validatePasswordChange(fields: PasswordFields): string | null {

@@ -28,14 +28,16 @@ function LogoutIcon() {
 function BrandMark() {
   return (
     <span className="relative flex h-[3.2rem] w-[3.2rem] shrink-0 items-center justify-center overflow-visible">
-      <span className="pointer-events-none absolute inset-[0.55rem] rounded-full bg-cyan-400/14 blur-[18px] transition duration-300 group-hover:bg-cyan-300/18" />
-      <span className="pointer-events-none absolute bottom-[0.42rem] h-[1.15rem] w-[1.7rem] rounded-full bg-indigo-500/12 blur-[12px] transition duration-300 group-hover:bg-indigo-400/16" />
+      <span className="pointer-events-none absolute -inset-[0.08rem] rounded-full bg-[radial-gradient(circle,rgba(34,211,238,0.18)_0%,rgba(99,102,241,0.14)_34%,rgba(168,85,247,0.08)_54%,rgba(34,211,238,0)_78%)] opacity-90 blur-[19px] transition duration-300 group-hover:opacity-100 group-hover:blur-[22px]" />
+      <span className="pointer-events-none absolute left-[0.28rem] top-[0.32rem] h-[1.05rem] w-[1.05rem] rounded-full bg-cyan-300/20 blur-[12px] transition duration-300 group-hover:bg-cyan-200/24" />
+      <span className="pointer-events-none absolute right-[0.24rem] bottom-[0.38rem] h-[1.15rem] w-[1.15rem] rounded-full bg-violet-400/16 blur-[13px] transition duration-300 group-hover:bg-violet-300/20" />
+      <span className="pointer-events-none absolute inset-[0.62rem] rounded-full bg-cyan-400/10 blur-[16px] transition duration-300 group-hover:bg-cyan-300/12" />
       <Image
-        src="/assets/v1/icons/mascot-logo-navbar.png"
+        src="/assets/v1/icons/mascot-logo-navbar-filled.png"
         alt="StudyHub mascot"
         width={70}
         height={93}
-        className="relative z-10 h-[3.05rem] w-auto object-contain drop-shadow-[0_10px_24px_rgba(15,23,42,0.18)] transition duration-300 group-hover:-translate-y-[1px] group-hover:scale-[1.02] dark:drop-shadow-[0_12px_26px_rgba(6,182,212,0.12)]"
+        className="relative z-10 h-[3.02rem] w-auto object-contain drop-shadow-[0_8px_18px_rgba(15,23,42,0.14)] transition duration-300 group-hover:-translate-y-[1px] group-hover:scale-[1.015] dark:drop-shadow-[0_10px_22px_rgba(6,182,212,0.08)]"
       />
     </span>
   );

@@ -27,10 +27,10 @@ function StatCard({ label, value }: StatCardProps) {
       transition={{ type: "spring", stiffness: 280, damping: 22 }}
       className="rounded-[1.4rem] border border-white/90 bg-white/92 px-4 py-3 shadow-[0_18px_45px_rgba(99,102,241,0.09)] backdrop-blur dark:border-white/10 dark:bg-[radial-gradient(circle_at_82%_16%,rgba(226,232,240,0.12)_0%,rgba(148,163,184,0.07)_18%,rgba(15,23,42,0)_42%),linear-gradient(160deg,rgba(15,24,48,0.9)_0%,rgba(8,16,38,0.9)_58%,rgba(5,12,28,0.94)_100%)] dark:shadow-[0_18px_45px_rgba(6,182,212,0.12)]"
     >
-      <p className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-slate-500 dark:text-cyan-100/70">
+      <p className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-slate-400 dark:text-cyan-100/70">
         {label}
       </p>
-      <p className="mt-2 text-3xl font-black text-slate-900 dark:text-white">{value}</p>
+      <p className="mt-2 text-3xl font-black text-slate-800 dark:text-white">{value}</p>
     </motion.div>
   );
 }
@@ -55,7 +55,7 @@ function HeroHeading() {
           <h1 className="dashboard-script-title text-4xl sm:text-5xl">
             Dashboard
           </h1>
-          <p className="mt-1 max-w-xl text-sm text-slate-600 dark:text-slate-300">
+          <p className="mt-1 max-w-xl text-sm text-slate-500 dark:text-slate-300">
             Welcome back. Your courses, quick ideas, and pinned study pieces now
             live in one softer, faster workspace.
           </p>

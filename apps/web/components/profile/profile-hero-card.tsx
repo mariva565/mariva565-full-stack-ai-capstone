@@ -76,7 +76,7 @@ export function ProfileHeroCard({
             ) : null}
           </div>
 
-          <h2 className="mt-6 text-3xl font-black text-slate-900 dark:text-white">{name}</h2>
+          <h2 className="dashboard-script-title mt-6 text-3xl sm:text-[2.6rem]">{name}</h2>
           <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{email}</p>
           <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-brand-500/10 px-4 py-1.5 text-sm font-semibold text-brand-700 dark:bg-brand-500/15 dark:text-brand-200">
             <ShieldIcon className="h-4 w-4" />
@@ -95,10 +95,10 @@ export function ProfileHeroCard({
         </div>
 
         <div className="mt-6 rounded-[1.5rem] border border-brand-100/80 bg-brand-50/80 p-4 text-sm text-slate-700 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-slate-200">
-          <p className="font-semibold text-slate-900 dark:text-white">Avatar uploads now go through Cloudflare R2.</p>
+          <p className="font-semibold text-slate-900 dark:text-white">Direct photo upload is planned.</p>
           <p className="mt-1 leading-6 text-slate-600 dark:text-slate-300">
-            You can upload a profile photo directly from this page or keep using an
-            external `https://` image URL when that fits better.
+            We still have not finalized a reliable upload solution, so for now the safe
+            path is an external `https://` image URL or the initials-based avatar.
           </p>
         </div>
 

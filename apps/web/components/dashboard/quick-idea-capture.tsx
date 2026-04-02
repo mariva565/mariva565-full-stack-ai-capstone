@@ -51,7 +51,7 @@ export function QuickIdeaCapture({ ideaCount, busy, onAdd }: Props) {
           <h2 className="dashboard-panel-title mt-1 text-2xl">
             Add to backlog from here
           </h2>
-          <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-300">
             Save the idea now and sort it on the full progress board later.
           </p>
         </div>

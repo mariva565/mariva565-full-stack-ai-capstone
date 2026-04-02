@@ -35,7 +35,7 @@ export function ProgressWidget({ milestones }: Props) {
       >
         <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">
+            <p className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-slate-400 dark:text-slate-400">
               Progress Board
             </p>
             <h2 className="dashboard-panel-title mt-1 text-2xl">
@@ -55,7 +55,7 @@ export function ProgressWidget({ milestones }: Props) {
         </div>
 
         {next && (
-          <p className="mt-2 truncate text-xs text-slate-500 dark:text-slate-400">
+          <p className="mt-2 truncate text-xs text-slate-400 dark:text-slate-400">
             Next: {next.title}
             {next.dueDate && (
               <span className="text-slate-400 dark:text-slate-500">

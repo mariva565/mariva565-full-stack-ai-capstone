@@ -92,13 +92,9 @@ export default function ProfilePage() {
                 roleLabel={roleLabel}
                 memberSince={memberSince}
                 saving={savingProfile}
-                uploadingAvatar={uploadingAvatar}
-                removingAvatar={removingAvatar}
                 hasChanges={hasProfileChanges}
                 onNameChange={setName}
                 onAvatarUrlChange={setAvatarUrl}
-                onAvatarUpload={handleAvatarFileChange}
-                onRemoveAvatar={handleRemoveAvatar}
                 onSubmit={handleProfileSubmit}
               />
 

@@ -1,8 +1,8 @@
 import type { ChangeEvent, FormEvent } from "react";
-import { AVATAR_FILE_ACCEPT, AVATAR_MAX_MB } from "@/lib/profile";
+import { AVATAR_MAX_MB } from "@/lib/profile";
 import { EmailIcon, UserIcon } from "../auth/auth-icons";
 import { ProfileField } from "./profile-field";
-import { CalendarIcon, CameraIcon, LinkIcon, ShieldIcon } from "./profile-icons";
+import { CalendarIcon, LinkIcon, ShieldIcon } from "./profile-icons";
 
 type ProfileDetailsCardProps = {
   name: string;
@@ -11,13 +11,9 @@ type ProfileDetailsCardProps = {
   roleLabel: string;
   memberSince: string;
   saving: boolean;
-  uploadingAvatar: boolean;
-  removingAvatar: boolean;
   hasChanges: boolean;
   onNameChange: (value: string) => void;
   onAvatarUrlChange: (value: string) => void;
-  onAvatarUpload: (event: ChangeEvent<HTMLInputElement>) => void;
-  onRemoveAvatar: () => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
 };
 
@@ -28,13 +24,9 @@ export function ProfileDetailsCard({
   roleLabel,
   memberSince,
   saving,
-  uploadingAvatar,
-  removingAvatar,
   hasChanges,
   onNameChange,
   onAvatarUrlChange,
-  onAvatarUpload,
-  onRemoveAvatar,
   onSubmit,
 }: ProfileDetailsCardProps) {
   return (
@@ -83,39 +75,21 @@ export function ProfileDetailsCard({
           autoComplete="url"
           required={false}
           onChange={(event) => onAvatarUrlChange(event.target.value)}
-          helperText="Use a direct image link. Leave blank if you prefer initials."
+          helperText="External https:// image links work today. Direct photo upload is planned."
         />
 
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-[1.4rem] border border-dashed border-slate-200 bg-slate-50/80 px-4 py-3 text-sm text-slate-600 dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-300">
           <div>
-            <p className="font-semibold text-slate-900 dark:text-white">Avatar upload</p>
+            <p className="font-semibold text-slate-900 dark:text-white">Direct photo upload</p>
             <p className="mt-1 text-xs leading-5 text-slate-500 dark:text-slate-400">
-              Upload JPG, PNG, WebP, or GIF up to {AVATAR_MAX_MB} MB.
+              Planned for a later pass. We still have not finalized a reliable upload
+              solution, so for now use the image URL field above or keep your initials.
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-2">
-            <label className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-slate-700 transition hover:-translate-y-0.5 hover:text-brand-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:text-brand-200">
-              <CameraIcon className="h-4 w-4" />
-              {uploadingAvatar ? "Uploading..." : "Upload photo"}
-              <input
-                type="file"
-                accept={AVATAR_FILE_ACCEPT}
-                className="hidden"
-                disabled={uploadingAvatar || removingAvatar}
-                onChange={onAvatarUpload}
-              />
-            </label>
-
-            <button
-              type="button"
-              onClick={onRemoveAvatar}
-              disabled={uploadingAvatar || removingAvatar || !avatarUrl}
-              className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-slate-700 transition hover:-translate-y-0.5 hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:text-red-300"
-            >
-              {removingAvatar ? "Removing..." : "Remove photo"}
-            </button>
-          </div>
+          <span className="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-slate-500 shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
+            Coming soon
+          </span>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">

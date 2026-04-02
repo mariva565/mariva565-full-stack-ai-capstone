@@ -458,6 +458,26 @@ GEMINI_API_KEY=
 | 7 | **UI компоненти** | 🟡 В процес | ConfirmModal/Toast/Spinner добавени; остават confirm() случаи в Dashboard/Admin |
 | 8 | **Mobile** | ⏳ Блокирана | Expo Go гърми на физически телефон; Android емулатор се инсталира |
 
+### Препоръчан следващ фокус
+- **1. Course Details + Materials refinement pass**
+  - Въпреки че са маркирани като parity-pass завършени, тези екрани още имат нужда от още adaptation polish.
+  - Да се мине през module sections, material rows/cards, hierarchy, spacing, title/copy tones, empty states и action clarity.
+  - Да се сравнят отново с v1 като UX поток, не само по feature checklist.
+- **2. Admin Panel adaptation pass**
+  - Голямо парче е и има смисъл да дойде след като modules/materials се усещат наистина довършени.
+  - Да се мине през tabs, cards, tables, moderation actions, empty states и destructive flows.
+  - Да се махнат оставащите native `confirm()` диалози и да се заменят с нашия `ConfirmModal`.
+- **3. Public pages follow-up: `How it works` + `Contact`**
+  - Да не изпадат от adaptation плана: в момента нямаме отделни app-router страници за тях.
+  - Да се реши дали ще са отделни routes или sections с dedicated pages, но да се пазят в handoff-а като реален follow-up.
+  - Особено подходящи са за по-късен public-site polish pass след modules/materials.
+- **4. Sharing / "Shared with Me"**
+  - Това е последната голяма v1-style parity функционалност, която още стои като `не е започната`.
+  - Изисква schema + API + UI таб/бутон, но дава много добра стойност за adaptation story-то.
+- **5. Avatar upload solution**
+  - Засега UI-то е честно маркирано като planned / coming soon.
+  - Да се върнем към него чак след като има ясен и надежден storage/upload подход за демо.
+
 ### Правила за имплементация
 - Всеки файл < 300 реда (без монолити)
 - Tailwind only, без inline styles
