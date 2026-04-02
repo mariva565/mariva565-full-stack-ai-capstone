@@ -1,248 +1,175 @@
 import { useEffect, useState, type FormEvent } from "react";
+import { motion } from "framer-motion";
+import Link from "next/link";
 
-import type { CourseMaterial } from "../../lib/course-materials";
-import { MaterialRow } from "./material-row";
+import { ArrowDownIcon, ArrowUpIcon } from "../ui/action-icons";
 
 type ModuleInfo = {
   id: number;
+  courseId: number;
   title: string;
+  description: string | null;
   orderIndex: number;
-};
-
-type MaterialDraft = {
-  title: string;
-  content: string;
-  materialType: "note" | "link" | "file";
-  fileUrl: string;
-  tags: string;
 };
 
 type ModuleSectionProps = {
   module: ModuleInfo;
-  materials: CourseMaterial[];
-  showCreateForm: boolean;
-  draft: MaterialDraft;
-  pinBusyMaterialId: number | null;
-  favoriteMaterialIds: Set<number>;
-  onToggleCreateForm: (moduleId: number) => void;
-  onDraftChange: (field: keyof MaterialDraft, value: string) => void;
-  onRenameModule: (moduleId: number, title: string) => Promise<boolean>;
-  onSubmitMaterial: (moduleId: number, event: FormEvent) => void;
+  isFirst: boolean;
+  isLast: boolean;
+  moveBusy: boolean;
+  onUpdateModule: (moduleId: number, title: string, description: string) => Promise<boolean>;
   onDeleteModule: (moduleId: number) => void;
-  onTogglePin: (materialId: number, isPinned: boolean) => void;
+  onMoveModule: (moduleId: number, direction: "up" | "down") => void;
 };
 
 export function ModuleSection({
   module,
-  materials,
-  showCreateForm,
-  draft,
-  pinBusyMaterialId,
-  favoriteMaterialIds,
-  onToggleCreateForm,
-  onDraftChange,
-  onRenameModule,
-  onSubmitMaterial,
+  isFirst,
+  isLast,
+  moveBusy,
+  onUpdateModule,
   onDeleteModule,
-  onTogglePin,
+  onMoveModule,
 }: ModuleSectionProps) {
-  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [isEditingDetails, setIsEditingDetails] = useState(false);
   const [titleDraft, setTitleDraft] = useState(module.title);
+  const [descriptionDraft, setDescriptionDraft] = useState(module.description ?? "");
   const [renameBusy, setRenameBusy] = useState(false);
-  const submitLabel = draft.materialType === "note" ? "Save note" : "Create material";
 
   useEffect(() => {
     setTitleDraft(module.title);
-  }, [module.title]);
+    setDescriptionDraft(module.description ?? "");
+  }, [module.description, module.title]);
 
   async function handleRenameSubmit(event: FormEvent) {
     event.preventDefault();
     setRenameBusy(true);
-    const success = await onRenameModule(module.id, titleDraft);
+    const success = await onUpdateModule(module.id, titleDraft, descriptionDraft);
     setRenameBusy(false);
 
     if (success) {
-      setIsEditingTitle(false);
+      setIsEditingDetails(false);
     }
   }
 
   return (
-    <section className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
-      <header className="flex items-start justify-between gap-3 border-b border-slate-200 px-5 py-4 dark:border-slate-700">
-        {isEditingTitle ? (
-          <form onSubmit={handleRenameSubmit} className="min-w-0 flex-1 space-y-2">
-            <input
-              type="text"
-              value={titleDraft}
-              onChange={(event) => setTitleDraft(event.target.value)}
-              className="block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-900 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-slate-600 dark:bg-slate-800 dark:text-white"
-              placeholder="Module title"
-            />
-            <div className="flex flex-wrap gap-2">
-              <button
-                type="submit"
-                disabled={renameBusy}
-                className="rounded-lg bg-brand-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {renameBusy ? "Saving..." : "Save name"}
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setIsEditingTitle(false);
-                  setTitleDraft(module.title);
-                }}
-                className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-700"
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
-        ) : (
-          <div>
-            <h2 className="font-semibold text-slate-900 dark:text-white">{module.title}</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400">Module #{module.orderIndex + 1}</p>
-          </div>
-        )}
+    <motion.article
+      whileHover={{ y: -6 }}
+      transition={{ type: "spring", stiffness: 260, damping: 22 }}
+      className="group relative overflow-hidden rounded-[1.8rem] border border-slate-200/80 bg-[linear-gradient(160deg,rgba(255,255,255,0.96)_0%,rgba(248,250,252,0.95)_58%,rgba(238,242,255,0.92)_100%)] p-5 shadow-[0_24px_55px_rgba(15,23,42,0.08)] dark:border-cyan-400/10 dark:bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.12)_0%,rgba(34,211,238,0)_28%),linear-gradient(160deg,rgba(15,23,42,0.97)_0%,rgba(9,17,34,0.96)_55%,rgba(6,10,24,0.98)_100%)]"
+    >
+      <div className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-brand-300/70 to-transparent dark:via-cyan-300/70" />
+      <div className="pointer-events-none absolute right-0 top-0 h-24 w-24 rounded-full bg-brand-100/90 blur-3xl transition duration-300 group-hover:scale-110 dark:bg-cyan-500/10" />
 
-        <div className="flex gap-2">
-          {!isEditingTitle && (
+      <div className="relative flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
+        <div className="min-w-0 flex-1">
+          <div className="flex items-start gap-4">
+            <div className="flex h-12 w-12 flex-none items-center justify-center rounded-2xl bg-gradient-to-br from-white via-brand-50 to-cyan-50 text-sm font-black text-brand-600 shadow-sm ring-1 ring-brand-100 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800 dark:text-cyan-100 dark:ring-cyan-400/10">
+              {String(module.orderIndex + 1).padStart(2, "0")}
+            </div>
+
+            <div className="min-w-0 flex-1">
+              <p className="text-[0.68rem] font-semibold uppercase tracking-[0.28em] text-slate-400 dark:text-slate-500">
+                Module
+              </p>
+              {isEditingDetails ? (
+                <form onSubmit={handleRenameSubmit} className="mt-2 space-y-3">
+                  <input
+                    type="text"
+                    value={titleDraft}
+                    onChange={(event) => setTitleDraft(event.target.value)}
+                    className="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-200/50 dark:border-slate-700 dark:bg-slate-950/70 dark:text-white dark:focus:border-brand-400 dark:focus:ring-brand-500/20"
+                    placeholder="Module title"
+                  />
+                  <textarea
+                    value={descriptionDraft}
+                    onChange={(event) => setDescriptionDraft(event.target.value)}
+                    rows={3}
+                    className="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm leading-6 text-slate-700 outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-200/50 dark:border-slate-700 dark:bg-slate-950/70 dark:text-slate-200 dark:focus:border-brand-400 dark:focus:ring-brand-500/20"
+                    placeholder="Optional module description"
+                  />
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      type="submit"
+                      disabled={renameBusy}
+                      className="rounded-full bg-slate-900 px-4 py-2 text-xs font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
+                    >
+                      {renameBusy ? "Saving..." : "Save changes"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsEditingDetails(false);
+                        setTitleDraft(module.title);
+                        setDescriptionDraft(module.description ?? "");
+                      }}
+                      className="rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-600 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                <>
+                  <h2 className="dashboard-script-title mt-2 block max-w-3xl text-[clamp(1.55rem,2.35vw,2rem)] leading-[1.03]">
+                    {module.title}
+                  </h2>
+                  <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-300">
+                    {module.description?.trim() || "Open this module to manage its materials in a dedicated workspace instead of mixing everything inside the course page."}
+                  </p>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap gap-2 xl:justify-end">
+          <Link
+            href={`/modules/${module.id}`}
+            className="rounded-full bg-[linear-gradient(135deg,#6366f1_0%,#8b5cf6_55%,#06b6d4_100%)] px-4 py-2 text-sm font-semibold text-white shadow-[0_16px_35px_rgba(99,102,241,0.22)] transition hover:-translate-y-0.5 hover:shadow-[0_20px_45px_rgba(99,102,241,0.28)]"
+          >
+            Open materials
+          </Link>
+          {!isEditingDetails ? (
             <button
               type="button"
-              onClick={() => setIsEditingTitle(true)}
-              className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-700"
+              onClick={() => setIsEditingDetails(true)}
+              className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
             >
-              Rename
+              Edit details
             </button>
-          )}
+          ) : null}
           <button
             type="button"
-            onClick={() => onToggleCreateForm(module.id)}
-            className="rounded-lg border border-brand-300 px-3 py-1.5 text-xs font-semibold text-brand-700 hover:bg-brand-50 dark:border-brand-500/40 dark:text-brand-200 dark:hover:bg-brand-900/30"
+            disabled={moveBusy || isFirst}
+            onClick={() => onMoveModule(module.id, "up")}
+            title="Move module up"
+            aria-label="Move module up"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 text-slate-500 transition hover:-translate-y-0.5 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-45 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
           >
-            {showCreateForm ? "Close form" : "+ Material"}
+            <ArrowUpIcon />
+          </button>
+          <button
+            type="button"
+            disabled={moveBusy || isLast}
+            onClick={() => onMoveModule(module.id, "down")}
+            title="Move module down"
+            aria-label="Move module down"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 text-slate-500 transition hover:-translate-y-0.5 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-45 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+          >
+            <ArrowDownIcon />
           </button>
           <button
             type="button"
             onClick={() => onDeleteModule(module.id)}
-            className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-50 dark:border-red-800 dark:text-red-300 dark:hover:bg-red-900/30"
+            className="rounded-full border border-red-200 px-4 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-50 dark:border-red-900/70 dark:text-red-300 dark:hover:bg-red-950/40"
           >
             Delete
           </button>
         </div>
-      </header>
-
-      {showCreateForm && (
-        <form
-          onSubmit={(event) => onSubmitMaterial(module.id, event)}
-          className="space-y-3 border-b border-slate-200 bg-slate-50 px-5 py-4 dark:border-slate-700 dark:bg-slate-900/40"
-        >
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div>
-              <label className="block text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-300">
-                Title
-              </label>
-              <input
-                type="text"
-                value={draft.title}
-                onChange={(event) => onDraftChange("title", event.target.value)}
-                className="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-slate-600 dark:bg-slate-800 dark:text-white"
-                placeholder="Optional for quick notes"
-              />
-              <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">
-                If you leave this empty, we use the first line from Content as the saved title.
-              </p>
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-300">
-                Type
-              </label>
-              <select
-                value={draft.materialType}
-                onChange={(event) => onDraftChange("materialType", event.target.value)}
-                className="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-slate-600 dark:bg-slate-800 dark:text-white"
-              >
-                <option value="note">Note</option>
-                <option value="link">Link</option>
-                <option value="file">File</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div>
-              <label className="block text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-300">
-                Tags
-              </label>
-              <input
-                type="text"
-                value={draft.tags}
-                onChange={(event) => onDraftChange("tags", event.target.value)}
-                className="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-500"
-                placeholder="react, hooks, async"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-300">
-                Link / File URL
-              </label>
-              <input
-                type="text"
-                inputMode="url"
-                value={draft.fileUrl}
-                onChange={(event) => onDraftChange("fileUrl", event.target.value)}
-                className="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-500"
-                placeholder="https://..."
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-300">
-              Content
-            </label>
-            <textarea
-              rows={4}
-              value={draft.content}
-              onChange={(event) => onDraftChange("content", event.target.value)}
-              className="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-500"
-              placeholder="Quick summary or key points..."
-            />
-            <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">
-              This text is what gets stored in Neon as the note content.
-            </p>
-          </div>
-
-          <button
-            type="submit"
-            className="rounded-lg bg-brand-600 px-3 py-2 text-sm font-semibold text-white hover:bg-brand-700"
-          >
-            {submitLabel}
-          </button>
-        </form>
-      )}
-
-      {materials.length === 0 ? (
-        <p className="px-5 py-4 text-sm text-slate-500 dark:text-slate-400">
-          No materials for the current filter.
-        </p>
-      ) : (
-        <ul className="divide-y divide-slate-100 dark:divide-slate-700">
-          {materials.map((material) => (
-            <MaterialRow
-              key={material.id}
-              material={material}
-              isPinned={favoriteMaterialIds.has(material.id)}
-              pinBusy={pinBusyMaterialId === material.id}
-              onTogglePin={onTogglePin}
-            />
-          ))}
-        </ul>
-      )}
-    </section>
+      </div>
+    </motion.article>
   );
 }
 
-export type { MaterialDraft, ModuleInfo };
+export type { ModuleInfo };

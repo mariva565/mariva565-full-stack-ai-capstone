@@ -42,6 +42,7 @@ export const modules = pgTable("modules", {
     .notNull()
     .references(() => courses.id, { onDelete: "cascade" }),
   title: varchar("title", { length: 255 }).notNull(),
+  description: text("description"),
   orderIndex: integer("order_index").notNull().default(0),
   createdBy: integer("created_by")
     .notNull()

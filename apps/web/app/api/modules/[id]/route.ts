@@ -1,11 +1,41 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "../../../../lib/db";
-import { modules } from "../../../../../../drizzle/schema";
+import { courses, modules } from "../../../../../../drizzle/schema";
 import { requireAuth } from "../../../../lib/api-utils";
 import { logActivity } from "../../../../lib/activity";
 import { eq, and } from "drizzle-orm";
 
 type Ctx = { params: Promise<{ id: string }> };
+
+// GET /api/modules/:id
+export async function GET(request: NextRequest, { params }: Ctx) {
+  const auth = await requireAuth(request);
+  if ("error" in auth) return auth.error;
+
+  const { id } = await params;
+  const [result] = await db
+    .select({
+      module: modules,
+      course: {
+        id: courses.id,
+        title: courses.title,
+        description: courses.description,
+      },
+    })
+    .from(modules)
+    .innerJoin(courses, eq(modules.courseId, courses.id))
+    .where(eq(modules.id, Number(id)))
+    .limit(1);
+
+  if (!result) {
+    return NextResponse.json(
+      { code: "NOT_FOUND", message: "Module not found" },
+      { status: 404 }
+    );
+  }
+
+  return NextResponse.json(result);
+}
 
 // PUT /api/modules/:id
 export async function PUT(request: NextRequest, { params }: Ctx) {
@@ -14,12 +44,13 @@ export async function PUT(request: NextRequest, { params }: Ctx) {
 
   const { id } = await params;
   const body = await request.json();
-  const { title, orderIndex } = body;
+  const { title, description, orderIndex } = body;
 
   const [updated] = await db
     .update(modules)
     .set({
       ...(title !== undefined && { title }),
+      ...(description !== undefined && { description }),
       ...(orderIndex !== undefined && { orderIndex }),
     })
     .where(and(eq(modules.id, Number(id)), eq(modules.createdBy, auth.user.sub)))
@@ -32,7 +63,10 @@ export async function PUT(request: NextRequest, { params }: Ctx) {
     );
   }
 
-  await logActivity(auth.user.sub, "update_module", updated.id, { title: updated.title });
+  await logActivity(auth.user.sub, "update_module", updated.id, {
+    title: updated.title,
+    description: updated.description,
+  });
 
   return NextResponse.json({ module: updated });
 }

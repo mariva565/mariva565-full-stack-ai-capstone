@@ -1,60 +1,43 @@
-import type { FormEvent } from "react";
-
-import type { CourseMaterial } from "../../lib/course-materials";
-import { ModuleSection, type MaterialDraft, type ModuleInfo } from "./module-section";
+import { ModuleSection, type ModuleInfo } from "./module-section";
 
 type ModuleListProps = {
   modules: ModuleInfo[];
-  materialsByModule: Record<number, CourseMaterial[]>;
-  activeMaterialFormModuleId: number | null;
-  materialDraft: MaterialDraft;
-  pinBusyMaterialId: number | null;
-  favoriteMaterialIds: Set<number>;
-  onToggleCreateForm: (moduleId: number) => void;
-  onDraftChange: (field: keyof MaterialDraft, value: string) => void;
-  onRenameModule: (moduleId: number, title: string) => Promise<boolean>;
-  onSubmitMaterial: (moduleId: number, event: FormEvent) => void;
+  movingModuleId: number | null;
+  onUpdateModule: (moduleId: number, title: string, description: string) => Promise<boolean>;
   onDeleteModule: (moduleId: number) => void;
-  onTogglePin: (materialId: number, isPinned: boolean) => void;
+  onMoveModule: (moduleId: number, direction: "up" | "down") => void;
 };
 
 export function ModuleList({
   modules,
-  materialsByModule,
-  activeMaterialFormModuleId,
-  materialDraft,
-  pinBusyMaterialId,
-  favoriteMaterialIds,
-  onToggleCreateForm,
-  onDraftChange,
-  onRenameModule,
-  onSubmitMaterial,
+  movingModuleId,
+  onUpdateModule,
   onDeleteModule,
-  onTogglePin,
+  onMoveModule,
 }: ModuleListProps) {
   return (
     <div className="mt-6 space-y-4">
-      {modules.length === 0 && (
-        <p className="rounded-xl border border-slate-200 bg-white px-5 py-4 text-sm text-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400">
-          No modules yet. Create your first module to start adding materials.
-        </p>
-      )}
+      {modules.length === 0 ? (
+        <div className="rounded-[1.8rem] border border-dashed border-slate-300/80 bg-white/75 px-6 py-8 text-center shadow-sm backdrop-blur dark:border-slate-700 dark:bg-slate-900/55">
+          <p className="text-lg font-semibold text-slate-900 dark:text-white">
+            No modules yet
+          </p>
+          <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+            Start with your first module, then open it to add notes, links, and file references.
+          </p>
+        </div>
+      ) : null}
 
-      {modules.map((moduleRow) => (
+      {modules.map((moduleRow, index) => (
         <ModuleSection
           key={moduleRow.id}
           module={moduleRow}
-          materials={materialsByModule[moduleRow.id] ?? []}
-          showCreateForm={activeMaterialFormModuleId === moduleRow.id}
-          draft={materialDraft}
-          pinBusyMaterialId={pinBusyMaterialId}
-          favoriteMaterialIds={favoriteMaterialIds}
-          onToggleCreateForm={onToggleCreateForm}
-          onDraftChange={onDraftChange}
-          onRenameModule={onRenameModule}
-          onSubmitMaterial={onSubmitMaterial}
+          isFirst={index === 0}
+          isLast={index === modules.length - 1}
+          moveBusy={movingModuleId === moduleRow.id}
+          onUpdateModule={onUpdateModule}
           onDeleteModule={onDeleteModule}
-          onTogglePin={onTogglePin}
+          onMoveModule={onMoveModule}
         />
       ))}
     </div>

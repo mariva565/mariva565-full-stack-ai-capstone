@@ -459,6 +459,8 @@ GEMINI_API_KEY=
 | 8 | **Mobile** | ⏳ Блокирана | Expo Go гърми на физически телефон; Android емулатор се инсталира |
 
 ### Препоръчан следващ фокус
+> Update after Session 66: the Course Details + Materials refinement pass is complete and now restores the original hierarchy with a dedicated module workspace route at `/modules/[id]`. Before the Admin Panel pass, stop for an interface review checkpoint across Dashboard, Course Details, module workspace, material detail, and Profile.
+
 - **1. Course Details + Materials refinement pass**
   - Въпреки че са маркирани като parity-pass завършени, тези екрани още имат нужда от още adaptation polish.
   - Да се мине през module sections, material rows/cards, hierarchy, spacing, title/copy tones, empty states и action clarity.

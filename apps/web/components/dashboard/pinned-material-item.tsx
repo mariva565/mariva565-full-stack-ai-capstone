@@ -11,6 +11,8 @@ export type PinnedMaterial = {
   materialTitle: string;
   materialType: string;
   tags: string | null;
+  moduleId: number;
+  moduleTitle: string;
   courseId: number;
   courseTitle: string;
 };
@@ -38,10 +40,10 @@ export function PinnedMaterialItem({ item }: PinnedMaterialItemProps) {
       <div className="mt-2 flex items-center gap-2">
         <MaterialTypePill type={item.materialType} />
         <Link
-          href={`/courses/${item.courseId}`}
+          href={`/modules/${item.moduleId}`}
           className="truncate text-xs font-medium text-slate-500 hover:text-brand-600 dark:text-slate-400 dark:hover:text-brand-100"
         >
-          {item.courseTitle}
+          {item.moduleTitle}
         </Link>
       </div>
 

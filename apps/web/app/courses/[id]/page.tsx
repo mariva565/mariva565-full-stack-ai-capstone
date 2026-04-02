@@ -1,139 +1,140 @@
 "use client";
-import { FormEvent, useEffect, useMemo, useState } from "react";
+
+import { FormEvent, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+
 import { CourseWorkspaceHeader } from "../../../components/course/course-workspace-header";
 import { ModuleList } from "../../../components/course/module-list";
+import type { ModuleInfo } from "../../../components/course/module-section";
 import { ConfirmModal } from "../../../components/ui/confirm-modal";
 import { Spinner } from "../../../components/ui/spinner";
 import { Toast, type ToastTone } from "../../../components/ui/toast";
-import {
-  matchesFilter,
-  matchesSearch,
-  sortMaterials,
-  type CourseMaterial,
-} from "../../../lib/course-materials";
 import { readErrorMessage } from "../../../lib/http";
-import {
-  prepareTagsFromInput,
-  resolveMaterialTitle,
-  type MaterialFilter,
-  type MaterialSort,
-} from "../../../lib/materials";
-import type { MaterialDraft, ModuleInfo } from "../../../components/course/module-section";
 
-type Course = { id: number; title: string; description: string | null };
-type ModuleResponse = { module?: ModuleInfo };
-type MaterialResponse = { material?: CourseMaterial };
-type ToastState = { tone: ToastTone; message: string };
-const EMPTY_MATERIAL_DRAFT: MaterialDraft = { title: "", content: "", materialType: "note", fileUrl: "", tags: "" };
+type Course = {
+  id: number;
+  title: string;
+  description: string | null;
+};
+
+type ToastState = {
+  tone: ToastTone;
+  message: string;
+};
+
+type ModuleResponse = {
+  module?: ModuleInfo;
+};
 
 export default function CourseDetailsPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const [course, setCourse] = useState<Course | null>(null);
   const [modules, setModules] = useState<ModuleInfo[]>([]);
-  const [materialsByModule, setMaterialsByModule] = useState<Record<number, CourseMaterial[]>>({});
-  const [favoriteMaterialIds, setFavoriteMaterialIds] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModuleForm, setShowModuleForm] = useState(false);
   const [newModuleTitle, setNewModuleTitle] = useState("");
+  const [newModuleDescription, setNewModuleDescription] = useState("");
   const [moduleToDelete, setModuleToDelete] = useState<number | null>(null);
   const [deleteBusy, setDeleteBusy] = useState(false);
-  const [activeMaterialFormModuleId, setActiveMaterialFormModuleId] = useState<number | null>(null);
-  const [materialDraft, setMaterialDraft] = useState<MaterialDraft>(EMPTY_MATERIAL_DRAFT);
-  const [pinBusyMaterialId, setPinBusyMaterialId] = useState<number | null>(null);
-  const [filterBy, setFilterBy] = useState<MaterialFilter>("all");
-  const [sortBy, setSortBy] = useState<MaterialSort>("newest");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [movingModuleId, setMovingModuleId] = useState<number | null>(null);
   const [toast, setToast] = useState<ToastState | null>(null);
+
   useEffect(() => {
     void loadPageData();
   }, [id]);
+
   async function loadCourseData() {
-    const courseResponse = await fetch(`/api/courses/${id}`);
-    if (courseResponse.status === 401) {
+    const response = await fetch(`/api/courses/${id}`);
+    if (response.status === 401) {
       router.push("/login");
       return false;
     }
-    if (!courseResponse.ok) {
+
+    if (!response.ok) {
       router.push("/dashboard");
       return false;
     }
-    const coursePayload = (await courseResponse.json()) as { course: Course };
-    setCourse(coursePayload.course);
-    const modulesResponse = await fetch(`/api/courses/${id}/modules`);
-    const modulesPayload = (await modulesResponse.json()) as { modules?: ModuleInfo[] };
-    const moduleRows = modulesPayload.modules ?? [];
-    setModules(moduleRows);
-    const materialPairs = await Promise.all(
-      moduleRows.map(async (moduleRow) => {
-        const materialsResponse = await fetch(`/api/modules/${moduleRow.id}/materials`);
-        const materialsPayload = (await materialsResponse.json()) as { materials?: CourseMaterial[] };
-        return [moduleRow.id, materialsPayload.materials ?? []] as const;
-      })
-    );
-    const nextMap: Record<number, CourseMaterial[]> = {};
-    for (const [moduleId, materials] of materialPairs) {
-      nextMap[moduleId] = materials;
-    }
-    setMaterialsByModule(nextMap);
+
+    const payload = (await response.json()) as { course: Course };
+    setCourse(payload.course);
     return true;
   }
-  async function loadFavorites() {
-    const response = await fetch("/api/favorites");
+
+  async function loadModulesData() {
+    const response = await fetch(`/api/courses/${id}/modules`);
     if (!response.ok) {
-      setFavoriteMaterialIds([]);
+      setModules([]);
       return;
     }
-    const data = (await response.json()) as { favorites?: { materialId: number }[] };
-    setFavoriteMaterialIds((data.favorites ?? []).map((favorite) => favorite.materialId));
+
+    const payload = (await response.json()) as { modules?: ModuleInfo[] };
+    setModules(payload.modules ?? []);
   }
+
   async function loadPageData() {
     setLoading(true);
     const success = await loadCourseData();
     if (success) {
-      await loadFavorites();
+      await loadModulesData();
     }
     setLoading(false);
   }
+
   function pushToast(message: string, tone: ToastTone) {
     setToast({ message, tone });
   }
-  function updateMaterialDraft(field: keyof MaterialDraft, value: string) {
-    setMaterialDraft((current) => ({
-      ...current,
-      [field]: value,
-    }));
-  }
-  function toggleMaterialForm(moduleId: number) {
-    setMaterialDraft(EMPTY_MATERIAL_DRAFT);
-    setActiveMaterialFormModuleId((current) => (current === moduleId ? null : moduleId));
+
+  async function persistModuleOrder(nextModules: ModuleInfo[]) {
+    const results = await Promise.all(
+      nextModules.map(async (moduleRow, index) => {
+        const response = await fetch(`/api/modules/${moduleRow.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ orderIndex: index }),
+        });
+
+        return response.ok;
+      })
+    );
+
+    return results.every(Boolean);
   }
 
   async function handleAddModule(event: FormEvent) {
     event.preventDefault();
     if (!newModuleTitle.trim()) {
+      pushToast("Module title is required.", "error");
       return;
     }
+
     const response = await fetch(`/api/courses/${id}/modules`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title: newModuleTitle, orderIndex: modules.length }),
+      body: JSON.stringify({
+        title: newModuleTitle.trim(),
+        description: newModuleDescription.trim() || null,
+        orderIndex: modules.length,
+      }),
     });
+
     if (!response.ok) {
       pushToast(await readErrorMessage(response, "Could not create module."), "error");
       return;
     }
+
     const payload = (await response.json()) as ModuleResponse;
     if (payload.module) {
-      setModules((current) => [...current, payload.module as ModuleInfo]);
-      setMaterialsByModule((current) => ({ ...current, [payload.module!.id]: [] }));
+      setModules((current) => [...current, payload.module!]);
     }
+
     setNewModuleTitle("");
+    setNewModuleDescription("");
     setShowModuleForm(false);
     pushToast("Module created.", "success");
   }
-  async function handleRenameModule(moduleId: number, title: string) {
+
+  async function handleUpdateModule(moduleId: number, title: string, description: string) {
     if (!title.trim()) {
       pushToast("Module title is required.", "error");
       return false;
@@ -142,160 +143,132 @@ export default function CourseDetailsPage() {
     const response = await fetch(`/api/modules/${moduleId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title }),
+      body: JSON.stringify({ title: title.trim(), description: description.trim() || null }),
     });
+
     if (!response.ok) {
-      pushToast(await readErrorMessage(response, "Could not rename module."), "error");
+      pushToast(await readErrorMessage(response, "Could not update module."), "error");
       return false;
     }
+
     const payload = (await response.json()) as ModuleResponse;
     if (payload.module) {
       setModules((current) => current.map((item) => (item.id === moduleId ? payload.module! : item)));
     }
-    pushToast("Module renamed.", "success");
+
+    pushToast("Module updated.", "success");
     return true;
   }
+
+  async function handleMoveModule(moduleId: number, direction: "up" | "down") {
+    const currentIndex = modules.findIndex((item) => item.id === moduleId);
+    const targetIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
+    if (currentIndex < 0 || targetIndex < 0 || targetIndex >= modules.length) {
+      return;
+    }
+
+    const reordered = [...modules];
+    [reordered[currentIndex], reordered[targetIndex]] = [reordered[targetIndex], reordered[currentIndex]];
+    const normalized = reordered.map((moduleRow, index) => ({
+      ...moduleRow,
+      orderIndex: index,
+    }));
+
+    setMovingModuleId(moduleId);
+    setModules(normalized);
+
+    const reorderedSuccessfully = await persistModuleOrder(normalized);
+    setMovingModuleId(null);
+    if (reorderedSuccessfully) {
+      pushToast("Module order updated.", "success");
+      return;
+    }
+
+    pushToast("Could not update module order.", "error");
+    await loadModulesData();
+  }
+
   async function confirmDeleteModule() {
     if (!moduleToDelete) {
       return;
     }
+
     setDeleteBusy(true);
     const response = await fetch(`/api/modules/${moduleToDelete}`, { method: "DELETE" });
     setDeleteBusy(false);
+
     if (!response.ok) {
       pushToast(await readErrorMessage(response, "Could not delete module."), "error");
       return;
     }
+
     setModuleToDelete(null);
-    setModules((current) => current.filter((item) => item.id !== moduleToDelete));
-    setMaterialsByModule((current) => {
-      const next = { ...current };
-      delete next[moduleToDelete];
-      return next;
-    });
+    const remainingModules = modules
+      .filter((item) => item.id !== moduleToDelete)
+      .map((item, index) => ({ ...item, orderIndex: index }));
+    setModules(remainingModules);
+    await persistModuleOrder(remainingModules);
     pushToast("Module deleted.", "success");
   }
-  async function handleAddMaterial(moduleId: number, event: FormEvent) {
-    event.preventDefault();
-    const trimmedTitle = materialDraft.title.trim();
-    const trimmedContent = materialDraft.content.trim();
-    const trimmedFileUrl = materialDraft.fileUrl.trim();
-    const resolvedTitle = resolveMaterialTitle(
-      trimmedTitle,
-      trimmedContent,
-      materialDraft.materialType,
-      trimmedFileUrl
-    );
-    if (!resolvedTitle) {
-      pushToast("Add a title, some content, or a link first.", "error");
-      return;
-    }
-    const response = await fetch(`/api/modules/${moduleId}/materials`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        title: resolvedTitle,
-        content: trimmedContent || null,
-        materialType: materialDraft.materialType,
-        fileUrl: trimmedFileUrl || null,
-        tags: prepareTagsFromInput(materialDraft.tags),
-      }),
-    });
-    if (!response.ok) {
-      pushToast(await readErrorMessage(response, "Could not create material."), "error");
-      return;
-    }
-    const payload = (await response.json()) as MaterialResponse;
-    if (payload.material) {
-      setMaterialsByModule((current) => ({
-        ...current,
-        [moduleId]: [payload.material as CourseMaterial, ...(current[moduleId] ?? [])],
-      }));
-    }
-    setMaterialDraft(EMPTY_MATERIAL_DRAFT);
-    setActiveMaterialFormModuleId(null);
-    pushToast("Material created.", "success");
-  }
-  async function togglePin(materialId: number, isPinned: boolean) {
-    setPinBusyMaterialId(materialId);
-    const response = await fetch(
-      isPinned ? `/api/favorites?materialId=${materialId}` : "/api/favorites",
-      {
-        method: isPinned ? "DELETE" : "POST",
-        headers: { "Content-Type": "application/json" },
-        body: isPinned ? undefined : JSON.stringify({ materialId }),
-      }
-    );
-    setPinBusyMaterialId(null);
-    if (!response.ok) {
-      pushToast(await readErrorMessage(response, "Could not update pin state."), "error");
-      return;
-    }
-    setFavoriteMaterialIds((current) =>
-      isPinned ? current.filter((id) => id !== materialId) : [...current, materialId]
-    );
-    pushToast(isPinned ? "Material unpinned." : "Material pinned.", "success");
-  }
-  const favoriteMaterialSet = useMemo(() => new Set(favoriteMaterialIds), [favoriteMaterialIds]);
-  const processedMaterialsByModule = useMemo(() => {
-    const nextMap: Record<number, CourseMaterial[]> = {};
-    for (const [moduleId, materials] of Object.entries(materialsByModule)) {
-      const prepared = materials.filter(
-        (material) => matchesFilter(material, filterBy) && matchesSearch(material, searchQuery)
-      );
-      nextMap[Number(moduleId)] = sortMaterials(prepared, sortBy);
-    }
-    return nextMap;
-  }, [filterBy, materialsByModule, searchQuery, sortBy]);
+
   if (loading) {
     return <Spinner centered label="Loading course workspace..." />;
   }
+
   if (!course) {
     return null;
   }
+
   return (
     <>
-      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
-        <CourseWorkspaceHeader
-          title={course.title}
-          description={course.description}
-          searchQuery={searchQuery}
-          sortBy={sortBy}
-          filterBy={filterBy}
-          showModuleForm={showModuleForm}
-          newModuleTitle={newModuleTitle}
-          onSearchQueryChange={setSearchQuery}
-          onSortChange={setSortBy}
-          onFilterChange={setFilterBy}
-          onToggleModuleForm={() => setShowModuleForm((current) => !current)}
-          onModuleTitleChange={setNewModuleTitle}
-          onCreateModule={handleAddModule}
-        />
-        <ModuleList
-          modules={modules}
-          materialsByModule={processedMaterialsByModule}
-          activeMaterialFormModuleId={activeMaterialFormModuleId}
-          materialDraft={materialDraft}
-          pinBusyMaterialId={pinBusyMaterialId}
-          favoriteMaterialIds={favoriteMaterialSet}
-          onToggleCreateForm={toggleMaterialForm}
-          onDraftChange={updateMaterialDraft}
-          onRenameModule={handleRenameModule}
-          onSubmitMaterial={handleAddMaterial}
-          onDeleteModule={setModuleToDelete}
-          onTogglePin={togglePin}
-        />
+      <div className="relative overflow-hidden">
+        <div className="pointer-events-none absolute left-0 top-10 h-72 w-72 rounded-full bg-brand-200/40 blur-3xl dark:bg-brand-500/10" />
+        <div className="pointer-events-none absolute right-0 top-24 h-72 w-72 rounded-full bg-cyan-200/40 blur-3xl dark:bg-cyan-500/10" />
+
+        <div className="relative mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+          <CourseWorkspaceHeader
+            title={course.title}
+            description={course.description}
+            moduleCount={modules.length}
+            showModuleForm={showModuleForm}
+            newModuleTitle={newModuleTitle}
+            newModuleDescription={newModuleDescription}
+            onToggleModuleForm={() => {
+              setShowModuleForm((current) => {
+                const next = !current;
+                if (!next) {
+                  setNewModuleTitle("");
+                  setNewModuleDescription("");
+                }
+                return next;
+              });
+            }}
+            onModuleTitleChange={setNewModuleTitle}
+            onModuleDescriptionChange={setNewModuleDescription}
+            onCreateModule={handleAddModule}
+          />
+
+          <ModuleList
+            modules={modules}
+            movingModuleId={movingModuleId}
+            onUpdateModule={handleUpdateModule}
+            onDeleteModule={setModuleToDelete}
+            onMoveModule={handleMoveModule}
+          />
+        </div>
       </div>
+
       <ConfirmModal
         isOpen={moduleToDelete !== null}
         title="Delete module?"
-        description="This action will remove the module and all of its materials."
+        description="This action removes the module and all of its materials."
         confirmLabel="Delete module"
         busy={deleteBusy}
         onCancel={() => setModuleToDelete(null)}
         onConfirm={confirmDeleteModule}
       />
-      {toast && <Toast message={toast.message} tone={toast.tone} onClose={() => setToast(null)} />}
+
+      {toast ? <Toast message={toast.message} tone={toast.tone} onClose={() => setToast(null)} /> : null}
     </>
   );
 }

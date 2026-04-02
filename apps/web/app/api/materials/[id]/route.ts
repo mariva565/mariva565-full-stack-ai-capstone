@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "../../../../lib/db";
-import { materials } from "../../../../../../drizzle/schema";
+import { courses, materials, modules } from "../../../../../../drizzle/schema";
 import { requireAuth } from "../../../../lib/api-utils";
 import { logActivity } from "../../../../lib/activity";
 import { eq, and } from "drizzle-orm";
@@ -13,20 +13,35 @@ export async function GET(request: NextRequest, { params }: Ctx) {
   if ("error" in auth) return auth.error;
 
   const { id } = await params;
-  const [material] = await db
-    .select()
+  const [result] = await db
+    .select({
+      material: materials,
+      module: {
+        id: modules.id,
+        title: modules.title,
+        courseId: modules.courseId,
+        orderIndex: modules.orderIndex,
+      },
+      course: {
+        id: courses.id,
+        title: courses.title,
+        description: courses.description,
+      },
+    })
     .from(materials)
+    .innerJoin(modules, eq(materials.moduleId, modules.id))
+    .innerJoin(courses, eq(modules.courseId, courses.id))
     .where(eq(materials.id, Number(id)))
     .limit(1);
 
-  if (!material) {
+  if (!result) {
     return NextResponse.json(
       { code: "NOT_FOUND", message: "Material not found" },
       { status: 404 }
     );
   }
 
-  return NextResponse.json({ material });
+  return NextResponse.json(result);
 }
 
 // PUT /api/materials/:id

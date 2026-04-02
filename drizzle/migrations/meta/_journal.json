@@ -15,6 +15,13 @@
       "when": 1774879466303,
       "tag": "0001_add-milestones-events",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1775136682313,
+      "tag": "0002_faithful_mesmero",
+      "breakpoints": true
     }
   ]
 }

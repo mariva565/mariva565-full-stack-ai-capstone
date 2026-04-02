@@ -1,9 +1,11 @@
+import { motion } from "framer-motion";
 import Link from "next/link";
 
-import { MaterialTypePill } from "../materials/material-type-pill";
-import { TagList } from "../materials/tag-list";
 import type { CourseMaterial } from "../../lib/course-materials";
-import { parseTags } from "../../lib/materials";
+import { normalizeMaterialType, parseTags } from "../../lib/materials";
+import { MaterialTypePill } from "../materials/material-type-pill";
+import { PinAngleIcon } from "../ui/action-icons";
+import { TagList } from "../materials/tag-list";
 
 type MaterialRowProps = {
   material: CourseMaterial;
@@ -12,17 +14,73 @@ type MaterialRowProps = {
   onTogglePin: (materialId: number, isPinned: boolean) => void;
 };
 
+const TYPE_SURFACE = {
+  note:
+    "bg-[linear-gradient(135deg,#f59e0b_0%,#f97316_100%)] text-white shadow-[0_14px_32px_rgba(245,158,11,0.28)]",
+  link:
+    "bg-[linear-gradient(135deg,#06b6d4_0%,#0891b2_100%)] text-white shadow-[0_14px_32px_rgba(6,182,212,0.28)]",
+  file:
+    "bg-[linear-gradient(135deg,#64748b_0%,#334155_100%)] text-white shadow-[0_14px_32px_rgba(51,65,85,0.26)]",
+} as const;
+
+const TYPE_HALO = {
+  note: "bg-amber-300/65",
+  link: "bg-cyan-300/60",
+  file: "bg-slate-400/45",
+} as const;
+
+type MaterialSurfaceType = keyof typeof TYPE_SURFACE;
+
 function getContentPreview(content: string | null): string | null {
   const normalized = content?.trim().replace(/\s+/g, " ");
   if (!normalized) {
     return null;
   }
 
-  if (normalized.length <= 160) {
+  if (normalized.length <= 180) {
     return normalized;
   }
 
-  return `${normalized.slice(0, 157).trimEnd()}...`;
+  return `${normalized.slice(0, 177).trimEnd()}...`;
+}
+
+function MaterialTypeIllustration({ type }: { type: MaterialSurfaceType }) {
+  const iconProps = {
+    stroke: "currentColor",
+    strokeWidth: 1.6,
+    strokeLinecap: "round" as const,
+    strokeLinejoin: "round" as const,
+  };
+
+  if (type === "note") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true" className="h-7 w-7">
+        <path d="M7 4.75h7l3.25 3.25V19H7V4.75Z" fill="currentColor" fillOpacity="0.18" {...iconProps} />
+        <path d="M14 4.75V8h3.25" {...iconProps} />
+        <path d="M9.1 11.1h5.9" {...iconProps} />
+        <path d="M9.1 14.2h5.1" {...iconProps} />
+        <path d="M9.1 17.1h3.4" {...iconProps} />
+      </svg>
+    );
+  }
+
+  if (type === "link") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true" className="h-7 w-7">
+        <path d="M10.1 14l3.8-3.8" {...iconProps} />
+        <path d="M8.2 16l-1.3 1.3a2.85 2.85 0 1 1-4-4l2.2-2.2a2.85 2.85 0 0 1 4 0l1.1 1.1" {...iconProps} />
+        <path d="M15.8 8l1.3-1.3a2.85 2.85 0 1 1 4 4l-2.2 2.2a2.85 2.85 0 0 1-4 0l-1.1-1.1" {...iconProps} />
+      </svg>
+    );
+  }
+
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" className="h-7 w-7">
+      <path d="M7 4.75h7l3.25 3.25V19H7V4.75Z" fill="currentColor" fillOpacity="0.14" {...iconProps} />
+      <path d="M14 4.75V8h3.25" {...iconProps} />
+      <path d="M11.1 10.8l3-3a2 2 0 1 1 2.85 2.8l-3.6 3.65a2.35 2.35 0 1 1-3.35-3.3l2.4-2.45" {...iconProps} />
+    </svg>
+  );
 }
 
 export function MaterialRow({
@@ -31,47 +89,103 @@ export function MaterialRow({
   pinBusy,
   onTogglePin,
 }: MaterialRowProps) {
+  const normalizedType = normalizeMaterialType(material.materialType);
   const tags = parseTags(material.tags);
   const preview = getContentPreview(material.content);
+  const pinLabel = isPinned ? "Remove from quick access" : "Pin to quick access";
 
   return (
-    <li className="px-5 py-4">
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0 flex-1">
-          <Link
-            href={`/materials/${material.id}`}
-            className="text-sm font-semibold text-slate-900 transition-colors hover:text-brand-600 dark:text-white dark:hover:text-brand-100"
-          >
-            {material.title}
-          </Link>
-          <div className="mt-2 flex flex-wrap items-center gap-2">
-            <MaterialTypePill type={material.materialType} />
-            {material.fileUrl && (
-              <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-600 dark:bg-slate-700 dark:text-slate-300">
-                Has attachment
-              </span>
-            )}
+    <li className="group relative overflow-hidden rounded-[1.8rem] border border-slate-200/80 bg-[linear-gradient(160deg,rgba(255,255,255,0.96)_0%,rgba(248,250,252,0.95)_58%,rgba(238,242,255,0.92)_100%)] shadow-[0_24px_55px_rgba(15,23,42,0.08)] transition hover:-translate-y-1 hover:shadow-[0_28px_65px_rgba(99,102,241,0.12)] dark:border-cyan-400/10 dark:bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.1)_0%,rgba(34,211,238,0)_26%),linear-gradient(160deg,rgba(15,23,42,0.97)_0%,rgba(9,17,34,0.96)_55%,rgba(6,12,28,0.98)_100%)] dark:hover:shadow-[0_28px_65px_rgba(6,182,212,0.08)]">
+      <div className="pointer-events-none absolute inset-y-5 left-0 w-1 rounded-full bg-[linear-gradient(180deg,#6366f1_0%,#8b5cf6_55%,#06b6d4_100%)] opacity-70" />
+
+      <div className="flex flex-col gap-4 p-5 sm:p-6">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <div className="flex min-w-0 gap-4">
+            <motion.div
+              whileHover={{
+                scale: 1.14,
+                y: -3,
+                rotate: [0, -5, 7, 0],
+              }}
+              transition={{
+                duration: 0.45,
+                ease: "easeOut",
+              }}
+              className="relative flex-none"
+            >
+              <div
+                className={`absolute inset-1 rounded-[1.15rem] opacity-0 blur-xl transition duration-300 group-hover:opacity-100 ${TYPE_HALO[normalizedType]}`}
+              />
+              <div
+                className={`relative flex h-14 w-14 items-center justify-center rounded-[1.35rem] transition duration-300 group-hover:shadow-[0_18px_40px_rgba(15,23,42,0.14)] ${TYPE_SURFACE[normalizedType]}`}
+              >
+                <MaterialTypeIllustration type={normalizedType} />
+              </div>
+            </motion.div>
+
+            <div className="min-w-0">
+              <p className="text-[0.68rem] font-semibold uppercase tracking-[0.28em] text-slate-400 dark:text-slate-500">
+                Saved {new Date(material.createdAt).toLocaleDateString()}
+              </p>
+              <Link
+                href={`/materials/${material.id}`}
+                className="dashboard-script-title mt-2 block text-[clamp(1.95rem,3vw,2.65rem)] leading-[1.04] transition group-hover:translate-x-0.5"
+              >
+                {material.title}
+              </Link>
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                <MaterialTypePill type={material.materialType} />
+                {material.fileUrl ? (
+                  <span className="rounded-full border border-slate-200/80 bg-white/80 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-300">
+                    Has source URL
+                  </span>
+                ) : null}
+                {isPinned ? (
+                  <span className="rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-amber-700 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-200">
+                    Quick access
+                  </span>
+                ) : null}
+              </div>
+            </div>
           </div>
-          {preview && (
-            <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">
-              {preview}
-            </p>
-          )}
-          <TagList tags={tags} />
+
+          <div className="flex flex-wrap items-center gap-2 lg:justify-end">
+            <button
+              type="button"
+              disabled={pinBusy}
+              onClick={() => onTogglePin(material.id, isPinned)}
+              title={pinLabel}
+              aria-label={pinLabel}
+              className={`inline-flex h-10 w-10 items-center justify-center rounded-full border transition disabled:cursor-not-allowed disabled:opacity-60 ${
+                isPinned
+                  ? "border-amber-200 bg-amber-50 text-amber-700 hover:-translate-y-0.5 hover:bg-amber-100 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-200"
+                  : "border-slate-200 bg-white/80 text-slate-600 hover:-translate-y-0.5 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-300 dark:hover:bg-slate-800"
+              }`}
+            >
+              <PinAngleIcon filled={isPinned} className={isPinned ? "-rotate-[18deg]" : "text-slate-400 dark:text-slate-400"} />
+            </button>
+            <Link
+              href={`/materials/${material.id}`}
+              className="rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
+            >
+              Open material
+            </Link>
+          </div>
         </div>
 
-        <button
-          type="button"
-          disabled={pinBusy}
-          onClick={() => onTogglePin(material.id, isPinned)}
-          className={`rounded-lg border px-2.5 py-1 text-xs font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60 ${
-            isPinned
-              ? "border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 dark:border-amber-800 dark:bg-amber-900/30 dark:text-amber-300"
-              : "border-slate-300 text-slate-600 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
-          }`}
-        >
-          {isPinned ? "Pinned" : "Pin"}
-        </button>
+        {preview ? (
+          <p className="text-sm leading-7 text-slate-600 dark:text-slate-300">{preview}</p>
+        ) : (
+          <p className="text-sm italic text-slate-400 dark:text-slate-500">
+            No preview text yet. Open the material to add more context.
+          </p>
+        )}
+
+        {tags.length > 0 ? (
+          <div className="border-t border-slate-200/70 pt-4 dark:border-slate-800">
+            <TagList tags={tags} />
+          </div>
+        ) : null}
       </div>
     </li>
   );

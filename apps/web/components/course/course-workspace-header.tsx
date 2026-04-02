@@ -1,128 +1,135 @@
 import type { FormEvent } from "react";
 import Link from "next/link";
 
-import { FILTER_OPTIONS, SORT_OPTIONS } from "../../lib/course-materials";
-import type { MaterialFilter, MaterialSort } from "../../lib/materials";
-
 type CourseWorkspaceHeaderProps = {
   title: string;
   description: string | null;
-  searchQuery: string;
-  sortBy: MaterialSort;
-  filterBy: MaterialFilter;
+  moduleCount: number;
   showModuleForm: boolean;
   newModuleTitle: string;
-  onSearchQueryChange: (value: string) => void;
-  onSortChange: (value: MaterialSort) => void;
-  onFilterChange: (value: MaterialFilter) => void;
+  newModuleDescription: string;
   onToggleModuleForm: () => void;
   onModuleTitleChange: (value: string) => void;
+  onModuleDescriptionChange: (value: string) => void;
   onCreateModule: (event: FormEvent) => void;
 };
 
 export function CourseWorkspaceHeader({
   title,
   description,
-  searchQuery,
-  sortBy,
-  filterBy,
+  moduleCount,
   showModuleForm,
   newModuleTitle,
-  onSearchQueryChange,
-  onSortChange,
-  onFilterChange,
+  newModuleDescription,
   onToggleModuleForm,
   onModuleTitleChange,
+  onModuleDescriptionChange,
   onCreateModule,
 }: CourseWorkspaceHeaderProps) {
   return (
     <>
       <Link
         href="/dashboard"
-        className="text-sm font-medium text-brand-600 hover:text-brand-700 dark:text-brand-100"
+        className="inline-flex items-center gap-2 text-sm font-medium text-brand-600 transition hover:text-brand-700 dark:text-brand-100"
       >
-        &larr; Back to dashboard
+        <span aria-hidden="true">&larr;</span>
+        Back to dashboard
       </Link>
 
-      <div className="mt-4 rounded-2xl border border-slate-200 bg-gradient-to-br from-white via-slate-50 to-brand-50 p-6 shadow-sm dark:border-slate-700 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800">
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{title}</h1>
-        <p className="mt-2 max-w-2xl text-sm text-slate-600 dark:text-slate-300">
-          {description || "Organize your study notes, links, and files by modules, tags, and pin status."}
-        </p>
-        <div className="mt-4 rounded-2xl border border-brand-200/70 bg-white/70 px-4 py-3 text-sm text-slate-600 shadow-sm backdrop-blur dark:border-brand-500/20 dark:bg-slate-800/60 dark:text-slate-300">
-          Text notes are fully usable right now. Create a module, write in <span className="font-semibold text-slate-900 dark:text-white">Content</span>, and save the material even if file uploads are still postponed.
-        </div>
+      <section className="relative mt-4 overflow-hidden rounded-[2rem] border border-white/60 bg-[linear-gradient(160deg,rgba(255,255,255,0.96)_0%,rgba(248,250,252,0.94)_58%,rgba(238,242,255,0.92)_100%)] p-6 shadow-[0_30px_80px_rgba(15,23,42,0.08)] dark:border-cyan-400/10 dark:bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.12)_0%,rgba(34,211,238,0)_28%),linear-gradient(160deg,rgba(15,23,42,0.97)_0%,rgba(10,18,38,0.96)_54%,rgba(6,12,28,0.98)_100%)]">
+        <div className="pointer-events-none absolute -right-10 top-0 h-40 w-40 rounded-full bg-fuchsia-200/70 blur-3xl dark:bg-fuchsia-500/10" />
+        <div className="pointer-events-none absolute left-0 top-10 h-28 w-28 rounded-full bg-cyan-200/60 blur-3xl dark:bg-cyan-500/10" />
+        <div className="relative">
+          <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
+            <div className="max-w-3xl">
+              <p className="text-[0.68rem] font-semibold uppercase tracking-[0.32em] text-slate-400 dark:text-slate-500">
+                Course Workspace
+              </p>
+              <h1 className="dashboard-script-title mt-3 text-4xl md:text-5xl">
+                {title}
+              </h1>
+              <p className="mt-4 max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-300">
+                {description || "Organize this course through modules first, then open a module to manage its materials."}
+              </p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                <span className="rounded-full border border-brand-200/80 bg-white/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-brand-700 shadow-sm dark:border-brand-400/20 dark:bg-brand-500/10 dark:text-brand-100">
+                  {moduleCount} {moduleCount === 1 ? "module" : "modules"}
+                </span>
+                <span className="rounded-full border border-cyan-200/80 bg-cyan-50/90 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-cyan-700 dark:border-cyan-400/20 dark:bg-cyan-500/10 dark:text-cyan-100">
+                  Course &rarr; Modules &rarr; Materials
+                </span>
+              </div>
+            </div>
 
-        <div className="mt-5 grid gap-3 lg:grid-cols-[2fr_1fr]">
-          <input
-            type="search"
-            value={searchQuery}
-            onChange={(event) => onSearchQueryChange(event.target.value)}
-            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-500"
-            placeholder="Search title, content or tags..."
-          />
-
-          <select
-            value={sortBy}
-            onChange={(event) => onSortChange(event.target.value as MaterialSort)}
-            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-slate-600 dark:bg-slate-800 dark:text-white"
-          >
-            {SORT_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="mt-3 flex flex-wrap gap-2">
-          {FILTER_OPTIONS.map((option) => (
             <button
-              key={option.value}
               type="button"
-              onClick={() => onFilterChange(option.value)}
-              className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                filterBy === option.value
-                  ? "bg-brand-600 text-white"
-                  : "bg-slate-200 text-slate-700 hover:bg-slate-300 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600"
-              }`}
+              onClick={onToggleModuleForm}
+              className="group inline-flex items-center justify-center rounded-full bg-[linear-gradient(135deg,#6366f1_0%,#8b5cf6_55%,#06b6d4_100%)] px-5 py-3 text-sm font-semibold text-white shadow-[0_20px_45px_rgba(99,102,241,0.25)] transition hover:-translate-y-0.5 hover:shadow-[0_24px_55px_rgba(99,102,241,0.32)]"
             >
-              {option.label}
+              {showModuleForm ? (
+                "Hide module form"
+              ) : (
+                <span className="inline-flex items-center gap-2">
+                  <span className="inline-block text-base leading-none transition duration-500 [transition-timing-function:cubic-bezier(0.34,1.56,0.64,1)] group-hover:-translate-y-1 group-hover:scale-110 group-hover:rotate-90">
+                    +
+                  </span>
+                  <span>New module</span>
+                </span>
+              )}
             </button>
-          ))}
-        </div>
-      </div>
+          </div>
 
-      <div className="mt-6 rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-800">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Modules</h2>
-          <button
-            type="button"
-            onClick={onToggleModuleForm}
-            className="rounded-lg bg-brand-600 px-3 py-2 text-sm font-semibold text-white hover:bg-brand-700"
-          >
-            {showModuleForm ? "Close module form" : "+ New module"}
-          </button>
-        </div>
+          <div className="mt-5 rounded-[1.4rem] border border-brand-200/80 bg-white/80 px-4 py-3 text-sm text-slate-600 shadow-sm backdrop-blur dark:border-brand-400/15 dark:bg-slate-900/60 dark:text-slate-300">
+            Pick a module to open its full materials workspace. That keeps the navigation closer to the original StudyHub product instead of flattening everything into one page.
+          </div>
 
-        {showModuleForm && (
-          <form onSubmit={onCreateModule} className="mt-4 flex flex-col gap-3 sm:flex-row">
-            <input
-              type="text"
-              value={newModuleTitle}
-              onChange={(event) => onModuleTitleChange(event.target.value)}
-              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-slate-600 dark:bg-slate-700 dark:text-white"
-              placeholder="e.g. JavaScript Fundamentals"
-            />
-            <button
-              type="submit"
-              className="rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700"
+          {showModuleForm ? (
+            <form
+              onSubmit={onCreateModule}
+              className="mt-5 rounded-[1.6rem] border border-slate-200/80 bg-white/85 p-4 shadow-sm backdrop-blur dark:border-slate-700/80 dark:bg-slate-900/65"
             >
-              Create
-            </button>
-          </form>
-        )}
-      </div>
+              <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto]">
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-xs font-semibold uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">
+                      Module title
+                    </label>
+                    <input
+                      type="text"
+                      value={newModuleTitle}
+                      onChange={(event) => onModuleTitleChange(event.target.value)}
+                      className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-200/50 dark:border-slate-700 dark:bg-slate-950/70 dark:text-white dark:focus:border-brand-400 dark:focus:ring-brand-500/20"
+                      placeholder="e.g. React Fundamentals"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">
+                      Module description
+                    </label>
+                    <textarea
+                      value={newModuleDescription}
+                      onChange={(event) => onModuleDescriptionChange(event.target.value)}
+                      rows={3}
+                      className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm leading-6 text-slate-900 outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-200/50 dark:border-slate-700 dark:bg-slate-950/70 dark:text-white dark:focus:border-brand-400 dark:focus:ring-brand-500/20"
+                      placeholder="Optional note about what this module covers"
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  className="rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
+                >
+                  Create module
+                </button>
+              </div>
+              <p className="mt-3 text-xs leading-5 text-slate-500 dark:text-slate-400">
+                Modules are the structure layer. Add an optional description here if you want the card copy to describe the module instead of showing the default helper text.
+              </p>
+            </form>
+          ) : null}
+        </div>
+      </section>
     </>
   );
 }

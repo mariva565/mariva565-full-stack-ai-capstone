@@ -29,7 +29,7 @@ export async function POST(request: NextRequest, { params }: Ctx) {
 
   const { id } = await params;
   const body = await request.json();
-  const { title, orderIndex } = body;
+  const { title, description, orderIndex } = body;
 
   if (!title) {
     return NextResponse.json(
@@ -43,12 +43,17 @@ export async function POST(request: NextRequest, { params }: Ctx) {
     .values({
       courseId: Number(id),
       title,
+      description: description ?? null,
       orderIndex: orderIndex ?? 0,
       createdBy: auth.user.sub,
     })
     .returning();
 
-  await logActivity(auth.user.sub, "create_module", mod.id, { title: mod.title, courseId: Number(id) });
+  await logActivity(auth.user.sub, "create_module", mod.id, {
+    title: mod.title,
+    description: mod.description,
+    courseId: Number(id),
+  });
 
   return NextResponse.json({ module: mod }, { status: 201 });
 }

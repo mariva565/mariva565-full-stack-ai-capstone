@@ -66,6 +66,7 @@ export function PinnedSidebar({
     const matchesSearch =
       normalizedQuery.length === 0 ||
       favorite.materialTitle.toLowerCase().includes(normalizedQuery) ||
+      favorite.moduleTitle.toLowerCase().includes(normalizedQuery) ||
       favorite.courseTitle.toLowerCase().includes(normalizedQuery) ||
       parseTags(favorite.tags).some((tag) =>
         tag.toLowerCase().includes(normalizedQuery)

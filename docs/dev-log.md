@@ -1463,6 +1463,278 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 **Validation:**
 - `npm.cmd --workspace @studyhub/web run typecheck`
 
+### Session 74 (Legacy plus-button motion alignment)
+
+**Problem investigated:**
+- The create-action buttons still did not feel quite like the original StudyHub v1 interaction.
+- The user called out the `+` animation specifically: it should feel closer to the legacy button behavior instead of looking like a generic modern hover effect.
+- One module card label still said `Module workspace`, even though the current UI language had already been simplified to just `Module`.
+
+**What changed:**
+- `apps/web/components/course/course-workspace-header.tsx`
+  - adjusted the `New module` plus icon to use a more v1-like hover motion with upward lift, bounce timing, and a quarter-turn spin
+- `apps/web/components/modules/module-workspace-header.tsx`
+  - matched the `Add material` plus icon to the same legacy-inspired motion so the two create buttons now feel consistent
+- `apps/web/components/course/module-section.tsx`
+  - changed the eyebrow label from `Module workspace` to `Module`
+
+**Why:**
+- The add buttons now feel closer to the original StudyHub interaction language the user remembered from v1.
+- The module cards also read more cleanly without the older `workspace` wording.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 73 (Editable module descriptions + course card cleanup)
+
+**Problem investigated:**
+- The course module cards still showed a redundant `Contains X item` summary line that the UI no longer needed.
+- The explanation text under each module title was not actually editable because modules did not yet have a stored `description` field in the schema.
+- The user-facing control still said `Rename`, but the real need was to edit both the module title and the descriptive copy below it.
+
+**What changed:**
+- `drizzle/schema.ts`
+  - added `description` to the `modules` table
+- `drizzle/migrations/0002_faithful_mesmero.sql`
+  - generated a new Drizzle migration for the module description column
+  - made the SQL idempotent with `ADD COLUMN IF NOT EXISTS`
+- `apps/web/app/api/courses/[id]/modules/route.ts`
+  - create-module API now accepts and stores an optional module description
+- `apps/web/app/api/modules/[id]/route.ts`
+  - update-module API now accepts and persists description changes
+- `apps/web/components/course/module-section.tsx`
+  - removed the `Contains X item` line from the card
+  - changed the action from `Rename` to `Edit details`
+  - edit mode now supports both title and description
+  - card copy now renders the stored module description when present
+- `apps/web/components/course/course-workspace-header.tsx`
+  - the new-module form now includes an optional description field
+- `apps/web/app/courses/[id]/page.tsx`
+  - removed module material-count fetching because those counts are no longer shown on the page
+  - wired create/update flows to the new description field
+- `apps/web/components/modules/module-workspace-header.tsx`
+  - the module workspace header now reuses the stored module description instead of always showing the generic helper copy
+
+**Why:**
+- The course cards are now quieter and no longer waste space on redundant metadata.
+- Module descriptions are now real editable content instead of fixed placeholder text, which makes the `Edit details` action honest and actually useful.
+- Removing the old count-fetching also simplifies the course page and cuts unnecessary API calls.
+
+**Validation:**
+- `node_modules\\.bin\\drizzle-kit.cmd generate`
+- applied the new `modules.description` column to the current dev database via Neon HTTP after `drizzle-kit migrate` stalled on the websocket migration path in this environment
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 72 (Icon-based pin and reorder controls)
+
+**Problem investigated:**
+- The material flow still used text buttons for `Pin / Pinned`, while the original StudyHub interface communicated that action more cleanly with a pin icon.
+- The course module cards also still used text-based `Up / Down` controls, even though the older interface handled reorder actions with simple arrow icons.
+
+**What changed:**
+- `apps/web/components/ui/action-icons.tsx`
+  - added a shared icon set for pin, move up, and move down controls
+- `apps/web/components/course/material-row.tsx`
+  - replaced the text-based pin button with an icon button inspired by the old pinned-state treatment
+  - kept clear `title` and `aria-label` copy so the control remains understandable without visible text
+- `apps/web/components/materials/material-view-panel.tsx`
+  - switched the material detail pin action to the same icon button treatment
+- `apps/web/components/course/module-section.tsx`
+  - replaced `Up / Down` text controls with icon buttons so reorder actions read lighter and closer to the v1 interaction language
+
+**Why:**
+- These controls now feel more visual and less repetitive, especially in material cards where the title and metadata already carry enough text.
+- The module cards also breathe better because reorder actions no longer compete with the main content copy.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 71 (Material type icons cleanup)
+
+**Problem investigated:**
+- The material cards still repeated the type too many times: once as a large text block inside the animated icon (`NOTE`), once again as a `Note` chip, and once more in the footer as `NOTE item`.
+- That made the card feel text-heavy and distracted from the actual material title.
+
+**What changed:**
+- `apps/web/components/course/material-row.tsx`
+  - replaced the text-based animated `NOTE/LINK/FILE` square with small illustrated SVG icons for note, link, and file
+  - kept the hover interaction and glow treatment, but moved the emphasis from text to drawing
+  - removed the redundant footer label (`NOTE item`, `LINK item`, `FILE item`)
+  - kept the `MaterialTypePill` as the single textual type indicator on the card
+
+**Why:**
+- The material rows now feel quieter and more visual, which makes the user’s eye land on the title first instead of bouncing between repeated labels.
+- The cleanup also scales correctly for link and file materials once those appear in the module.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 70 (Course module card simplification)
+
+**Problem investigated:**
+- The module titles on the course details cards were still too close in scale to the main course title above them.
+- The metadata chips under each module card felt redundant: the module number was already shown in the left badge, and the `study item` chip was too vague to justify a highlighted pill.
+
+**What changed:**
+- `apps/web/components/course/module-section.tsx`
+  - reduced the signature title scale so module names sit one level below the course title
+  - removed the redundant metadata chips from the bottom of each card
+  - replaced them with a quieter summary line such as `Contains 1 item` or `No items yet`
+
+**Why:**
+- The course page hierarchy now reads more naturally: course title first, module titles second.
+- The cards also feel less busy because repeated structural labels no longer compete with the content and actions.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 69 (Course module cards typography + clearer count labels)
+
+**Problem investigated:**
+- The course details page still had a leftover draft feel in the module cards because the module titles were rendering in the default heavy sans treatment instead of the signature heading style.
+- The count chip on each card said `1 material`, which read too much like an internal data label and was not clear enough in the interface.
+
+**What changed:**
+- `apps/web/components/course/module-section.tsx`
+  - moved module card titles into the shared signature heading treatment
+  - removed the truncation-heavy title styling so course module names can read more naturally
+  - changed the count chip from `material/materials` to the clearer `study item/study items`
+  - renamed the secondary order chip from `Step N` to `Module N` so the language matches the actual hierarchy
+
+**Why:**
+- The course details screen now stays visually aligned with the signature typography direction already established across the dashboard, module workspace, and material detail views.
+- The card metadata also reads more like product copy and less like raw database terminology.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 68 (Signature font cleanup + material detail duplication fix)
+
+**Problem investigated:**
+- Several headings in the new module/material flow still looked like leftover draft typography instead of the intended signature treatment.
+- Cyrillic titles were not reliably reading as “signature” because the handwritten stack needed a better fallback.
+- The material detail page was also repeating the same material title twice: once in the page header and once again inside the main content panel.
+
+**What changed:**
+- `apps/web/app/globals.css`
+  - added a Cyrillic-friendly handwritten fallback (`Caveat`) into the shared signature font stack
+- `apps/web/components/modules/module-sidebar.tsx`
+  - moved the course title into the signature treatment
+  - updated module titles so the active item reads in the signature style instead of a leftover draft sans look
+- `apps/web/components/modules/module-pinned-sidebar.tsx`
+  - updated the “Pinned materials” heading to the signature treatment
+- `apps/web/components/course/material-row.tsx`
+  - changed the material row title from the temporary heavy sans treatment to the signature title treatment
+- `apps/web/components/materials/material-view-panel.tsx`
+  - moved the in-panel material title into the signature treatment
+- `apps/web/app/materials/[id]/page.tsx`
+  - removed the duplicated material title from the page header
+  - turned the top section into a context header (“Material workspace”) so the actual content title only appears once
+
+**Why:**
+- The module/material flow now feels much more consistent with the premium signature direction already used in the stronger dashboard/profile passes.
+- The material detail screen also reads cleaner because it no longer repeats the same title in two places.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 67 (Material card icon interaction + title styling)
+
+**Problem investigated:**
+- The user wanted the material card icon to feel more alive again, closer to the old StudyHub hover interaction.
+- The material title also needed a cleaner font/color treatment to read closer to the original visual direction.
+
+**What changed:**
+- `apps/web/components/course/material-row.tsx`
+  - added a hover animation to the material type icon with scale, lift, and slight rotation
+  - restored a soft colored glow behind the icon so it feels more interactive on pointer hover
+  - updated the icon label styling to a stronger uppercase badge treatment
+  - refined the material title to use a cleaner Poppins-heavy look with a darker blue/slate tone and better hover color transition
+
+**Why:**
+- The material rows now feel closer to the old product's playful interaction language without breaking the newer premium layout.
+- The title reads more intentional and visually anchored instead of feeling too plain.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 66 (Course -> modules -> materials hierarchy restoration)
+
+**Problem investigated:**
+- The current adaptation work still felt too flat compared with the original StudyHub flow.
+- `Course Details` was mixing modules and materials on one screen, which blurred the intended hierarchy.
+- `Materials` detail/edit had no strong breadcrumb back to the module context, so the navigation loop still felt incomplete.
+
+**What changed:**
+- `apps/web/app/api/modules/[id]/route.ts`
+  - added a `GET` payload that returns both the selected module and its parent course context
+- `apps/web/app/api/materials/[id]/route.ts`
+  - expanded the `GET` payload to include module + course context for breadcrumbs and smarter redirects
+- `apps/web/app/courses/[id]/page.tsx`
+  - turned the page back into a true modules workspace for the selected course
+  - removed the flattened inline materials management from this screen
+  - added module creation, rename, delete, reorder, and clearer “Open materials” actions
+- `apps/web/components/course/course-workspace-header.tsx`
+  - rebuilt the course hero around the restored `course -> modules -> materials` flow
+- `apps/web/components/course/module-list.tsx`
+  - simplified the screen into a dedicated module-card list
+- `apps/web/components/course/module-section.tsx`
+  - redesigned each module item into a stronger premium card with order, counts, rename/reorder/delete actions, and direct module-workspace entry
+- `apps/web/app/modules/[id]/page.tsx`
+  - added a new dedicated module-level materials workspace route
+  - brought in the original-style hierarchy more clearly with module sidebar, materials list, pinned rail, filters, sort, search, and quick create form
+- `apps/web/components/modules/module-sidebar.tsx`
+  - added a left rail for switching between modules inside the same course
+- `apps/web/components/modules/module-workspace-header.tsx`
+  - added the new module hero/toolbar with filters and create-material CTA
+- `apps/web/components/modules/module-material-composer.tsx`
+  - extracted the quick-create material form into a dedicated module-level surface
+- `apps/web/components/modules/module-pinned-sidebar.tsx`
+  - added a dedicated quick-access rail for pinned materials inside the current module
+- `apps/web/components/course/material-row.tsx`
+  - upgraded material items into clearer premium cards with better type emphasis, pin visibility, metadata, and open actions
+- `apps/web/app/materials/[id]/page.tsx`
+  - added explicit breadcrumb context back to the module and course
+  - changed delete redirect to return to the module workspace instead of the dashboard
+- `apps/web/components/materials/material-view-panel.tsx`
+  - refined the view mode surface and action styling
+- `apps/web/components/materials/material-editor-form.tsx`
+  - refined the edit form styling to match the new module/material flow
+- `apps/web/components/dashboard/pinned-material-item.tsx`
+  - changed the secondary pinned link target from the course page to the new module workspace
+- `apps/web/components/dashboard/pinned-sidebar.tsx`
+  - updated pinned search matching to include module names too
+
+**Why:**
+- The adapted web app now follows the original mental model more faithfully:
+  - dashboard selects a course
+  - course page manages modules
+  - module page manages materials
+  - material detail/edit keeps a clear path back to its module
+- This also makes the UI feel less crowded and gives module/material actions much clearer ownership.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+**Recommended next adaptation target:**
+- **First:** Interface review checkpoint
+  - pause before the Admin Panel pass and review the current adapted UI in the browser
+  - look specifically at Dashboard, Course Details, module workspace, material detail, and Profile for spacing, hierarchy, copy tone, mobile behavior, and visual consistency
+  - capture any last small UI corrections before moving into the next large feature/polish block
+- **Second:** Admin Panel adaptation pass
+  - replace the remaining native `confirm()` flows with `ConfirmModal`
+  - tighten tabs/cards/tables/empty states so they match the newer dashboard/profile/module quality bar
+- **Third:** Public pages follow-up: `How it works` + `Contact`
+  - still missing as dedicated app-router pages
+  - good follow-up after the authenticated app surfaces feel settled
+- **Fourth:** Sharing / `Shared with Me`
+  - still the last major visible parity feature not started in the active plan
+- **Fifth:** Avatar upload implementation revisit
+  - keep this for after the remaining UI adaptation targets unless a dependable demo-safe upload path is chosen earlier
+
+**Recommended prompt for the next chat:**
+- `Read docs/dev-log.md and docs/implementation-plan.md and start with an interface review checkpoint before the Admin Panel pass. Review Dashboard, Course Details, module workspace, material detail, and Profile in the browser, note any remaining UI inconsistencies, and only then continue into admin adaptation work.`
+
 ### Session 65 (Cross-chat handoff for adaptation work)
 
 **Current UI state:**
