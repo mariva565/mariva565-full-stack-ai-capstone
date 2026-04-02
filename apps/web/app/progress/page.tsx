@@ -8,6 +8,7 @@ import { MilestoneTimeline } from "../../components/progress/milestone-timeline"
 import { ProgressBar } from "../../components/progress/progress-bar";
 import { ProgressSummaryCards } from "../../components/progress/progress-summary-cards";
 import { TimelineFilters } from "../../components/progress/timeline-filters";
+import { UpcomingEventsPanel } from "../../components/progress/upcoming-events-panel";
 import { useProgressPageState } from "../../components/progress/use-progress-page-state";
 import { ConfirmModal } from "../../components/ui/confirm-modal";
 import { Spinner } from "../../components/ui/spinner";
@@ -19,6 +20,7 @@ export default function ProgressPage() {
     loading,
     addBusy,
     ideaBusy,
+    events,
     rowBusyId,
     deleteId,
     deleteBusy,
@@ -96,6 +98,7 @@ export default function ProgressPage() {
           </div>
 
           <div className="space-y-6">
+            <UpcomingEventsPanel events={events} />
             <DueSoonList milestones={dueSoonMilestones} />
             <IdeasBacklog
               ideas={ideas}

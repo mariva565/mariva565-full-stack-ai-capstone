@@ -77,11 +77,7 @@ export function CourseCard({ course, onEdit, onDelete }: CourseCardProps) {
           {course.description || "No description yet."}
         </p>
 
-        <div className="mt-5 flex items-center justify-between gap-3 border-t border-slate-200/70 pt-4 dark:border-slate-700/70">
-          <DashboardPill tone="brand" className="uppercase tracking-[0.18em]">
-            Course card
-          </DashboardPill>
-
+        <div className="mt-5 flex items-center justify-end gap-3 border-t border-slate-200/70 pt-4 dark:border-slate-700/70">
           <div className="flex items-center gap-2">
             <DashboardActionButton
               onClick={() => onEdit(course)}

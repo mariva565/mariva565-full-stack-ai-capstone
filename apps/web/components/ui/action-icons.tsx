@@ -65,3 +65,98 @@ export function ArrowDownIcon({ className, ...props }: ActionIconProps) {
     </svg>
   );
 }
+
+export function CollectionIcon({ className, ...props }: ActionIconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={iconClassName(className)}
+      {...props}
+    >
+      <rect x="4.5" y="6.5" width="15" height="11" rx="2.2" />
+      <path d="M8 4.5h8" />
+      <path d="M8 19.5h8" />
+    </svg>
+  );
+}
+
+export function PencilIcon({ className, ...props }: ActionIconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={iconClassName(className)}
+      {...props}
+    >
+      <path d="M4.75 19.25h3.4l9.3-9.3a2.15 2.15 0 1 0-3.05-3.05l-9.3 9.3v3.05Z" />
+      <path d="m13.1 8.2 2.7 2.7" />
+    </svg>
+  );
+}
+
+export function TrashIcon({ className, ...props }: ActionIconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={iconClassName(className)}
+      {...props}
+    >
+      <path d="M4.75 7.25h14.5" />
+      <path d="M9.25 4.75h5.5" />
+      <path d="M7.75 7.25v10a2 2 0 0 0 2 2h4.5a2 2 0 0 0 2-2v-10" />
+      <path d="M10 10.25v5.5" />
+      <path d="M14 10.25v5.5" />
+    </svg>
+  );
+}
+
+export function EyeIcon({ className, ...props }: ActionIconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={iconClassName(className)}
+      {...props}
+    >
+      <path d="M2.75 12s3.2-5.25 9.25-5.25S21.25 12 21.25 12 18.05 17.25 12 17.25 2.75 12 2.75 12Z" />
+      <circle cx="12" cy="12" r="2.65" />
+    </svg>
+  );
+}
+
+export function ExternalLinkIcon({ className, ...props }: ActionIconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={iconClassName(className)}
+      {...props}
+    >
+      <path d="M13 5.75h5.25V11" />
+      <path d="m18.25 5.75-8.5 8.5" />
+      <path d="M10 7.75H7.75a2 2 0 0 0-2 2v6.5a2 2 0 0 0 2 2h6.5a2 2 0 0 0 2-2V14" />
+    </svg>
+  );
+}

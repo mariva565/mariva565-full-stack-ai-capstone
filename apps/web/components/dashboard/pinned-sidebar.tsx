@@ -31,6 +31,7 @@ function TagFilterButtons({
         onClick={() => onTagSelect(null)}
         active={activeTag === null}
         tone="brand"
+        className="text-slate-600 dark:text-slate-300"
       >
         All tags
       </DashboardPillButton>
@@ -40,6 +41,7 @@ function TagFilterButtons({
           onClick={() => onTagSelect(tag)}
           active={activeTag === tag}
           tone="brand"
+          className="text-slate-600 dark:text-slate-300"
         >
           {tag}
         </DashboardPillButton>

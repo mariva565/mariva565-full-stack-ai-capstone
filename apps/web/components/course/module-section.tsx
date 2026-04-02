@@ -2,7 +2,13 @@ import { useEffect, useState, type FormEvent } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 
-import { ArrowDownIcon, ArrowUpIcon } from "../ui/action-icons";
+import {
+  ArrowDownIcon,
+  ArrowUpIcon,
+  CollectionIcon,
+  PencilIcon,
+  TrashIcon,
+} from "../ui/action-icons";
 
 type ModuleInfo = {
   id: number;
@@ -114,9 +120,11 @@ export function ModuleSection({
                   <h2 className="dashboard-script-title mt-2 block max-w-3xl text-[clamp(1.55rem,2.35vw,2rem)] leading-[1.03]">
                     {module.title}
                   </h2>
-                  <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-300">
-                    {module.description?.trim() || "Open this module to manage its materials in a dedicated workspace instead of mixing everything inside the course page."}
-                  </p>
+                  {module.description?.trim() ? (
+                    <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-300">
+                      {module.description.trim()}
+                    </p>
+                  ) : null}
                 </>
               )}
             </div>
@@ -126,17 +134,21 @@ export function ModuleSection({
         <div className="flex flex-wrap gap-2 xl:justify-end">
           <Link
             href={`/modules/${module.id}`}
-            className="rounded-full bg-[linear-gradient(135deg,#6366f1_0%,#8b5cf6_55%,#06b6d4_100%)] px-4 py-2 text-sm font-semibold text-white shadow-[0_16px_35px_rgba(99,102,241,0.22)] transition hover:-translate-y-0.5 hover:shadow-[0_20px_45px_rgba(99,102,241,0.28)]"
+            title="View materials"
+            aria-label="View materials"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-[linear-gradient(135deg,#6366f1_0%,#8b5cf6_55%,#06b6d4_100%)] text-white shadow-[0_16px_35px_rgba(99,102,241,0.22)] transition hover:-translate-y-0.5 hover:shadow-[0_20px_45px_rgba(99,102,241,0.28)]"
           >
-            Open materials
+            <CollectionIcon />
           </Link>
           {!isEditingDetails ? (
             <button
               type="button"
               onClick={() => setIsEditingDetails(true)}
-              className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
+              title="Edit"
+              aria-label="Edit"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 text-slate-600 transition hover:-translate-y-0.5 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
             >
-              Edit details
+              <PencilIcon />
             </button>
           ) : null}
           <button
@@ -162,9 +174,11 @@ export function ModuleSection({
           <button
             type="button"
             onClick={() => onDeleteModule(module.id)}
-            className="rounded-full border border-red-200 px-4 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-50 dark:border-red-900/70 dark:text-red-300 dark:hover:bg-red-950/40"
+            title="Delete module"
+            aria-label="Delete module"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-red-200 text-red-600 transition hover:-translate-y-0.5 hover:bg-red-50 dark:border-red-900/70 dark:text-red-300 dark:hover:bg-red-950/40"
           >
-            Delete
+            <TrashIcon />
           </button>
         </div>
       </div>

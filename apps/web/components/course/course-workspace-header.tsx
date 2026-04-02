@@ -43,20 +43,17 @@ export function CourseWorkspaceHeader({
           <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
             <div className="max-w-3xl">
               <p className="text-[0.68rem] font-semibold uppercase tracking-[0.32em] text-slate-400 dark:text-slate-500">
-                Course Workspace
+                Course
               </p>
               <h1 className="dashboard-script-title mt-3 text-4xl md:text-5xl">
                 {title}
               </h1>
               <p className="mt-4 max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-300">
-                {description || "Organize this course through modules first, then open a module to manage its materials."}
+                {description || "Start with modules, then open one to collect notes, links, and file references."}
               </p>
               <div className="mt-4 flex flex-wrap gap-2">
                 <span className="rounded-full border border-brand-200/80 bg-white/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-brand-700 shadow-sm dark:border-brand-400/20 dark:bg-brand-500/10 dark:text-brand-100">
                   {moduleCount} {moduleCount === 1 ? "module" : "modules"}
-                </span>
-                <span className="rounded-full border border-cyan-200/80 bg-cyan-50/90 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-cyan-700 dark:border-cyan-400/20 dark:bg-cyan-500/10 dark:text-cyan-100">
-                  Course &rarr; Modules &rarr; Materials
                 </span>
               </div>
             </div>
@@ -64,10 +61,14 @@ export function CourseWorkspaceHeader({
             <button
               type="button"
               onClick={onToggleModuleForm}
-              className="group inline-flex items-center justify-center rounded-full bg-[linear-gradient(135deg,#6366f1_0%,#8b5cf6_55%,#06b6d4_100%)] px-5 py-3 text-sm font-semibold text-white shadow-[0_20px_45px_rgba(99,102,241,0.25)] transition hover:-translate-y-0.5 hover:shadow-[0_24px_55px_rgba(99,102,241,0.32)]"
+              className={`group inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-semibold transition ${
+                showModuleForm
+                  ? "border border-slate-200 bg-white/85 text-slate-700 hover:-translate-y-0.5 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-200 dark:hover:bg-slate-800"
+                  : "bg-[linear-gradient(135deg,#6366f1_0%,#8b5cf6_55%,#06b6d4_100%)] text-white shadow-[0_20px_45px_rgba(99,102,241,0.25)] hover:-translate-y-0.5 hover:shadow-[0_24px_55px_rgba(99,102,241,0.32)]"
+              }`}
             >
               {showModuleForm ? (
-                "Hide module form"
+                "Close"
               ) : (
                 <span className="inline-flex items-center gap-2">
                   <span className="inline-block text-base leading-none transition duration-500 [transition-timing-function:cubic-bezier(0.34,1.56,0.64,1)] group-hover:-translate-y-1 group-hover:scale-110 group-hover:rotate-90">
@@ -80,7 +81,7 @@ export function CourseWorkspaceHeader({
           </div>
 
           <div className="mt-5 rounded-[1.4rem] border border-brand-200/80 bg-white/80 px-4 py-3 text-sm text-slate-600 shadow-sm backdrop-blur dark:border-brand-400/15 dark:bg-slate-900/60 dark:text-slate-300">
-            Pick a module to open its full materials workspace. That keeps the navigation closer to the original StudyHub product instead of flattening everything into one page.
+            Build the outline first. Materials stay tucked inside each module.
           </div>
 
           {showModuleForm ? (
@@ -124,7 +125,7 @@ export function CourseWorkspaceHeader({
                 </button>
               </div>
               <p className="mt-3 text-xs leading-5 text-slate-500 dark:text-slate-400">
-                Modules are the structure layer. Add an optional description here if you want the card copy to describe the module instead of showing the default helper text.
+                Optional description shown on the module card.
               </p>
             </form>
           ) : null}

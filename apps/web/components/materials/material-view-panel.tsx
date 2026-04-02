@@ -1,6 +1,6 @@
 import { MaterialTypePill } from "./material-type-pill";
 import { TagList } from "./tag-list";
-import { PinAngleIcon } from "../ui/action-icons";
+import { ExternalLinkIcon, PinAngleIcon } from "../ui/action-icons";
 
 type MaterialViewPanelProps = {
   title: string;
@@ -30,6 +30,7 @@ export function MaterialViewPanel({
   onDelete,
 }: MaterialViewPanelProps) {
   const pinLabel = isPinned ? "Remove from quick access" : "Pin to quick access";
+  const sourceLabel = "Open source";
 
   return (
     <div>
@@ -40,6 +41,18 @@ export function MaterialViewPanel({
           </h2>
           <div className="mt-2 flex flex-wrap items-center gap-2">
             <MaterialTypePill type={materialType} />
+            {fileUrl ? (
+              <a
+                href={fileUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                title={sourceLabel}
+                aria-label={sourceLabel}
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-300 text-slate-600 transition hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
+              >
+                <ExternalLinkIcon />
+              </a>
+            ) : null}
             <button
               type="button"
               disabled={pinBusy}
@@ -85,19 +98,6 @@ export function MaterialViewPanel({
         <p className="mt-6 rounded-[1.4rem] border border-dashed border-slate-300/80 bg-slate-50/80 px-4 py-4 text-sm text-slate-500 dark:border-slate-700 dark:bg-slate-900/50 dark:text-slate-400">
           No content yet.
         </p>
-      )}
-
-      {fileUrl && (
-        <div className="mt-6">
-          <a
-            href={fileUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center rounded-full border border-slate-200 bg-white/80 px-4 py-2 text-sm font-semibold text-brand-600 transition hover:bg-slate-50 hover:text-brand-700 dark:border-slate-700 dark:bg-slate-900/70 dark:text-brand-100 dark:hover:bg-slate-800"
-          >
-            Open attached link/file &rarr;
-          </a>
-        </div>
       )}
 
       <p className="mt-6 text-xs text-slate-400 dark:text-slate-500">

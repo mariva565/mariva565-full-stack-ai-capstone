@@ -1288,6 +1288,153 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 **Validation:**
 - `npm.cmd --workspace @studyhub/web run typecheck`
 
+## 2026-04-02
+
+### Session 75 (Interface review cleanup before Admin)
+
+**Problem investigated:**
+- The restored `course -> module -> material` flow was structurally correct, but several surfaces still read like implementation notes instead of polished product UI.
+- Key actions in the module and material cards were still more text-heavy than the v1 reference, especially around open/edit/source affordances.
+- The material flow also still repeated state through extra chips (`Has source URL`, `Quick access`, `Not pinned`) even when those states were already visible elsewhere.
+
+**What changed:**
+- `apps/web/components/course/course-workspace-header.tsx`
+  - simplified the eyebrow/helper copy so the course header sounds more like product UI and less like a handoff explanation
+  - removed the extra hierarchy chip
+  - changed the open-form CTA state from `Hide module form` to a quieter `Close`
+- `apps/web/components/course/module-section.tsx`
+  - shortened the fallback module description copy
+  - switched the main module actions toward a lighter icon-toolbar treatment for view/edit/delete, closer to the v1 interaction language
+- `apps/web/components/course/module-list.tsx`
+  - tightened the empty-state copy
+- `apps/web/components/modules/module-workspace-header.tsx`
+  - replaced the upload/disclaimer-style helper copy with shorter product-facing guidance
+  - changed the open-form CTA state from `Hide material form` to `Close`
+- `apps/web/components/modules/module-sidebar.tsx`
+  - shortened the sidebar helper copy
+- `apps/web/components/modules/module-pinned-sidebar.tsx`
+  - shortened both the helper text and empty state
+- `apps/web/components/ui/action-icons.tsx`
+  - added shared collection, pencil, trash, eye, and external-link icons so the module/material action bars can stay lighter and more consistent
+- `apps/web/components/course/material-row.tsx`
+  - removed the redundant `Has source URL` and `Quick access` chips
+  - moved source/open actions to icon buttons so the title and preview stay visually dominant
+- `apps/web/components/materials/material-view-panel.tsx`
+  - moved source access into the main metadata/action area
+  - removed the extra bottom `Open attached link/file` CTA
+- `apps/web/components/materials/material-editor-form.tsx`
+  - tightened the helper copy
+- `apps/web/components/modules/module-material-composer.tsx`
+  - tightened the helper copy and auto-title hint
+- `apps/web/app/materials/[id]/page.tsx`
+  - replaced the `Material workspace` framing with cleaner review/edit language
+  - removed the negative `Not pinned` chip and only show the quick-access chip when the item is actually pinned
+
+**Why:**
+- The course/module/material flow now reads closer to a finished product and less like an explanation of the implementation.
+- The action language is lighter and more v1-like: more icon-led, less repetitive text.
+- Source and pin states still remain visible, but without the extra chip noise that was making the cards feel busier than necessary.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+**Recommended next adaptation target:**
+- stay in the interface review checkpoint for one more manual browser pass across Dashboard, Course Details, module workspace, material detail, and Profile
+- specifically verify mobile wrapping and hover balance of the new icon-heavy action bars
+- only after that checkpoint looks clean should the next chat move into the Admin Panel adaptation pass
+
+### Session 76 (Dashboard course-focus cleanup)
+
+**Problem investigated:**
+- The dashboard was still showing the `Progress Board`, `Quick Idea Capture`, and `Calendar Pulse` strip above the course area.
+- That secondary productivity layer was starting to compete with the main dashboard meaning, which should stay centered on courses and pinned study materials.
+
+**What changed:**
+- `apps/web/app/dashboard/page.tsx`
+  - removed the dashboard-only rendering of `ProgressWidget`, `QuickIdeaCapture`, and `CalendarWidget`
+  - removed the page-level milestone/calendar/idea-create wiring that only existed to support that strip
+  - kept the rest of the dashboard flow intact: hero, create-course form, course filters/cards, and pinned sidebar
+
+**Why:**
+- The dashboard now has a cleaner mental model and no longer splits attention between course management and a separate backlog/progress area.
+- Courses stay as the primary object on the page, which better matches the product structure you called out.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 77 (Material card hierarchy cleanup)
+
+**Problem investigated:**
+- The material title inside the module workspace cards was still too close in scale to the module title above, which made the card hierarchy feel flat.
+- The `Open material` action was also reading too heavy because the solid black treatment stood apart from the lighter secondary buttons around it.
+
+**What changed:**
+- `apps/web/components/course/material-row.tsx`
+  - reduced the material title scale so note titles sit more clearly below the module heading level
+  - changed the `Open material` action from a dark solid button to a lighter outlined button that matches the surrounding action language better
+
+**Why:**
+- The material cards now read with a clearer visual hierarchy.
+- The main CTA still stays obvious, but no longer steals attention through a one-off black surface.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 78 (Module card fallback-copy removal)
+
+**Problem investigated:**
+- Module cards without a saved description were still showing fallback helper copy under the title.
+- That line was no longer adding value and was making the cards feel busier than they needed to be.
+
+**What changed:**
+- `apps/web/components/course/module-section.tsx`
+  - removed the fallback summary text entirely
+  - module cards now show the second line only when a real module description exists
+
+**Why:**
+- Empty-description cards now read much cleaner and keep the focus on the module title and actions.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 79 (Progress nav exposure + course-card label removal)
+
+**Problem investigated:**
+- After the dashboard cleanup, the progress/backlog area no longer had an obvious entry point from the authenticated navigation.
+- Dashboard course cards were also still carrying the `Course card` pill, which read like an internal UI label instead of meaningful user-facing information.
+
+**What changed:**
+- `apps/web/components/navbar.tsx`
+  - added a direct `Progress` navigation link to the existing `/progress` page
+- `apps/web/components/dashboard/course-card.tsx`
+  - removed the `Course card` pill entirely
+  - kept the footer focused on actions only
+
+**Why:**
+- The progress area is now easy to discover without putting it back into the dashboard itself.
+- Course cards read cleaner and no longer waste attention on a redundant structural label.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 80 (Pinned shelf typography softening)
+
+**Problem investigated:**
+- The pinned-materials shelf on the dashboard still had some text reading too close to pure black, especially in the saved-item titles and tag filter pills.
+- That made the shelf feel visually heavier than the surrounding softer brand/slate treatment.
+
+**What changed:**
+- `apps/web/components/dashboard/pinned-material-item.tsx`
+  - shifted pinned item titles from near-black to a softer brand tone
+- `apps/web/components/dashboard/pinned-sidebar.tsx`
+  - softened the inactive tag-filter pill text in that section
+
+**Why:**
+- The pinned shelf now feels more aligned with the rest of the dashboard typography and less visually harsh.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
 ### Session 56 (Authenticated navbar mascot cleanup)
 
 **Problem investigated:**

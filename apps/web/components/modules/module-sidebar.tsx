@@ -33,7 +33,7 @@ export function ModuleSidebar({
           {courseTitle}
         </h2>
         <p className="mt-2 text-xs leading-5 text-slate-500 dark:text-slate-400">
-          Switch modules without leaving the materials workspace.
+          Jump between modules from here.
         </p>
       </div>
 

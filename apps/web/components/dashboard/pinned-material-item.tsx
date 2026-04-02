@@ -32,7 +32,7 @@ export function PinnedMaterialItem({ item }: PinnedMaterialItemProps) {
     >
       <Link
         href={`/materials/${item.materialId}`}
-        className="text-base font-semibold text-slate-900 transition-colors hover:text-brand-600 dark:text-white dark:hover:text-brand-100"
+        className="text-base font-semibold text-brand-700 transition-colors hover:text-brand-600 dark:text-brand-100 dark:hover:text-cyan-200"
       >
         {item.materialTitle}
       </Link>

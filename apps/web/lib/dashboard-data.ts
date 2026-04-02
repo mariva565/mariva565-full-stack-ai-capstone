@@ -1,16 +1,14 @@
-import { asc, desc, eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import {
   courses,
-  events,
   favorites,
   materials,
-  milestones,
   modules,
 } from "../../../drizzle/schema";
 import { db } from "./db";
 
 export async function getDashboardData(userId: number) {
-  const [courseRows, favoriteRows, milestoneRows, eventRows] = await Promise.all([
+  const [courseRows, favoriteRows] = await Promise.all([
     db
       .select()
       .from(courses)
@@ -35,22 +33,10 @@ export async function getDashboardData(userId: number) {
       .innerJoin(courses, eq(modules.courseId, courses.id))
       .where(eq(favorites.userId, userId))
       .orderBy(desc(favorites.createdAt)),
-    db
-      .select()
-      .from(milestones)
-      .where(eq(milestones.userId, userId))
-      .orderBy(asc(milestones.orderIndex)),
-    db
-      .select()
-      .from(events)
-      .where(eq(events.userId, userId))
-      .orderBy(asc(events.date)),
   ]);
 
   return {
     courses: courseRows,
     favorites: favoriteRows,
-    milestones: milestoneRows,
-    events: eventRows,
   };
 }

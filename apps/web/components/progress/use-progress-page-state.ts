@@ -17,6 +17,14 @@ import {
 type ToastState = { tone: ToastTone; message: string };
 type MilestonesResponse = { milestones: Milestone[] };
 type MilestoneResponse = { milestone?: Milestone };
+type ProgressEvent = {
+  id: number;
+  title: string;
+  date: string;
+  type: string;
+  color: string | null;
+};
+type EventsResponse = { events: ProgressEvent[] };
 type MilestonePatchPayload = Partial<{
   title: string;
   description: string | null;
@@ -37,6 +45,7 @@ function timeoutMessage(error: unknown) {
 export function useProgressPageState() {
   const router = useRouter();
   const [allMilestones, setAllMilestones] = useState<Milestone[]>([]);
+  const [events, setEvents] = useState<ProgressEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [addBusy, setAddBusy] = useState(false);
   const [ideaBusy, setIdeaBusy] = useState(false);
@@ -83,7 +92,7 @@ export function useProgressPageState() {
   }
 
   useEffect(() => {
-    void loadMilestones();
+    void loadProgressData();
   }, []);
 
   async function fetchWithTimeout(input: string, init?: RequestInit) {
@@ -101,20 +110,51 @@ export function useProgressPageState() {
     }
   }
 
-  async function loadMilestones(showSpinner = true) {
+  async function loadProgressData(showSpinner = true) {
     if (showSpinner) setLoading(true);
     try {
-      const response = await fetchWithTimeout("/api/milestones");
-      if (response.status === 401) {
+      const [milestonesResult, eventsResult] = await Promise.allSettled([
+        fetchWithTimeout("/api/milestones"),
+        fetchWithTimeout("/api/events"),
+      ]);
+
+      if (milestonesResult.status === "rejected") {
+        setToast({
+          tone: "error",
+          message: timeoutMessage(milestonesResult.reason) ?? "Could not load progress items.",
+        });
+        return;
+      }
+
+      const milestonesResponse = milestonesResult.value;
+      if (milestonesResponse.status === 401) {
         router.push("/login");
         return;
       }
-      if (!response.ok) {
+      if (!milestonesResponse.ok) {
         setToast({ tone: "error", message: "Could not load progress items." });
         return;
       }
-      const data = (await response.json()) as MilestonesResponse;
+
+      const data = (await milestonesResponse.json()) as MilestonesResponse;
       setAllMilestones(data.milestones ?? []);
+
+      if (eventsResult.status === "fulfilled") {
+        const eventsResponse = eventsResult.value;
+        if (eventsResponse.status === 401) {
+          router.push("/login");
+          return;
+        }
+
+        if (eventsResponse.ok) {
+          const eventsPayload = (await eventsResponse.json()) as EventsResponse;
+          setEvents(eventsPayload.events ?? []);
+        } else {
+          setEvents([]);
+        }
+      } else {
+        setEvents([]);
+      }
     } catch (error) {
       setToast({
         tone: "error",
@@ -292,7 +332,7 @@ export function useProgressPageState() {
     ]);
     setRowBusyId(null);
     if (!sourceUpdated || !targetUpdated) {
-      await loadMilestones(false);
+      await loadProgressData(false);
       setToast({ tone: "error", message: "Could not reorder milestone." });
       return;
     }
@@ -337,6 +377,7 @@ export function useProgressPageState() {
     loading,
     addBusy,
     ideaBusy,
+    events,
     rowBusyId,
     deleteId,
     deleteBusy,

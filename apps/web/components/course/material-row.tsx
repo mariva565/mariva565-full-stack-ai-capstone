@@ -4,7 +4,7 @@ import Link from "next/link";
 import type { CourseMaterial } from "../../lib/course-materials";
 import { normalizeMaterialType, parseTags } from "../../lib/materials";
 import { MaterialTypePill } from "../materials/material-type-pill";
-import { PinAngleIcon } from "../ui/action-icons";
+import { EyeIcon, ExternalLinkIcon, PinAngleIcon } from "../ui/action-icons";
 import { TagList } from "../materials/tag-list";
 
 type MaterialRowProps = {
@@ -92,7 +92,9 @@ export function MaterialRow({
   const normalizedType = normalizeMaterialType(material.materialType);
   const tags = parseTags(material.tags);
   const preview = getContentPreview(material.content);
+  const openLabel = "Open";
   const pinLabel = isPinned ? "Remove from quick access" : "Pin to quick access";
+  const sourceLabel = "Open source";
 
   return (
     <li className="group relative overflow-hidden rounded-[1.8rem] border border-slate-200/80 bg-[linear-gradient(160deg,rgba(255,255,255,0.96)_0%,rgba(248,250,252,0.95)_58%,rgba(238,242,255,0.92)_100%)] shadow-[0_24px_55px_rgba(15,23,42,0.08)] transition hover:-translate-y-1 hover:shadow-[0_28px_65px_rgba(99,102,241,0.12)] dark:border-cyan-400/10 dark:bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.1)_0%,rgba(34,211,238,0)_26%),linear-gradient(160deg,rgba(15,23,42,0.97)_0%,rgba(9,17,34,0.96)_55%,rgba(6,12,28,0.98)_100%)] dark:hover:shadow-[0_28px_65px_rgba(6,182,212,0.08)]">
@@ -129,27 +131,29 @@ export function MaterialRow({
               </p>
               <Link
                 href={`/materials/${material.id}`}
-                className="dashboard-script-title mt-2 block text-[clamp(1.95rem,3vw,2.65rem)] leading-[1.04] transition group-hover:translate-x-0.5"
+                className="dashboard-script-title mt-2 block text-[clamp(1.35rem,2.15vw,1.8rem)] leading-[1.08] transition group-hover:translate-x-0.5"
               >
                 {material.title}
               </Link>
               <div className="mt-3 flex flex-wrap items-center gap-2">
                 <MaterialTypePill type={material.materialType} />
-                {material.fileUrl ? (
-                  <span className="rounded-full border border-slate-200/80 bg-white/80 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-300">
-                    Has source URL
-                  </span>
-                ) : null}
-                {isPinned ? (
-                  <span className="rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-amber-700 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-200">
-                    Quick access
-                  </span>
-                ) : null}
               </div>
             </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-2 lg:justify-end">
+            {material.fileUrl ? (
+              <a
+                href={material.fileUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                title={sourceLabel}
+                aria-label={sourceLabel}
+                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white/80 text-slate-600 transition hover:-translate-y-0.5 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-300 dark:hover:bg-slate-800"
+              >
+                <ExternalLinkIcon />
+              </a>
+            ) : null}
             <button
               type="button"
               disabled={pinBusy}
@@ -166,9 +170,12 @@ export function MaterialRow({
             </button>
             <Link
               href={`/materials/${material.id}`}
-              className="rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
+              title={openLabel}
+              aria-label={openLabel}
+              className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:-translate-y-0.5 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-300 dark:hover:bg-slate-800"
             >
-              Open material
+              <EyeIcon />
+              <span>Open</span>
             </Link>
           </div>
         </div>
@@ -177,7 +184,7 @@ export function MaterialRow({
           <p className="text-sm leading-7 text-slate-600 dark:text-slate-300">{preview}</p>
         ) : (
           <p className="text-sm italic text-slate-400 dark:text-slate-500">
-            No preview text yet. Open the material to add more context.
+            No preview yet. Open the item to add more context.
           </p>
         )}
 

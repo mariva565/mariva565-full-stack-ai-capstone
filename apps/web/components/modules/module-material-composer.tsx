@@ -36,7 +36,7 @@ export function ModuleMaterialComposer({
             Add Material
           </p>
           <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">
-            Use quick notes for study summaries, links for references, and file URLs when you want to point to an external resource.
+            Capture a quick note, save a link, or point to a file URL.
           </p>
         </div>
 
@@ -53,7 +53,7 @@ export function ModuleMaterialComposer({
               placeholder="Optional for quick notes"
             />
             <p className="mt-2 text-xs leading-5 text-slate-500 dark:text-slate-400">
-              Leave this empty and we will turn the first line of the note into the saved title.
+              Leave this empty to use the opening line as the title.
             </p>
           </div>
 

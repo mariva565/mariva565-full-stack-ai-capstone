@@ -40,7 +40,7 @@ export function MaterialEditorForm({
           Edit Material
         </p>
         <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">
-          Keep the title clear, add tags for filtering, and use file URLs only when the source should open elsewhere.
+          Update the title, tags, and any linked source details.
         </p>
       </div>
 

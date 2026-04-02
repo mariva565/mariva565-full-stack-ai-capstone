@@ -23,7 +23,7 @@ export function ModuleList({
             No modules yet
           </p>
           <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-            Start with your first module, then open it to add notes, links, and file references.
+            Create the first one to start shaping this course.
           </p>
         </div>
       ) : null}

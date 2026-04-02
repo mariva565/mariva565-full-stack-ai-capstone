@@ -237,13 +237,13 @@ export default function MaterialPage() {
                   Back to {moduleInfo.title}
                 </Link>
                 <p className="mt-4 text-[0.68rem] font-semibold uppercase tracking-[0.32em] text-slate-400 dark:text-slate-500">
-                  Material Detail
+                  Material
                 </p>
                 <h1 className="dashboard-panel-title mt-3 text-3xl md:text-4xl">
-                  Material workspace
+                  Review and edit
                 </h1>
                 <p className="mt-4 max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-300">
-                  Review, pin, or edit this item inside <span className="font-semibold text-slate-900 dark:text-white">{moduleInfo.title}</span> from the <span className="font-semibold text-slate-900 dark:text-white">{course.title}</span> course.
+                  Keep this item inside <span className="font-semibold text-slate-900 dark:text-white">{moduleInfo.title}</span> from the <span className="font-semibold text-slate-900 dark:text-white">{course.title}</span> course. Pin it for quick access or update the details whenever the source changes.
                 </p>
               </div>
 
@@ -251,7 +251,7 @@ export default function MaterialPage() {
                 href={`/courses/${course.id}`}
                 className="rounded-full border border-slate-200 bg-white/80 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-300 dark:hover:bg-slate-800"
               >
-                View course modules
+                Course modules
               </Link>
             </div>
 
@@ -259,9 +259,11 @@ export default function MaterialPage() {
               <span className="rounded-full border border-brand-200/80 bg-white/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-brand-700 shadow-sm dark:border-brand-400/20 dark:bg-brand-500/10 dark:text-brand-100">
                 Module {moduleInfo.orderIndex + 1}
               </span>
-              <span className="rounded-full border border-cyan-200/80 bg-cyan-50/90 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-cyan-700 dark:border-cyan-400/20 dark:bg-cyan-500/10 dark:text-cyan-100">
-                {isPinned ? "Pinned in quick access" : "Not pinned"}
-              </span>
+              {isPinned ? (
+                <span className="rounded-full border border-cyan-200/80 bg-cyan-50/90 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-cyan-700 dark:border-cyan-400/20 dark:bg-cyan-500/10 dark:text-cyan-100">
+                  Quick access
+                </span>
+              ) : null}
             </div>
           </div>
 

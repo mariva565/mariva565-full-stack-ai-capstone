@@ -58,7 +58,7 @@ export function ModuleWorkspaceHeader({
               {moduleTitle}
             </h1>
             <p className="mt-4 max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-300">
-              {moduleDescription?.trim() || "Notes, links, and file URLs live here. The hierarchy stays true to the original flow: pick a course, choose a module, then browse its materials."}
+              {moduleDescription?.trim() || "Keep notes, links, and file URLs together in one focused place."}
             </p>
             <div className="mt-4 flex flex-wrap gap-2">
               <span className="rounded-full border border-brand-200/80 bg-white/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-brand-700 shadow-sm dark:border-brand-400/20 dark:bg-brand-500/10 dark:text-brand-100">
@@ -73,10 +73,14 @@ export function ModuleWorkspaceHeader({
           <button
             type="button"
             onClick={onToggleCreateForm}
-            className="group inline-flex items-center justify-center rounded-full bg-[linear-gradient(135deg,#6366f1_0%,#8b5cf6_55%,#06b6d4_100%)] px-5 py-3 text-sm font-semibold text-white shadow-[0_20px_45px_rgba(99,102,241,0.25)] transition hover:-translate-y-0.5 hover:shadow-[0_24px_55px_rgba(99,102,241,0.32)]"
+            className={`group inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-semibold transition ${
+              showCreateForm
+                ? "border border-slate-200 bg-white/85 text-slate-700 hover:-translate-y-0.5 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-200 dark:hover:bg-slate-800"
+                : "bg-[linear-gradient(135deg,#6366f1_0%,#8b5cf6_55%,#06b6d4_100%)] text-white shadow-[0_20px_45px_rgba(99,102,241,0.25)] hover:-translate-y-0.5 hover:shadow-[0_24px_55px_rgba(99,102,241,0.32)]"
+            }`}
           >
             {showCreateForm ? (
-              "Hide material form"
+              "Close"
             ) : (
               <span className="inline-flex items-center gap-2">
                 <span className="inline-block text-base leading-none transition duration-500 [transition-timing-function:cubic-bezier(0.34,1.56,0.64,1)] group-hover:-translate-y-1 group-hover:scale-110 group-hover:rotate-90">
@@ -89,7 +93,7 @@ export function ModuleWorkspaceHeader({
         </div>
 
         <div className="mt-5 rounded-[1.4rem] border border-brand-200/80 bg-white/80 px-4 py-3 text-sm text-slate-600 shadow-sm backdrop-blur dark:border-brand-400/15 dark:bg-slate-900/60 dark:text-slate-300">
-          Direct file uploads are still intentionally postponed. Text notes, links, and file URLs are already usable and keep the demo honest.
+          Capture quick notes, save reference links, or attach a file URL.
         </div>
 
         <div className="mt-5 grid gap-3 lg:grid-cols-[minmax(0,1.7fr)_220px]">

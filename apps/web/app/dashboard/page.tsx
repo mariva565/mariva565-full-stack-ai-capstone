@@ -12,9 +12,6 @@ import { DashboardHero } from "../../components/dashboard/dashboard-hero";
 import { DashboardPageShell } from "../../components/dashboard/dashboard-page-shell";
 import { PinnedSidebar } from "../../components/dashboard/pinned-sidebar";
 import { type PinnedMaterial } from "../../components/dashboard/pinned-material-item";
-import { ProgressWidget } from "../../components/dashboard/progress-widget";
-import { CalendarWidget } from "../../components/dashboard/calendar-widget";
-import { QuickIdeaCapture } from "../../components/dashboard/quick-idea-capture";
 import { ConfirmModal } from "../../components/ui/confirm-modal";
 import { Spinner } from "../../components/ui/spinner";
 import { Toast, type ToastTone } from "../../components/ui/toast";
@@ -28,30 +25,9 @@ type Course = {
   createdAt: string;
 };
 
-type Milestone = {
-  id: number;
-  title: string;
-  status: string;
-  dueDate: string | null;
-  orderIndex: number;
-};
-
-type CalendarEvent = {
-  id: number;
-  title: string;
-  date: string;
-  type: string;
-};
-
 type DashboardResponse = {
   courses?: Course[];
   favorites?: PinnedMaterial[];
-  milestones?: Milestone[];
-  events?: CalendarEvent[];
-};
-
-type MilestoneResponse = {
-  milestone?: Milestone;
 };
 
 type ToastState = {
@@ -86,9 +62,6 @@ export default function DashboardPage() {
   const [activeTag, setActiveTag] = useState<string | null>(null);
   const [courseToDelete, setCourseToDelete] = useState<number | null>(null);
   const [deleteBusy, setDeleteBusy] = useState(false);
-  const [milestones, setMilestones] = useState<Milestone[]>([]);
-  const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>([]);
-  const [ideaBusy, setIdeaBusy] = useState(false);
   const [toast, setToast] = useState<ToastState | null>(null);
   const {
     courseToEdit,
@@ -128,8 +101,6 @@ export default function DashboardPage() {
       const data = (await response.json()) as DashboardResponse;
       setCourses(data.courses ?? []);
       setFavorites(data.favorites ?? []);
-      setMilestones(data.milestones ?? []);
-      setCalendarEvents(data.events ?? []);
     } catch {
       setToast({ tone: "error", message: "Could not load your dashboard." });
     } finally {
@@ -191,45 +162,6 @@ export default function DashboardPage() {
     setToast({ tone: "success", message: "Course deleted." });
   }
 
-  async function handleAddIdea(title: string, description: string) {
-    setIdeaBusy(true);
-
-    try {
-      const response = await fetch("/api/milestones", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title,
-          description: description || null,
-          status: "idea",
-          orderIndex: milestones.reduce((max, milestone) => Math.max(max, milestone.orderIndex), -1) + 1,
-        }),
-      });
-
-      if (!response.ok) {
-        setToast({
-          tone: "error",
-          message: await readErrorMessage(response, "Could not save idea."),
-        });
-        return false;
-      }
-
-      const payload = (await response.json()) as MilestoneResponse;
-      const milestone = payload.milestone;
-      if (milestone) {
-        setMilestones((current) => [...current, milestone]);
-      }
-
-      setToast({ tone: "success", message: "Idea added to backlog." });
-      return true;
-    } catch {
-      setToast({ tone: "error", message: "Could not save idea." });
-      return false;
-    } finally {
-      setIdeaBusy(false);
-    }
-  }
-
   const filteredCourses = useMemo(
     () =>
       courses.filter((course) =>
@@ -265,16 +197,6 @@ export default function DashboardPage() {
             onSubmit={handleCreateCourse}
           />
         )}
-
-        <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-          <ProgressWidget milestones={milestones} />
-          <QuickIdeaCapture
-            ideaCount={milestones.filter((milestone) => milestone.status === "idea").length}
-            busy={ideaBusy}
-            onAdd={handleAddIdea}
-          />
-          <CalendarWidget events={calendarEvents} />
-        </div>
 
         <div className="mt-6 grid gap-6 lg:grid-cols-[2fr_1fr]">
           <section>
