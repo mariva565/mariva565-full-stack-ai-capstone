@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { ArrowLeftIcon } from "../auth/auth-icons";
-import { DashboardActionButton, DashboardPill } from "./dashboard-controls";
+import { DashboardActionButton } from "./dashboard-controls";
 
 type DashboardHeroProps = {
   courseCount: number;
@@ -38,11 +38,7 @@ function StatCard({ label, value }: StatCardProps) {
 function HeroHeading() {
   return (
     <div className="max-w-2xl">
-      <DashboardPill tone="brand" className="uppercase tracking-[0.24em] shadow-sm">
-        Workspace Board
-      </DashboardPill>
-
-      <div className="mt-4 flex items-center gap-4">
+      <div className="flex items-center gap-4">
         <div className="flex h-14 w-14 items-center justify-center rounded-[1.35rem] bg-[linear-gradient(135deg,#6366f1_0%,#8b5cf6_55%,#06b6d4_100%)] shadow-[0_18px_35px_rgba(99,102,241,0.25)] transition duration-300 hover:-translate-y-0.5 hover:rotate-[-5deg] hover:scale-[1.03] dark:shadow-[0_20px_40px_rgba(6,182,212,0.2)]">
           <div className="flex items-end gap-1">
             <span className="h-5 w-1.5 rounded-full bg-white/95" />
@@ -55,10 +51,6 @@ function HeroHeading() {
           <h1 className="dashboard-script-title text-4xl sm:text-5xl">
             Dashboard
           </h1>
-          <p className="mt-1 max-w-xl text-sm text-slate-500 dark:text-slate-300">
-            Welcome back. Your courses, quick ideas, and pinned study pieces now
-            live in one softer, faster workspace.
-          </p>
         </div>
       </div>
     </div>

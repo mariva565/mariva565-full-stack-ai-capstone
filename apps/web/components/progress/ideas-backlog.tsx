@@ -59,10 +59,10 @@ export function IdeasBacklog({ ideas, onAdd, onEdit, onPromote, onDelete, addBus
     >
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h2 className="flex items-center gap-2 text-lg font-semibold text-slate-900 dark:text-white">
-            <span className="h-2.5 w-2.5 rounded-full bg-cyan-400" />
-            Ideas Backlog
-          </h2>
+          <p className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">
+            Backlog
+          </p>
+          <h2 className="dashboard-panel-title mt-1 text-[1.55rem]">Ideas Backlog</h2>
           <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
             Feature ideas and improvements for later
           </p>
@@ -113,7 +113,7 @@ export function IdeasBacklog({ ideas, onAdd, onEdit, onPromote, onDelete, addBus
               ) : (
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
-                    <p className="text-sm font-medium text-slate-900 dark:text-white">{idea.title}</p>
+                    <p className="text-sm font-medium text-slate-700 dark:text-slate-100">{idea.title}</p>
                     {idea.description && (
                       <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{idea.description}</p>
                     )}

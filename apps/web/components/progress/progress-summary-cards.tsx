@@ -22,7 +22,7 @@ export function ProgressSummaryCards({
   ideas,
 }: ProgressSummaryCardsProps) {
   const cards: SummaryCard[] = [
-    { label: "Total", value: total },
+    { label: "Total", value: total, valueClassName: "text-brand-700 dark:text-brand-100" },
     { label: "Done", value: done, valueClassName: "text-emerald-600 dark:text-emerald-300" },
     { label: "Active", value: active, valueClassName: "text-amber-600 dark:text-amber-300" },
     { label: "Overdue", value: overdue, valueClassName: "text-rose-600 dark:text-rose-300" },
@@ -40,7 +40,7 @@ export function ProgressSummaryCards({
             {card.label}
           </p>
           <p
-            className={`mt-1 text-2xl font-bold text-slate-900 dark:text-white ${
+            className={`mt-1 text-[1.75rem] font-semibold text-slate-700 dark:text-slate-100 ${
               card.valueClassName ?? ""
             }`}
           >

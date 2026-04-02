@@ -16,7 +16,10 @@ export function ProgressBar({ milestones }: Props) {
     <div className="rounded-xl border border-slate-200 bg-white/80 p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900/60">
       <div className="mb-3 flex items-end justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Project Progress</h2>
+          <p className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">
+            Timeline
+          </p>
+          <h2 className="dashboard-panel-title mt-1 text-[1.65rem]">Project Progress</h2>
           <p className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
             {done} of {total} milestones completed
             {inProgress > 0 && (

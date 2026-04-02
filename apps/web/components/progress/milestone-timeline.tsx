@@ -186,7 +186,7 @@ export function MilestoneTimeline({
                     className={`font-medium ${
                       milestone.status === "done"
                         ? "text-slate-500 line-through dark:text-slate-400"
-                        : "text-slate-900 dark:text-white"
+                        : "text-slate-700 dark:text-slate-100"
                     }`}
                   >
                     {milestone.title}

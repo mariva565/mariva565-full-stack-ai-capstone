@@ -1435,6 +1435,70 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 **Validation:**
 - `npm.cmd --workspace @studyhub/web run typecheck`
 
+### Session 81 (Progress calendar move + dashboard widget cleanup)
+
+**Problem investigated:**
+- The dashboard no longer rendered `ProgressWidget`, `QuickIdeaCapture`, and `CalendarWidget`, but the old dashboard-only widget files and extra dashboard data loading were still hanging around.
+- The calendar summary also needed a real home inside the `Progress` area instead of remaining conceptually tied to the dashboard.
+
+**What changed:**
+- `apps/web/components/progress/upcoming-events-panel.tsx`
+  - added a dedicated progress-side panel for upcoming calendar events in the next 7 days
+  - linked that panel to the full `/calendar` page
+- `apps/web/components/progress/use-progress-page-state.ts`
+  - extended the progress page state to load calendar events alongside milestones
+- `apps/web/app/progress/page.tsx`
+  - placed the new upcoming-events panel in the right-side progress column above `Due Soon`
+- `apps/web/lib/dashboard-data.ts`
+  - removed milestone and event loading from the dashboard data helper because the dashboard no longer uses them
+- `apps/web/components/dashboard/progress-widget.tsx`
+  - removed as dead dashboard-only UI
+- `apps/web/components/dashboard/quick-idea-capture.tsx`
+  - removed as dead dashboard-only UI
+- `apps/web/components/dashboard/calendar-widget.tsx`
+  - removed after moving the calendar summary responsibility into the progress context
+
+**Why:**
+- The dashboard stays course-focused without carrying hidden leftover progress/calendar baggage in its data path.
+- The calendar summary now sits where it makes more product sense: inside `Progress`, next to milestones, due-soon items, and the ideas backlog.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 82 (Progress typography + color softening)
+
+**Problem investigated:**
+- The `Progress` area was still using too much default sans treatment and too many near-black display titles compared with the rest of the app.
+- That made the page feel visually disconnected from the softer signature/brand language already established across Dashboard, courses, modules, and materials.
+
+**What changed:**
+- `apps/web/app/progress/page.tsx`
+  - moved the main page heading into the shared signature title treatment
+  - softened the back-link hover color
+  - upgraded the hero surface to the same premium light/dark blend used elsewhere
+- `apps/web/components/progress/progress-bar.tsx`
+  - moved the section heading into the shared panel-title treatment
+- `apps/web/components/progress/due-soon-list.tsx`
+  - upgraded the section heading treatment
+  - softened item title color away from near-black
+- `apps/web/components/progress/upcoming-events-panel.tsx`
+  - upgraded the section heading treatment
+  - softened event title color away from near-black
+- `apps/web/components/progress/ideas-backlog.tsx`
+  - upgraded the section heading treatment
+  - softened backlog item titles away from near-black
+- `apps/web/components/progress/milestone-timeline.tsx`
+  - softened timeline item titles away from near-black
+- `apps/web/components/progress/progress-summary-cards.tsx`
+  - softened the number styling, especially the default `Total` card, so the stats no longer read as heavy black counters
+
+**Why:**
+- The progress page now feels much closer to the visual voice of the rest of the authenticated app.
+- Display text stays readable, but the page no longer defaults to harsh black headings everywhere.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
 ### Session 56 (Authenticated navbar mascot cleanup)
 
 **Problem investigated:**
@@ -1923,6 +1987,82 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 
 **Why:**
 - The brand area now looks more intentional and polished instead of clipped or visually hollow.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 83 (Calendar discoverability fix)
+
+**Problem investigated:**
+- The calendar had been moved out of the dashboard, but it was too hidden.
+- It existed as a separate `/calendar` page and only had a small entry point inside the `Progress` sidebar, so it was easy to miss.
+
+**What changed:**
+- `apps/web/components/navbar.tsx`
+  - added a direct `Calendar` navigation link
+- `apps/web/app/progress/page.tsx`
+  - added a visible `Open calendar` CTA in the hero area
+- `apps/web/app/calendar/page.tsx`
+  - changed the back-link from `Dashboard` to `Progress`
+
+**Why:**
+- The calendar now reads as part of the progress area, but it is no longer hidden behind a small secondary panel action.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 84 (Backlog layout move in Progress)
+
+**Problem investigated:**
+- The ideas backlog was still constrained to the narrow right rail in `Progress`.
+- That made it feel secondary even though it belongs more naturally under the milestone workflow.
+
+**What changed:**
+- `apps/web/app/progress/page.tsx`
+  - moved `IdeasBacklog` out of the right column
+  - rendered it as a full-width section below the main progress grid
+
+**Why:**
+- The backlog now reads as part of the main planning flow instead of as a cramped sidebar widget.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 85 (Calendar theme parity fix)
+
+**Problem investigated:**
+- The calendar page was still hardcoded as a dark-only screen.
+- It stayed visually dark even when the app was in light mode.
+
+**What changed:**
+- `apps/web/app/calendar/page.tsx`
+  - rebuilt the page shell to respect light and dark theme variants
+  - aligned the hero and month controls with the newer `Progress` styling
+- `apps/web/components/calendar/calendar-grid.tsx`
+  - added proper light-mode styling for headers, cells, selected state, and today state
+- `apps/web/components/calendar/event-sidebar.tsx`
+  - converted the sidebar, event cards, and form controls to proper light/dark styling
+  - replaced the broken delete glyph with a simple `x`
+
+**Why:**
+- The calendar now behaves like the rest of the app instead of forcing a dark visual treatment.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 86 (Dashboard hero copy cleanup)
+
+**Problem investigated:**
+- The dashboard hero still carried a `Workspace Board` eyebrow label that read like internal UI naming.
+- The helper sentence under `Dashboard` also felt optional and visually busy for such a straightforward screen.
+
+**What changed:**
+- `apps/web/components/dashboard/dashboard-hero.tsx`
+  - removed the `Workspace Board` pill
+  - removed the helper paragraph under the main `Dashboard` title
+
+**Why:**
+- The hero now lands faster and keeps the focus on the page title, actions, and stats.
 
 **Validation:**
 - `npm.cmd --workspace @studyhub/web run typecheck`

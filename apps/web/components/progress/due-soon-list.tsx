@@ -11,9 +11,10 @@ type DueSoonListProps = {
 export function DueSoonList({ milestones }: DueSoonListProps) {
   return (
     <section className="rounded-xl border border-slate-200 bg-white/80 p-5 dark:border-slate-700 dark:bg-slate-900/60">
-      <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-        Due Soon
-      </h2>
+      <p className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">
+        Focus
+      </p>
+      <h2 className="dashboard-panel-title mt-1 text-[1.45rem]">Due Soon</h2>
 
       {milestones.length === 0 ? (
         <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
@@ -40,7 +41,7 @@ export function DueSoonList({ milestones }: DueSoonListProps) {
                 key={milestone.id}
                 className="rounded-lg border border-slate-200 bg-slate-50/60 px-3 py-2 dark:border-slate-700 dark:bg-slate-950/40"
               >
-                <p className="truncate text-sm font-medium text-slate-900 dark:text-white">
+                <p className="truncate text-sm font-medium text-slate-700 dark:text-slate-100">
                   {milestone.title}
                 </p>
                 <div className="mt-1">

@@ -68,6 +68,7 @@ export function Navbar() {
   const links = [
     { href: "/dashboard", label: "Dashboard" },
     { href: "/progress", label: "Progress" },
+    { href: "/calendar", label: "Calendar" },
     { href: "/profile", label: "Profile" },
   ];
 
