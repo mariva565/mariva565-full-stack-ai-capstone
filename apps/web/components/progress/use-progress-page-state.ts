@@ -1,9 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import type { ToastTone } from "../ui/toast";
-import type { Milestone, MilestoneUpdate } from "./milestone-timeline";
+import type { Milestone, MilestoneUpdate, ProgressData, ProgressEvent } from "./types";
 import type { TimelineFilter } from "./timeline-filters";
 import {
   classifyMilestoneDueDate,
@@ -17,13 +17,6 @@ import {
 type ToastState = { tone: ToastTone; message: string };
 type MilestonesResponse = { milestones: Milestone[] };
 type MilestoneResponse = { milestone?: Milestone };
-type ProgressEvent = {
-  id: number;
-  title: string;
-  date: string;
-  type: string;
-  color: string | null;
-};
 type EventsResponse = { events: ProgressEvent[] };
 type MilestonePatchPayload = Partial<{
   title: string;
@@ -33,6 +26,8 @@ type MilestonePatchPayload = Partial<{
   orderIndex: number;
 }>;
 type FilterOption = { id: TimelineFilter; label: string; count: number };
+type UseProgressPageStateParams = { initialData: ProgressData };
+
 const REQUEST_TIMEOUT_MS = 12000;
 
 function timeoutMessage(error: unknown) {
@@ -42,11 +37,10 @@ function timeoutMessage(error: unknown) {
   return null;
 }
 
-export function useProgressPageState() {
+export function useProgressPageState({ initialData }: UseProgressPageStateParams) {
   const router = useRouter();
-  const [allMilestones, setAllMilestones] = useState<Milestone[]>([]);
-  const [events, setEvents] = useState<ProgressEvent[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [allMilestones, setAllMilestones] = useState<Milestone[]>(initialData.milestones);
+  const [events, setEvents] = useState<ProgressEvent[]>(initialData.events);
   const [addBusy, setAddBusy] = useState(false);
   const [ideaBusy, setIdeaBusy] = useState(false);
   const [rowBusyId, setRowBusyId] = useState<number | null>(null);
@@ -91,10 +85,6 @@ export function useProgressPageState() {
     return Math.max(...allMilestones.map((m) => m.orderIndex)) + 1;
   }
 
-  useEffect(() => {
-    void loadProgressData();
-  }, []);
-
   async function fetchWithTimeout(input: string, init?: RequestInit) {
     const controller = new AbortController();
     const timeoutId = window.setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
@@ -110,8 +100,7 @@ export function useProgressPageState() {
     }
   }
 
-  async function loadProgressData(showSpinner = true) {
-    if (showSpinner) setLoading(true);
+  async function loadProgressData() {
     try {
       const [milestonesResult, eventsResult] = await Promise.allSettled([
         fetchWithTimeout("/api/milestones"),
@@ -160,8 +149,6 @@ export function useProgressPageState() {
         tone: "error",
         message: timeoutMessage(error) ?? "Could not load progress items.",
       });
-    } finally {
-      if (showSpinner) setLoading(false);
     }
   }
 
@@ -274,7 +261,10 @@ export function useProgressPageState() {
     setAllMilestones((current) =>
       current.map((item) => (item.id === id ? updated : item))
     );
-    setToast({ tone: status === "done" ? "success" : "info", message: `Milestone set to ${STATUS_TOAST_LABEL[status]}.` });
+    setToast({
+      tone: status === "done" ? "success" : "info",
+      message: `Milestone set to ${STATUS_TOAST_LABEL[status]}.`,
+    });
   }
 
   async function handleUpdateMilestone(id: number, update: MilestoneUpdate): Promise<boolean> {
@@ -306,7 +296,6 @@ export function useProgressPageState() {
     const target = allMilestones.find((item) => item.id === targetId);
     if (!current || !target) return;
 
-    // Compute new orderIndex values — handle duplicate orderIndex gracefully
     let sourceNewOrder = target.orderIndex;
     let targetNewOrder = current.orderIndex;
     if (sourceNewOrder === targetNewOrder) {
@@ -332,7 +321,7 @@ export function useProgressPageState() {
     ]);
     setRowBusyId(null);
     if (!sourceUpdated || !targetUpdated) {
-      await loadProgressData(false);
+      await loadProgressData();
       setToast({ tone: "error", message: "Could not reorder milestone." });
       return;
     }
@@ -374,7 +363,6 @@ export function useProgressPageState() {
   }
 
   return {
-    loading,
     addBusy,
     ideaBusy,
     events,

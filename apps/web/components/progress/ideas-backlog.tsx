@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import type { Milestone } from "./milestone-timeline";
+import type { Milestone } from "./types";
 import { ArrowUpIcon, PencilIcon, TrashIcon } from "../ui/action-icons";
 
 type Props = {
@@ -60,12 +60,14 @@ export function IdeasBacklog({ ideas, onAdd, onEdit, onPromote, onDelete, addBus
     >
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <p className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">
+          <p className="font-poppins text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">
             Backlog
           </p>
           <h2 className="dashboard-panel-title mt-1 text-[1.55rem]">Ideas Backlog</h2>
         </div>
-        <span className="text-sm font-medium text-cyan-600 dark:text-cyan-400">{ideas.length}</span>
+        <span className="font-poppins text-sm font-semibold text-cyan-600 dark:text-cyan-400">
+          {ideas.length}
+        </span>
       </div>
 
       {ideas.length > 0 && (
@@ -111,7 +113,9 @@ export function IdeasBacklog({ ideas, onAdd, onEdit, onPromote, onDelete, addBus
               ) : (
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0 pr-2">
-                    <p className="text-sm font-medium text-slate-700 dark:text-slate-100">{idea.title}</p>
+                    <p className="font-poppins text-sm font-semibold tracking-tight text-slate-700 dark:text-slate-100">
+                      {idea.title}
+                    </p>
                     {idea.description && (
                       <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{idea.description}</p>
                     )}

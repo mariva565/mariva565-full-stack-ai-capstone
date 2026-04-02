@@ -1,10 +1,8 @@
 import { motion } from "framer-motion";
 import { parseTags } from "../../lib/materials";
-import {
-  PinnedMaterialItem,
-  type PinnedMaterial,
-} from "./pinned-material-item";
+import { PinnedMaterialItem } from "./pinned-material-item";
 import { DashboardPillButton } from "./dashboard-controls";
+import type { PinnedMaterial } from "./types";
 
 type PinnedSidebarProps = {
   favorites: PinnedMaterial[];

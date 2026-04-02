@@ -3,27 +3,12 @@
 import { useState } from "react";
 import { DeadlinePill } from "./deadline-pill";
 import { MilestoneEditor } from "./milestone-editor";
+import type { Milestone, MilestoneUpdate } from "./types";
 import {
   classifyMilestoneDueDate,
   formatMilestoneDueDate,
   toDateKey,
 } from "../../lib/progress";
-
-export type Milestone = {
-  id: number;
-  title: string;
-  description: string | null;
-  status: "not_started" | "in_progress" | "done" | "idea";
-  dueDate: string | null;
-  completedAt: string | null;
-  orderIndex: number;
-};
-
-export type MilestoneUpdate = {
-  title: string;
-  description: string;
-  dueDate: string | null;
-};
 
 type MoveDirection = "up" | "down";
 
@@ -183,7 +168,7 @@ export function MilestoneTimeline({
               >
                 <div className="flex items-center justify-between gap-3">
                   <h3
-                    className={`font-medium ${
+                    className={`font-poppins font-semibold tracking-tight ${
                       milestone.status === "done"
                         ? "text-slate-500 line-through dark:text-slate-400"
                         : "text-slate-700 dark:text-slate-100"

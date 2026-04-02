@@ -1288,6 +1288,41 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 **Validation:**
 - `npm.cmd --workspace @studyhub/web run typecheck`
 
+### Session 94 (Server-first initial data for Dashboard and Progress)
+
+**Problem investigated:**
+- Dashboard and Progress were both rendering empty client state first, then fetching data after mount.
+- This caused the user-visible "zero values first, real numbers later" effect and made the app feel slower than it needed to.
+
+**What changed:**
+- `apps/web/lib/server-auth.ts`
+  - added a small server helper that reads the auth token from cookies and redirects unauthenticated users to `/login`
+- `apps/web/lib/dashboard-data.ts`
+  - normalized dashboard payloads for server rendering, including stable string dates
+- `apps/web/components/dashboard/types.ts`
+  - extracted shared dashboard data types out of client UI files
+- `apps/web/components/dashboard/dashboard-client-page.tsx`
+  - moved the interactive dashboard UI into a dedicated client component seeded with initial server data
+- `apps/web/app/dashboard/page.tsx`
+  - converted the page into a server component that fetches dashboard data before render
+- `apps/web/components/progress/types.ts`
+  - extracted shared milestone/event types for the progress flow
+- `apps/web/lib/progress-data.ts`
+  - added a server helper that fetches milestones and events before render and normalizes their date fields
+- `apps/web/components/progress/progress-page-client.tsx`
+  - moved the interactive progress UI into a dedicated client component seeded with initial server data
+- `apps/web/components/progress/use-progress-page-state.ts`
+  - removed the initial client-side loading fetch and now starts from server-provided data while keeping client mutations intact
+- `apps/web/app/progress/page.tsx`
+  - converted the page into a server component that fetches progress data before render
+
+**Why:**
+- Dashboard and Progress now arrive already populated on first render instead of showing empty values and catching up later.
+- This keeps the existing client interactivity, but removes the biggest source of the perceived loading lag on these two pages.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
 ## 2026-04-02
 
 ### Session 75 (Interface review cleanup before Admin)
@@ -2067,6 +2102,166 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 **Validation:**
 - `npm.cmd --workspace @studyhub/web run typecheck`
 
+### Session 87 (Interface review pass for Progress, Calendar, and module workspace)
+
+**Problem investigated:**
+- The current pre-Admin interface review still showed a few draft-like helper blocks, count pills, and heavier-than-needed text across `Progress`, `Calendar`, and the `course -> module` workspace flow.
+- Some mobile states also felt a bit rigid because primary CTAs were still sized like desktop controls.
+- The ideas backlog and calendar event rows had a few action areas where compact icons would read cleaner than repeated text labels.
+
+**What changed:**
+- `apps/web/app/progress/page.tsx`
+  - removed the extra helper sentence from the hero
+  - made the `Open calendar` CTA span full width on smaller screens
+- `apps/web/components/progress/upcoming-events-panel.tsx`
+  - simplified the copy from `Upcoming Events` + helper text into a tighter `Coming Up` treatment
+  - shortened the calendar CTA label
+- `apps/web/components/progress/due-soon-list.tsx`
+  - replaced the vague `Focus` eyebrow with the clearer `Milestones`
+- `apps/web/components/progress/ideas-backlog.tsx`
+  - removed the helper line under the title
+  - replaced the text-heavy row actions with icon actions for edit, promote, and delete
+  - shortened the add CTA copy
+- `apps/web/app/calendar/page.tsx`
+  - removed the extra hero helper sentence
+  - made the `Today` CTA more mobile-friendly
+  - centered the month label between the previous/next controls and loosened the panel spacing
+- `apps/web/components/calendar/event-sidebar.tsx`
+  - replaced the plain `x` delete affordance with the shared trash icon button
+  - added a softer day summary line instead of a separate empty-state sentence
+- `apps/web/components/course/course-workspace-header.tsx`
+  - replaced the module count pill with quieter metadata text
+  - removed the helper banner and redundant form note
+  - made the primary module CTA fill the available width on mobile
+- `apps/web/components/modules/module-workspace-header.tsx`
+  - replaced the count pills with a lighter `study items / pinned` metadata line
+  - removed the helper banner and shortened the search placeholder copy
+  - made the add-material CTA work better on mobile width
+- `apps/web/components/modules/module-sidebar.tsx`
+  - shortened the back-link copy
+  - removed the extra helper text and module-count pill
+- `apps/web/components/modules/module-pinned-sidebar.tsx`
+  - shortened the main heading
+  - removed the helper sentence and tightened the empty-state copy
+
+**Why:**
+- The progress/calendar area now lands faster without stacked helper copy repeating what the page already communicates visually.
+- The course/module workspace also feels less like a draft scaffold because metadata stays visible without competing through pills and banners.
+- Mobile layouts benefit from the wider CTA treatment, and the icon actions reduce visual noise in repeated list rows.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 88 (Progress calendar CTA cleanup)
+
+**Problem investigated:**
+- The calendar is already directly reachable from the authenticated navbar.
+- The extra calendar buttons inside `Progress` made the page feel repetitive instead of more discoverable.
+
+**What changed:**
+- `apps/web/app/progress/page.tsx`
+  - removed the hero-level `Open calendar` button
+- `apps/web/components/progress/upcoming-events-panel.tsx`
+  - removed the secondary `Calendar` CTA from the panel header
+
+**Why:**
+- `Progress` now relies on the navbar for calendar navigation instead of repeating the same action in multiple places.
+- The page header and sidebar card read cleaner with less duplicate UI chrome.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 89 (Progress/navbar sans font cleanup)
+
+**Problem investigated:**
+- The plain sans text around the authenticated navbar and the `Progress` screen still read a bit like leftover draft typography.
+- It was not actually Arial; the current default sans layer there was `Rubik`, but next to the handwritten titles it still felt too generic.
+
+**What changed:**
+- `apps/web/components/navbar.tsx`
+  - switched the authenticated navbar chrome to the shared `font-poppins` treatment
+- `apps/web/app/progress/page.tsx`
+  - applied `font-poppins` to the page shell so the non-handwritten UI copy reads more intentionally
+- `apps/web/app/calendar/page.tsx`
+  - matched the calendar shell to the same `font-poppins` treatment for consistency with `Progress`
+
+**Why:**
+- The app chrome and the progress/calendar flow now feel less like they are falling back to a draft sans layer.
+- The handwritten display titles still keep their stronger personality, but the supporting UI text now has a cleaner companion font.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 90 (Progress heading font hardening)
+
+**Problem investigated:**
+- Some `Progress` headings and item titles still looked too close to the base sans layer.
+- Even after moving the page shell to `Poppins`, a few repeated labels still felt like they were relying too much on inheritance instead of explicit typography styling.
+
+**What changed:**
+- `apps/web/components/progress/progress-summary-cards.tsx`
+  - applied explicit `font-poppins` styling to the stat card labels and values
+- `apps/web/components/progress/progress-bar.tsx`
+  - applied explicit `font-poppins` styling to the eyebrow copy, summary text, and percentage value
+- `apps/web/components/progress/upcoming-events-panel.tsx`
+  - applied explicit `font-poppins` styling to the panel eyebrow, event titles, and event dates
+- `apps/web/components/progress/due-soon-list.tsx`
+  - applied explicit `font-poppins` styling to the eyebrow and milestone titles
+- `apps/web/components/progress/ideas-backlog.tsx`
+  - applied explicit `font-poppins` styling to the eyebrow, count, and idea titles
+- `apps/web/components/progress/milestone-timeline.tsx`
+  - applied explicit `font-poppins` styling to milestone row titles
+
+**Why:**
+- The `Progress` screen no longer depends only on inherited shell typography for its most visible headings and repeated labels.
+- The screen now reads more consistently next to the handwritten display titles instead of slipping back toward a generic draft look.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 91 (Course card icon interaction polish)
+
+**Problem investigated:**
+- The material `note` icon already had a more playful hover interaction with lift, scale, rotation, and glow.
+- The dashboard course cards still used a calmer static glyph, so the icon language did not feel fully aligned.
+
+**What changed:**
+- `apps/web/components/dashboard/course-card.tsx`
+  - wrapped the course glyph in a `motion` hover interaction
+  - added a soft halo behind the icon
+  - matched the icon behavior more closely to the material-card interaction language with lift, scale, and slight rotation
+
+**Why:**
+- Course cards now feel more alive on hover instead of visually lagging behind the stronger material-card polish.
+- The dashboard keeps a more consistent icon interaction style across the main study flow.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 92 (Home animation visibility gating)
+
+**Problem investigated:**
+- Laptop heat suggested that some home-page effects were doing continuous work even when they were not actively needed.
+- In v1, these effects were designed to wake up only when visible or in active use.
+
+**What changed:**
+- `apps/web/components/home/hero-3d.tsx`
+  - added a viewport gate before loading the Three.js script and initializing the 3D scene
+  - switched the external script load to `lazyOnload`
+- `apps/web/components/ui/cursor-glow.tsx`
+  - removed the always-running `requestAnimationFrame` loop
+  - now starts animating only after actual mouse movement
+  - stops animating again once the glow settles
+  - pauses fully when the document is hidden
+  - skips the effect for reduced-motion and non-fine-pointer environments
+
+**Why:**
+- The home page now behaves closer to the old v1 intent: expensive visual effects only spin up when they are visible or actively being used.
+- This should reduce unnecessary CPU/GPU work and help with laptop heat while keeping the same visual direction.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
 ### Session 54 (Hero gradient visibility fix)
 
 **Problem investigated:**
@@ -2126,6 +2321,28 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 - The dashboard now follows the intended rule more faithfully:
   - all dashboard headings use the handwritten signature gradient
   - dark surfaces carry the same soft luminous premium atmosphere seen on the profile page
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 93 (Loading fallback simplification)
+
+**Problem investigated:**
+- The user suspected the loading screen itself might be contributing unnecessary work and visual heaviness.
+- The shared spinner had already been simplified functionally, but it still carried an unnecessary client boundary and an overly decorative centered fallback.
+
+**What changed:**
+- `apps/web/components/ui/spinner.tsx`
+  - removed the unnecessary `"use client"` directive so the spinner can stay server-friendly
+  - replaced the heavier centered loader with a simpler static card, one spinner ring, and short supporting copy
+  - collapsed the old rotating tips concept into a single lightweight hint string
+- `apps/web/app/loading.tsx`
+  - shortened the global loading message
+  - switched the fallback copy to a simpler one-line hint
+
+**Why:**
+- The loading experience now does less, hydrates less, and reads more like a calm fallback than a mini animated screen of its own.
+- This keeps the loader out of the way while we continue tackling the bigger source of slowness: client-side page data fetching.
 
 **Validation:**
 - `npm.cmd --workspace @studyhub/web run typecheck`

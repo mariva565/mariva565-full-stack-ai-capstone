@@ -4,18 +4,11 @@ import {
   DashboardActionButton,
   DashboardPill,
 } from "./dashboard-controls";
-
-type Course = {
-  id: number;
-  title: string;
-  description: string | null;
-  status: string;
-  createdAt: string;
-};
+import type { DashboardCourse } from "./types";
 
 type CourseCardProps = {
-  course: Course;
-  onEdit: (course: Course) => void;
+  course: DashboardCourse;
+  onEdit: (course: DashboardCourse) => void;
   onDelete: (courseId: number) => void;
 };
 
@@ -25,12 +18,26 @@ function formatStatus(status: string): string {
 
 function CourseCardGlyph() {
   return (
-    <div className="flex h-12 w-12 items-center justify-center rounded-[1.15rem] bg-gradient-to-br from-brand-50 via-white to-cyan-50 text-brand-500 shadow-sm ring-1 ring-brand-100 transition duration-300 group-hover:-translate-y-0.5 group-hover:rotate-[-4deg] group-hover:scale-[1.03] dark:from-slate-900 dark:via-slate-900 dark:to-slate-800 dark:text-cyan-100 dark:ring-cyan-400/10">
-      <svg viewBox="0 0 24 24" className="h-6 w-6 fill-none stroke-current stroke-[1.8]">
-        <path d="M6.5 5.5h7a3 3 0 0 1 3 3v10l-3-1.8-3 1.8-3-1.8-3 1.8v-10a3 3 0 0 1 3-3Z" />
-        <path d="M9 8.5h5.5" />
-      </svg>
-    </div>
+    <motion.div
+      whileHover={{
+        scale: 1.14,
+        y: -3,
+        rotate: [0, -5, 7, 0],
+      }}
+      transition={{
+        duration: 0.45,
+        ease: "easeOut",
+      }}
+      className="relative flex-none"
+    >
+      <div className="absolute inset-1 rounded-[1rem] bg-brand-200/70 opacity-0 blur-xl transition duration-300 group-hover:opacity-100 dark:bg-cyan-300/20" />
+      <div className="relative flex h-12 w-12 items-center justify-center rounded-[1.15rem] bg-gradient-to-br from-brand-50 via-white to-cyan-50 text-brand-500 shadow-sm ring-1 ring-brand-100 transition duration-300 group-hover:shadow-[0_18px_40px_rgba(15,23,42,0.14)] dark:from-slate-900 dark:via-slate-900 dark:to-slate-800 dark:text-cyan-100 dark:ring-cyan-400/10">
+        <svg viewBox="0 0 24 24" className="h-6 w-6 fill-none stroke-current stroke-[1.8]">
+          <path d="M6.5 5.5h7a3 3 0 0 1 3 3v10l-3-1.8-3 1.8-3-1.8-3 1.8v-10a3 3 0 0 1 3-3Z" />
+          <path d="M9 8.5h5.5" />
+        </svg>
+      </div>
+    </motion.div>
   );
 }
 

@@ -36,11 +36,11 @@ export function ProgressSummaryCards({
           key={card.label}
           className="rounded-xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-slate-700 dark:bg-slate-900/60"
         >
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+          <p className="font-poppins text-xs font-semibold uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">
             {card.label}
           </p>
           <p
-            className={`mt-1 text-[1.75rem] font-semibold text-slate-700 dark:text-slate-100 ${
+            className={`font-poppins mt-1 text-[1.75rem] font-black tracking-tight text-slate-700 dark:text-slate-100 ${
               card.valueClassName ?? ""
             }`}
           >

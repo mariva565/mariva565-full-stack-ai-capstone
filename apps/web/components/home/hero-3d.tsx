@@ -5,10 +5,35 @@ import Script from "next/script";
 
 export function Hero3D() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [shouldLoad, setShouldLoad] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    if (!isLoaded || !containerRef.current) return;
+    const container = containerRef.current;
+    if (!container || shouldLoad) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((entry) => entry.isIntersecting)) return;
+        setShouldLoad(true);
+        observer.disconnect();
+      },
+      {
+        threshold: 0.1,
+        rootMargin: "160px 0px",
+      }
+    );
+
+    observer.observe(container);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [shouldLoad]);
+
+  useEffect(() => {
+    if (!shouldLoad || !isLoaded || !containerRef.current) return;
 
     const THREE = (window as any).THREE;
     if (!THREE) return;
@@ -263,18 +288,21 @@ export function Hero3D() {
         containerRef.current.removeChild(renderer.domElement);
       }
     };
-  }, [isLoaded]);
+  }, [isLoaded, shouldLoad]);
 
   return (
     <>
-      <Script
-        src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"
-        onLoad={() => setIsLoaded(true)}
-      />
+      {shouldLoad ? (
+        <Script
+          src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"
+          strategy="lazyOnload"
+          onLoad={() => setIsLoaded(true)}
+        />
+      ) : null}
       <div
         ref={containerRef}
         className="absolute inset-0 z-0 pointer-events-none transition-opacity duration-1000"
-        style={{ opacity: isLoaded ? 1 : 0 }}
+        style={{ opacity: shouldLoad && isLoaded ? 1 : 0 }}
         id="hero-canvas"
       />
     </>

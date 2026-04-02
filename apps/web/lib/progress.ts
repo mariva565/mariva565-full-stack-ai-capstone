@@ -1,4 +1,4 @@
-import type { Milestone } from "../components/progress/milestone-timeline";
+import type { Milestone } from "../components/progress/types";
 import type { TimelineFilter } from "../components/progress/timeline-filters";
 
 export const FILTER_EMPTY_MESSAGE: Record<TimelineFilter, string> = {

@@ -137,7 +137,7 @@ export default function CalendarPage() {
   return (
     <>
       <div className="min-h-screen bg-[radial-gradient(circle_at_82%_14%,rgba(125,211,252,0.2)_0%,rgba(196,181,253,0.14)_20%,rgba(255,255,255,0)_44%),linear-gradient(180deg,rgba(248,250,252,0.98)_0%,rgba(241,245,249,0.96)_55%,rgba(238,242,255,0.94)_100%)] dark:bg-[radial-gradient(circle_at_82%_14%,rgba(34,211,238,0.16)_0%,rgba(168,85,247,0.12)_20%,rgba(15,23,42,0)_44%),linear-gradient(180deg,rgba(2,8,22,0.98)_0%,rgba(5,11,24,0.97)_55%,rgba(8,15,30,0.98)_100%)]">
-        <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+        <div className="font-poppins mx-auto max-w-6xl px-4 py-8 sm:px-6">
           <Link
             href="/progress"
             className="mb-4 inline-flex items-center gap-1 text-sm text-slate-500 transition-colors hover:text-brand-700 dark:text-slate-400 dark:hover:text-cyan-200"

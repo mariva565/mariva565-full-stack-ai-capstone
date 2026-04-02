@@ -1,14 +1,6 @@
 "use client";
 
-import Link from "next/link";
-
-type ProgressEvent = {
-  id: number;
-  title: string;
-  date: string;
-  type: string;
-  color: string | null;
-};
+import type { ProgressEvent } from "./types";
 
 type UpcomingEventsPanelProps = {
   events: ProgressEvent[];
@@ -35,20 +27,11 @@ export function UpcomingEventsPanel({ events }: UpcomingEventsPanelProps) {
 
   return (
     <section className="rounded-xl border border-slate-200 bg-white/80 p-5 dark:border-slate-700 dark:bg-slate-900/60">
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <p className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">
-            Next 7 days
-          </p>
-          <h2 className="dashboard-panel-title mt-1 text-[1.45rem]">Coming Up</h2>
-        </div>
-
-        <Link
-          href="/calendar"
-          className="inline-flex items-center rounded-full border border-slate-200 bg-white/90 px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:-translate-y-0.5 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-300 dark:hover:bg-slate-900"
-        >
-          Calendar
-        </Link>
+      <div>
+        <p className="font-poppins text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">
+          Next 7 days
+        </p>
+        <h2 className="dashboard-panel-title mt-1 text-[1.45rem]">Coming Up</h2>
       </div>
 
       {upcoming.length === 0 ? (
@@ -65,10 +48,10 @@ export function UpcomingEventsPanel({ events }: UpcomingEventsPanelProps) {
               <span
                 className={`h-2.5 w-2.5 shrink-0 rounded-full ${TYPE_COLORS[event.type] ?? "bg-slate-400"}`}
               />
-              <span className="min-w-0 flex-1 truncate text-sm font-medium text-slate-700 dark:text-slate-100">
+              <span className="font-poppins min-w-0 flex-1 truncate text-sm font-semibold tracking-tight text-slate-700 dark:text-slate-100">
                 {event.title}
               </span>
-              <span className="shrink-0 text-xs text-slate-500 dark:text-slate-400">
+              <span className="font-poppins shrink-0 text-xs font-medium text-slate-500 dark:text-slate-400">
                 {new Date(`${event.date}T00:00:00`).toLocaleDateString("en-GB", {
                   day: "numeric",
                   month: "short",

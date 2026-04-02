@@ -81,7 +81,7 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/80 backdrop-blur-xl dark:border-cyan-400/10 dark:bg-[linear-gradient(180deg,rgba(2,8,22,0.94)_0%,rgba(3,11,28,0.88)_100%)]">
-      <nav className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
+      <nav className="font-poppins mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
         <Link
           href="/dashboard"
           className="group inline-flex items-center gap-3"

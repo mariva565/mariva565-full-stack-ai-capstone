@@ -8,33 +8,64 @@ export function CursorGlow() {
   useEffect(() => {
     const glow = glowRef.current;
     if (!glow) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (!window.matchMedia("(pointer: fine)").matches) return;
 
-    let rafId: number;
+    let rafId: number | null = null;
     let targetX = -500;
     let targetY = -500;
     let currentX = -500;
     let currentY = -500;
+    let lastMoveAt = 0;
+
+    const stopAnimation = () => {
+      if (rafId === null) return;
+      cancelAnimationFrame(rafId);
+      rafId = null;
+    };
+
+    const animate = (now: number) => {
+      currentX += (targetX - currentX) * 0.12;
+      currentY += (targetY - currentY) * 0.12;
+      glow.style.transform = `translate(${currentX}px, ${currentY}px)`;
+
+      const settled = Math.abs(targetX - currentX) < 0.5 && Math.abs(targetY - currentY) < 0.5;
+      const idle = now - lastMoveAt > 120;
+      if (document.hidden || (settled && idle)) {
+        rafId = null;
+        return;
+      }
+
+      rafId = requestAnimationFrame(animate);
+    };
+
+    const ensureAnimation = () => {
+      if (rafId !== null || document.hidden) return;
+      rafId = requestAnimationFrame(animate);
+    };
 
     const handleMouseMove = (e: MouseEvent) => {
       targetX = e.clientX - 250;
       targetY = e.clientY - 250;
+      lastMoveAt = performance.now();
       glow.style.opacity = "1";
+      ensureAnimation();
     };
 
-    const animate = () => {
-      // Smooth lerp (matching original 90ms-like feel)
-      currentX += (targetX - currentX) * 0.12;
-      currentY += (targetY - currentY) * 0.12;
-      glow.style.transform = `translate(${currentX}px, ${currentY}px)`;
-      rafId = requestAnimationFrame(animate);
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        glow.style.opacity = "0";
+        stopAnimation();
+      }
     };
 
     window.addEventListener("mousemove", handleMouseMove);
-    rafId = requestAnimationFrame(animate);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
-      cancelAnimationFrame(rafId);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      stopAnimation();
     };
   }, []);
 

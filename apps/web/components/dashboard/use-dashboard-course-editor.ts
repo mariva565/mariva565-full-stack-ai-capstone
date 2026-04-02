@@ -3,12 +3,9 @@
 import { FormEvent, useState } from "react";
 import type { ToastTone } from "../ui/toast";
 import { readErrorMessage } from "../../lib/http";
+import type { DashboardCourse } from "./types";
 
-type EditableCourse = {
-  id: number;
-  title: string;
-  description: string | null;
-};
+type EditableCourse = Pick<DashboardCourse, "id" | "title" | "description">;
 
 type UseDashboardCourseEditorParams = {
   onSaved: () => Promise<void>;

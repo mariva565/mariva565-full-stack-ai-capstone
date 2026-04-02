@@ -4,18 +4,7 @@ import Link from "next/link";
 import { MaterialTypePill } from "../materials/material-type-pill";
 import { TagList } from "../materials/tag-list";
 import { parseTags } from "../../lib/materials";
-
-export type PinnedMaterial = {
-  id: number;
-  materialId: number;
-  materialTitle: string;
-  materialType: string;
-  tags: string | null;
-  moduleId: number;
-  moduleTitle: string;
-  courseId: number;
-  courseTitle: string;
-};
+import type { PinnedMaterial } from "./types";
 
 type PinnedMaterialItemProps = {
   item: PinnedMaterial;
