@@ -4,20 +4,10 @@ import { users } from "../../../../../../drizzle/schema";
 import { logActivity } from "../../../../lib/activity";
 import { requireAuth } from "../../../../lib/api-utils";
 import { db } from "../../../../lib/db";
+import { getProfileUserSelection, normalizeProfileUser } from "../../../../lib/profile-data";
 import { deleteAvatarByUrl, uploadAvatarFile, validateAvatarFile } from "../../../../lib/r2";
 
 export const runtime = "nodejs";
-
-function mapUserSelection() {
-  return {
-    id: users.id,
-    email: users.email,
-    name: users.name,
-    role: users.role,
-    avatarUrl: users.avatarUrl,
-    createdAt: users.createdAt,
-  };
-}
 
 export async function POST(request: NextRequest) {
   const auth = await requireAuth(request);
@@ -67,7 +57,7 @@ export async function POST(request: NextRequest) {
       .update(users)
       .set({ avatarUrl: uploadedAvatarUrl })
       .where(eq(users.id, auth.user.sub))
-      .returning(mapUserSelection());
+      .returning(getProfileUserSelection());
 
     if (existingUser.avatarUrl && existingUser.avatarUrl !== uploadedAvatarUrl) {
       try {
@@ -82,7 +72,7 @@ export async function POST(request: NextRequest) {
       size: fileEntry.size,
     });
 
-    return NextResponse.json({ user: updatedUser });
+    return NextResponse.json({ user: normalizeProfileUser(updatedUser) });
   } catch (error) {
     if (uploadedAvatarUrl) {
       try {
@@ -130,11 +120,11 @@ export async function DELETE(request: NextRequest) {
       .update(users)
       .set({ avatarUrl: null })
       .where(eq(users.id, auth.user.sub))
-      .returning(mapUserSelection());
+      .returning(getProfileUserSelection());
 
     await logActivity(auth.user.sub, "remove_avatar", auth.user.sub);
 
-    return NextResponse.json({ user: updatedUser });
+    return NextResponse.json({ user: normalizeProfileUser(updatedUser) });
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "Could not remove avatar.";

@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react";
+import { ChangeEvent, FormEvent, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { readErrorMessage } from "@/lib/http";
 import {
@@ -18,54 +18,26 @@ type ToastState = {
   message: string;
 };
 
-export function useProfilePageState() {
+type UseProfilePageStateParams = {
+  initialUser: ProfileUser;
+};
+
+export function useProfilePageState({ initialUser }: UseProfilePageStateParams) {
   const router = useRouter();
-  const [user, setUser] = useState<ProfileUser | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<ProfileUser>(initialUser);
   const [savingProfile, setSavingProfile] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [removingAvatar, setRemovingAvatar] = useState(false);
   const [toast, setToast] = useState<ToastState | null>(null);
-  const [name, setName] = useState("");
-  const [avatarUrl, setAvatarUrl] = useState("");
+  const [name, setName] = useState(initialUser.name);
+  const [avatarUrl, setAvatarUrl] = useState(initialUser.avatarUrl ?? "");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  useEffect(() => {
-    void loadProfile();
-  }, []);
-
-  async function loadProfile() {
-    setLoading(true);
-
-    try {
-      const response = await fetch("/api/auth/me");
-      if (response.status === 401) {
-        router.replace("/login");
-        return;
-      }
-
-      if (!response.ok) {
-        setToast({ tone: "error", message: "Could not load your profile." });
-        return;
-      }
-
-      const payload = (await response.json()) as { user: ProfileUser };
-      setUser(payload.user);
-      setName(payload.user.name);
-      setAvatarUrl(payload.user.avatarUrl ?? "");
-    } catch {
-      setToast({ tone: "error", message: "Could not load your profile." });
-    } finally {
-      setLoading(false);
-    }
-  }
-
   async function handleProfileSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!user) return;
 
     const trimmedName = name.trim();
     const normalizedAvatarUrl = normalizeAvatarUrl(avatarUrl);
@@ -90,6 +62,11 @@ export function useProfilePageState() {
       body: JSON.stringify({ name: trimmedName, avatarUrl: normalizedAvatarUrl }),
     });
     setSavingProfile(false);
+
+    if (response.status === 401) {
+      router.replace("/login");
+      return;
+    }
 
     if (!response.ok) {
       setToast({
@@ -128,6 +105,11 @@ export function useProfilePageState() {
     });
     setSavingPassword(false);
 
+    if (response.status === 401) {
+      router.replace("/login");
+      return;
+    }
+
     if (!response.ok) {
       setToast({
         tone: "error",
@@ -160,6 +142,11 @@ export function useProfilePageState() {
         method: "POST",
         body: formData,
       });
+
+      if (response.status === 401) {
+        router.replace("/login");
+        return;
+      }
 
       if (!response.ok) {
         setToast({
@@ -200,6 +187,11 @@ export function useProfilePageState() {
         method: "DELETE",
       });
 
+      if (response.status === 401) {
+        router.replace("/login");
+        return;
+      }
+
       if (!response.ok) {
         setToast({
           tone: "error",
@@ -235,7 +227,6 @@ export function useProfilePageState() {
 
   return {
     user,
-    loading,
     savingProfile,
     savingPassword,
     uploadingAvatar,
@@ -255,7 +246,6 @@ export function useProfilePageState() {
     setCurrentPassword,
     setNewPassword,
     setConfirmPassword,
-    handleAvatarFileChange,
     handleProfileSubmit,
     handlePasswordSubmit,
     handleRemoveAvatar,

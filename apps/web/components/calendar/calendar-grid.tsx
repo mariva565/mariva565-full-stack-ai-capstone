@@ -1,17 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-
-export type CalendarEvent = {
-  id: number;
-  title: string;
-  description: string | null;
-  date: string;
-  type: string;
-  color: string | null;
-  courseId: number | null;
-  milestoneId: number | null;
-};
+import type { CalendarEvent } from "./types";
 
 type Props = {
   year: number;

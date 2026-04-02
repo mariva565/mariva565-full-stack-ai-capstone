@@ -1,47 +1,29 @@
 import { NextRequest, NextResponse } from "next/server";
+
+import { requireAuth } from "../../../lib/api-utils";
+import { getCalendarEvents } from "../../../lib/calendar-data";
 import { db } from "../../../lib/db";
 import { events } from "../../../../../drizzle/schema";
-import { requireAuth } from "../../../lib/api-utils";
-import { eq, and, gte, lte, asc } from "drizzle-orm";
 
-// GET /api/events?month=2026-04 — list events for a month
+// GET /api/events?month=2026-04 вЂ” list events for a month
 export async function GET(request: NextRequest) {
   const auth = await requireAuth(request);
   if ("error" in auth) return auth.error;
 
   const month = request.nextUrl.searchParams.get("month");
 
-  let rows;
-  if (month) {
-    // month format: "2026-04"
-    const startDate = `${month}-01`;
-    const [y, m] = month.split("-").map(Number);
-    const lastDay = new Date(y, m, 0).getDate();
-    const endDate = `${month}-${String(lastDay).padStart(2, "0")}`;
-
-    rows = await db
-      .select()
-      .from(events)
-      .where(
-        and(
-          eq(events.userId, auth.user.sub),
-          gte(events.date, startDate),
-          lte(events.date, endDate)
-        )
-      )
-      .orderBy(asc(events.date));
-  } else {
-    rows = await db
-      .select()
-      .from(events)
-      .where(eq(events.userId, auth.user.sub))
-      .orderBy(asc(events.date));
+  try {
+    const calendarEvents = await getCalendarEvents(auth.user.sub, month ?? undefined);
+    return NextResponse.json({ events: calendarEvents });
+  } catch {
+    return NextResponse.json(
+      { code: "INVALID_MONTH", message: "Month must use YYYY-MM format." },
+      { status: 400 }
+    );
   }
-
-  return NextResponse.json({ events: rows });
 }
 
-// POST /api/events — create a new event
+// POST /api/events вЂ” create a new event
 export async function POST(request: NextRequest) {
   const auth = await requireAuth(request);
   if ("error" in auth) return auth.error;

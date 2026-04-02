@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import type { CalendarEvent } from "./calendar-grid";
+import type { CalendarEvent } from "./types";
 import { TrashIcon } from "../ui/action-icons";
 
 type Props = {

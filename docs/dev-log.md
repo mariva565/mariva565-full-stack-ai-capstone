@@ -2346,3 +2346,68 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 
 **Validation:**
 - `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 95 (Calendar server-first initial data pass)
+
+**Problem investigated:**
+- The `Calendar` page was still loading its initial month entirely on the client.
+- That meant the first render waited for `useEffect` + `/api/events?month=...`, which kept the same "empty shell first, real data second" pattern we had already removed from `Dashboard` and `Progress`.
+
+**What changed:**
+- `apps/web/app/calendar/page.tsx`
+  - converted the route into an async server page
+  - now reads the authenticated user server-side and fetches the initial calendar month before the first render
+- `apps/web/components/calendar/calendar-client-page.tsx`
+  - moved the interactive calendar UI into a dedicated client component
+  - keeps month navigation, add/delete actions, and toast handling on the client
+  - skips the redundant initial client fetch after hydration
+- `apps/web/lib/calendar-data.ts`
+  - added a shared calendar data helper for month-bound event loading and event date normalization
+  - added a small helper for the initial year/month/selected-day view model
+- `apps/web/app/api/events/route.ts`
+  - re-used the shared calendar data helper for `GET /api/events`
+  - now returns a clean `INVALID_MONTH` error for malformed `month` params
+- `apps/web/components/calendar/types.ts`
+  - added shared calendar event/view types
+- `apps/web/components/calendar/calendar-grid.tsx`
+  - now imports the shared calendar event type instead of owning it locally
+- `apps/web/components/calendar/event-sidebar.tsx`
+  - now imports the shared calendar event type from the new types file
+
+**Why:**
+- `Calendar` now follows the same server-first initial render pattern as `Dashboard` and `Progress`.
+- The first page load can render immediately with real month data instead of waiting for a client-side fetch after hydration.
+- The calendar event query logic is now centralized instead of split between the page and the API route.
+
+**Extra cleanup:**
+- Month navigation now keeps the selected day aligned with the visible month, so the sidebar does not stay stuck on a date from the previous month after switching months.
+- Added a small inline "Updating events..." status for month-to-month client refreshes instead of using a full-page loading fallback.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+**Recommended next step:**
+- Continue the pre-Admin performance polish with the separate navbar auth fetch removal in `apps/web/components/navbar.tsx`.
+- After that, do the same server-first initial data pass for `Profile`.
+
+### Session 96 (Performance guardrails documented for future pages)
+
+**Problem investigated:**
+- The recent speed/perceived-performance fixes were recorded in session notes, but not yet collected into a reusable checklist for future page work.
+- That made it too easy to forget the same lessons when starting the next authenticated screens.
+
+**What changed:**
+- `docs/performance-guardrails.md`
+  - added a dedicated performance checklist for future page development
+  - documented the server-first initial data rule for authenticated screens
+  - documented the anti-pattern to avoid: `empty client state -> useEffect fetch -> real content`
+  - documented the navbar/shared-chrome rule so we do not keep adding separate auth fetches
+  - documented lightweight loading and animation guardrails
+  - recorded the current follow-up targets: navbar auth fetch cleanup and Profile server-first
+
+**Why:**
+- The performance fixes now live in one reusable document instead of being scattered only across individual session logs.
+- Future chats and future pages can use the same checklist before introducing new loading regressions.
+
+**Recommended future handoff:**
+- Read `docs/dev-log.md`, `docs/implementation-plan.md`, and `docs/performance-guardrails.md` before continuing authenticated web-page work.

@@ -1,41 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "../../../../lib/db";
 import { users } from "../../../../../../drizzle/schema";
-import { verifyToken } from "../../../../lib/jwt";
 import { eq } from "drizzle-orm";
 import { logActivity } from "../../../../lib/activity";
+import { requireAuth } from "../../../../lib/api-utils";
+import { getProfileUserById, getProfileUserSelection, normalizeProfileUser } from "../../../../lib/profile-data";
 import { deleteAvatarByUrl } from "../../../../lib/r2";
 
 export async function GET(request: NextRequest) {
-  const token = request.cookies.get("token")?.value;
+  const auth = await requireAuth(request);
+  if ("error" in auth) return auth.error;
 
-  if (!token) {
-    return NextResponse.json(
-      { code: "NOT_AUTHENTICATED", message: "Not authenticated" },
-      { status: 401 }
-    );
-  }
-
-  const payload = await verifyToken(token);
-  if (!payload) {
-    return NextResponse.json(
-      { code: "INVALID_TOKEN", message: "Invalid or expired token" },
-      { status: 401 }
-    );
-  }
-
-  const [user] = await db
-    .select({
-      id: users.id,
-      email: users.email,
-      name: users.name,
-      role: users.role,
-      avatarUrl: users.avatarUrl,
-      createdAt: users.createdAt,
-    })
-    .from(users)
-    .where(eq(users.id, payload.sub))
-    .limit(1);
+  const user = await getProfileUserById(auth.user.sub);
 
   if (!user) {
     return NextResponse.json(
@@ -48,22 +24,8 @@ export async function GET(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
-  const token = request.cookies.get("token")?.value;
-
-  if (!token) {
-    return NextResponse.json(
-      { code: "NOT_AUTHENTICATED", message: "Not authenticated" },
-      { status: 401 }
-    );
-  }
-
-  const payload = await verifyToken(token);
-  if (!payload) {
-    return NextResponse.json(
-      { code: "INVALID_TOKEN", message: "Invalid or expired token" },
-      { status: 401 }
-    );
-  }
+  const auth = await requireAuth(request);
+  if ("error" in auth) return auth.error;
 
   const body = (await request.json()) as {
     name?: string;
@@ -73,7 +35,7 @@ export async function PUT(request: NextRequest) {
   const [currentUser] = await db
     .select({ avatarUrl: users.avatarUrl })
     .from(users)
-    .where(eq(users.id, payload.sub))
+    .where(eq(users.id, auth.user.sub))
     .limit(1);
 
   if (!currentUser) {
@@ -106,17 +68,10 @@ export async function PUT(request: NextRequest) {
   const [updated] = await db
     .update(users)
     .set(updates)
-    .where(eq(users.id, payload.sub))
-    .returning({
-      id: users.id,
-      email: users.email,
-      name: users.name,
-      role: users.role,
-      avatarUrl: users.avatarUrl,
-      createdAt: users.createdAt,
-    });
+    .where(eq(users.id, auth.user.sub))
+    .returning(getProfileUserSelection());
 
-  await logActivity(payload.sub, "update_profile", updated.id, { fields: Object.keys(updates) });
+  await logActivity(auth.user.sub, "update_profile", updated.id, { fields: Object.keys(updates) });
 
   if (
     Object.prototype.hasOwnProperty.call(updates, "avatarUrl") &&
@@ -130,5 +85,5 @@ export async function PUT(request: NextRequest) {
     }
   }
 
-  return NextResponse.json({ user: updated });
+  return NextResponse.json({ user: normalizeProfileUser(updated) });
 }
