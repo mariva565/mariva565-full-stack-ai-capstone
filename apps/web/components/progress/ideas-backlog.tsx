@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import type { Milestone } from "./milestone-timeline";
+import { ArrowUpIcon, PencilIcon, TrashIcon } from "../ui/action-icons";
 
 type Props = {
   ideas: Milestone[];
@@ -63,9 +64,6 @@ export function IdeasBacklog({ ideas, onAdd, onEdit, onPromote, onDelete, addBus
             Backlog
           </p>
           <h2 className="dashboard-panel-title mt-1 text-[1.55rem]">Ideas Backlog</h2>
-          <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
-            Feature ideas and improvements for later
-          </p>
         </div>
         <span className="text-sm font-medium text-cyan-600 dark:text-cyan-400">{ideas.length}</span>
       </div>
@@ -112,7 +110,7 @@ export function IdeasBacklog({ ideas, onAdd, onEdit, onPromote, onDelete, addBus
                 </form>
               ) : (
                 <div className="flex items-start justify-between gap-2">
-                  <div className="min-w-0">
+                  <div className="min-w-0 pr-2">
                     <p className="text-sm font-medium text-slate-700 dark:text-slate-100">{idea.title}</p>
                     {idea.description && (
                       <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{idea.description}</p>
@@ -121,24 +119,27 @@ export function IdeasBacklog({ ideas, onAdd, onEdit, onPromote, onDelete, addBus
                   <div className="flex shrink-0 gap-1">
                     <button
                       onClick={() => startEdit(idea)}
-                      className="rounded px-2 py-1 text-xs text-slate-500 transition-colors hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400"
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white/85 text-slate-500 transition hover:-translate-y-0.5 hover:border-indigo-200 hover:text-indigo-600 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-400 dark:hover:border-indigo-500/30 dark:hover:text-indigo-300"
                       title="Edit idea"
+                      aria-label="Edit idea"
                     >
-                      Edit
+                      <PencilIcon className="h-3.5 w-3.5" />
                     </button>
                     <button
                       onClick={() => onPromote(idea.id)}
-                      className="rounded px-2 py-1 text-xs text-cyan-700 transition-colors hover:bg-cyan-500/10 dark:text-cyan-400"
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-cyan-200 bg-cyan-50/80 text-cyan-700 transition hover:-translate-y-0.5 hover:bg-cyan-100 dark:border-cyan-500/20 dark:bg-cyan-500/10 dark:text-cyan-300 dark:hover:bg-cyan-500/15"
                       title="Move to timeline"
+                      aria-label="Move to timeline"
                     >
-                      Promote
+                      <ArrowUpIcon className="h-3.5 w-3.5" />
                     </button>
                     <button
                       onClick={() => onDelete(idea.id)}
-                      className="rounded px-2 py-1 text-xs text-slate-500 transition-colors hover:text-red-500 dark:hover:text-red-400"
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white/85 text-slate-500 transition hover:-translate-y-0.5 hover:border-red-200 hover:text-red-500 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-400 dark:hover:border-red-500/30 dark:hover:text-red-400"
                       title="Remove idea"
+                      aria-label="Remove idea"
                     >
-                      Delete
+                      <TrashIcon className="h-3.5 w-3.5" />
                     </button>
                   </div>
                 </div>
@@ -187,7 +188,7 @@ export function IdeasBacklog({ ideas, onAdd, onEdit, onPromote, onDelete, addBus
           onClick={() => setShowForm(true)}
           className="w-full rounded-lg border border-dashed border-cyan-300 py-2 text-sm text-cyan-700 transition-colors hover:border-cyan-400 hover:text-cyan-600 dark:border-cyan-500/30 dark:text-cyan-400/70 dark:hover:border-cyan-400 dark:hover:text-cyan-300"
         >
-          + Jot down an idea
+          + Add idea
         </button>
       )}
     </section>

@@ -51,17 +51,15 @@ export function CourseWorkspaceHeader({
               <p className="mt-4 max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-300">
                 {description || "Start with modules, then open one to collect notes, links, and file references."}
               </p>
-              <div className="mt-4 flex flex-wrap gap-2">
-                <span className="rounded-full border border-brand-200/80 bg-white/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-brand-700 shadow-sm dark:border-brand-400/20 dark:bg-brand-500/10 dark:text-brand-100">
-                  {moduleCount} {moduleCount === 1 ? "module" : "modules"}
-                </span>
-              </div>
+              <p className="mt-4 text-sm font-medium text-slate-500 dark:text-slate-400">
+                {moduleCount} {moduleCount === 1 ? "module" : "modules"}
+              </p>
             </div>
 
             <button
               type="button"
               onClick={onToggleModuleForm}
-              className={`group inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-semibold transition ${
+              className={`group inline-flex w-full items-center justify-center rounded-full px-5 py-3 text-sm font-semibold transition sm:w-auto ${
                 showModuleForm
                   ? "border border-slate-200 bg-white/85 text-slate-700 hover:-translate-y-0.5 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-200 dark:hover:bg-slate-800"
                   : "bg-[linear-gradient(135deg,#6366f1_0%,#8b5cf6_55%,#06b6d4_100%)] text-white shadow-[0_20px_45px_rgba(99,102,241,0.25)] hover:-translate-y-0.5 hover:shadow-[0_24px_55px_rgba(99,102,241,0.32)]"
@@ -78,10 +76,6 @@ export function CourseWorkspaceHeader({
                 </span>
               )}
             </button>
-          </div>
-
-          <div className="mt-5 rounded-[1.4rem] border border-brand-200/80 bg-white/80 px-4 py-3 text-sm text-slate-600 shadow-sm backdrop-blur dark:border-brand-400/15 dark:bg-slate-900/60 dark:text-slate-300">
-            Build the outline first. Materials stay tucked inside each module.
           </div>
 
           {showModuleForm ? (
@@ -124,9 +118,6 @@ export function CourseWorkspaceHeader({
                   Create module
                 </button>
               </div>
-              <p className="mt-3 text-xs leading-5 text-slate-500 dark:text-slate-400">
-                Optional description shown on the module card.
-              </p>
             </form>
           ) : null}
         </div>

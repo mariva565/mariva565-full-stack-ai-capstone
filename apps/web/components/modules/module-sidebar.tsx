@@ -22,7 +22,7 @@ export function ModuleSidebar({
         className="inline-flex items-center gap-2 text-sm font-medium text-brand-600 transition hover:text-brand-700 dark:text-brand-100"
       >
         <span aria-hidden="true">&larr;</span>
-        Back to modules
+        Back to course
       </Link>
 
       <div className="mt-4 rounded-[1.4rem] border border-slate-200/80 bg-[linear-gradient(160deg,rgba(255,255,255,0.95)_0%,rgba(248,250,252,0.92)_100%)] px-4 py-4 dark:border-slate-800 dark:bg-slate-900/80">
@@ -32,19 +32,13 @@ export function ModuleSidebar({
         <h2 className="dashboard-script-title block mt-2 text-[1.95rem] leading-[1.04]">
           {courseTitle}
         </h2>
-        <p className="mt-2 text-xs leading-5 text-slate-500 dark:text-slate-400">
-          Jump between modules from here.
-        </p>
       </div>
 
       <div className="mt-5">
-        <div className="mb-3 flex items-center justify-between">
+        <div className="mb-3">
           <p className="text-[0.68rem] font-semibold uppercase tracking-[0.28em] text-slate-400 dark:text-slate-500">
             Modules
           </p>
-          <span className="rounded-full border border-slate-200 px-2.5 py-0.5 text-[11px] font-semibold text-slate-500 dark:border-slate-700 dark:text-slate-400">
-            {modules.length}
-          </span>
         </div>
 
         <div className="space-y-2">

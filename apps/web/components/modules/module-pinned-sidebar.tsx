@@ -23,17 +23,14 @@ export function ModulePinnedSidebar({ items }: ModulePinnedSidebarProps) {
           Quick Access
         </p>
         <h2 className="dashboard-panel-title block mt-2 text-[1.85rem] leading-[1.04]">
-          Pinned materials
+          Pinned
         </h2>
-        <p className="mt-2 text-xs leading-5 text-slate-500 dark:text-slate-400">
-          Pin the items you revisit most.
-        </p>
       </div>
 
       <div className="mt-4 space-y-3">
         {items.length === 0 ? (
           <div className="rounded-[1.3rem] border border-dashed border-slate-300/80 bg-slate-50/80 px-4 py-5 text-sm text-slate-500 dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-400">
-            Pinned items from this module land here.
+            Pin something to keep it close.
           </div>
         ) : (
           items.map((item) => (

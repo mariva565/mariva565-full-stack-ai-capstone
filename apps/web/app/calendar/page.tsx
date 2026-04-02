@@ -151,31 +151,30 @@ export default function CalendarPage() {
                 Progress
               </p>
               <h1 className="dashboard-script-title mt-3 text-4xl md:text-5xl">Calendar</h1>
-              <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
-                Keep reminders, deadlines, exams, and milestone dates in one place.
-              </p>
             </div>
 
             <button
               onClick={goToToday}
-              className="inline-flex items-center rounded-full border border-slate-200 bg-white/90 px-4 py-2 text-sm font-semibold text-slate-600 shadow-[0_10px_30px_rgba(148,163,184,0.14)] transition hover:-translate-y-0.5 hover:border-brand-200 hover:text-brand-700 dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-300 dark:hover:border-cyan-400/30 dark:hover:text-cyan-200"
+              className="inline-flex w-full items-center justify-center rounded-full border border-slate-200 bg-white/90 px-4 py-2 text-sm font-semibold text-slate-600 shadow-[0_10px_30px_rgba(148,163,184,0.14)] transition hover:-translate-y-0.5 hover:border-brand-200 hover:text-brand-700 dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-300 dark:hover:border-cyan-400/30 dark:hover:text-cyan-200 sm:w-auto"
             >
               Today
             </button>
           </section>
 
           <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(280px,320px)]">
-            <section className="rounded-2xl border border-slate-200 bg-white/85 p-4 shadow-[0_18px_45px_rgba(148,163,184,0.16)] dark:border-cyan-400/10 dark:bg-slate-950/45 dark:shadow-[0_20px_50px_rgba(8,15,30,0.38)]">
-              <div className="mb-4 flex items-center justify-between">
+            <section className="rounded-2xl border border-slate-200 bg-white/85 p-4 shadow-[0_18px_45px_rgba(148,163,184,0.16)] dark:border-cyan-400/10 dark:bg-slate-950/45 dark:shadow-[0_20px_50px_rgba(8,15,30,0.38)] sm:p-5">
+              <div className="mb-4 flex items-center gap-3 sm:mb-5">
                 <button
                   onClick={goToPrevMonth}
                   className="rounded-full border border-slate-200 bg-white/90 px-3 py-1.5 text-sm font-medium text-slate-500 transition hover:-translate-y-0.5 hover:border-brand-200 hover:text-brand-700 dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-400 dark:hover:border-cyan-400/30 dark:hover:text-cyan-200"
                 >
                   &larr;
                 </button>
-                <h2 className="text-lg font-semibold text-slate-700 dark:text-slate-100">
-                  {MONTH_NAMES[month]} {year}
-                </h2>
+                <div className="min-w-0 flex-1 text-center">
+                  <h2 className="text-lg font-semibold text-slate-700 dark:text-slate-100">
+                    {MONTH_NAMES[month]} {year}
+                  </h2>
+                </div>
                 <button
                   onClick={goToNextMonth}
                   className="rounded-full border border-slate-200 bg-white/90 px-3 py-1.5 text-sm font-medium text-slate-500 transition hover:-translate-y-0.5 hover:border-brand-200 hover:text-brand-700 dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-400 dark:hover:border-cyan-400/30 dark:hover:text-cyan-200"

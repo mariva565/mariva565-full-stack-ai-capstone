@@ -68,14 +68,11 @@ export default function ProgressPage() {
                 Progress
               </p>
               <h1 className="dashboard-script-title mt-3 text-4xl md:text-5xl">Capstone Progress</h1>
-              <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
-                Keep your milestones clean, track deadlines, and move ideas into action.
-              </p>
             </div>
 
             <Link
               href="/calendar"
-              className="inline-flex items-center rounded-full border border-slate-200 bg-white/90 px-4 py-2 text-sm font-semibold text-slate-600 shadow-[0_10px_30px_rgba(148,163,184,0.14)] transition hover:-translate-y-0.5 hover:border-brand-200 hover:text-brand-700 dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-300 dark:hover:border-cyan-400/30 dark:hover:text-cyan-200"
+              className="inline-flex w-full items-center justify-center rounded-full border border-slate-200 bg-white/90 px-4 py-2 text-sm font-semibold text-slate-600 shadow-[0_10px_30px_rgba(148,163,184,0.14)] transition hover:-translate-y-0.5 hover:border-brand-200 hover:text-brand-700 dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-300 dark:hover:border-cyan-400/30 dark:hover:text-cyan-200 sm:w-auto"
             >
               Open calendar
             </Link>

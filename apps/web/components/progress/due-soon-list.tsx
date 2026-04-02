@@ -12,7 +12,7 @@ export function DueSoonList({ milestones }: DueSoonListProps) {
   return (
     <section className="rounded-xl border border-slate-200 bg-white/80 p-5 dark:border-slate-700 dark:bg-slate-900/60">
       <p className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">
-        Focus
+        Milestones
       </p>
       <h2 className="dashboard-panel-title mt-1 text-[1.45rem]">Due Soon</h2>
 

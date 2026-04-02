@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import type { CalendarEvent } from "./calendar-grid";
+import { TrashIcon } from "../ui/action-icons";
 
 type Props = {
   date: string;
@@ -33,6 +34,10 @@ export function EventSidebar({ date, events, onAdd, onDelete, addBusy }: Props) 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [type, setType] = useState("reminder");
+  const eventCountLabel =
+    events.length === 0
+      ? "Nothing scheduled yet."
+      : `${events.length} ${events.length === 1 ? "event" : "events"} scheduled.`;
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -46,17 +51,14 @@ export function EventSidebar({ date, events, onAdd, onDelete, addBusy }: Props) 
   }
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white/85 p-4 shadow-[0_18px_45px_rgba(148,163,184,0.16)] dark:border-cyan-400/10 dark:bg-slate-950/45 dark:shadow-[0_20px_50px_rgba(8,15,30,0.38)]">
+    <section className="rounded-2xl border border-slate-200 bg-white/85 p-4 shadow-[0_18px_45px_rgba(148,163,184,0.16)] dark:border-cyan-400/10 dark:bg-slate-950/45 dark:shadow-[0_20px_50px_rgba(8,15,30,0.38)] sm:p-5">
       <p className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">
-        Selected day
+        Day view
       </p>
       <h3 className="mb-1 mt-2 text-sm font-semibold text-slate-700 dark:text-slate-100">
         {formatDate(date)}
       </h3>
-
-      {events.length === 0 && !showForm && (
-        <p className="my-4 text-sm text-slate-500 dark:text-slate-400">No events on this day.</p>
-      )}
+      <p className="text-xs text-slate-500 dark:text-slate-400">{eventCountLabel}</p>
 
       {events.length > 0 && (
         <ul className="mt-3 space-y-2">
@@ -87,11 +89,11 @@ export function EventSidebar({ date, events, onAdd, onDelete, addBusy }: Props) 
 
                 <button
                   onClick={() => onDelete(event.id)}
-                  className="shrink-0 text-xs text-slate-400 transition-colors hover:text-rose-500 dark:text-slate-500 dark:hover:text-rose-400"
+                  className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white/80 text-slate-400 transition hover:-translate-y-0.5 hover:border-rose-200 hover:text-rose-500 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-500 dark:hover:border-rose-500/30 dark:hover:text-rose-400"
                   title="Delete"
                   aria-label="Delete"
                 >
-                  x
+                  <TrashIcon className="h-3.5 w-3.5" />
                 </button>
               </li>
             );

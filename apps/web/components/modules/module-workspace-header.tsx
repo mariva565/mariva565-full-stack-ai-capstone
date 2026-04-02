@@ -54,31 +54,26 @@ export function ModuleWorkspaceHeader({
             <p className="mt-4 text-[0.68rem] font-semibold uppercase tracking-[0.32em] text-slate-400 dark:text-slate-500">
               Module
             </p>
-            <h1 className="dashboard-script-title mt-3 text-4xl md:text-5xl">
-              {moduleTitle}
-            </h1>
-            <p className="mt-4 max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-300">
-              {moduleDescription?.trim() || "Keep notes, links, and file URLs together in one focused place."}
-            </p>
-            <div className="mt-4 flex flex-wrap gap-2">
-              <span className="rounded-full border border-brand-200/80 bg-white/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-brand-700 shadow-sm dark:border-brand-400/20 dark:bg-brand-500/10 dark:text-brand-100">
-                {materialCount} {materialCount === 1 ? "material" : "materials"}
-              </span>
-              <span className="rounded-full border border-cyan-200/80 bg-cyan-50/90 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-cyan-700 dark:border-cyan-400/20 dark:bg-cyan-500/10 dark:text-cyan-100">
-                {pinnedCount} pinned
-              </span>
+              <h1 className="dashboard-script-title mt-3 text-4xl md:text-5xl">
+                {moduleTitle}
+              </h1>
+              <p className="mt-4 max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-300">
+                {moduleDescription?.trim() || "Keep notes, links, and file URLs together in one focused place."}
+              </p>
+              <p className="mt-4 text-sm font-medium text-slate-500 dark:text-slate-400">
+                {materialCount} {materialCount === 1 ? "study item" : "study items"} · {pinnedCount} pinned
+              </p>
             </div>
-          </div>
 
-          <button
-            type="button"
-            onClick={onToggleCreateForm}
-            className={`group inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-semibold transition ${
-              showCreateForm
-                ? "border border-slate-200 bg-white/85 text-slate-700 hover:-translate-y-0.5 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-200 dark:hover:bg-slate-800"
-                : "bg-[linear-gradient(135deg,#6366f1_0%,#8b5cf6_55%,#06b6d4_100%)] text-white shadow-[0_20px_45px_rgba(99,102,241,0.25)] hover:-translate-y-0.5 hover:shadow-[0_24px_55px_rgba(99,102,241,0.32)]"
-            }`}
-          >
+            <button
+              type="button"
+              onClick={onToggleCreateForm}
+              className={`group inline-flex w-full items-center justify-center rounded-full px-5 py-3 text-sm font-semibold transition sm:w-auto ${
+                showCreateForm
+                  ? "border border-slate-200 bg-white/85 text-slate-700 hover:-translate-y-0.5 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-200 dark:hover:bg-slate-800"
+                  : "bg-[linear-gradient(135deg,#6366f1_0%,#8b5cf6_55%,#06b6d4_100%)] text-white shadow-[0_20px_45px_rgba(99,102,241,0.25)] hover:-translate-y-0.5 hover:shadow-[0_24px_55px_rgba(99,102,241,0.32)]"
+              }`}
+            >
             {showCreateForm ? (
               "Close"
             ) : (
@@ -88,22 +83,18 @@ export function ModuleWorkspaceHeader({
                 </span>
                 <span>Add material</span>
               </span>
-            )}
-          </button>
-        </div>
+              )}
+            </button>
+          </div>
 
-        <div className="mt-5 rounded-[1.4rem] border border-brand-200/80 bg-white/80 px-4 py-3 text-sm text-slate-600 shadow-sm backdrop-blur dark:border-brand-400/15 dark:bg-slate-900/60 dark:text-slate-300">
-          Capture quick notes, save reference links, or attach a file URL.
-        </div>
-
-        <div className="mt-5 grid gap-3 lg:grid-cols-[minmax(0,1.7fr)_220px]">
-          <input
-            type="search"
-            value={searchQuery}
-            onChange={(event) => onSearchQueryChange(event.target.value)}
-            className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-200/50 dark:border-slate-700 dark:bg-slate-950/70 dark:text-white dark:focus:border-brand-400 dark:focus:ring-brand-500/20"
-            placeholder="Search title, note content or tags..."
-          />
+          <div className="mt-5 grid gap-3 lg:grid-cols-[minmax(0,1.7fr)_220px]">
+            <input
+              type="search"
+              value={searchQuery}
+              onChange={(event) => onSearchQueryChange(event.target.value)}
+              className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-200/50 dark:border-slate-700 dark:bg-slate-950/70 dark:text-white dark:focus:border-brand-400 dark:focus:ring-brand-500/20"
+              placeholder="Search title, notes, or tags..."
+            />
 
           <select
             value={sortBy}
