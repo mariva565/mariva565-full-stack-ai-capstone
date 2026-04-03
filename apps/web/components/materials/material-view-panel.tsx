@@ -40,7 +40,10 @@ export function MaterialViewPanel({
           <p className="text-[0.68rem] font-semibold uppercase tracking-[0.28em] text-slate-400 dark:text-slate-500">
             Saved {formattedCreatedAt}
           </p>
-          <h2 className="dashboard-script-title text-[clamp(2rem,3vw,2.9rem)] leading-[1.12]">
+          <p className="mt-3 text-[0.68rem] font-semibold uppercase tracking-[0.28em] text-slate-400 dark:text-slate-500">
+            Material title
+          </p>
+          <h2 className="mt-1 text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">
             {title}
           </h2>
           <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -80,14 +83,14 @@ export function MaterialViewPanel({
             onClick={onEdit}
             className="inline-flex flex-1 items-center justify-center rounded-full bg-[linear-gradient(135deg,#6366f1_0%,#8b5cf6_55%,#06b6d4_100%)] px-4 py-2 text-sm font-semibold text-white shadow-[0_18px_40px_rgba(99,102,241,0.24)] transition hover:-translate-y-0.5 hover:shadow-[0_22px_48px_rgba(99,102,241,0.28)] sm:flex-none"
           >
-            Edit
+            Edit material
           </button>
           <button
             type="button"
             onClick={onDelete}
             className="inline-flex flex-1 items-center justify-center rounded-full border border-red-200 bg-white/80 px-4 py-2 text-sm font-semibold text-red-700 transition hover:-translate-y-0.5 hover:bg-red-50 dark:border-red-800 dark:bg-slate-900/70 dark:text-red-300 dark:hover:bg-red-900/30 sm:flex-none"
           >
-            Delete
+            Delete material
           </button>
         </div>
       </div>
@@ -100,7 +103,9 @@ export function MaterialViewPanel({
         </div>
       ) : (
         <div className="mt-6 rounded-[1.5rem] border border-dashed border-slate-300/80 bg-slate-50/80 px-4 py-4 dark:border-slate-700 dark:bg-slate-900/50">
-          <p className="text-sm font-semibold text-slate-900 dark:text-white">No notes yet</p>
+          <p className="text-sm font-semibold text-slate-900 dark:text-white">
+            No notes saved for this material yet
+          </p>
           <p className="mt-1 text-sm leading-6 text-slate-500 dark:text-slate-400">
             Switch to edit mode when you want to add context, reminders, or a quick source summary.
           </p>

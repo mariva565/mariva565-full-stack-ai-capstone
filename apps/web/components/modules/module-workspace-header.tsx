@@ -1,7 +1,6 @@
-import Link from "next/link";
-
 import { FILTER_OPTIONS, SORT_OPTIONS } from "../../lib/course-materials";
 import type { MaterialFilter, MaterialSort } from "../../lib/materials";
+import { WayfindingBreadcrumbs } from "../ui/wayfinding-breadcrumbs";
 
 type ModuleWorkspaceHeaderProps = {
   courseId: number;
@@ -42,24 +41,26 @@ export function ModuleWorkspaceHeader({
       <div className="pointer-events-none absolute left-0 top-12 h-28 w-28 rounded-full bg-cyan-200/60 blur-3xl dark:bg-cyan-500/10" />
 
       <div className="relative">
+        <WayfindingBreadcrumbs
+          items={[
+            { label: "Dashboard", href: "/dashboard" },
+            { label: courseTitle, href: `/courses/${courseId}` },
+            { label: moduleTitle },
+          ]}
+        />
+
         <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
           <div className="max-w-3xl">
-            <Link
-              href={`/courses/${courseId}`}
-              className="inline-flex items-center gap-2 text-sm font-medium text-brand-600 transition hover:text-brand-700 dark:text-brand-100"
-            >
-              <span aria-hidden="true">&larr;</span>
-              {courseTitle}
-            </Link>
             <p className="mt-4 text-[0.68rem] font-semibold uppercase tracking-[0.32em] text-slate-400 dark:text-slate-500">
               Module
             </p>
             <h1 className="dashboard-script-title mt-3 text-4xl md:text-5xl">{moduleTitle}</h1>
             <p className="mt-4 max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-300">
-              {moduleDescription?.trim() || "Keep notes, links, and file URLs together in one focused place."}
+              {moduleDescription?.trim() ||
+                "This module is where you collect the materials, notes, links, and file references for one part of the course."}
             </p>
             <p className="mt-4 text-sm font-medium text-slate-500 dark:text-slate-400">
-              {materialCount} {materialCount === 1 ? "study item" : "study items"} / {pinnedCount} pinned
+              {materialCount} {materialCount === 1 ? "material" : "materials"} / {pinnedCount} pinned
             </p>
           </div>
 
@@ -91,7 +92,7 @@ export function ModuleWorkspaceHeader({
             value={searchQuery}
             onChange={(event) => onSearchQueryChange(event.target.value)}
             className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-200/50 dark:border-slate-700 dark:bg-slate-950/70 dark:text-white dark:focus:border-brand-400 dark:focus:ring-brand-500/20"
-            placeholder="Search title, notes, or tags..."
+            placeholder="Search materials, notes, links, or tags..."
           />
 
           <select

@@ -237,7 +237,7 @@ export function ModuleWorkspaceClientPage({
                     No materials for the current view
                   </p>
                   <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-                    Try another filter, clear the search, or add the first study item for this module.
+                    Try another filter, clear the search, or add the first material for this module.
                   </p>
                   {(searchQuery || filterBy !== "all" || sortBy !== "newest") ? (
                     <button

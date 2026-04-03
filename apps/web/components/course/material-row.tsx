@@ -4,7 +4,7 @@ import Link from "next/link";
 import type { CourseMaterial } from "../../lib/course-materials";
 import { normalizeMaterialType, parseTags } from "../../lib/materials";
 import { MaterialTypePill } from "../materials/material-type-pill";
-import { ExternalLinkIcon, PinAngleIcon } from "../ui/action-icons";
+import { ExternalLinkIcon, PencilIcon, PinAngleIcon } from "../ui/action-icons";
 import { TagList } from "../materials/tag-list";
 
 type MaterialRowProps = {
@@ -144,6 +144,14 @@ export function MaterialRow({
           </Link>
 
           <div className="flex flex-wrap items-center gap-2 lg:justify-end">
+            <Link
+              href={`${materialHref}?edit=1`}
+              title="Edit material"
+              aria-label="Edit material"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white/80 text-slate-600 transition hover:-translate-y-0.5 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-300 dark:hover:bg-slate-800"
+            >
+              <PencilIcon />
+            </Link>
             {material.fileUrl ? (
               <a
                 href={material.fileUrl}

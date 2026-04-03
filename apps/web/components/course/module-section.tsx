@@ -134,11 +134,12 @@ export function ModuleSection({
         <div className="flex flex-wrap gap-2 xl:justify-end">
           <Link
             href={`/modules/${module.id}`}
-            title="View materials"
-            aria-label="View materials"
-            className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-[linear-gradient(135deg,#6366f1_0%,#8b5cf6_55%,#06b6d4_100%)] text-white shadow-[0_16px_35px_rgba(99,102,241,0.22)] transition hover:-translate-y-0.5 hover:shadow-[0_20px_45px_rgba(99,102,241,0.28)]"
+            title="Open module"
+            aria-label="Open module"
+            className="inline-flex items-center gap-2 rounded-full bg-[linear-gradient(135deg,#6366f1_0%,#8b5cf6_55%,#06b6d4_100%)] px-4 py-3 text-sm font-semibold text-white shadow-[0_16px_35px_rgba(99,102,241,0.22)] transition hover:-translate-y-0.5 hover:shadow-[0_20px_45px_rgba(99,102,241,0.28)]"
           >
             <CollectionIcon />
+            <span>Open module</span>
           </Link>
           {!isEditingDetails ? (
             <button

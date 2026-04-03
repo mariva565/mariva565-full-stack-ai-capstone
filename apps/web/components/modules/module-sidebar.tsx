@@ -22,7 +22,7 @@ export function ModuleSidebar({
         className="inline-flex items-center gap-2 text-sm font-medium text-brand-600 transition hover:text-brand-700 dark:text-brand-100"
       >
         <span aria-hidden="true">&larr;</span>
-        Back to course
+        Back to course overview
       </Link>
 
       <div className="mt-4 rounded-[1.4rem] border border-slate-200/80 bg-[linear-gradient(160deg,rgba(255,255,255,0.95)_0%,rgba(248,250,252,0.92)_100%)] px-4 py-4 dark:border-slate-800 dark:bg-slate-900/80">
@@ -32,6 +32,9 @@ export function ModuleSidebar({
         <h2 className="dashboard-script-title block mt-2 text-[1.95rem] leading-[1.12]">
           {courseTitle}
         </h2>
+        <p className="mt-3 text-sm leading-6 text-slate-500 dark:text-slate-400">
+          Open another module from this list whenever you want to switch the current materials workspace.
+        </p>
       </div>
 
       <div className="mt-5">

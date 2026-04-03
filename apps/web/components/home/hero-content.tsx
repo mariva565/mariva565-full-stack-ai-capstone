@@ -61,7 +61,7 @@ export function HeroContent() {
           href="/how-it-works"
           className="btn-explore-features"
         >
-          See How It Works
+          <span className="relative z-10">See How It Works</span>
         </Link>
       </motion.div>
     </div>

@@ -2699,6 +2699,98 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 **Validation:**
 - `npm.cmd --workspace @studyhub/web run build`
 
+### Session 117 (Module material quick-edit shortcut)
+
+**Problem investigated:**
+- In the module workspace, material cards exposed source and pin quick actions, but there was no equally fast edit shortcut inside the card container.
+- That made small content corrections feel slower than needed because the user first had to open the detail page and only then switch to edit mode.
+
+**What changed:**
+- `apps/web/components/course/material-row.tsx`
+  - added a dedicated quick-edit icon button in the card action cluster
+  - the button links to the material detail route with `?edit=1`
+- `apps/web/app/materials/[id]/page.tsx`
+  - reads the `edit` search param on the server page
+  - passes an `initialEditing` flag into the client page
+- `apps/web/components/materials/material-page-client.tsx`
+  - starts directly in edit mode when `initialEditing` is true
+
+**Why:**
+- Materials from the module workspace now have a true quick-edit path instead of only a quick-open path.
+- The existing detail/edit architecture stays intact; the new button just lands the user directly in the editing state.
+
+**Validation:**
+- Not run by request: skipped build/dev restart to avoid disrupting the user's current dev session.
+
+### Session 116 (Material type/source wording clarified)
+
+**Problem investigated:**
+- The material editor still exposed language from the temporary `fileUrl` data model in a way that could sound misleading.
+- That made it look as if the `file` type was already a full upload flow, even though the current implementation still stores an external source URL and real file upload remains future scope.
+
+**What changed:**
+- `apps/web/components/materials/material-editor-form.tsx`
+  - made the source field label dynamic:
+    - `Link URL` for link materials
+    - `File source URL` for file materials
+    - `Optional source URL` for notes
+  - added type-aware placeholders
+  - added short helper copy that explains the real current behavior:
+    - notes can stay text-only
+    - links use a normal URL
+    - file upload is still planned, so file materials currently use an external file link
+  - tightened the intro copy so it talks about source details matching the selected material type
+
+**Why:**
+- The UI now matches the actual state of the feature instead of over-promising a finished upload flow.
+- This keeps the long-term direction intact (`note`, `link`, `file upload`) while being honest about the current implementation.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run build`
+
+### Session 114 (Hero secondary CTA effect restored)
+
+**Problem investigated:**
+- The public home secondary CTA (`See How It Works`) still worked functionally, but it had lost part of the richer premium hover treatment that made the v1 button feel special.
+- Compared to the old landing page, the current button looked flatter and less memorable.
+
+**What changed:**
+- `apps/web/app/globals.css`
+  - upgraded `.btn-explore-features` with a stronger glass surface, richer shadowing, and a more polished hover state
+  - restored the premium-effect feel with:
+    - animated rotating highlight border
+    - subtle internal radial glow on hover
+    - stronger pressed/hover depth response
+  - added `@keyframes rotateGradient` for the rotating border treatment
+- `apps/web/components/home/hero-content.tsx`
+  - wrapped the button label in a foreground span so the text stays visually above the decorative pseudo-elements
+
+**Why:**
+- The button now feels closer to the old v1 premium CTA instead of reading as a plain outlined pill.
+- The effect stays CSS-only, so it adds visual richness without introducing heavier hero-side JavaScript work.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run build`
+- The first build attempt hit only the tool timeout; the retry completed successfully.
+
+### Session 115 (Create module button stretch fix)
+
+**Problem investigated:**
+- In the course workspace module-creation form, the `Create module` button could stretch vertically into a tall block instead of staying a normal button.
+- The issue came from the large-screen grid layout stretching the second column item to match the full row height.
+
+**What changed:**
+- `apps/web/components/course/course-workspace-header.tsx`
+  - changed the large-screen form grid to use a fixed action column and `lg:items-start`
+  - set the submit button to stay `w-full` inside that action column, but align to the top instead of stretching to the full row height
+
+**Why:**
+- The button now behaves like a button again instead of a full-height sidebar block.
+- The form keeps the same desktop two-column structure without affecting the server-first course page flow.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run build`
+
 ### Session 112 (Shared handwritten title clipping pass)
 
 **Problem investigated:**
@@ -2724,6 +2816,27 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 **Validation:**
 - `npm.cmd --workspace @studyhub/web run build`
 - Build completed successfully after a retry with a longer timeout; the earlier failure was only the tool timeout, not a compile error.
+
+### Session 113 (Auth autofill stripe cleanup)
+
+**Problem investigated:**
+- The login fields could show pale horizontal bars inside the input area when the browser autofilled saved credentials.
+- The visual issue came from the browser's autofill styling painting on the inner input element, which broke the intended single glass-field look.
+
+**What changed:**
+- `apps/web/components/auth/auth-icon-field.tsx`
+  - added a dedicated `auth-field-input` class to the real `<input>`
+- `apps/web/app/globals.css`
+  - added a scoped WebKit autofill override for auth inputs
+  - kept autofilled text/caret colors aligned with the normal theme
+  - used autofill-safe background handling so the browser no longer draws a separate tinted stripe inside the field
+
+**Why:**
+- The auth fields should now read as one clean surface instead of a rounded shell with a second browser-colored rectangle inside it.
+- This keeps saved-credentials autofill working, but removes the distracting visual artifact.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run build`
 
 ### Session 109 (Local production chunk mismatch diagnosis)
 
@@ -2890,4 +3003,110 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 - The title now has enough vertical room for the script font to render cleanly.
 
 **Validation:**
+- `npm.cmd --workspace @studyhub/web run build`
+
+### Session 118 (Course / module / material UX hierarchy audit)
+
+**Problem investigated:**
+- The current pre-Admin web flow feels harder to read at a glance than v1, even though the underlying data hierarchy is still `course -> module -> material`.
+- The main question was whether v2 still follows the old structure logically, or whether the hierarchy became less obvious during the redesign.
+
+**What was reviewed:**
+- v2 current flow
+  - `apps/web/components/course/course-workspace-header.tsx`
+  - `apps/web/components/course/module-section.tsx`
+  - `apps/web/components/modules/module-workspace-header.tsx`
+  - `apps/web/components/modules/module-sidebar.tsx`
+  - `apps/web/components/course/material-row.tsx`
+  - `apps/web/components/materials/material-page-client.tsx`
+- v1 reference flow
+  - `C:\Users\mariy\Projects\Visual-Studio-Capstone-Project-StudyHub-interface-v3\src\pages\courses\coursesRenderer.js`
+  - `C:\Users\mariy\Projects\Visual-Studio-Capstone-Project-StudyHub-interface-v3\src\modules.html`
+  - `C:\Users\mariy\Projects\Visual-Studio-Capstone-Project-StudyHub-interface-v3\src\pages\modules\modules.js`
+  - `C:\Users\mariy\Projects\Visual-Studio-Capstone-Project-StudyHub-interface-v3\src\materials.html`
+  - `C:\Users\mariy\Projects\Visual-Studio-Capstone-Project-StudyHub-interface-v3\src\pages\materials\materialsRenderer.js`
+
+**Findings:**
+- The core hierarchy is still correct in v2:
+  - dashboard lists courses
+  - a course page manages modules
+  - a module page manages materials
+  - a material page shows one saved material
+- v1 exposed that hierarchy more bluntly and therefore more clearly:
+  - course cards opened a dedicated modules page
+  - the modules page showed `Back to Courses`, the course title, and an explicit `Add Module`
+  - each module row had a direct `View Materials` action
+  - the materials page showed `Back to Modules`, a course badge, the current module title, and an explicit `Add Material`
+- v2 keeps the data structure, but weakens the information architecture in a few places:
+  - module cards on the course page rely on an icon-only `View materials` affordance
+  - module pages sometimes use `study items` instead of `materials`
+  - the material page header leads with `Review and edit` instead of the material title itself
+  - opening a material moves the user into a more isolated detail page, while v1 kept the material list as the main workspace and used a separate edit page only as a secondary step
+
+**Why this matters:**
+- The issue is not the database or route nesting.
+- The issue is that page identity and "where am I in the hierarchy?" are currently less explicit than in v1.
+- This makes the product feel prettier, but a little less self-explanatory during normal authoring.
+
+**Recommended next polish pass:**
+- add stronger breadcrumb-style hierarchy across course, module, and material screens
+- standardize terminology around `course`, `module`, and `material` instead of mixing in `study item`
+- make the material page header identify the current material immediately, not just the edit state
+- consider making the jump from module to material feel less like leaving the workspace
+
+**Validation:**
+- no build run for this audit pass by request
+
+### Session 119 (Hierarchy / wayfinding pass across course, module, and material pages)
+
+**Problem investigated:**
+- The course -> module -> material structure was technically intact, but the UI still did not explain that hierarchy clearly enough during normal authoring.
+- The biggest friction points were weak page-to-page wayfinding, mixed terminology, and the material page leading with an edit-state headline instead of the material itself.
+
+**What changed:**
+- `apps/web/components/ui/wayfinding-breadcrumbs.tsx`
+  - added a shared breadcrumb component for the authenticated workspace flow
+  - kept it lightweight and presentational so it can be reused without changing the existing server-first page structure
+- `apps/web/components/course/course-workspace-header.tsx`
+  - replaced the isolated back link with breadcrumb-based wayfinding from `Dashboard`
+  - clarified the course workspace description so it explicitly says this is where modules are created before opening one to manage materials
+  - renamed the primary CTA from `New module` to `Add module`
+- `apps/web/components/course/module-section.tsx`
+  - replaced the icon-only module-open affordance with an explicit `Open module` action
+  - kept the edit / move / delete controls intact around it
+- `apps/web/components/course/module-list.tsx`
+  - updated the empty-state copy to connect modules directly to the next step of adding materials
+- `apps/web/components/modules/module-workspace-header.tsx`
+  - added breadcrumb wayfinding from `Dashboard` -> course -> current module
+  - standardized `study item(s)` to `material(s)`
+  - updated the search placeholder and helper copy so the page reads as a materials workspace, not a vague mixed-content area
+- `apps/web/components/modules/module-workspace-client-page.tsx`
+  - updated the empty-state copy so it points to adding the first material, not a generic study item
+- `apps/web/components/modules/module-sidebar.tsx`
+  - renamed the back action to `Back to course overview`
+  - added a short helper line explaining that the sidebar is for switching the current module workspace
+- `apps/web/components/course/material-row.tsx`
+  - renamed the quick-edit affordance to `Edit material` for clearer intent
+- `apps/web/components/materials/material-page-client.tsx`
+  - added full breadcrumb wayfinding from `Dashboard` -> course -> module -> current material
+  - changed the hero to lead with the material title itself instead of `Review and edit`
+  - added clearer context copy for both view and edit states
+  - changed the primary return CTA to `Back to module materials`
+  - surfaced material-type and editing-state badges in the page header
+- `apps/web/components/materials/material-view-panel.tsx`
+  - reduced the repeated giant title treatment inside the detail panel
+  - relabeled the action buttons to `Edit material` and `Delete material`
+  - clarified the empty-note state so it references the current material directly
+
+**Why:**
+- The hierarchy should now be readable even if someone lands directly on a deeper page.
+- The flow now says more clearly:
+  - this is the course
+  - these are its modules
+  - this module contains materials
+  - this screen is one specific material
+- This keeps the stronger server-first architecture from the recent performance pass, but makes the navigation logic much easier to understand during demos and manual use.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
 - `npm.cmd --workspace @studyhub/web run build`
