@@ -23,34 +23,32 @@ export function Spinner({ label = "Loading your workspace...", centered = false,
 
   return (
     <div
-      className="relative flex min-h-screen items-center justify-center overflow-hidden px-5 py-12"
+      className="relative flex min-h-[50vh] flex-col items-center justify-center p-8 text-center animate-[fadeIn_0.3s_ease-out_forwards]"
       role="status"
       aria-live="polite"
     >
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(248,250,252,0.98)_0%,rgba(241,245,249,0.95)_55%,rgba(238,242,255,0.92)_100%)] dark:bg-[linear-gradient(180deg,rgba(2,8,22,0.98)_0%,rgba(6,12,28,0.96)_55%,rgba(8,15,30,0.98)_100%)]" />
-      <div className="pointer-events-none absolute left-1/2 top-20 h-40 w-40 -translate-x-1/2 rounded-full bg-brand-200/25 blur-3xl dark:bg-brand-500/10" />
+      {/* Subtle ambient glow behind the spinner */}
+      <div className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-48 w-48 -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand-500/15 blur-[60px] dark:bg-brand-500/20" />
 
-      <div className="relative w-full max-w-sm rounded-[1.75rem] border border-white/65 bg-white/92 p-7 shadow-[0_20px_50px_rgba(15,23,42,0.10)] sm:p-8 dark:border-slate-800 dark:bg-slate-950/84">
-        <div className="flex flex-col items-center text-center">
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/88 px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-slate-500 shadow-sm dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-400">
-            <span className="h-2 w-2 rounded-full bg-gradient-to-r from-brand-500 to-cyan-400" />
-            StudyHub
-          </div>
-
-          <div className="relative mb-5 inline-flex h-14 w-14 items-center justify-center">
-            <span className="absolute inset-0 rounded-full border-2 border-brand-100 dark:border-slate-800" />
-            <span className="absolute inset-0 rounded-full border-2 border-transparent border-t-brand-500 border-r-cyan-400 animate-spin" />
-            <span className="absolute inset-[0.55rem] rounded-full bg-white dark:bg-slate-950" />
-          </div>
-
-          <p className="font-poppins text-xl font-semibold tracking-tight text-slate-800 sm:text-[1.65rem] dark:text-slate-100">
-            {label}
-          </p>
-          <p className="font-poppins mt-3 max-w-xs text-sm leading-6 text-slate-500 dark:text-slate-400">
-            {resolvedHint}
-          </p>
-        </div>
+      {/* Elegant Spinner */}
+      <div className="relative mb-6 inline-flex h-14 w-14 items-center justify-center">
+        {/* Track border */}
+        <span className="absolute inset-0 rounded-full border-[3px] border-brand-500/10 dark:border-white/5" />
+        {/* Animated primary ring */}
+        <span className="absolute inset-0 rounded-full border-[3px] border-transparent border-t-brand-500 border-r-pink-500 animate-spin" />
+        {/* Glowing center dot */}
+        <span className="absolute h-2.5 w-2.5 rounded-full bg-gradient-to-br from-brand-400 to-pink-500 shadow-[0_0_10px_rgba(99,102,241,0.6)] animate-pulse" />
       </div>
+
+      <p className="mb-2 text-xl font-bold tracking-tight text-slate-800 dark:text-slate-100">
+        {label}
+      </p>
+      
+      {resolvedHint && (
+        <p className="max-w-sm text-sm font-medium text-slate-500 dark:text-slate-400 opacity-80">
+          {resolvedHint}
+        </p>
+      )}
     </div>
   );
 }
