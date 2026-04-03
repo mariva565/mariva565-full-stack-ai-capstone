@@ -18,6 +18,7 @@ export function LoginForm() {
     setPassword,
     closeToast,
     handleSubmit,
+    handleGoogleError,
     handlePlannedFeatureClick,
   } = useLoginForm();
 
@@ -66,7 +67,7 @@ export function LoginForm() {
 
         <LoginFormActions
           onForgotPassword={() => handlePlannedFeatureClick("password-reset")}
-          onGoogleSignIn={() => handlePlannedFeatureClick("google")}
+          onGoogleError={handleGoogleError}
         />
       </form>
     </>

@@ -131,3 +131,24 @@ export const activityLogs = pgTable("activity_logs", {
   details: jsonb("details"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
+
+// ─── 9. oauth_accounts ──────────────────────────────────────
+export const oauthAccounts = pgTable(
+  "oauth_accounts",
+  {
+    id: serial("id").primaryKey(),
+    userId: integer("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    provider: varchar("provider", { length: 50 }).notNull(), // 'google'
+    providerUserId: varchar("provider_user_id", { length: 255 }).notNull(),
+    providerEmail: varchar("provider_email", { length: 255 }),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("oauth_accounts_provider_user_id_idx").on(
+      table.provider,
+      table.providerUserId
+    ),
+  ]
+);

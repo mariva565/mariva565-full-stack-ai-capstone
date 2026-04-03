@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { ThemeScript } from "@/components/theme/theme-script";
 import { Navbar } from "@/components/navbar";
+import { Providers } from "@/components/providers";
 import "./globals.css";
 
 const shantellSans = Shantell_Sans({
@@ -39,8 +40,10 @@ export default function RootLayout({ children }: RootLayoutProps) {
     >
       <body className="min-h-screen bg-white font-rubik text-slate-900 antialiased transition-colors duration-300 selection:bg-primary-100 selection:text-primary-900 dark:bg-slate-950 dark:text-slate-100">
         <ThemeScript />
-        <Navbar />
-        {children}
+        <Providers>
+          <Navbar />
+          {children}
+        </Providers>
       </body>
     </html>
   );

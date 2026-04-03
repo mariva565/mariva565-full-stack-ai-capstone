@@ -4,6 +4,12 @@ import type { FormEvent } from "react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { readErrorMessage } from "@/lib/http";
+import type { ToastTone } from "../ui/toast";
+
+type ToastState = {
+  message: string;
+  tone: ToastTone;
+};
 
 type RegisterFormState = {
   name: string;
@@ -11,10 +17,13 @@ type RegisterFormState = {
   password: string;
   error: string;
   loading: boolean;
+  toast: ToastState | null;
   setName: (value: string) => void;
   setEmail: (value: string) => void;
   setPassword: (value: string) => void;
+  closeToast: () => void;
   handleSubmit: (event: FormEvent<HTMLFormElement>) => Promise<void>;
+  handleGoogleError: (message: string) => void;
 };
 
 function normalizeName(rawValue: string): string {
@@ -28,6 +37,7 @@ export function useRegisterForm(): RegisterFormState {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState<ToastState | null>(null);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -63,15 +73,22 @@ export function useRegisterForm(): RegisterFormState {
     }
   }
 
+  function handleGoogleError(message: string) {
+    setToast({ tone: "error", message });
+  }
+
   return {
     name,
     email,
     password,
     error,
     loading,
+    toast,
     setName,
     setEmail,
     setPassword,
+    closeToast: () => setToast(null),
     handleSubmit,
+    handleGoogleError,
   };
 }

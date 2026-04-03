@@ -23,6 +23,7 @@ type LoginFormState = {
   setPassword: (value: string) => void;
   closeToast: () => void;
   handleSubmit: (event: FormEvent<HTMLFormElement>) => Promise<void>;
+  handleGoogleError: (message: string) => void;
   handlePlannedFeatureClick: (feature: PlannedFeature) => void;
 };
 
@@ -75,6 +76,10 @@ export function useLoginForm(): LoginFormState {
     setToast({ tone: "info", message: buildPlannedFeatureMessage(feature) });
   }
 
+  function handleGoogleError(message: string) {
+    setToast({ tone: "error", message });
+  }
+
   return {
     email,
     password,
@@ -85,6 +90,7 @@ export function useLoginForm(): LoginFormState {
     setPassword,
     closeToast: () => setToast(null),
     handleSubmit,
+    handleGoogleError,
     handlePlannedFeatureClick,
   };
 }

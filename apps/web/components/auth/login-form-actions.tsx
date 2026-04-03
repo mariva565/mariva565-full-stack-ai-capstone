@@ -1,15 +1,14 @@
 import { AuthSectionDivider } from "./auth-section-divider";
-import { GoogleIcon } from "./auth-icons";
-import { AuthSocialButton } from "./auth-social-button";
+import { AuthGoogleSignIn } from "./auth-google-sign-in";
 
 type LoginFormActionsProps = {
   onForgotPassword: () => void;
-  onGoogleSignIn: () => void;
+  onGoogleError: (error: string) => void;
 };
 
 export function LoginFormActions({
   onForgotPassword,
-  onGoogleSignIn,
+  onGoogleError,
 }: LoginFormActionsProps) {
   return (
     <div className="space-y-3">
@@ -25,16 +24,11 @@ export function LoginFormActions({
 
       <AuthSectionDivider label="OR" />
 
-      <AuthSocialButton
-        label="Sign in with Google"
-        badge="Soon"
-        icon={<GoogleIcon className="h-[18px] w-[18px]" />}
-        onClick={onGoogleSignIn}
-      />
+      <AuthGoogleSignIn onError={onGoogleError} />
 
       <div className="rounded-2xl border border-dashed border-slate-200/80 bg-white/55 px-4 py-2.5 text-[0.72rem] leading-5 text-slate-500 dark:border-slate-700 dark:bg-slate-900/40 dark:text-slate-400">
-        Password reset and Google sign-in stay visible for parity, but we will
-        wire them after the base JWT auth flow is fully stable.
+        Password reset stays visible for parity, but we will
+        wire it after the base JWT auth flow is fully stable.
       </div>
     </div>
   );

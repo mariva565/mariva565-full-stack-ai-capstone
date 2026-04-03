@@ -4,6 +4,9 @@ import { AuthIconField } from "./auth-icon-field";
 import { EmailIcon, LockIcon, UserIcon } from "./auth-icons";
 import { RegisterFormHeader } from "./register-form-header";
 import { useRegisterForm } from "./use-register-form";
+import { Toast } from "../ui/toast";
+import { AuthSectionDivider } from "./auth-section-divider";
+import { AuthGoogleSignIn } from "./auth-google-sign-in";
 
 export function RegisterForm() {
   const {
@@ -12,14 +15,21 @@ export function RegisterForm() {
     password,
     error,
     loading,
+    toast,
     setName,
     setEmail,
     setPassword,
+    closeToast,
     handleSubmit,
+    handleGoogleError,
   } = useRegisterForm();
 
   return (
     <>
+      {toast && (
+        <Toast message={toast.message} tone={toast.tone} onClose={closeToast} />
+      )}
+
       <RegisterFormHeader />
 
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -79,6 +89,10 @@ export function RegisterForm() {
         >
           {loading ? "Creating account..." : "Create Account"}
         </button>
+
+        <AuthSectionDivider label="OR" />
+
+        <AuthGoogleSignIn onError={handleGoogleError} />
       </form>
     </>
   );

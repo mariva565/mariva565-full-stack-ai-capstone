@@ -3269,5 +3269,30 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
   - material link/file actions no longer use a vague catch-all term
 
 **Validation:**
-- `npm.cmd --workspace @studyhub/web run typecheck`
 - `npm.cmd --workspace @studyhub/web run build`
+
+### Session 125 (Google Sign-In Integration)
+
+**Goal:**
+- Implement Google Sign-In as promised in the `implementation-plan.md`.
+
+**What changed:**
+- `drizzle/schema.ts`
+  - Added `oauthAccounts` table for storing external identities, linked to `users`.
+- `apps/web/lib/google.ts`
+  - Added `verifyGoogleIdToken` helper using `google-auth-library`.
+- `apps/web/app/api/auth/google/route.ts`
+  - Added complete OAuth verification and account matching/creation flow. New Google users get a secure, generated 32-byte bcrypt-hashed placeholder password to satisfy existing schema constraints.
+- `apps/web/components/providers.tsx`
+  - Wrapped Next.js app in `<GoogleOAuthProvider>` to enable the GIS components.
+- `apps/web/components/auth/auth-google-sign-in.tsx`
+  - Implemented the actual `<GoogleLogin>` component mapping responses to our `/api/auth/google` API.
+- `<LoginFormActions>` and `<RegisterForm>`
+  - Hooked the actual component in place of the placeholder.
+
+**Why:**
+- By creating the `oauth_accounts` table, the platform now flawlessly supports users registering with Google directly, linking their existing email accounts, or mixing standard and OAuth authentication smoothly, laying the exact generic groundwork the Expo mobile app will need next.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+- DB pushing and Google Sign-in complete e2e.

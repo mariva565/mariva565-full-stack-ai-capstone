@@ -22,6 +22,13 @@
       "when": 1775136682313,
       "tag": "0002_faithful_mesmero",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1775236163106,
+      "tag": "0003_deep_hex",
+      "breakpoints": true
     }
   ]
 }
