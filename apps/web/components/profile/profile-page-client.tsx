@@ -45,7 +45,7 @@ export function ProfilePageClient({ initialUser }: ProfilePageClientProps) {
 
   return (
     <>
-      <div className="relative overflow-hidden">
+      <div className="relative overflow-hidden font-poppins">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-[420px] bg-gradient-to-b from-brand-100/80 via-white/40 to-transparent dark:hidden" />
         <div className="pointer-events-none absolute -left-24 top-20 h-72 w-72 rounded-full bg-fuchsia-300/30 blur-3xl dark:hidden" />
         <div className="pointer-events-none absolute -right-20 top-40 h-72 w-72 rounded-full bg-cyan-300/30 blur-3xl dark:hidden" />

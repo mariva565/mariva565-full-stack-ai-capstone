@@ -1,15 +1,9 @@
-import { Rubik, Shantell_Sans, Poppins } from "next/font/google";
+import { Rubik, Shantell_Sans } from "next/font/google";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { ThemeScript } from "@/components/theme/theme-script";
 import { Navbar } from "@/components/navbar";
 import "./globals.css";
-
-const poppins = Poppins({
-  subsets: ["latin", "latin-ext"],
-  weight: ["400", "500", "600", "700", "800", "900"],
-  variable: "--font-poppins",
-});
 
 const shantellSans = Shantell_Sans({
   subsets: ["latin", "cyrillic"],
@@ -41,7 +35,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${rubik.variable} ${shantellSans.variable} ${poppins.variable}`}
+      className={`${rubik.variable} ${shantellSans.variable}`}
     >
       <body className="min-h-screen bg-white font-rubik text-slate-900 antialiased transition-colors duration-300 selection:bg-primary-100 selection:text-primary-900 dark:bg-slate-950 dark:text-slate-100">
         <ThemeScript />

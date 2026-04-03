@@ -112,10 +112,12 @@ export function GlassCard({ icon, title, description, delay = 0 }: GlassCardProp
         {/* Text — turns white on hover */}
         <div className="relative z-10">
           <h3
-            className="text-xl font-bold mb-3"
+            className="home-ink-title mb-3 text-xl"
             style={{
-              color: hovered ? "#ffffff" : "#1e293b",
+              color: hovered ? "#ffffff" : undefined,
               transition: "color 0.4s ease",
+              WebkitTextFillColor: hovered ? "#ffffff" : undefined,
+              backgroundImage: hovered ? "none" : undefined,
             }}
           >
             {title}

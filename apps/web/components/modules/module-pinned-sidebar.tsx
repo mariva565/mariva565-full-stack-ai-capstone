@@ -39,7 +39,7 @@ export function ModulePinnedSidebar({ items }: ModulePinnedSidebarProps) {
               href={`/materials/${item.materialId}`}
               className="group block rounded-[1.35rem] border border-slate-200/80 bg-white/90 p-4 transition hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(15,23,42,0.08)] dark:border-slate-800 dark:bg-slate-900/80 dark:hover:shadow-[0_18px_40px_rgba(6,182,212,0.06)]"
             >
-              <p className="text-sm font-semibold text-slate-900 transition group-hover:text-brand-600 dark:text-white dark:group-hover:text-brand-100">
+              <p className="dashboard-script-title block text-[1.25rem] leading-[1.06] transition duration-300 group-hover:translate-x-0.5">
                 {item.materialTitle}
               </p>
               <div className="mt-2">

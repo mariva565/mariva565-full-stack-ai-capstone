@@ -95,17 +95,17 @@ export function ProfileHeroCard({
         </div>
 
         <div className="mt-6 rounded-[1.5rem] border border-brand-100/80 bg-brand-50/80 p-4 text-sm text-slate-700 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-slate-200">
-          <p className="font-semibold text-slate-900 dark:text-white">Direct photo upload is planned.</p>
+          <p className="font-semibold text-slate-900 dark:text-white">Avatar uploads are still pending.</p>
           <p className="mt-1 leading-6 text-slate-600 dark:text-slate-300">
-            We still have not finalized a reliable upload solution, so for now the safe
-            path is an external `https://` image URL or the initials-based avatar.
+            External `https://` image URLs work today. Direct uploads stay paused until
+            the storage flow is finalized.
           </p>
         </div>
 
-        <div className="mt-6 flex flex-wrap gap-3">
+        <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
           <Link
             href="/dashboard"
-            className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-brand-500 via-fuchsia-500 to-cyan-500 px-5 py-3 text-sm font-semibold text-white shadow-[0_18px_35px_rgba(99,102,241,0.25)] transition hover:-translate-y-0.5"
+            className="inline-flex w-full items-center justify-center rounded-full bg-gradient-to-r from-brand-500 via-fuchsia-500 to-cyan-500 px-5 py-3 text-sm font-semibold text-white shadow-[0_18px_35px_rgba(99,102,241,0.25)] transition hover:-translate-y-0.5 sm:w-auto"
           >
             Open Dashboard
           </Link>
@@ -113,7 +113,7 @@ export function ProfileHeroCard({
           {role === "admin" ? (
             <Link
               href="/admin"
-              className="inline-flex items-center justify-center rounded-full border border-white/70 bg-white/85 px-5 py-3 text-sm font-semibold text-slate-700 shadow-sm backdrop-blur transition hover:-translate-y-0.5 hover:text-brand-700 dark:border-white/10 dark:bg-slate-950/65 dark:text-slate-200 dark:hover:text-brand-200"
+              className="inline-flex w-full items-center justify-center rounded-full border border-white/70 bg-white/85 px-5 py-3 text-sm font-semibold text-slate-700 shadow-sm backdrop-blur transition hover:-translate-y-0.5 hover:text-brand-700 dark:border-white/10 dark:bg-slate-950/65 dark:text-slate-200 dark:hover:text-brand-200 sm:w-auto"
             >
               Open Admin Panel
             </Link>

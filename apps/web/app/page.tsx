@@ -61,7 +61,7 @@ export default function HomePage() {
           <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="flex items-center gap-3">
                <img src="/assets/v1/icons/mascot-logo.png" alt="Logo" className="w-8 h-8 object-contain" />
-               <span className="font-shantell font-bold text-slate-800 text-xl">Study Hub</span>
+               <span className="home-ink-title text-xl">Study Hub</span>
             </div>
             
             <p className="text-slate-400 text-sm font-medium">

@@ -1,7 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Shantell+Sans:wght@400;500;600;700;800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -124,18 +122,6 @@
     @apply bg-white/15 border-white/60 -translate-y-[3px] scale-[1.02] shadow-2xl text-white;
   }
 
-  .font-shantell {
-    font-family: 'Shantell Sans', 'Caveat', cursive;
-  }
-
-  .font-poppins {
-    font-family: 'Poppins', sans-serif;
-  }
-
-  .font-handwritten {
-    font-family: 'Shantell Sans', 'Caveat', cursive;
-  }
-
   .dashboard-script-title,
   .dashboard-panel-title {
     @apply inline-block font-shantell font-extrabold tracking-tight;
@@ -162,6 +148,39 @@
     filter:
       drop-shadow(0 12px 28px rgba(124, 58, 237, 0.22))
       drop-shadow(0 0 18px rgba(6, 182, 212, 0.16));
+  }
+
+  .home-display-title {
+    @apply inline-block font-shantell font-black tracking-tight;
+    background-image: linear-gradient(135deg, #1f2a44 0%, #5b58d8 44%, #0f8f9f 100%);
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    filter:
+      drop-shadow(0 10px 24px rgba(99, 102, 241, 0.08))
+      drop-shadow(0 0 12px rgba(6, 182, 212, 0.05));
+  }
+
+  .home-ink-title {
+    @apply inline-block font-shantell font-bold tracking-tight;
+    background-image: linear-gradient(135deg, #344156 0%, #5d4fd3 60%, #0f8aa3 100%);
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+
+  .dark .home-display-title,
+  .dark .home-ink-title {
+    background-image: linear-gradient(135deg, #f5eeff 0%, #cbb7ff 35%, #87dcff 100%);
+    filter:
+      drop-shadow(0 12px 28px rgba(124, 58, 237, 0.18))
+      drop-shadow(0 0 16px rgba(6, 182, 212, 0.12));
   }
 
   .text-gradient-animated {

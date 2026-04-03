@@ -27,7 +27,7 @@ import { GlassCard } from "./glass-card";
 
 export function HomeFeatures() {
   return (
-    <section className="relative overflow-hidden py-32 transition-colors duration-500"
+    <section id="features" className="relative overflow-hidden py-32 transition-colors duration-500"
       style={{ background: "linear-gradient(180deg, #ffffff 0%, #f8fafc 30%, #eef2ff 100%)" }}
     >
       {/* Decorative blur blobs (matching original) */}
@@ -39,7 +39,7 @@ export function HomeFeatures() {
           <span className="mb-4 inline-block text-sm font-bold uppercase tracking-[0.2em] text-indigo-500">
             Features
           </span>
-          <h2 className="font-shantell text-4xl font-black tracking-tight text-slate-900 dark:text-white sm:text-5xl lg:text-6xl">
+          <h2 className="home-display-title text-4xl sm:text-5xl lg:text-6xl">
             Everything you need to succeed
           </h2>
           <p className="mx-auto mt-6 max-w-2xl text-lg text-slate-500 dark:text-slate-400">

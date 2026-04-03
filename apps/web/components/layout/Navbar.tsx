@@ -60,9 +60,10 @@ export function Navbar() {
 
         {/* Nav Links */}
         <div className="hidden lg:flex items-center gap-2">
-          <NavLink href="#features">Features</NavLink>
-          <NavLink href="#about">About</NavLink>
-          <NavLink href="#faq">FAQ</NavLink>
+          <NavLink href="/#features">Features</NavLink>
+          <NavLink href="/#about">About</NavLink>
+          <NavLink href="/how-it-works">How It Works</NavLink>
+          <NavLink href="/#faq">FAQ</NavLink>
 
           <Link
             href="/login"
@@ -108,9 +109,10 @@ export function Navbar() {
             transition={{ duration: 0.2 }}
             className="lg:hidden border-t border-white/30 bg-white/80 backdrop-blur-xl px-4 py-4 flex flex-col gap-1"
           >
-            <MobileNavLink href="#features" onClick={() => setMenuOpen(false)}>Features</MobileNavLink>
-            <MobileNavLink href="#about" onClick={() => setMenuOpen(false)}>About</MobileNavLink>
-            <MobileNavLink href="#faq" onClick={() => setMenuOpen(false)}>FAQ</MobileNavLink>
+            <MobileNavLink href="/#features" onClick={() => setMenuOpen(false)}>Features</MobileNavLink>
+            <MobileNavLink href="/#about" onClick={() => setMenuOpen(false)}>About</MobileNavLink>
+            <MobileNavLink href="/how-it-works" onClick={() => setMenuOpen(false)}>How It Works</MobileNavLink>
+            <MobileNavLink href="/#faq" onClick={() => setMenuOpen(false)}>FAQ</MobileNavLink>
             <div className="mt-2 flex flex-col gap-2">
               <Link
                 href="/login"

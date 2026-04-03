@@ -127,7 +127,7 @@ function BenefitCard({ icon, title, sub, delay, floatDelay, isInView }: {
         </div>
 
         <div className="relative z-10">
-          <p className="text-sm font-bold text-slate-900 font-handwritten">{title}</p>
+          <p className="home-ink-title text-sm">{title}</p>
           <p className="text-xs text-slate-400">{sub}</p>
         </div>
       </div>
@@ -242,7 +242,7 @@ export function HomeAbout() {
             </div>
 
             {/* Heading with animated underline */}
-            <h2 className="mb-6 font-shantell text-4xl font-black tracking-tight text-slate-900 sm:text-5xl">
+            <h2 className="home-display-title mb-6 text-4xl sm:text-5xl">
               Empowering{" "}
               <span className="relative inline-block" style={{
                 background: "linear-gradient(135deg, #8b5cf6, #ec4899)",

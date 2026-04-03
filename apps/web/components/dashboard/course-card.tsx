@@ -42,6 +42,7 @@ function CourseCardGlyph() {
 }
 
 export function CourseCard({ course, onEdit, onDelete }: CourseCardProps) {
+  const courseHref = `/courses/${course.id}`;
   const statusTone =
     course.status === "published"
       ? "cyan"
@@ -59,30 +60,32 @@ export function CourseCard({ course, onEdit, onDelete }: CourseCardProps) {
       <div className="pointer-events-none absolute right-0 top-0 h-24 w-24 rounded-full bg-brand-100/80 blur-2xl transition duration-500 group-hover:scale-110 dark:bg-cyan-500/10" />
       <div className="pointer-events-none absolute -right-8 top-[-1rem] hidden h-24 w-24 rounded-full bg-white/10 blur-3xl dark:block" />
       <div className="relative flex h-full flex-col">
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex min-w-0 items-start gap-3">
-            <CourseCardGlyph />
-            <div className="min-w-0">
-              <p className="text-[0.68rem] font-semibold uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">
-                Created {new Date(course.createdAt).toLocaleDateString()}
-              </p>
-              <Link
-                href={`/courses/${course.id}`}
-                className="dashboard-script-title mt-1 block truncate text-2xl transition duration-300 group-hover:translate-x-0.5"
-              >
-                {course.title}
-              </Link>
+        <Link
+          href={courseHref}
+          className="block rounded-[1.4rem] transition outline-none focus-visible:ring-2 focus-visible:ring-brand-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-cyan-300/70 dark:focus-visible:ring-offset-slate-950"
+        >
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex min-w-0 items-start gap-3">
+              <CourseCardGlyph />
+              <div className="min-w-0">
+                <p className="text-[0.68rem] font-semibold uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">
+                  Created {new Date(course.createdAt).toLocaleDateString()}
+                </p>
+                <span className="dashboard-script-title mt-1 block truncate text-2xl transition duration-300 group-hover:translate-x-0.5">
+                  {course.title}
+                </span>
+              </div>
             </div>
+
+            <DashboardPill tone={statusTone}>
+              {formatStatus(course.status)}
+            </DashboardPill>
           </div>
 
-          <DashboardPill tone={statusTone}>
-            {formatStatus(course.status)}
-          </DashboardPill>
-        </div>
-
-        <p className="mt-4 min-h-12 text-sm leading-6 text-slate-600 dark:text-slate-300">
-          {course.description || "No description yet."}
-        </p>
+          <p className="mt-4 min-h-12 text-sm leading-6 text-slate-600 dark:text-slate-300">
+            {course.description || "No description yet."}
+          </p>
+        </Link>
 
         <div className="mt-5 flex items-center justify-end gap-3 border-t border-slate-200/70 pt-4 dark:border-slate-700/70">
           <div className="flex items-center gap-2">
@@ -97,12 +100,6 @@ export function CourseCard({ course, onEdit, onDelete }: CourseCardProps) {
               variant="danger"
             >
               Delete
-            </DashboardActionButton>
-            <DashboardActionButton
-              href={`/courses/${course.id}`}
-              variant="primary"
-            >
-              Open
             </DashboardActionButton>
           </div>
         </div>

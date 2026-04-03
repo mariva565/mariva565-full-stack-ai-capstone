@@ -17,11 +17,11 @@ export function PinnedMaterialItem({ item }: PinnedMaterialItemProps) {
     <motion.li
       whileHover={{ y: -5 }}
       transition={{ type: "spring", stiffness: 260, damping: 22 }}
-      className="rounded-[1.35rem] border border-slate-200/80 bg-white/92 p-4 shadow-sm transition hover:shadow-[0_18px_45px_rgba(15,23,42,0.08)] dark:border-cyan-400/10 dark:bg-slate-950/55 dark:hover:shadow-[0_20px_45px_rgba(6,182,212,0.06)]"
+      className="group rounded-[1.35rem] border border-slate-200/80 bg-white/92 p-4 shadow-sm transition hover:shadow-[0_18px_45px_rgba(15,23,42,0.08)] dark:border-cyan-400/10 dark:bg-slate-950/55 dark:hover:shadow-[0_20px_45px_rgba(6,182,212,0.06)]"
     >
       <Link
         href={`/materials/${item.materialId}`}
-        className="text-base font-semibold text-brand-700 transition-colors hover:text-brand-600 dark:text-brand-100 dark:hover:text-cyan-200"
+        className="dashboard-script-title block text-[1.38rem] leading-[1.06] transition duration-300 group-hover:translate-x-0.5"
       >
         {item.materialTitle}
       </Link>

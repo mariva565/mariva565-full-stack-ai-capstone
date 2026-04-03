@@ -11,6 +11,9 @@ const config: Config = {
     extend: {
       fontFamily: {
         rubik: ["var(--font-rubik)", "sans-serif"],
+        poppins: ["var(--font-rubik)", "sans-serif"],
+        shantell: ["var(--font-shantell)", "Caveat", "cursive"],
+        handwritten: ["var(--font-shantell)", "Caveat", "cursive"],
       },
       colors: {
         brand: {

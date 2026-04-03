@@ -27,7 +27,7 @@ export function HomeStats() {
               <div className="bg-gradient-to-br from-brand-500 to-cyan-500 bg-clip-text text-4xl font-extrabold text-transparent sm:text-5xl">
                 {stat.value}
               </div>
-              <div className="mt-2 text-sm font-bold text-slate-900 dark:text-white">
+              <div className="home-ink-title mt-2 text-sm">
                 {stat.label}
               </div>
               <div className="mt-1 text-xs text-slate-400">

@@ -2534,3 +2534,167 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 
 **Validation:**
 - `npm.cmd --workspace @studyhub/web run typecheck`
+
+## 2026-04-03
+
+### Session 100 (Material/detail polish + quieter profile copy)
+
+**Problem investigated:**
+- The current pre-Admin checkpoint still had a few authenticated screens where the supporting sans layer, helper copy, and action layout felt heavier than the more polished dashboard/progress direction.
+- The material detail screen in particular still read a bit too explanatory, and the profile page repeated the same avatar-upload caveat in multiple places.
+
+**What changed:**
+- `apps/web/components/course/course-details-client-page.tsx`
+  - applied the shared `font-poppins` shell treatment so the course workspace matches the newer authenticated typography direction
+- `apps/web/components/modules/module-workspace-client-page.tsx`
+  - applied the same `font-poppins` shell treatment to the module workspace
+- `apps/web/components/materials/material-page-client.tsx`
+  - applied `font-poppins` to the page shell
+  - shortened the hero copy
+  - replaced the long inline course/module sentence with a cleaner metadata line
+  - made the secondary course CTA work better on smaller screens
+- `apps/web/components/materials/material-view-panel.tsx`
+  - added a quieter saved-date eyebrow above the title
+  - upgraded the source/pin controls and edit/delete actions to feel more aligned with the rest of the app
+  - softened the content surface styling
+  - replaced the bare `No content yet.` line with a fuller empty-state treatment
+- `apps/web/components/profile/profile-page-client.tsx`
+  - applied `font-poppins` to the page shell
+- `apps/web/components/profile/profile-page-header.tsx`
+  - removed the heavier account-settings badge
+  - shortened the helper sentence
+  - made the back action friendlier on mobile width
+- `apps/web/components/profile/profile-hero-card.tsx`
+  - shortened the avatar-upload honesty note
+  - made the main action buttons stack more cleanly on mobile
+- `apps/web/components/profile/profile-details-card.tsx`
+  - removed the duplicated upload-status block
+  - shortened the intro copy and avatar helper text
+
+**Why:**
+- The course/module/material/profile flow now shares the same cleaner authenticated typography companion instead of mixing back into the older draft-like sans feel.
+- Material detail lands faster, with clearer metadata and calmer actions.
+- Profile still communicates the upload limitation honestly, but without repeating the same message in multiple cards.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 101 (Pinned material title typography cleanup)
+
+**Problem investigated:**
+- Some pinned material cards were still rendering their item titles with a generic sans style that read closer to the old draft UI than to the current StudyHub signature typography.
+- The most visible mismatch was in the dashboard pinned shelf, but the module workspace pinned sidebar still had the same leftover title treatment.
+
+**What changed:**
+- `apps/web/components/dashboard/pinned-material-item.tsx`
+  - switched pinned material titles from the plain brand-colored sans style to the shared `dashboard-script-title` treatment
+  - added the same subtle title hover shift used elsewhere in the content cards
+- `apps/web/components/modules/module-pinned-sidebar.tsx`
+  - applied the same signature title treatment to pinned material names inside the module sidebar
+
+**Why:**
+- Pinned material titles now match the rest of the course/module/material hierarchy instead of falling back to a draft-looking font style.
+- The dashboard shelf and module pinned list now feel like the same design system.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 102 (Course card primary-action cleanup)
+
+**Problem investigated:**
+- Dashboard course cards still had a dedicated `Open` button even though the course title already acted as the primary navigation link.
+- That made the footer feel busier than necessary and repeated the same action in two places.
+
+**What changed:**
+- `apps/web/components/dashboard/course-card.tsx`
+  - removed the duplicate `Open` button from the footer
+  - turned the upper content area of the card into the clearer primary click target
+  - kept `Edit` and `Delete` as the remaining secondary actions in the footer
+
+**Why:**
+- The card now has a cleaner action hierarchy:
+  - open the course from the main content/title area
+  - use the footer only for management actions
+- This keeps the stronger visual button styling elsewhere in the UI without overloading the course card footer.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 103 (Material card primary-action cleanup)
+
+**Problem investigated:**
+- Material cards in the course/module workspace still had a dedicated `Open` button even though the material title already opened the same detail page.
+- That repeated the primary navigation action and made the top-right controls busier than needed.
+
+**What changed:**
+- `apps/web/components/course/material-row.tsx`
+  - removed the duplicate `Open` button
+  - turned the upper content area of the material card into the clearer primary click target
+  - kept only the source-link action and quick-access pin action on the right
+
+**Why:**
+- The material card now follows the same action hierarchy as the course card:
+  - open from the main content/title area
+  - keep the side actions for secondary controls only
+- This makes the card lighter without losing discoverability.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 104 (Cyrillic-safe app sans font fix)
+
+**Problem investigated:**
+- Mixed Bulgarian + English content still looked uneven in several authenticated screens even after the local UI polish passes.
+- The root cause turned out to be global font coverage:
+  - the shared app sans utility was conceptually treated as `Poppins`
+  - but `Poppins` in the current Next font pipeline does not provide a Cyrillic subset
+  - that caused Cyrillic text to fall back to a different font inside the same paragraph or card
+
+**What changed:**
+- `apps/web/app/layout.tsx`
+  - removed the unused `Poppins` Next font setup from the root layout
+- `apps/web/tailwind.config.ts`
+  - pointed the shared `font-poppins` utility at the already-loaded Cyrillic-safe `Rubik` variable
+  - kept the handwritten/signature utilities on `Shantell Sans`
+- `apps/web/app/globals.css`
+  - removed the old direct CSS font-family overrides for `font-poppins`, `font-shantell`, and `font-handwritten`
+  - now relies on the Tailwind font utilities backed by the Next font variables
+  - removed the old direct Google Fonts import for `Poppins`
+
+**Why:**
+- Mixed Bulgarian and English UI/content now stays on one consistent sans font instead of switching mid-line to a fallback.
+- This fixes the uneven reading texture across notes, cards, helper copy, and other authenticated app surfaces.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run build` ✅
+- `npm.cmd --workspace @studyhub/web run typecheck` hit a local sandbox `.next/types` path mismatch after build, but the successful Next build already completed its own type/lint validation for this change.
+
+### Session 105 (Home typography color refinement)
+
+**Problem investigated:**
+- The home page already had the right handwritten/display font in key places, but some section headings and smaller titles still read as plain black instead of belonging to the richer StudyHub visual language.
+- The issue was not font choice anymore, but the color treatment on several home-only titles.
+
+**What changed:**
+- `apps/web/app/globals.css`
+  - added `home-display-title` for large home section headings
+  - added `home-ink-title` for smaller home card/question titles
+- `apps/web/components/home/features.tsx`
+  - moved the main section heading to the richer home display treatment
+- `apps/web/components/home/about.tsx`
+  - moved the main section heading and benefit-card titles to the richer home title treatments
+- `apps/web/components/home/faq.tsx`
+  - moved the FAQ section heading and accordion question titles away from the plain black treatment
+- `apps/web/components/home/glass-card.tsx`
+  - upgraded feature-card titles so they use the richer home title treatment by default and still turn white on hover
+- `apps/web/components/home/stats.tsx`
+  - aligned stat labels to the same home title treatment for consistency if the section is re-enabled later
+- `apps/web/app/page.tsx`
+  - updated the footer wordmark away from the plain black look
+
+**Why:**
+- The home page now keeps its current font direction, but the headings and smaller titles feel more premium and less flat.
+- This makes the public marketing surface feel closer to the stronger brand treatment already present in the hero and authenticated app.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run build`

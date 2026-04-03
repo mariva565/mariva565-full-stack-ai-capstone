@@ -4,7 +4,7 @@ import Link from "next/link";
 import type { CourseMaterial } from "../../lib/course-materials";
 import { normalizeMaterialType, parseTags } from "../../lib/materials";
 import { MaterialTypePill } from "../materials/material-type-pill";
-import { EyeIcon, ExternalLinkIcon, PinAngleIcon } from "../ui/action-icons";
+import { ExternalLinkIcon, PinAngleIcon } from "../ui/action-icons";
 import { TagList } from "../materials/tag-list";
 
 type MaterialRowProps = {
@@ -89,10 +89,10 @@ export function MaterialRow({
   pinBusy,
   onTogglePin,
 }: MaterialRowProps) {
+  const materialHref = `/materials/${material.id}`;
   const normalizedType = normalizeMaterialType(material.materialType);
   const tags = parseTags(material.tags);
   const preview = getContentPreview(material.content);
-  const openLabel = "Open";
   const pinLabel = isPinned ? "Remove from quick access" : "Pin to quick access";
   const sourceLabel = "Open source";
 
@@ -102,44 +102,46 @@ export function MaterialRow({
 
       <div className="flex flex-col gap-4 p-5 sm:p-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-          <div className="flex min-w-0 gap-4">
-            <motion.div
-              whileHover={{
-                scale: 1.14,
-                y: -3,
-                rotate: [0, -5, 7, 0],
-              }}
-              transition={{
-                duration: 0.45,
-                ease: "easeOut",
-              }}
-              className="relative flex-none"
-            >
-              <div
-                className={`absolute inset-1 rounded-[1.15rem] opacity-0 blur-xl transition duration-300 group-hover:opacity-100 ${TYPE_HALO[normalizedType]}`}
-              />
-              <div
-                className={`relative flex h-14 w-14 items-center justify-center rounded-[1.35rem] transition duration-300 group-hover:shadow-[0_18px_40px_rgba(15,23,42,0.14)] ${TYPE_SURFACE[normalizedType]}`}
+          <Link
+            href={materialHref}
+            className="block min-w-0 rounded-[1.4rem] transition outline-none focus-visible:ring-2 focus-visible:ring-brand-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-cyan-300/70 dark:focus-visible:ring-offset-slate-950"
+          >
+            <div className="flex min-w-0 gap-4">
+              <motion.div
+                whileHover={{
+                  scale: 1.14,
+                  y: -3,
+                  rotate: [0, -5, 7, 0],
+                }}
+                transition={{
+                  duration: 0.45,
+                  ease: "easeOut",
+                }}
+                className="relative flex-none"
               >
-                <MaterialTypeIllustration type={normalizedType} />
-              </div>
-            </motion.div>
+                <div
+                  className={`absolute inset-1 rounded-[1.15rem] opacity-0 blur-xl transition duration-300 group-hover:opacity-100 ${TYPE_HALO[normalizedType]}`}
+                />
+                <div
+                  className={`relative flex h-14 w-14 items-center justify-center rounded-[1.35rem] transition duration-300 group-hover:shadow-[0_18px_40px_rgba(15,23,42,0.14)] ${TYPE_SURFACE[normalizedType]}`}
+                >
+                  <MaterialTypeIllustration type={normalizedType} />
+                </div>
+              </motion.div>
 
-            <div className="min-w-0">
-              <p className="text-[0.68rem] font-semibold uppercase tracking-[0.28em] text-slate-400 dark:text-slate-500">
-                Saved {new Date(material.createdAt).toLocaleDateString()}
-              </p>
-              <Link
-                href={`/materials/${material.id}`}
-                className="dashboard-script-title mt-2 block text-[clamp(1.35rem,2.15vw,1.8rem)] leading-[1.08] transition group-hover:translate-x-0.5"
-              >
-                {material.title}
-              </Link>
-              <div className="mt-3 flex flex-wrap items-center gap-2">
-                <MaterialTypePill type={material.materialType} />
+              <div className="min-w-0">
+                <p className="text-[0.68rem] font-semibold uppercase tracking-[0.28em] text-slate-400 dark:text-slate-500">
+                  Saved {new Date(material.createdAt).toLocaleDateString()}
+                </p>
+                <span className="dashboard-script-title mt-2 block text-[clamp(1.35rem,2.15vw,1.8rem)] leading-[1.08] transition group-hover:translate-x-0.5">
+                  {material.title}
+                </span>
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  <MaterialTypePill type={material.materialType} />
+                </div>
               </div>
             </div>
-          </div>
+          </Link>
 
           <div className="flex flex-wrap items-center gap-2 lg:justify-end">
             {material.fileUrl ? (
@@ -168,15 +170,6 @@ export function MaterialRow({
             >
               <PinAngleIcon filled={isPinned} className={isPinned ? "-rotate-[18deg]" : "text-slate-400 dark:text-slate-400"} />
             </button>
-            <Link
-              href={`/materials/${material.id}`}
-              title={openLabel}
-              aria-label={openLabel}
-              className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:-translate-y-0.5 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-300 dark:hover:bg-slate-800"
-            >
-              <EyeIcon />
-              <span>Open</span>
-            </Link>
           </div>
         </div>
 

@@ -1,5 +1,4 @@
-import type { ChangeEvent, FormEvent } from "react";
-import { AVATAR_MAX_MB } from "@/lib/profile";
+import type { FormEvent } from "react";
 import { EmailIcon, UserIcon } from "../auth/auth-icons";
 import { ProfileField } from "./profile-field";
 import { CalendarIcon, LinkIcon, ShieldIcon } from "./profile-icons";
@@ -37,8 +36,7 @@ export function ProfileDetailsCard({
         </span>
         <h2 className="dashboard-script-title text-2xl">Personal info</h2>
         <p className="text-sm leading-6 text-slate-600 dark:text-slate-300">
-          Keep the account basics clean and recognizable. Email stays read-only in the
-          current backend.
+          Keep the basics recognizable. Email stays read-only on this screen.
         </p>
       </div>
 
@@ -75,22 +73,8 @@ export function ProfileDetailsCard({
           autoComplete="url"
           required={false}
           onChange={(event) => onAvatarUrlChange(event.target.value)}
-          helperText="External https:// image links work today. Direct photo upload is planned."
+          helperText="Use an external https:// image for now."
         />
-
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-[1.4rem] border border-dashed border-slate-200 bg-slate-50/80 px-4 py-3 text-sm text-slate-600 dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-300">
-          <div>
-            <p className="font-semibold text-slate-900 dark:text-white">Direct photo upload</p>
-            <p className="mt-1 text-xs leading-5 text-slate-500 dark:text-slate-400">
-              Planned for a later pass. We still have not finalized a reliable upload
-              solution, so for now use the image URL field above or keep your initials.
-            </p>
-          </div>
-
-          <span className="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-slate-500 shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
-            Coming soon
-          </span>
-        </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
           <ProfileField

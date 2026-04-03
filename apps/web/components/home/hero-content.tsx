@@ -58,10 +58,10 @@ export function HeroContent() {
         </Link>
 
         <Link
-          href="/#features"
+          href="/how-it-works"
           className="btn-explore-features"
         >
-          Explore Features
+          See How It Works
         </Link>
       </motion.div>
     </div>

@@ -190,7 +190,7 @@ export function ModuleWorkspaceClientPage({
 
   return (
     <>
-      <div className="relative overflow-hidden">
+      <div className="relative overflow-hidden font-poppins">
         <div className="pointer-events-none absolute -left-10 top-10 h-80 w-80 rounded-full bg-brand-200/35 blur-3xl dark:bg-brand-500/10" />
         <div className="pointer-events-none absolute right-0 top-24 h-80 w-80 rounded-full bg-cyan-200/35 blur-3xl dark:bg-cyan-500/10" />
 
