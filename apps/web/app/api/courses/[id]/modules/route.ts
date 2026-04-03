@@ -3,7 +3,7 @@ import { db } from "../../../../../lib/db";
 import { modules } from "../../../../../../../drizzle/schema";
 import { requireAuth } from "../../../../../lib/api-utils";
 import { logActivity } from "../../../../../lib/activity";
-import { eq, asc } from "drizzle-orm";
+import { getCourseModules } from "../../../../../lib/course-details-data";
 
 type Ctx = { params: Promise<{ id: string }> };
 
@@ -13,11 +13,7 @@ export async function GET(request: NextRequest, { params }: Ctx) {
   if ("error" in auth) return auth.error;
 
   const { id } = await params;
-  const rows = await db
-    .select()
-    .from(modules)
-    .where(eq(modules.courseId, Number(id)))
-    .orderBy(asc(modules.orderIndex));
+  const rows = await getCourseModules(Number(id));
 
   return NextResponse.json({ modules: rows });
 }

@@ -1,5 +1,4 @@
 import { eq } from "drizzle-orm";
-import { cache } from "react";
 
 import { users } from "../../../drizzle/schema";
 import type { ProfileUser } from "./profile";
@@ -33,7 +32,7 @@ export function normalizeProfileUser(user: ProfileUserRow): ProfileUser {
   };
 }
 
-export const getProfileUserById = cache(async (userId: number): Promise<ProfileUser | null> => {
+export async function getProfileUserById(userId: number): Promise<ProfileUser | null> {
   const [user] = await db
     .select(getProfileUserSelection())
     .from(users)
@@ -41,4 +40,4 @@ export const getProfileUserById = cache(async (userId: number): Promise<ProfileU
     .limit(1);
 
   return user ? normalizeProfileUser(user) : null;
-});
+}

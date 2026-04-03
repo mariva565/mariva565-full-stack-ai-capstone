@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "../../../../lib/db";
-import { courses, materials, modules } from "../../../../../../drizzle/schema";
+import { materials } from "../../../../../../drizzle/schema";
 import { requireAuth } from "../../../../lib/api-utils";
 import { logActivity } from "../../../../lib/activity";
+import { getMaterialDetail } from "../../../../lib/material-detail-data";
 import { eq, and } from "drizzle-orm";
 
 type Ctx = { params: Promise<{ id: string }> };
@@ -13,26 +14,7 @@ export async function GET(request: NextRequest, { params }: Ctx) {
   if ("error" in auth) return auth.error;
 
   const { id } = await params;
-  const [result] = await db
-    .select({
-      material: materials,
-      module: {
-        id: modules.id,
-        title: modules.title,
-        courseId: modules.courseId,
-        orderIndex: modules.orderIndex,
-      },
-      course: {
-        id: courses.id,
-        title: courses.title,
-        description: courses.description,
-      },
-    })
-    .from(materials)
-    .innerJoin(modules, eq(materials.moduleId, modules.id))
-    .innerJoin(courses, eq(modules.courseId, courses.id))
-    .where(eq(materials.id, Number(id)))
-    .limit(1);
+  const result = await getMaterialDetail(Number(id));
 
   if (!result) {
     return NextResponse.json(

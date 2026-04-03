@@ -72,6 +72,16 @@ Every schema change MUST use Drizzle migrations. Migration SQL scripts must be c
 - TypeScript strict mode
 - API error contract: `{ code: string, message: string }`
 
+### Performance Planning
+- For new authenticated web pages, plan **server-first initial data** from the start whenever first render depends on user-specific content.
+- Avoid designing pages around `empty state -> useEffect fetch -> real content` if the initial content can be rendered on the server.
+- Prefer page structure like:
+  - async `app/.../page.tsx` for auth + initial data
+  - dedicated client component for mutations and interactive UI state
+- Avoid duplicate auth fetches in shared chrome like the navbar.
+- Keep loading fallbacks lightweight and quiet.
+- Before building or refactoring an authenticated screen, review `docs/performance-guardrails.md`.
+
 ### Styling & UI Design (Premium Standards)
 - **Tailwind only**: Use utility classes (zero inline styles).
 - **Dark mode from day 1**: Every component must have a `dark:` variant.
@@ -88,7 +98,7 @@ Every schema change MUST use Drizzle migrations. Migration SQL scripts must be c
 ### Handoff
 - Update `docs/dev-log.md` at end of each session
 - Update `docs/implementation-plan.md` status when a phase completes
-- New chat prompt: "Read `docs/dev-log.md` and `docs/implementation-plan.md` and continue from current phase."
+- New chat prompt: "Read `docs/dev-log.md`, `docs/implementation-plan.md`, and `docs/performance-guardrails.md` and continue from current phase."
 
 ## Legacy Reference
 

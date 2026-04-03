@@ -3,8 +3,9 @@ import { db } from "../../../../../lib/db";
 import { materials } from "../../../../../../../drizzle/schema";
 import { requireAuth } from "../../../../../lib/api-utils";
 import { logActivity } from "../../../../../lib/activity";
+import { getModuleMaterials } from "../../../../../lib/module-workspace-data";
 import { normalizeMaterialType, resolveMaterialTitle } from "../../../../../lib/materials";
-import { eq, desc } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 
 type Ctx = { params: Promise<{ id: string }> };
 
@@ -14,11 +15,7 @@ export async function GET(request: NextRequest, { params }: Ctx) {
   if ("error" in auth) return auth.error;
 
   const { id } = await params;
-  const rows = await db
-    .select()
-    .from(materials)
-    .where(eq(materials.moduleId, Number(id)))
-    .orderBy(desc(materials.createdAt));
+  const rows = await getModuleMaterials(Number(id));
 
   return NextResponse.json({ materials: rows });
 }

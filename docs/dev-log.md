@@ -1288,6 +1288,86 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 **Validation:**
 - `npm.cmd --workspace @studyhub/web run typecheck`
 
+### Session 99 (Course, module, and material pages moved to server-first initial data)
+
+**Problem investigated:**
+- The remaining authenticated detail/workspace pages were still on the old pattern of `loading state -> useEffect -> fetch initial data -> render real content`.
+- That left the heaviest content routes (`courses/[id]`, `modules/[id]`, `materials/[id]`) still vulnerable to the same delayed first paint we had already removed from Dashboard, Progress, Calendar, and Profile.
+
+**What changed:**
+- `apps/web/app/courses/[id]/page.tsx`
+  - converted the route into an async server page
+  - now resolves auth and course detail data before first render
+- `apps/web/components/course/course-details-client-page.tsx`
+  - extracted the interactive course workspace into a dedicated client shell
+  - keeps add/edit/delete/reorder actions client-side only
+- `apps/web/lib/course-details-data.ts`
+  - added shared helpers for course summary + module list loading
+- `apps/web/components/course/types.ts`
+  - added shared course detail types for server/client handoff
+- `apps/web/app/modules/[id]/page.tsx`
+  - converted the module workspace route into an async server page
+  - now loads module context, module materials, course modules, and favorites before first render
+- `apps/web/components/modules/module-workspace-client-page.tsx`
+  - extracted the interactive module workspace into a dedicated client shell
+  - keeps create-material, filter/search/sort, and pin actions client-side
+- `apps/web/lib/module-workspace-data.ts`
+  - added shared helpers for module context and normalized module-material loading
+- `apps/web/components/modules/types.ts`
+  - added shared module workspace types for server/client handoff
+- `apps/web/app/materials/[id]/page.tsx`
+  - converted the material route into an async server page
+  - now loads material detail and initial pin state server-side
+- `apps/web/components/materials/material-page-client.tsx`
+  - extracted the interactive material view/editor into a dedicated client shell
+  - keeps edit/save/delete/pin actions client-side
+- `apps/web/lib/material-detail-data.ts`
+  - added shared material detail helpers with normalized timestamp output
+- `apps/web/components/materials/types.ts`
+  - added shared material page types for server/client handoff
+- `apps/web/lib/favorites-data.ts`
+  - centralized favorite-item loading and single-item pin-state lookup
+- `apps/web/app/api/courses/[id]/route.ts`
+- `apps/web/app/api/courses/[id]/modules/route.ts`
+- `apps/web/app/api/modules/[id]/route.ts`
+- `apps/web/app/api/modules/[id]/materials/route.ts`
+- `apps/web/app/api/materials/[id]/route.ts`
+- `apps/web/app/api/favorites/route.ts`
+- `apps/web/lib/dashboard-data.ts`
+  - now re-use the shared server data helpers instead of duplicating initial query shapes
+- `docs/performance-guardrails.md`
+  - updated the checklist to mark the three detail/workspace pages as completed
+  - clarified that future authenticated pages should start with server-first planning before UI polish
+
+**Why:**
+- The remaining authenticated workspaces now follow the same server-first first-render path as the earlier optimized pages.
+- First paint no longer depends on a client-side fetch for the core page content.
+- Query shapes and normalization are more centralized, which lowers the chance of future drift between pages and API routes.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 98 (Performance planning rules promoted into project instructions)
+
+**Problem investigated:**
+- The performance guidance existed as a helpful checklist, but it still risked being treated as something to remember later instead of something to plan for up front.
+- We needed the rule to be visible at the moment new work starts, not only after a slowdown appears.
+
+**What changed:**
+- `AGENTS.md`
+  - added a new `Performance Planning` section
+  - recorded the server-first initial data rule for new authenticated web pages
+  - recorded the anti-pattern to avoid: designing around `empty state -> useEffect fetch -> real content`
+  - recorded the preferred split between async server pages and dedicated client shells
+  - updated the handoff prompt so future chats also read `docs/performance-guardrails.md`
+- `docs/performance-guardrails.md`
+  - added a `Planning Rule` section that frames performance as an input to page design, not just a later cleanup pass
+  - added a short pre-build checklist for deciding first-paint data, server fetches, client-only state, and duplicate auth fetch risk
+
+**Why:**
+- The performance lessons are now part of the project instructions, not only session history.
+- Future pages should be planned with the right loading architecture earlier, which lowers the chance of repeating the same regressions.
+
 ### Session 94 (Server-first initial data for Dashboard and Progress)
 
 **Problem investigated:**
@@ -2411,3 +2491,46 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 
 **Recommended future handoff:**
 - Read `docs/dev-log.md`, `docs/implementation-plan.md`, and `docs/performance-guardrails.md` before continuing authenticated web-page work.
+
+### Session 97 (Navbar auth fetch cleanup + Profile server-first)
+
+**Problem investigated:**
+- The authenticated navbar still made its own client-side `/api/auth/me` request after render just to get name, role, avatar, and the Admin link state.
+- The Profile page still started as a client page with a full initial loading spinner and fetched its first user payload after mount.
+
+**What changed:**
+- `apps/web/lib/server-auth.ts`
+  - added `getRequestUserOrNull()` so shared server-rendered UI can read the current auth user without forcing a redirect
+- `apps/web/lib/profile-data.ts`
+  - added shared profile-user selection + normalization helpers
+  - added `getProfileUserById()` for server-first profile/nav loading
+- `apps/web/components/navbar.tsx`
+  - converted the exported navbar into a small server wrapper
+  - now resolves the current user on the server and passes only the needed user chrome data down
+- `apps/web/components/navbar-client.tsx`
+  - holds the interactive/client navbar shell
+  - removed the old `useEffect` auth fetch
+- `apps/web/app/profile/page.tsx`
+  - converted the profile route into an async server page
+  - loads the authenticated profile before first render
+- `apps/web/components/profile/profile-page-client.tsx`
+  - extracted the interactive profile UI into a dedicated client component seeded with `initialUser`
+- `apps/web/components/profile/use-profile-page-state.ts`
+  - now starts from server-provided user data instead of loading it on mount
+  - keeps profile save/password/avatar actions client-side
+  - redirects to `/login` on later action-level `401` responses
+- `apps/web/app/api/auth/me/route.ts`
+  - now reuses shared auth/profile helpers instead of duplicating token parsing and user mapping
+- `apps/web/app/api/auth/avatar/route.ts`
+  - now reuses the shared profile-user selection/normalization helpers so client state keeps consistent string dates
+- `docs/performance-guardrails.md`
+  - updated the checklist to reflect that navbar and Profile are now completed
+  - recorded the next likely server-first audit candidates: `courses/[id]`, `modules/[id]`, `materials/[id]`
+
+**Why:**
+- The navbar no longer waits for a post-render auth request just to show user chrome and admin visibility.
+- Profile now lands with real user data on first render instead of showing a spinner and filling in later.
+- The user/profile loading logic is more centralized, which lowers the chance of future drift between page code and auth APIs.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`

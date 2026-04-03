@@ -2,6 +2,20 @@
 
 Use this as a quick checklist before building or refactoring the next authenticated web page.
 
+## Planning Rule
+
+Treat performance as an input to page design, not only as a later cleanup step.
+
+Before building a new authenticated screen, decide:
+- what data is required for meaningful first paint
+- whether that data can be fetched on the server
+- which parts truly need to stay client-side
+- whether any auth/user fetch would be duplicated in shared layout UI
+
+If the page needs authenticated initial data, default to planning the route as:
+- async server page for auth + initial data
+- dedicated client shell for mutations and interactive state
+
 ## Core Rule
 
 Prefer **server-first initial data** whenever the first render depends on authenticated, user-specific content.
@@ -16,6 +30,9 @@ That pattern creates the "blank first, real data later" feel we already removed 
 - `Dashboard`
 - `Progress`
 - `Calendar`
+- `Profile`
+
+The separate authenticated navbar auth fetch was also removed, so shared app chrome should follow the same rule.
 
 ## Preferred Page Shape
 
@@ -81,9 +98,22 @@ When moving a page to server-first loading:
 
 ## Current Follow-up
 
-Next performance cleanup targets:
-- `Navbar auth fetch cleanup`
-- `Profile server-first`
+Already moved to the server-first / no-duplicate-auth-fetch pattern:
+- `Dashboard`
+- `Progress`
+- `Calendar`
+- `Profile`
+- `courses/[id]`
+- `modules/[id]`
+- `materials/[id]`
+- authenticated navbar user state
+
+For future authenticated screens and future rewrites:
+- start by deciding the server-first initial data shape before building UI polish
+- preserve these patterns when doing later cosmetic work
+- avoid reintroducing `useEffect` first-load fetches for page-critical data
+
+Admin is still out of scope unless the active focus changes.
 
 Review these before building more authenticated screens:
 - Can this page render meaningful first content from the server?

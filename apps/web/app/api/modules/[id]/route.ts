@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "../../../../lib/db";
-import { courses, modules } from "../../../../../../drizzle/schema";
+import { modules } from "../../../../../../drizzle/schema";
 import { requireAuth } from "../../../../lib/api-utils";
 import { logActivity } from "../../../../lib/activity";
+import { getModuleContext } from "../../../../lib/module-workspace-data";
 import { eq, and } from "drizzle-orm";
 
 type Ctx = { params: Promise<{ id: string }> };
@@ -13,19 +14,7 @@ export async function GET(request: NextRequest, { params }: Ctx) {
   if ("error" in auth) return auth.error;
 
   const { id } = await params;
-  const [result] = await db
-    .select({
-      module: modules,
-      course: {
-        id: courses.id,
-        title: courses.title,
-        description: courses.description,
-      },
-    })
-    .from(modules)
-    .innerJoin(courses, eq(modules.courseId, courses.id))
-    .where(eq(modules.id, Number(id)))
-    .limit(1);
+  const result = await getModuleContext(Number(id));
 
   if (!result) {
     return NextResponse.json(
