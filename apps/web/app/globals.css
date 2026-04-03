@@ -411,6 +411,33 @@
   75% { transform: rotate(-1.5deg); }
 }
 
+/* Contact page — cosmic background */
+@keyframes cosmic-gradient {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes aurora-drift-1 {
+  0%, 100% { transform: translateX(0) translateY(0) scale(1) rotate(0deg); }
+  25% { transform: translateX(40px) translateY(-30px) scale(1.05) rotate(2deg); }
+  50% { transform: translateX(-30px) translateY(25px) scale(0.95) rotate(-1deg); }
+  75% { transform: translateX(25px) translateY(15px) scale(1.02) rotate(1deg); }
+}
+
+@keyframes aurora-drift-2 {
+  0%, 100% { transform: translateX(0) translateY(0) scale(1) rotate(0deg); }
+  20% { transform: translateX(-35px) translateY(20px) scale(1.03) rotate(-2deg); }
+  45% { transform: translateX(30px) translateY(-35px) scale(0.97) rotate(1deg); }
+  70% { transform: translateX(-20px) translateY(-15px) scale(1.04) rotate(-1deg); }
+}
+
+@keyframes aurora-drift-3 {
+  0%, 100% { transform: translateX(0) translateY(0) scale(1) rotate(0deg); }
+  30% { transform: translateX(45px) translateY(20px) scale(1.06) rotate(2deg); }
+  55% { transform: translateX(-25px) translateY(-30px) scale(0.94) rotate(-2deg); }
+  80% { transform: translateX(20px) translateY(-20px) scale(1.03) rotate(1deg); }
+}
+
 /* Auth glassmorphism inputs */
 .auth-input {
   @apply w-full rounded-2xl px-4 py-3 text-slate-900 placeholder-slate-400 outline-none transition-all duration-200;

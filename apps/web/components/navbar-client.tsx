@@ -17,7 +17,7 @@ type NavbarClientProps = {
   initialUser: NavbarUser | null;
 };
 
-const PUBLIC_PATHS = ["/", "/login", "/register"];
+const PUBLIC_PATHS = ["/", "/login", "/register", "/how-it-works", "/contact"];
 
 function LogoutIcon() {
   return (
