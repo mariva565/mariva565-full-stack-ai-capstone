@@ -137,11 +137,22 @@ export function Navbar() {
 }
 
 function MobileNavLink({ href, onClick, children }: { href: string; onClick: () => void; children: React.ReactNode }) {
+  const className =
+    "rounded-xl px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors";
+
+  if (href.startsWith("/#")) {
+    return (
+      <a href={href} onClick={onClick} className={className}>
+        {children}
+      </a>
+    );
+  }
+
   return (
     <Link
       href={href}
       onClick={onClick}
-      className="rounded-xl px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors"
+      className={className}
     >
       {children}
     </Link>
@@ -149,10 +160,21 @@ function MobileNavLink({ href, onClick, children }: { href: string; onClick: () 
 }
 
 function NavLink({ href, children }: { href: string; children: React.ReactNode }) {
+  const className =
+    "text-slate-500 hover:text-primary-600 font-semibold px-4 py-2 rounded-full hover:bg-primary-50/50 hover:-translate-y-1 hover:scale-105 hover:shadow-[0_12px_20px_-5px_rgba(99,102,241,0.2)] hover:border hover:border-primary-500/20 border border-transparent transition-all duration-[400ms] ease-[cubic-bezier(0.175,0.885,0.32,1.275)] text-sm";
+
+  if (href.startsWith("/#")) {
+    return (
+      <a href={href} className={className}>
+        {children}
+      </a>
+    );
+  }
+
   return (
     <Link
       href={href}
-      className="text-slate-500 hover:text-primary-600 font-semibold px-4 py-2 rounded-full hover:bg-primary-50/50 hover:-translate-y-1 hover:scale-105 hover:shadow-[0_12px_20px_-5px_rgba(99,102,241,0.2)] hover:border hover:border-primary-500/20 border border-transparent transition-all duration-[400ms] ease-[cubic-bezier(0.175,0.885,0.32,1.275)] text-sm"
+      className={className}
     >
       {children}
     </Link>

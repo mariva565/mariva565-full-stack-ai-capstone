@@ -143,7 +143,7 @@ export function HomeAbout() {
     <section
       id="about"
       ref={sectionRef}
-      className="relative overflow-hidden py-32"
+      className="relative scroll-mt-28 overflow-hidden py-32"
       style={{ background: "linear-gradient(180deg, #f8fafc 0%, #ffffff 100%)" }}
     >
       {/* Blob backgrounds (matching original: purple top-right, pink mid-left) */}

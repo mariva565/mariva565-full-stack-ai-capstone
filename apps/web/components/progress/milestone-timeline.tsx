@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DeadlinePill } from "./deadline-pill";
 import { MilestoneEditor } from "./milestone-editor";
 import type { Milestone, MilestoneUpdate } from "./types";
@@ -14,6 +14,7 @@ type MoveDirection = "up" | "down";
 
 type Props = {
   milestones: Milestone[];
+  revealedMilestoneId?: number | null;
   onStatusChange: (id: number, status: Milestone["status"]) => void;
   onUpdate: (id: number, update: MilestoneUpdate) => Promise<boolean>;
   onMove: (
@@ -75,6 +76,7 @@ function toDateInputValue(value: string | null) {
 
 export function MilestoneTimeline({
   milestones,
+  revealedMilestoneId = null,
   onStatusChange,
   onUpdate,
   onMove,
@@ -84,11 +86,37 @@ export function MilestoneTimeline({
 }: Props) {
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [flashedId, setFlashedId] = useState<number | null>(null);
   const [draftTitle, setDraftTitle] = useState("");
   const [draftDescription, setDraftDescription] = useState("");
   const [draftDueDate, setDraftDueDate] = useState("");
 
   const orderedIds = milestones.map((item) => item.id);
+
+  useEffect(() => {
+    if (!revealedMilestoneId) return;
+
+    setExpandedId(revealedMilestoneId);
+    setEditingId(null);
+    setFlashedId(revealedMilestoneId);
+
+    const frameId = window.requestAnimationFrame(() => {
+      document
+        .getElementById(`milestone-${revealedMilestoneId}`)
+        ?.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+
+    const timeoutId = window.setTimeout(() => {
+      setFlashedId((current) =>
+        current === revealedMilestoneId ? null : current
+      );
+    }, 2400);
+
+    return () => {
+      window.cancelAnimationFrame(frameId);
+      window.clearTimeout(timeoutId);
+    };
+  }, [revealedMilestoneId]);
 
   function startEdit(milestone: Milestone) {
     setExpandedId(milestone.id);
@@ -135,6 +163,7 @@ export function MilestoneTimeline({
           const isExpanded = expandedId === milestone.id;
           const isEditing = editingId === milestone.id;
           const isBusy = busyId === milestone.id;
+          const isRevealed = flashedId === milestone.id;
           const canMoveUp = index > 0;
           const canMoveDown = index < milestones.length - 1;
 
@@ -150,7 +179,11 @@ export function MilestoneTimeline({
                   : `Due ${dueDateLabel}`;
 
           return (
-            <li key={milestone.id} className="relative pl-10">
+            <li
+              key={milestone.id}
+              id={`milestone-${milestone.id}`}
+              className="relative scroll-mt-28 pl-10"
+            >
               <button
                 onClick={() => onStatusChange(milestone.id, nextStatus[milestone.status])}
                 className={`absolute left-0.5 top-3 h-5 w-5 cursor-pointer rounded-full ${cfg.dot} ring-4 ${cfg.ring} transition-all hover:scale-110`}
@@ -159,16 +192,18 @@ export function MilestoneTimeline({
               />
 
               <div
-                className={`cursor-pointer rounded-xl border px-4 py-3 transition-colors ${
-                  milestone.status === "done"
-                    ? "border-emerald-200 bg-emerald-50/50 dark:border-emerald-500/20 dark:bg-emerald-500/5"
-                    : "border-slate-200 bg-white/80 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900/60 dark:hover:bg-slate-900"
+                className={`cursor-pointer rounded-xl border px-4 py-3 transition-[background-color,border-color,box-shadow] ${
+                  isRevealed
+                    ? "border-brand-300 bg-brand-50/80 shadow-[0_0_0_3px_rgba(99,102,241,0.12)] dark:border-brand-400/50 dark:bg-brand-500/10 dark:shadow-[0_0_0_3px_rgba(129,140,248,0.14)]"
+                    : milestone.status === "done"
+                      ? "border-emerald-200 bg-emerald-50/50 dark:border-emerald-500/20 dark:bg-emerald-500/5"
+                      : "border-slate-200 bg-white/80 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900/60 dark:hover:bg-slate-900"
                 }`}
                 onClick={() => setExpandedId(isExpanded ? null : milestone.id)}
               >
                 <div className="flex items-center justify-between gap-3">
                   <h3
-                    className={`font-poppins font-semibold tracking-tight ${
+                    className={`font-rubik text-[1.04rem] font-semibold tracking-tight ${
                       milestone.status === "done"
                         ? "text-slate-500 line-through dark:text-slate-400"
                         : "text-slate-700 dark:text-slate-100"

@@ -60,12 +60,12 @@ export function IdeasBacklog({ ideas, onAdd, onEdit, onPromote, onDelete, addBus
     >
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <p className="font-poppins text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">
+          <p className="font-rubik text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">
             Backlog
           </p>
           <h2 className="dashboard-panel-title mt-1 text-[1.55rem]">Ideas Backlog</h2>
         </div>
-        <span className="font-poppins text-sm font-semibold text-cyan-600 dark:text-cyan-400">
+        <span className="font-rubik text-sm font-semibold text-cyan-600 dark:text-cyan-400">
           {ideas.length}
         </span>
       </div>
@@ -113,7 +113,7 @@ export function IdeasBacklog({ ideas, onAdd, onEdit, onPromote, onDelete, addBus
               ) : (
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0 pr-2">
-                    <p className="font-poppins text-sm font-semibold tracking-tight text-slate-700 dark:text-slate-100">
+                    <p className="font-rubik text-sm font-semibold tracking-tight text-slate-700 dark:text-slate-100">
                       {idea.title}
                     </p>
                     {idea.description && (

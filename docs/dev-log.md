@@ -2698,3 +2698,116 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 
 **Validation:**
 - `npm.cmd --workspace @studyhub/web run build`
+
+### Session 109 (Local production chunk mismatch diagnosis)
+
+**Problem investigated:**
+- The local production preview on `http://localhost:3002/courses/[id]` failed with a generic client-side exception.
+- Browser console showed `ChunkLoadError` and then broader `400 (Bad Request)` failures for multiple `/_next/static/*` assets, not just the course route chunk.
+- Hard refresh (`Ctrl` + `Shift` + `R`) did not recover the page.
+
+**What changed:**
+- No application code changes.
+- Confirmed the current workspace build contains the expected `/courses/[id]` chunk under `apps/web/.next/static/chunks/app/courses/[id]/`.
+- Confirmed the running local server on port `3002` was still responding with invalid static-asset responses, which points to a stale or misaligned local `next start` process rather than a course-page rendering bug.
+
+**Why:**
+- This failure mode is caused by the local production preview process and its served assets being out of sync, so refreshing the browser alone is not enough.
+- The fix path is to restart the local production server against the latest build instead of patching the `/courses/[id]` page.
+
+**Validation:**
+- local HTTP checks against `localhost:3002`
+- `.next` asset presence review
+
+### Session 107 (Public Features anchors made reliable)
+
+**Problem investigated:**
+- The public `Features` links were present in the navbar and page flow, but in practice they were not navigating reliably.
+- The most likely cause was relying on App Router `Link` hash navigation for `/#features` style targets, which can feel inconsistent compared to plain anchor behavior in a public marketing page.
+
+**What changed:**
+- `apps/web/components/layout/Navbar.tsx`
+  - changed hash-target nav items to use native anchor rendering for `/#features`, `/#about`, and `/#faq`
+  - kept normal route links on `next/link`
+- `apps/web/components/home/features.tsx`
+  - added `scroll-mt` offset to the `features` section
+- `apps/web/components/home/about.tsx`
+  - added `scroll-mt` offset to the `about` section
+- `apps/web/components/home/faq.tsx`
+  - added `scroll-mt` offset to the `faq` section
+- `apps/web/app/how-it-works/page.tsx`
+  - changed the return link back to home features to a native anchor as well
+
+**Why:**
+- Public section jumps are now handled by regular browser anchor navigation, which is the most predictable behavior for this case.
+- The added scroll offset also prevents the section title from landing hidden under the sticky navbar.
+
+**Validation:**
+- code-path review only
+
+### Session 108 (Progress promote visibility + timeline font consistency)
+
+**Problem investigated:**
+- Promoting an item from `Ideas Backlog` removed it from the backlog immediately, but it was easy to miss where it landed afterward.
+- The progress counters updated correctly, which confirmed the item was becoming a real milestone, but the UI did not make that transition obvious enough.
+- In the milestone timeline, mixed English + Bulgarian titles still felt visually uneven in some rows.
+
+**What changed:**
+- `apps/web/components/progress/use-progress-page-state.ts`
+  - after promoting an idea, keeps the item in the milestone flow by switching restricted timeline filters back to `active`
+  - stores the promoted milestone id so the timeline can reveal it
+- `apps/web/components/progress/progress-page-client.tsx`
+  - passes the revealed milestone id into the timeline
+  - uses explicit `font-rubik` on the page shell
+- `apps/web/components/progress/milestone-timeline.tsx`
+  - scrolls the promoted milestone into view
+  - auto-expands it
+  - adds a temporary highlight so the user can immediately spot it
+  - switches the milestone row title to explicit `font-rubik`
+- `apps/web/components/progress/ideas-backlog.tsx`
+- `apps/web/components/progress/due-soon-list.tsx`
+- `apps/web/components/progress/upcoming-events-panel.tsx`
+- `apps/web/components/progress/progress-bar.tsx`
+- `apps/web/components/progress/progress-summary-cards.tsx`
+  - aligned visible progress typography to explicit `font-rubik` for more predictable mixed-language rendering
+
+**Why:**
+- Promoted ideas now behave more like a visible move, not like a disappearance.
+- Progress percentages still update because the item really does become part of the milestone set.
+- The progress screen now relies on the Cyrillic-safe app sans font more explicitly in the places where the mixed-language mismatch was most noticeable.
+
+### Session 106 (Home CTA de-duplication + new How It Works page)
+
+**Problem investigated:**
+- The public home page had overlapping "Features" navigation signals:
+  - navbar `Features`
+  - hero secondary CTA `Explore Features`
+- In practice that made the public navigation feel duplicated, and the current secondary CTA did not have a distinct destination like the old v1 `how-it-works` page.
+- I also confirmed the home anchor setup was incomplete:
+  - `Features` and `FAQ` links existed in the navbar
+  - but the corresponding public sections did not both expose matching ids for reliable hash navigation
+
+**What changed:**
+- `apps/web/app/how-it-works/page.tsx`
+  - added a new public `How It Works` page
+  - kept it lightweight and server-rendered
+  - reused the public shell and brand language without introducing new heavy client-side effects
+- `apps/web/components/home/hero-content.tsx`
+  - changed the secondary hero CTA from `Explore Features` to `See How It Works`
+  - pointed it to `/how-it-works` instead of duplicating the home features anchor
+- `apps/web/components/layout/Navbar.tsx`
+  - changed section links to absolute home anchors (`/#features`, `/#about`, `/#faq`)
+  - added a dedicated `How It Works` nav item on desktop and mobile
+- `apps/web/components/home/features.tsx`
+  - added `id="features"`
+- `apps/web/components/home/faq.tsx`
+  - added `id="faq"`
+
+**Why:**
+- `Features` now stays what it should be: a home section.
+- The hero secondary CTA now has a separate job: explain the product flow in a calmer, more narrative public page.
+- This matches the stronger v1 information architecture more closely without copying the old implementation.
+- Absolute home anchors also prevent broken in-page links once the public nav is reused from another route.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run build`

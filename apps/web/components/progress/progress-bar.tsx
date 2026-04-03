@@ -16,11 +16,11 @@ export function ProgressBar({ milestones }: Props) {
     <div className="rounded-xl border border-slate-200 bg-white/80 p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900/60">
       <div className="mb-3 flex items-end justify-between">
         <div>
-          <p className="font-poppins text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">
+          <p className="font-rubik text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">
             Timeline
           </p>
           <h2 className="dashboard-panel-title mt-1 text-[1.65rem]">Project Progress</h2>
-          <p className="font-poppins mt-0.5 text-sm text-slate-500 dark:text-slate-400">
+          <p className="font-rubik mt-0.5 text-sm text-slate-500 dark:text-slate-400">
             {done} of {total} milestones completed
             {inProgress > 0 && (
               <span className="text-amber-600 dark:text-amber-300">
@@ -30,7 +30,7 @@ export function ProgressBar({ milestones }: Props) {
             )}
           </p>
         </div>
-        <span className="font-poppins bg-gradient-to-r from-brand-500 to-cyan-500 bg-clip-text text-3xl font-black tracking-tight text-transparent">
+        <span className="font-rubik bg-gradient-to-r from-brand-500 to-cyan-500 bg-clip-text text-3xl font-black tracking-tight text-transparent">
           {pct}%
         </span>
       </div>

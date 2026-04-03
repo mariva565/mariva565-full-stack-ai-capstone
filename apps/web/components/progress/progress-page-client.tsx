@@ -37,6 +37,7 @@ export function ProgressPageClient({ initialData }: ProgressPageClientProps) {
     doneCount,
     activeCount,
     overdueCount,
+    revealedMilestoneId,
     setTimelineFilter,
     setDeleteId,
     setToast,
@@ -52,7 +53,7 @@ export function ProgressPageClient({ initialData }: ProgressPageClientProps) {
 
   return (
     <>
-      <div className="font-poppins mx-auto max-w-6xl px-4 py-8 sm:px-6">
+      <div className="font-rubik mx-auto max-w-6xl px-4 py-8 sm:px-6">
         <Link
           href="/dashboard"
           className="mb-4 inline-flex items-center gap-1 text-sm text-slate-500 transition-colors hover:text-brand-700 dark:text-slate-400 dark:hover:text-cyan-200"
@@ -92,6 +93,7 @@ export function ProgressPageClient({ initialData }: ProgressPageClientProps) {
             <AddMilestoneForm onAdd={handleAdd} busy={addBusy} />
             <MilestoneTimeline
               milestones={filteredMilestones}
+              revealedMilestoneId={revealedMilestoneId}
               onStatusChange={handleStatusChange}
               onUpdate={handleUpdateMilestone}
               onMove={handleMoveMilestone}

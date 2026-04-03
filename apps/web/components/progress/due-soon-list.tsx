@@ -11,7 +11,7 @@ type DueSoonListProps = {
 export function DueSoonList({ milestones }: DueSoonListProps) {
   return (
     <section className="rounded-xl border border-slate-200 bg-white/80 p-5 dark:border-slate-700 dark:bg-slate-900/60">
-      <p className="font-poppins text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">
+      <p className="font-rubik text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">
         Milestones
       </p>
       <h2 className="dashboard-panel-title mt-1 text-[1.45rem]">Due Soon</h2>
@@ -41,7 +41,7 @@ export function DueSoonList({ milestones }: DueSoonListProps) {
                 key={milestone.id}
                 className="rounded-lg border border-slate-200 bg-slate-50/60 px-3 py-2 dark:border-slate-700 dark:bg-slate-950/40"
               >
-                <p className="font-poppins truncate text-sm font-semibold tracking-tight text-slate-700 dark:text-slate-100">
+                <p className="font-rubik truncate text-sm font-semibold tracking-tight text-slate-700 dark:text-slate-100">
                   {milestone.title}
                 </p>
                 <div className="mt-1">

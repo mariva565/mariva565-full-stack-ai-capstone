@@ -48,6 +48,7 @@ export function useProgressPageState({ initialData }: UseProgressPageStateParams
   const [deleteBusy, setDeleteBusy] = useState(false);
   const [timelineFilter, setTimelineFilter] = useState<TimelineFilter>("active");
   const [toast, setToast] = useState<ToastState | null>(null);
+  const [revealedMilestoneId, setRevealedMilestoneId] = useState<number | null>(null);
 
   const orderedMilestones = useMemo(() => sortMilestonesByOrder(allMilestones), [allMilestones]);
   const milestones = useMemo(
@@ -247,7 +248,11 @@ export function useProgressPageState({ initialData }: UseProgressPageStateParams
     setAllMilestones((current) =>
       current.map((item) => (item.id === id ? updated : item))
     );
-    setToast({ tone: "success", message: "Moved to timeline." });
+    if (timelineFilter !== "all" && timelineFilter !== "active") {
+      setTimelineFilter("active");
+    }
+    setRevealedMilestoneId(updated.id);
+    setToast({ tone: "success", message: "Moved to milestones." });
   }
 
   async function handleStatusChange(id: number, status: Milestone["status"]) {
@@ -379,6 +384,7 @@ export function useProgressPageState({ initialData }: UseProgressPageStateParams
     doneCount,
     activeCount,
     overdueCount,
+    revealedMilestoneId,
     setTimelineFilter,
     setDeleteId,
     setToast,

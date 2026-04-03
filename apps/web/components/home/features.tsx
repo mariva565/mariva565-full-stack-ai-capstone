@@ -27,7 +27,9 @@ import { GlassCard } from "./glass-card";
 
 export function HomeFeatures() {
   return (
-    <section id="features" className="relative overflow-hidden py-32 transition-colors duration-500"
+    <section
+      id="features"
+      className="relative scroll-mt-28 overflow-hidden py-32 transition-colors duration-500"
       style={{ background: "linear-gradient(180deg, #ffffff 0%, #f8fafc 30%, #eef2ff 100%)" }}
     >
       {/* Decorative blur blobs (matching original) */}

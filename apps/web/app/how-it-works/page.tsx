@@ -154,12 +154,12 @@ export default function HowItWorksPage() {
                   <Link href="/register" className="btn-gradient-primary">
                     Start Organizing
                   </Link>
-                  <Link
+                  <a
                     href="/#features"
                     className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white/80 px-7 py-3 text-sm font-semibold text-slate-700 shadow-[0_10px_30px_rgba(15,23,42,0.05)] transition-all duration-300 hover:-translate-y-0.5 hover:border-indigo-200 hover:text-indigo-600 dark:border-white/10 dark:bg-slate-900/75 dark:text-slate-200 dark:hover:border-indigo-400/40 dark:hover:text-indigo-200"
                   >
                     Back to Home Features
-                  </Link>
+                  </a>
                 </div>
 
                 <div className="mt-10 grid gap-3 sm:grid-cols-3">

@@ -124,7 +124,7 @@ function FaqAccordionItem({ item }: { item: FaqItem }) {
 
 export function HomeFaq() {
   return (
-    <section id="faq" className="bg-slate-50 py-24 dark:bg-slate-800/50">
+    <section id="faq" className="scroll-mt-28 bg-slate-50 py-24 dark:bg-slate-800/50">
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         <div className="mb-14 text-center">
           <span className="mb-4 inline-block text-sm font-bold uppercase tracking-[0.2em] text-indigo-500">
