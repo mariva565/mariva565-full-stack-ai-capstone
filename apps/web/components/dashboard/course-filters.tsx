@@ -28,9 +28,9 @@ export function CourseFilters({
           onChange={(event) => onStatusChange(event.target.value as CourseStatusFilter)}
           className="rounded-xl border border-slate-200/80 bg-white/95 px-3 py-2.5 text-sm text-slate-900 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-slate-700/80 dark:bg-slate-950/60 dark:text-white"
         >
-          <option value="all">All statuses</option>
-          <option value="draft">Draft</option>
-          <option value="published">Published</option>
+          <option value="all">All course states</option>
+          <option value="draft">Draft courses</option>
+          <option value="published">Published courses</option>
         </select>
       </div>
     </div>

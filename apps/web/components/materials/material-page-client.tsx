@@ -196,12 +196,12 @@ export function MaterialPageClient({
               </span>
               {isEditing ? (
                 <span className="rounded-full border border-violet-200/80 bg-violet-50/90 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-violet-700 dark:border-violet-400/20 dark:bg-violet-500/10 dark:text-violet-100">
-                  Editing now
+                  Editing material
                 </span>
               ) : null}
               {isPinned ? (
                 <span className="rounded-full border border-cyan-200/80 bg-cyan-50/90 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-cyan-700 dark:border-cyan-400/20 dark:bg-cyan-500/10 dark:text-cyan-100">
-                  Quick access
+                  Pinned to quick access
                 </span>
               ) : null}
             </div>

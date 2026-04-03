@@ -70,8 +70,11 @@ export function ModuleSection({
       <div className="relative flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
         <div className="min-w-0 flex-1">
           <div className="flex items-start gap-4">
-            <div className="flex h-12 w-12 flex-none items-center justify-center rounded-2xl bg-gradient-to-br from-white via-brand-50 to-cyan-50 text-sm font-black text-brand-600 shadow-sm ring-1 ring-brand-100 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800 dark:text-cyan-100 dark:ring-cyan-400/10">
-              {String(module.orderIndex + 1).padStart(2, "0")}
+            <div className="relative flex-none">
+              <div className="absolute inset-1 rounded-[1rem] bg-brand-300/40 opacity-0 blur-xl transition duration-300 group-hover:opacity-100 dark:bg-cyan-400/20" />
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-white via-brand-50 to-cyan-50 text-sm font-black text-brand-600 shadow-sm ring-1 ring-brand-100 transition duration-300 [transition-timing-function:cubic-bezier(0.34,1.56,0.64,1)] group-hover:scale-110 group-hover:-rotate-[10deg] group-hover:bg-[linear-gradient(135deg,#6366f1_0%,#8b5cf6_55%,#06b6d4_100%)] group-hover:text-white group-hover:shadow-[0_12px_28px_rgba(99,102,241,0.28)] group-hover:ring-0 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800 dark:text-cyan-100 dark:ring-cyan-400/10 dark:group-hover:shadow-[0_12px_28px_rgba(34,211,238,0.18)]">
+                {String(module.orderIndex + 1).padStart(2, "0")}
+              </div>
             </div>
 
             <div className="min-w-0 flex-1">
@@ -115,21 +118,24 @@ export function ModuleSection({
                     </button>
                   </div>
                 </form>
-              ) : (
-                <>
-                  <h2 className="dashboard-script-title mt-2 block max-w-3xl text-[clamp(1.55rem,2.35vw,2rem)] leading-[1.12]">
-                    {module.title}
-                  </h2>
+                ) : (
+                  <>
+                    <h2 className="dashboard-script-title mt-2 block max-w-3xl text-[clamp(1.55rem,2.35vw,2rem)] leading-[1.12]">
+                      {module.title}
+                    </h2>
                   {module.description?.trim() ? (
                     <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-300">
                       {module.description.trim()}
                     </p>
-                  ) : null}
-                </>
-              )}
+                    ) : null}
+                    <p className="mt-3 text-sm font-medium text-slate-500 dark:text-slate-400">
+                      Open this module to add, search, and pin its materials.
+                    </p>
+                  </>
+                )}
+              </div>
             </div>
           </div>
-        </div>
 
         <div className="flex flex-wrap gap-2 xl:justify-end">
           <Link
@@ -145,8 +151,8 @@ export function ModuleSection({
             <button
               type="button"
               onClick={() => setIsEditingDetails(true)}
-              title="Edit"
-              aria-label="Edit"
+              title="Edit module details"
+              aria-label="Edit module details"
               className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 text-slate-600 transition hover:-translate-y-0.5 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
             >
               <PencilIcon />

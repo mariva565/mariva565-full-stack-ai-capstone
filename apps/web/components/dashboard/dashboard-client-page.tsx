@@ -187,7 +187,7 @@ export function DashboardClientPage({
             <div className="grid gap-4 sm:grid-cols-2">
               {filteredCourses.length === 0 && (
                 <p className="sm:col-span-2 rounded-xl border border-slate-200 bg-white px-5 py-4 text-sm text-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400">
-                  No courses match your search/filter yet.
+                  No courses match this search or course-state filter yet.
                 </p>
               )}
               {filteredCourses.map((course) => (

@@ -28,8 +28,8 @@ function CreateCourseIntro() {
         Start something worth keeping
       </h2>
       <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">
-        The quick form stays close to the hero, while the rest of the workspace
-        keeps breathing room.
+        Create the course first. After that, you can open it to add modules and
+        collect materials inside each module.
       </p>
     </div>
   );
@@ -79,9 +79,14 @@ function CourseFormFields({
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-xs uppercase tracking-[0.22em] text-slate-400 dark:text-slate-500">
-          Quick launch from the dashboard
-        </p>
+        <div>
+          <p className="text-xs uppercase tracking-[0.22em] text-slate-400 dark:text-slate-500">
+            Quick launch from the dashboard
+          </p>
+          <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">
+            New courses start as draft courses.
+          </p>
+        </div>
         <DashboardActionButton
           type="submit"
           disabled={creating}

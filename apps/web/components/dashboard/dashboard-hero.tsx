@@ -51,6 +51,10 @@ function HeroHeading() {
           <h1 className="dashboard-script-title text-4xl sm:text-5xl">
             Dashboard
           </h1>
+          <p className="mt-3 max-w-xl text-sm leading-6 text-slate-600 dark:text-slate-300">
+            Courses are your top-level study spaces. Open a course to manage
+            modules, then open a module to organize its materials.
+          </p>
         </div>
       </div>
     </div>
@@ -74,7 +78,7 @@ function HeroActions({ showCreateForm, onToggleCreateForm }: HeroActionsProps) {
         size="md"
         variant="primary"
       >
-        {showCreateForm ? "Close form" : "+ New Course"}
+        {showCreateForm ? "Close form" : "+ Create Course"}
       </DashboardActionButton>
     </div>
   );
@@ -105,7 +109,7 @@ export function DashboardHero({
 
       <div className="relative mt-6 grid gap-3 sm:grid-cols-3">
         <StatCard label="Courses" value={courseCount} />
-        <StatCard label="Drafts" value={draftCount} />
+        <StatCard label="Draft Courses" value={draftCount} />
         <StatCard label="Pinned Materials" value={pinnedCount} />
       </div>
     </section>

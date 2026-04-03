@@ -1,11 +1,18 @@
 import Link from "next/link";
 import { ArrowLeftIcon } from "../auth/auth-icons";
 import { ThemeToggle } from "../theme/theme-toggle";
+import { WayfindingBreadcrumbs } from "../ui/wayfinding-breadcrumbs";
 
 export function ProfilePageHeader() {
   return (
     <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
       <div className="max-w-2xl">
+        <WayfindingBreadcrumbs
+          items={[
+            { label: "Dashboard", href: "/dashboard" },
+            { label: "Profile" },
+          ]}
+        />
         <p className="text-[0.68rem] font-semibold uppercase tracking-[0.32em] text-slate-400 dark:text-slate-500">
           Profile
         </p>
@@ -13,7 +20,8 @@ export function ProfilePageHeader() {
           My Profile
         </h1>
         <p className="mt-3 text-sm leading-6 text-slate-600 sm:text-base dark:text-slate-300">
-          Keep your name, avatar link, and sign-in details tidy in one place.
+          Manage your account details, avatar link, and sign-in settings in one
+          place.
         </p>
       </div>
 

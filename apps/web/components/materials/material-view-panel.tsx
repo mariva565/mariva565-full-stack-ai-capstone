@@ -1,6 +1,7 @@
 import { MaterialTypePill } from "./material-type-pill";
 import { TagList } from "./tag-list";
 import { ExternalLinkIcon, PinAngleIcon } from "../ui/action-icons";
+import { normalizeMaterialType } from "../../lib/materials";
 
 type MaterialViewPanelProps = {
   title: string;
@@ -30,8 +31,10 @@ export function MaterialViewPanel({
   onDelete,
 }: MaterialViewPanelProps) {
   const formattedCreatedAt = new Date(createdAt).toLocaleDateString();
+  const normalizedType = normalizeMaterialType(materialType);
   const pinLabel = isPinned ? "Remove from quick access" : "Pin to quick access";
-  const sourceLabel = "Open source";
+  const sourceLabel =
+    normalizedType === "file" ? "Open file URL" : "Open saved link";
 
   return (
     <div>

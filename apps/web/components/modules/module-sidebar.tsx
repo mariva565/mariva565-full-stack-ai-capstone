@@ -33,7 +33,8 @@ export function ModuleSidebar({
           {courseTitle}
         </h2>
         <p className="mt-3 text-sm leading-6 text-slate-500 dark:text-slate-400">
-          Open another module from this list whenever you want to switch the current materials workspace.
+          Switch modules here. The center column always shows the materials
+          workspace for the currently selected module.
         </p>
       </div>
 

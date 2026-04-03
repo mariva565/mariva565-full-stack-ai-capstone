@@ -3110,3 +3110,164 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 **Validation:**
 - `npm.cmd --workspace @studyhub/web run typecheck`
 - `npm.cmd --workspace @studyhub/web run build`
+
+### Session 120 (Course module number badge interaction restored)
+
+**Problem investigated:**
+- In v1, the numbered module badge had a small but memorable hover interaction.
+- In the current course module cards, the card itself already lifted on hover, but the numbered badge stayed comparatively static and lost some of that playful v1 feel.
+
+**What changed:**
+- `apps/web/components/course/module-section.tsx`
+  - rebuilt the numbered module badge into a small layered surface
+  - added a soft glow halo behind it on card hover
+  - restored the v1-inspired badge reaction on hover:
+    - gradient color shift
+    - white text state
+    - slight scale-up
+    - slight negative rotation
+    - stronger floating shadow
+
+**Why:**
+- The badge now feels like an active part of the card instead of a passive label.
+- This brings back a bit of the playful visual response from v1 without adding heavy or always-running animation.
+- The interaction stays tied to hover only, so it remains lightweight for the current performance-sensitive pre-Admin scope.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 121 (Dashboard draft status clarified)
+
+**Problem investigated:**
+- The `Draft` label on dashboard course cards looked like a floating chip without enough context.
+- It was technically correct because new courses currently start with `courses.status = "draft"`, but the UI did not explain that this was the course state.
+
+**What changed:**
+- `apps/web/components/dashboard/course-card.tsx`
+  - changed the card status wording from plain `Draft` / `Published` to `Draft course` / `Published course`
+  - moved the status closer to the course title instead of leaving it as a detached top-right badge
+  - added short helper text so the status reads like a course state, not like a random type/tag pill
+- `apps/web/components/dashboard/dashboard-hero.tsx`
+  - renamed the stat from `Drafts` to `Draft Courses`
+- `apps/web/components/dashboard/course-filters.tsx`
+  - renamed the filter options to `All course states`, `Draft courses`, and `Published courses`
+- `apps/web/components/dashboard/create-course-form.tsx`
+  - added a small note that new courses start as draft courses
+
+**Why:**
+- The dashboard now explains what `draft` refers to:
+  - it is the state of the course
+  - not a material type
+  - not a random decorative pill
+- This makes the course cards easier to understand during demos and manual testing, especially while the publish flow is still lightweight.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 122 (Draft course pill removed from dashboard cards)
+
+**Problem investigated:**
+- Even after clarifying the `draft` wording, the draft course pill still added unnecessary noise on dashboard course cards.
+- Since `draft` is the default course state right now, the badge was still drawing attention to something that does not need to be front-and-center on every card.
+
+**What changed:**
+- `apps/web/components/dashboard/course-card.tsx`
+  - stopped rendering the status pill/helper block for `draft` courses
+  - kept the status UI available for non-draft states such as `published`
+
+**Why:**
+- Draft is currently the normal baseline state for new courses, so it should not compete with the title and primary actions.
+- This makes the card calmer and removes one more piece of visual ambiguity from the dashboard.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 123 (Dashboard / module / material destination clarity pass)
+
+**Problem investigated:**
+- After the hierarchy / wayfinding pass, the page identity was clearer, but some transitions still relied too much on implied click targets.
+- The biggest remaining friction points were:
+  - dashboard course cards still had no explicit `Open course` action
+  - module cards explained the hierarchy better, but not always the next step inside the module
+  - material rows still depended too much on whole-card click behavior instead of an obvious `Open material` affordance
+- The goal was to reduce user-facing hesitation without changing the server-first/auth/navbar architecture.
+
+**What changed:**
+- `apps/web/components/dashboard/dashboard-hero.tsx`
+  - added short hierarchy helper copy explaining `course -> module -> material`
+  - renamed the primary CTA to `+ Create Course`
+- `apps/web/components/dashboard/create-course-form.tsx`
+  - replaced the abstract intro copy with direct hierarchy guidance
+- `apps/web/components/dashboard/course-card.tsx`
+  - added an explicit `Open course` primary action
+  - added clearer helper copy about managing modules and materials
+  - renamed the secondary actions to `Edit course` / `Delete course`
+- `apps/web/components/dashboard/dashboard-client-page.tsx`
+  - clarified the dashboard empty-state filter message
+- `apps/web/components/course/module-list.tsx`
+  - added a section intro explaining that each module opens its own materials workspace
+- `apps/web/components/course/module-section.tsx`
+  - added helper copy clarifying what opening a module lets the user do
+  - made the edit action label more specific for accessibility
+- `apps/web/components/modules/module-sidebar.tsx`
+  - clarified that the sidebar switches the current module workspace
+- `apps/web/components/modules/module-material-composer.tsx`
+  - clarified that each saved entry becomes one material inside the current module
+- `apps/web/components/modules/module-pinned-sidebar.tsx`
+  - renamed the panel to `Pinned materials`
+  - clarified the empty-state copy
+- `apps/web/components/course/material-row.tsx`
+  - added an explicit `Open material` primary action
+  - clarified source-link labels and the no-preview fallback copy
+
+**Why:**
+- The hierarchy is now not only named more clearly, but also acted on more explicitly through visible buttons and helper copy.
+- This should lower the amount of guesswork for demo users and first-time users:
+  - where to click next
+  - what page opens next
+  - what lives inside a course, module, or material
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+- `npm.cmd --workspace @studyhub/web run build`
+
+### Session 124 (Review checkpoint follow-up: profile/material clarity + backlog alignment)
+
+**Problem investigated:**
+- After the first review-checkpoint pass, the main hierarchy flow was clearer, but a few places still used softer or more abstract language than the rest of the authenticated workspace.
+- The remaining small friction points were:
+  - Profile still lacked the same breadcrumb-style wayfinding used on course/module/material pages
+  - some profile labels leaned more decorative than practical
+  - the material detail page still used a generic `Open source` label while material rows already used more specific file/link wording
+  - the material detail badges could be slightly more explicit
+
+**What changed:**
+- `apps/web/components/profile/profile-page-header.tsx`
+  - added breadcrumb wayfinding from `Dashboard` to `Profile`
+  - clarified the header description so the page reads more directly as account settings
+- `apps/web/components/profile/profile-hero-card.tsx`
+  - renamed the hero label from `Workspace identity` to `Account overview`
+  - clarified the avatar note to say direct uploads are still pending, while external image URLs work now
+- `apps/web/components/materials/material-page-client.tsx`
+  - changed `Editing now` to `Editing material`
+  - changed `Quick access` to `Pinned to quick access`
+- `apps/web/components/materials/material-view-panel.tsx`
+  - aligned the external-link action label with the clearer material-row wording:
+    - `Open file URL`
+    - `Open saved link`
+
+**Checkpoint notes:**
+- Confirmed `How It Works` already exists at `/how-it-works`
+- Confirmed a dedicated `Contact` page is still missing
+- Confirmed Google sign-in is still a planned placeholder in the auth UI, not yet wired end-to-end
+- Admin remains the next large implementation/polish block once the pre-Admin user flow feels finished
+
+**Why:**
+- These changes make the authenticated flow feel more internally consistent:
+  - the same breadcrumb logic now reaches the profile page too
+  - labels explain user actions more concretely
+  - material link/file actions no longer use a vague catch-all term
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+- `npm.cmd --workspace @studyhub/web run build`

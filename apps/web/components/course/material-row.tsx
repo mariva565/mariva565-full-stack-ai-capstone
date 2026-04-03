@@ -94,7 +94,8 @@ export function MaterialRow({
   const tags = parseTags(material.tags);
   const preview = getContentPreview(material.content);
   const pinLabel = isPinned ? "Remove from quick access" : "Pin to quick access";
-  const sourceLabel = "Open source";
+  const sourceLabel =
+    normalizedType === "file" ? "Open file URL" : "Open saved link";
 
   return (
     <li className="group relative overflow-hidden rounded-[1.8rem] border border-slate-200/80 bg-[linear-gradient(160deg,rgba(255,255,255,0.96)_0%,rgba(248,250,252,0.95)_58%,rgba(238,242,255,0.92)_100%)] shadow-[0_24px_55px_rgba(15,23,42,0.08)] transition hover:-translate-y-1 hover:shadow-[0_28px_65px_rgba(99,102,241,0.12)] dark:border-cyan-400/10 dark:bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.1)_0%,rgba(34,211,238,0)_26%),linear-gradient(160deg,rgba(15,23,42,0.97)_0%,rgba(9,17,34,0.96)_55%,rgba(6,12,28,0.98)_100%)] dark:hover:shadow-[0_28px_65px_rgba(6,182,212,0.08)]">
@@ -145,6 +146,12 @@ export function MaterialRow({
 
           <div className="flex flex-wrap items-center gap-2 lg:justify-end">
             <Link
+              href={materialHref}
+              className="inline-flex items-center justify-center rounded-full bg-[linear-gradient(135deg,#6366f1_0%,#8b5cf6_55%,#06b6d4_100%)] px-4 py-2.5 text-sm font-semibold text-white shadow-[0_16px_35px_rgba(99,102,241,0.22)] transition hover:-translate-y-0.5 hover:shadow-[0_20px_45px_rgba(99,102,241,0.28)]"
+            >
+              Open material
+            </Link>
+            <Link
               href={`${materialHref}?edit=1`}
               title="Edit material"
               aria-label="Edit material"
@@ -185,7 +192,7 @@ export function MaterialRow({
           <p className="text-sm leading-7 text-slate-600 dark:text-slate-300">{preview}</p>
         ) : (
           <p className="text-sm italic text-slate-400 dark:text-slate-500">
-            No preview yet. Open the item to add more context.
+            No preview yet. Open the material to add more context.
           </p>
         )}
 

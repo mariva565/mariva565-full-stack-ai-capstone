@@ -36,7 +36,8 @@ export function ModuleMaterialComposer({
             Add Material
           </p>
           <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">
-            Capture a quick note, save a link, or point to a file URL.
+            Capture a quick note, save a link, or point to a file URL. Each
+            saved item becomes one material inside this module.
           </p>
         </div>
 
