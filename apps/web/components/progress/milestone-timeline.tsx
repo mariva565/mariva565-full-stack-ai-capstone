@@ -1,14 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { DeadlinePill } from "./deadline-pill";
-import { MilestoneEditor } from "./milestone-editor";
+import { useReducedMotion } from "framer-motion";
+
+import { STATUS_TOAST_LABEL, toDateKey } from "../../lib/progress";
+import { MilestoneTimelineItem } from "./milestone-timeline-item";
 import type { Milestone, MilestoneUpdate } from "./types";
-import {
-  classifyMilestoneDueDate,
-  formatMilestoneDueDate,
-  toDateKey,
-} from "../../lib/progress";
 
 type MoveDirection = "up" | "down";
 
@@ -27,48 +24,12 @@ type Props = {
   emptyMessage?: string;
 };
 
-const statusConfig = {
-  done: {
-    dot: "bg-emerald-500",
-    ring: "ring-emerald-500/30",
-    badge: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
-    label: "Done",
-  },
-  in_progress: {
-    dot: "bg-amber-400",
-    ring: "ring-amber-400/30",
-    badge: "bg-amber-400/10 text-amber-700 dark:text-amber-300",
-    label: "In Progress",
-  },
-  not_started: {
-    dot: "bg-slate-500",
-    ring: "ring-slate-500/30",
-    badge: "bg-slate-500/10 text-slate-600 dark:text-slate-300",
-    label: "Not Started",
-  },
-  idea: {
-    dot: "bg-cyan-400",
-    ring: "ring-cyan-400/30",
-    badge: "bg-cyan-400/10 text-cyan-700 dark:text-cyan-300",
-    label: "Idea",
-  },
-};
-
 const nextStatus: Record<Milestone["status"], Milestone["status"]> = {
   idea: "not_started",
   not_started: "in_progress",
   in_progress: "done",
   done: "not_started",
 };
-
-function formatDate(dateStr: string | null) {
-  if (!dateStr) return null;
-  return new Date(dateStr).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-}
 
 function toDateInputValue(value: string | null) {
   return toDateKey(value) ?? "";
@@ -90,6 +51,7 @@ export function MilestoneTimeline({
   const [draftTitle, setDraftTitle] = useState("");
   const [draftDescription, setDraftDescription] = useState("");
   const [draftDueDate, setDraftDueDate] = useState("");
+  const reduceMotion = useReducedMotion() ?? false;
 
   const orderedIds = milestones.map((item) => item.id);
 
@@ -101,22 +63,23 @@ export function MilestoneTimeline({
     setFlashedId(revealedMilestoneId);
 
     const frameId = window.requestAnimationFrame(() => {
-      document
-        .getElementById(`milestone-${revealedMilestoneId}`)
-        ?.scrollIntoView({ behavior: "smooth", block: "center" });
+      document.getElementById(`milestone-${revealedMilestoneId}`)?.scrollIntoView({
+        behavior: reduceMotion ? "auto" : "smooth",
+        block: "center",
+      });
     });
 
     const timeoutId = window.setTimeout(() => {
       setFlashedId((current) =>
         current === revealedMilestoneId ? null : current
       );
-    }, 2400);
+    }, reduceMotion ? 1600 : 2400);
 
     return () => {
       window.cancelAnimationFrame(frameId);
       window.clearTimeout(timeoutId);
     };
-  }, [revealedMilestoneId]);
+  }, [reduceMotion, revealedMilestoneId]);
 
   function startEdit(milestone: Milestone) {
     setExpandedId(milestone.id);
@@ -154,142 +117,48 @@ export function MilestoneTimeline({
   }
 
   return (
-    <div className="relative ml-4">
-      <div className="absolute bottom-2 left-3 top-2 w-0.5 bg-slate-200 dark:bg-slate-700" />
+    <div className="relative ml-2 sm:ml-4">
+      <div className="pointer-events-none absolute bottom-3 left-4 top-3 w-px bg-gradient-to-b from-brand-200 via-slate-200 to-cyan-200 dark:from-brand-400/40 dark:via-slate-700 dark:to-cyan-300/40" />
 
-      <ul className="space-y-1">
+      <ul className="space-y-3">
         {milestones.map((milestone, index) => {
-          const cfg = statusConfig[milestone.status];
           const isExpanded = expandedId === milestone.id;
           const isEditing = editingId === milestone.id;
-          const isBusy = busyId === milestone.id;
-          const isRevealed = flashedId === milestone.id;
-          const canMoveUp = index > 0;
-          const canMoveDown = index < milestones.length - 1;
-
-          const dueCategory = classifyMilestoneDueDate(milestone);
-          const dueDateLabel = formatMilestoneDueDate(milestone.dueDate) || "date";
-          const duePillLabel =
-            dueCategory === "overdue"
-              ? `Overdue ${dueDateLabel}`
-              : dueCategory === "today"
-                ? `Today ${dueDateLabel}`
-                : dueCategory === "next7"
-                  ? `Next 7 days ${dueDateLabel}`
-                  : `Due ${dueDateLabel}`;
 
           return (
-            <li
+            <MilestoneTimelineItem
               key={milestone.id}
-              id={`milestone-${milestone.id}`}
-              className="relative scroll-mt-28 pl-10"
-            >
-              <button
-                onClick={() => onStatusChange(milestone.id, nextStatus[milestone.status])}
-                className={`absolute left-0.5 top-3 h-5 w-5 cursor-pointer rounded-full ${cfg.dot} ring-4 ${cfg.ring} transition-all hover:scale-110`}
-                title={`Click to change to "${nextStatus[milestone.status].replace("_", " ")}"`}
-                disabled={isBusy}
-              />
-
-              <div
-                className={`cursor-pointer rounded-xl border px-4 py-3 transition-[background-color,border-color,box-shadow] ${
-                  isRevealed
-                    ? "border-brand-300 bg-brand-50/80 shadow-[0_0_0_3px_rgba(99,102,241,0.12)] dark:border-brand-400/50 dark:bg-brand-500/10 dark:shadow-[0_0_0_3px_rgba(129,140,248,0.14)]"
-                    : milestone.status === "done"
-                      ? "border-emerald-200 bg-emerald-50/50 dark:border-emerald-500/20 dark:bg-emerald-500/5"
-                      : "border-slate-200 bg-white/80 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900/60 dark:hover:bg-slate-900"
-                }`}
-                onClick={() => setExpandedId(isExpanded ? null : milestone.id)}
-              >
-                <div className="flex items-center justify-between gap-3">
-                  <h3
-                    className={`font-rubik text-[1.04rem] font-semibold tracking-tight ${
-                      milestone.status === "done"
-                        ? "text-slate-500 line-through dark:text-slate-400"
-                        : "text-slate-700 dark:text-slate-100"
-                    }`}
-                  >
-                    {milestone.title}
-                  </h3>
-
-                  <div className="flex shrink-0 items-center gap-2">
-                    {milestone.dueDate && (
-                      <DeadlinePill category={dueCategory} label={duePillLabel} />
-                    )}
-                    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${cfg.badge}`}>
-                      {cfg.label}
-                    </span>
-                  </div>
-                </div>
-
-                {isExpanded && (
-                  <div
-                    className="mt-3 space-y-3 border-t border-slate-200 pt-3 dark:border-slate-700"
-                    onClick={(event) => event.stopPropagation()}
-                  >
-                    {isEditing ? (
-                      <MilestoneEditor
-                        title={draftTitle}
-                        description={draftDescription}
-                        dueDate={draftDueDate}
-                        busy={isBusy}
-                        onTitleChange={setDraftTitle}
-                        onDescriptionChange={setDraftDescription}
-                        onDueDateChange={setDraftDueDate}
-                        onCancel={cancelEdit}
-                        onSave={() => {
-                          void saveEdit(milestone.id);
-                        }}
-                      />
-                    ) : (
-                      <>
-                        {milestone.description && (
-                          <p className="text-sm text-slate-600 dark:text-slate-300">
-                            {milestone.description}
-                          </p>
-                        )}
-                        {milestone.completedAt && (
-                          <p className="text-xs text-slate-500 dark:text-slate-400">
-                            Completed: {formatDate(milestone.completedAt)}
-                          </p>
-                        )}
-                      </>
-                    )}
-
-                    <div className="flex flex-wrap items-center gap-2 text-xs">
-                      <button
-                        onClick={() => void onMove(milestone.id, "up", orderedIds)}
-                        disabled={isBusy || !canMoveUp}
-                        className="rounded-lg border border-slate-300 px-2 py-1 text-slate-600 transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
-                      >
-                        Move up
-                      </button>
-                      <button
-                        onClick={() => void onMove(milestone.id, "down", orderedIds)}
-                        disabled={isBusy || !canMoveDown}
-                        className="rounded-lg border border-slate-300 px-2 py-1 text-slate-600 transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
-                      >
-                        Move down
-                      </button>
-                      {!isEditing && (
-                        <button
-                          onClick={() => startEdit(milestone)}
-                          className="rounded-lg border border-slate-300 px-2 py-1 text-slate-600 transition-colors hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
-                        >
-                          Edit
-                        </button>
-                      )}
-                      <button
-                        onClick={() => onDelete(milestone.id)}
-                        className="rounded-lg px-2 py-1 text-red-500 transition-colors hover:bg-red-500/10"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </li>
+              milestone={milestone}
+              index={index}
+              isExpanded={isExpanded}
+              isEditing={isEditing}
+              isBusy={busyId === milestone.id}
+              isRevealed={flashedId === milestone.id}
+              canMoveUp={index > 0}
+              canMoveDown={index < milestones.length - 1}
+              reduceMotion={reduceMotion}
+              nextStatusLabel={STATUS_TOAST_LABEL[nextStatus[milestone.status]]}
+              draftTitle={draftTitle}
+              draftDescription={draftDescription}
+              draftDueDate={draftDueDate}
+              onDraftTitleChange={setDraftTitle}
+              onDraftDescriptionChange={setDraftDescription}
+              onDraftDueDateChange={setDraftDueDate}
+              onToggleExpand={() =>
+                setExpandedId(isExpanded ? null : milestone.id)
+              }
+              onCycleStatus={() =>
+                onStatusChange(milestone.id, nextStatus[milestone.status])
+              }
+              onStartEdit={() => startEdit(milestone)}
+              onCancelEdit={cancelEdit}
+              onSaveEdit={() => {
+                void saveEdit(milestone.id);
+              }}
+              onMoveUp={() => void onMove(milestone.id, "up", orderedIds)}
+              onMoveDown={() => void onMove(milestone.id, "down", orderedIds)}
+              onDelete={() => onDelete(milestone.id)}
+            />
           );
         })}
       </ul>

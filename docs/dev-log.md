@@ -2699,6 +2699,32 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 **Validation:**
 - `npm.cmd --workspace @studyhub/web run build`
 
+### Session 112 (Shared handwritten title clipping pass)
+
+**Problem investigated:**
+- The clipping issue was not limited to one home heading anymore.
+- Several handwritten/script-style titles still used very tight line-height values, and some local component classes overrode the utility defaults with even tighter `leading-*` values.
+
+**What changed:**
+- `apps/web/app/globals.css`
+  - moved `dashboard-script-title`, `dashboard-panel-title`, `home-display-title`, and `home-ink-title` to safer shared vertical spacing
+  - added slightly larger line-height plus small top/bottom padding so the handwritten glyphs have more room to render cleanly
+- loosened the tightest local handwritten title usages in:
+  - `apps/web/components/course/module-section.tsx`
+  - `apps/web/components/course/material-row.tsx`
+  - `apps/web/components/dashboard/pinned-material-item.tsx`
+  - `apps/web/components/materials/material-view-panel.tsx`
+  - `apps/web/components/modules/module-sidebar.tsx`
+  - `apps/web/components/modules/module-pinned-sidebar.tsx`
+
+**Why:**
+- This turns the previous one-off heading fix into a broader typography safeguard for the handwritten brand titles.
+- Multi-line script headings should now stop looking clipped from the bottom across the main public/app surfaces where we had kept aggressive custom leading values.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run build`
+- Build completed successfully after a retry with a longer timeout; the earlier failure was only the tool timeout, not a compile error.
+
 ### Session 109 (Local production chunk mismatch diagnosis)
 
 **Problem investigated:**
@@ -2808,6 +2834,60 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 - The hero secondary CTA now has a separate job: explain the product flow in a calmer, more narrative public page.
 - This matches the stronger v1 information architecture more closely without copying the old implementation.
 - Absolute home anchors also prevent broken in-page links once the public nav is reused from another route.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run build`
+
+### Session 110 (Progress timeline interactivity pass)
+
+**Problem investigated:**
+- The milestone timeline already had the right data and filtering behavior, but the interaction still felt flatter than the rest of the polished pre-Admin app.
+- Expanding items, reordering, and spotting newly added milestones worked functionally, yet the visual feedback was still too quiet for a page that is meant to feel active and motivating.
+
+**What changed:**
+- `apps/web/components/progress/milestone-timeline.tsx`
+  - split the timeline row rendering into a dedicated item component so the file stays within the project size guardrails
+  - kept the existing server-first/client-shell data flow untouched
+  - reused the reveal flow with reduced-motion-aware scrolling/highlight timing
+- `apps/web/components/progress/milestone-timeline-item.tsx`
+  - rebuilt each row as a motion-driven card with hover lift, layout animation, richer glass surface styling, and a clearer step header
+  - added animated expand/collapse transitions for milestone details
+  - added a rotating chevron, stronger status marker treatment, and more polished action pills for move/edit/delete
+  - kept the status-dot click interaction, but made the reveal state much more noticeable with a temporary pulse
+- `apps/web/components/progress/milestone-timeline-item-helpers.tsx`
+  - extracted the item styling/config/date-preview helpers so the row component stays smaller and easier to maintain
+- `apps/web/components/progress/use-progress-page-state.ts`
+  - after creating a new milestone, now reveals it in the timeline and resets restrictive filters back to `active` when needed so the new item does not feel lost
+
+**Why:**
+- The timeline now feels more alive through interaction-driven motion instead of always-running animation loops.
+- Reordering and expanding milestones should feel clearer because the list now animates its layout and detail panels directly where the user is working.
+- Newly created milestones now get the same "you can immediately spot where it went" treatment that we already added for promoted ideas.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+- `npm.cmd --workspace @studyhub/web run build`
+- Build still shows the existing `jose` Edge Runtime warning from `lib/jwt.ts`; no new warning was introduced by this timeline pass.
+
+### Session 111 (Home Features heading layout/clipping fix)
+
+**Problem investigated:**
+- In the public `Features` section, the small eyebrow label and the main handwritten title could end up sitting on the same row.
+- The larger handwritten heading also looked slightly clipped at the bottom in local preview.
+
+**What changed:**
+- `apps/web/components/home/features.tsx`
+  - changed the `Features` eyebrow from `inline-block` to `block`
+  - forced the section heading to render as a block-level title with a centered max width
+- `apps/web/app/globals.css`
+  - added safer `line-height` and bottom padding to `.home-display-title`
+  - this gives the handwritten title a little more breathing room so the glyph bottoms do not get visually cut off
+
+**Why:**
+- The section hierarchy is clearer again:
+  - `Features` on its own line
+  - the main heading on the next line
+- The title now has enough vertical room for the script font to render cleanly.
 
 **Validation:**
 - `npm.cmd --workspace @studyhub/web run build`

@@ -133,7 +133,7 @@ export function MaterialRow({
                 <p className="text-[0.68rem] font-semibold uppercase tracking-[0.28em] text-slate-400 dark:text-slate-500">
                   Saved {new Date(material.createdAt).toLocaleDateString()}
                 </p>
-                <span className="dashboard-script-title mt-2 block text-[clamp(1.35rem,2.15vw,1.8rem)] leading-[1.08] transition group-hover:translate-x-0.5">
+                <span className="dashboard-script-title mt-2 block text-[clamp(1.35rem,2.15vw,1.8rem)] leading-[1.12] transition group-hover:translate-x-0.5">
                   {material.title}
                 </span>
                 <div className="mt-3 flex flex-wrap items-center gap-2">

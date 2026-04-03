@@ -21,7 +21,7 @@ export function PinnedMaterialItem({ item }: PinnedMaterialItemProps) {
     >
       <Link
         href={`/materials/${item.materialId}`}
-        className="dashboard-script-title block text-[1.38rem] leading-[1.06] transition duration-300 group-hover:translate-x-0.5"
+        className="dashboard-script-title block text-[1.38rem] leading-[1.12] transition duration-300 group-hover:translate-x-0.5"
       >
         {item.materialTitle}
       </Link>

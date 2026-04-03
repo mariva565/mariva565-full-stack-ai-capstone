@@ -29,7 +29,7 @@ export function ModuleSidebar({
         <p className="text-[0.68rem] font-semibold uppercase tracking-[0.3em] text-slate-400 dark:text-slate-500">
           Course
         </p>
-        <h2 className="dashboard-script-title block mt-2 text-[1.95rem] leading-[1.04]">
+        <h2 className="dashboard-script-title block mt-2 text-[1.95rem] leading-[1.12]">
           {courseTitle}
         </h2>
       </div>

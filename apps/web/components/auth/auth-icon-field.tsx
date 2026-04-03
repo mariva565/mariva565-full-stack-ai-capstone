@@ -48,7 +48,7 @@ export function AuthIconField({
           minLength={minLength}
           required={required}
           placeholder={placeholder}
-          className="w-full bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400 dark:text-slate-100 dark:placeholder:text-slate-500"
+          className="auth-field-input w-full bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400 dark:text-slate-100 dark:placeholder:text-slate-500"
         />
       </div>
     </div>

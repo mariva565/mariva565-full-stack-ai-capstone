@@ -38,10 +38,10 @@ export function HomeFeatures() {
 
       <div className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="mb-20 text-center">
-          <span className="mb-4 inline-block text-sm font-bold uppercase tracking-[0.2em] text-indigo-500">
+          <span className="mb-5 block text-sm font-bold uppercase tracking-[0.2em] text-indigo-500">
             Features
           </span>
-          <h2 className="home-display-title text-4xl sm:text-5xl lg:text-6xl">
+          <h2 className="home-display-title mx-auto block max-w-5xl text-4xl sm:text-5xl lg:text-6xl">
             Everything you need to succeed
           </h2>
           <p className="mx-auto mt-6 max-w-2xl text-lg text-slate-500 dark:text-slate-400">

@@ -40,7 +40,7 @@ export function MaterialViewPanel({
           <p className="text-[0.68rem] font-semibold uppercase tracking-[0.28em] text-slate-400 dark:text-slate-500">
             Saved {formattedCreatedAt}
           </p>
-          <h2 className="dashboard-script-title text-[clamp(2rem,3vw,2.9rem)] leading-[1.04]">
+          <h2 className="dashboard-script-title text-[clamp(2rem,3vw,2.9rem)] leading-[1.12]">
             {title}
           </h2>
           <div className="mt-3 flex flex-wrap items-center gap-2">

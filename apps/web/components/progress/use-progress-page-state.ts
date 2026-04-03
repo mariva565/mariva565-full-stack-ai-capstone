@@ -183,6 +183,10 @@ export function useProgressPageState({ initialData }: UseProgressPageStateParams
       const payload = (await response.json()) as MilestoneResponse;
       if (payload.milestone) {
         setAllMilestones((current) => [...current, payload.milestone as Milestone]);
+        if (timelineFilter !== "all" && timelineFilter !== "active") {
+          setTimelineFilter("active");
+        }
+        setRevealedMilestoneId(payload.milestone.id);
       }
       setToast({ tone: "success", message: "Milestone added." });
     } catch (error) {

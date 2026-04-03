@@ -117,7 +117,7 @@ export function ModuleSection({
                 </form>
               ) : (
                 <>
-                  <h2 className="dashboard-script-title mt-2 block max-w-3xl text-[clamp(1.55rem,2.35vw,2rem)] leading-[1.03]">
+                  <h2 className="dashboard-script-title mt-2 block max-w-3xl text-[clamp(1.55rem,2.35vw,2rem)] leading-[1.12]">
                     {module.title}
                   </h2>
                   {module.description?.trim() ? (
