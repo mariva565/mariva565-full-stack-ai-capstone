@@ -455,30 +455,37 @@ GEMINI_API_KEY=
 | 4 | **Dashboard** | ✅ Завършена (v1 parity pass) | Pinned секция, search/filter по тагове, status filter, по-ясни course карти |
 | 5 | **Profile** | ✅ Завършена (v1 parity pass) | Премиум hero/avatar layout, модулен account settings UI, password change flow, admin quick actions; storage-backed avatar upload остава за довършване след текущия UI focus |
 | 6 | **Sharing** | ⏳ Не започната | Нова таблица `shares`, "Shared with Me" tab, share бутон |
-| 7 | **UI компоненти** | 🟡 В процес | ConfirmModal/Toast/Spinner добавени; остават confirm() случаи в Dashboard/Admin |
+| 7 | **UI компоненти** | 🟡 В процес | ConfirmModal/Toast/Spinner добавени; native `confirm()` flows вече са махнати от Dashboard/Admin, остава по-широк visual polish pass |
 | 8 | **Mobile** | ⏳ Блокирана | Expo Go гърми на физически телефон; Android емулатор се инсталира |
 
 ### Препоръчан следващ фокус
 > Update after Session 66: the Course Details + Materials refinement pass is complete and now restores the original hierarchy with a dedicated module workspace route at `/modules/[id]`. Before the Admin Panel pass, stop for an interface review checkpoint across Dashboard, Course Details, module workspace, material detail, and Profile.
 
-- **1. Course Details + Materials refinement pass**
+- **1. Public page follow-up: `/how-it-works`**
+  - Това е следващият page-sized focus и е подходящ за отделен нов chat.
+  - Анимациите трябва да спират, когато секцията не е видима, и да не разчитат на безкрайни loops без нужда.
+  - Да се спазва animation guardrail-ът: visibility-gated, interaction-gated и quiet when off-screen.
+  - Да се пази модулността: split в `components/how-it-works/`, без монолитен page file, без прекалено големи client islands.
+- **2. Course Details + Materials refinement pass**
   - Въпреки че са маркирани като parity-pass завършени, тези екрани още имат нужда от още adaptation polish.
   - Да се мине през module sections, material rows/cards, hierarchy, spacing, title/copy tones, empty states и action clarity.
   - Да се сравнят отново с v1 като UX поток, не само по feature checklist.
-- **2. Admin Panel adaptation pass**
+- **3. Admin Panel adaptation pass**
   - Голямо парче е и има смисъл да дойде след като modules/materials се усещат наистина довършени.
   - Да се мине през tabs, cards, tables, moderation actions, empty states и destructive flows.
-  - Да се махнат оставащите native `confirm()` диалози и да се заменят с нашия `ConfirmModal`.
-- **3. Public pages follow-up: `How it works` + `Contact`**
-  - Да не изпадат от adaptation плана: в момента нямаме отделни app-router страници за тях.
-  - Да се реши дали ще са отделни routes или sections с dedicated pages, но да се пазят в handoff-а като реален follow-up.
-  - Особено подходящи са за по-късен public-site polish pass след modules/materials.
-- **4. Sharing / "Shared with Me"**
+  - Native `confirm()` диалозите вече са мигрирани към `ConfirmModal`; следващият фокус е по-цялостен polish на destructive flows и feedback states.
+- **4. Public pages follow-up: `Contact`**
+  - `Contact` route вече съществува и долният достъп от home page е възстановен.
+  - Остава по-късен polish pass: real submit flow, Tailwind-only cleanup и общо public-site consistency изчистване.
+- **5. Sharing / "Shared with Me"**
   - Това е последната голяма v1-style parity функционалност, която още стои като `не е започната`.
   - Изисква schema + API + UI таб/бутон, но дава много добра стойност за adaptation story-то.
-- **5. Avatar upload solution**
+- **6. Avatar upload solution**
   - Засега UI-то е честно маркирано като planned / coming soon.
   - Да се върнем към него чак след като има ясен и надежден storage/upload подход за демо.
+- **7. AI chatbot parity pass (from v1)**
+  - Да остане за след като основните страници са готови.
+  - Тогава да се върнем към provider/backend flow, UI entry points и честния demo scope за AI асистента.
 
 ### Правила за имплементация
 - Всеки файл < 300 реда (без монолити)

@@ -88,6 +88,9 @@ export default function HomePage() {
               <Link href="/login" className="text-slate-500 hover:text-brand-500 font-semibold transition-colors text-sm">
                 Login
               </Link>
+              <Link href="/contact" className="text-slate-500 hover:text-brand-500 font-semibold transition-colors text-sm">
+                Contact
+              </Link>
               <Link href="/register" className="text-slate-500 hover:text-brand-500 font-semibold transition-colors text-sm">
                 Register
               </Link>

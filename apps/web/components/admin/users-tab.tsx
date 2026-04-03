@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from "react";
 
+import { readErrorMessage } from "../../lib/http";
+import { ConfirmModal } from "../ui/confirm-modal";
+
 type AdminUser = {
   id: number;
   email: string;
@@ -13,6 +16,8 @@ type AdminUser = {
 export function UsersTab() {
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
+  const [userToDelete, setUserToDelete] = useState<Pick<AdminUser, "id" | "email"> | null>(null);
+  const [deleteBusy, setDeleteBusy] = useState(false);
 
   useEffect(() => {
     fetchUsers();
@@ -43,14 +48,20 @@ export function UsersTab() {
     }
   }
 
-  async function handleDelete(userId: number, email: string) {
-    if (!confirm(`Delete user ${email}? This will remove all their data.`)) return;
-    const res = await fetch(`/api/admin/users/${userId}`, { method: "DELETE" });
+  async function confirmDeleteUser() {
+    if (!userToDelete) {
+      return;
+    }
+
+    setDeleteBusy(true);
+    const res = await fetch(`/api/admin/users/${userToDelete.id}`, { method: "DELETE" });
+    setDeleteBusy(false);
+
     if (res.ok) {
-      setUsers((prev) => prev.filter((u) => u.id !== userId));
+      setUsers((prev) => prev.filter((u) => u.id !== userToDelete.id));
+      setUserToDelete(null);
     } else {
-      const data = await res.json();
-      alert(data.message || "Failed to delete user");
+      alert(await readErrorMessage(res, "Failed to delete user."));
     }
   }
 
@@ -59,54 +70,70 @@ export function UsersTab() {
   }
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-left text-sm">
-        <thead>
-          <tr className="border-b border-slate-200 dark:border-slate-700">
-            <th className="pb-3 font-medium text-slate-500 dark:text-slate-400">Name</th>
-            <th className="pb-3 font-medium text-slate-500 dark:text-slate-400">Email</th>
-            <th className="pb-3 font-medium text-slate-500 dark:text-slate-400">Role</th>
-            <th className="pb-3 font-medium text-slate-500 dark:text-slate-400">Joined</th>
-            <th className="pb-3 font-medium text-slate-500 dark:text-slate-400">Actions</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
-          {users.map((user) => (
-            <tr key={user.id}>
-              <td className="py-3 font-medium text-slate-900 dark:text-white">
-                {user.name}
-              </td>
-              <td className="py-3 text-slate-600 dark:text-slate-400">{user.email}</td>
-              <td className="py-3">
-                <select
-                  value={user.role}
-                  onChange={(e) => handleRoleChange(user.id, e.target.value)}
-                  className="rounded border border-slate-300 bg-white px-2 py-1 text-xs dark:border-slate-600 dark:bg-slate-700 dark:text-white"
-                >
-                  <option value="user">user</option>
-                  <option value="admin">admin</option>
-                </select>
-              </td>
-              <td className="py-3 text-slate-500 dark:text-slate-400">
-                {new Date(user.createdAt).toLocaleDateString()}
-              </td>
-              <td className="py-3">
-                <button
-                  onClick={() => handleDelete(user.id, user.email)}
-                  className="text-xs font-medium text-red-500 hover:text-red-700 dark:text-red-400"
-                >
-                  Delete
-                </button>
-              </td>
+    <>
+      <div className="overflow-x-auto">
+        <table className="w-full text-left text-sm">
+          <thead>
+            <tr className="border-b border-slate-200 dark:border-slate-700">
+              <th className="pb-3 font-medium text-slate-500 dark:text-slate-400">Name</th>
+              <th className="pb-3 font-medium text-slate-500 dark:text-slate-400">Email</th>
+              <th className="pb-3 font-medium text-slate-500 dark:text-slate-400">Role</th>
+              <th className="pb-3 font-medium text-slate-500 dark:text-slate-400">Joined</th>
+              <th className="pb-3 font-medium text-slate-500 dark:text-slate-400">Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-      {users.length === 0 && (
-        <p className="mt-4 text-center text-slate-500 dark:text-slate-400">
-          No users found.
-        </p>
-      )}
-    </div>
+          </thead>
+          <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+            {users.map((user) => (
+              <tr key={user.id}>
+                <td className="py-3 font-medium text-slate-900 dark:text-white">
+                  {user.name}
+                </td>
+                <td className="py-3 text-slate-600 dark:text-slate-400">{user.email}</td>
+                <td className="py-3">
+                  <select
+                    value={user.role}
+                    onChange={(e) => handleRoleChange(user.id, e.target.value)}
+                    className="rounded border border-slate-300 bg-white px-2 py-1 text-xs dark:border-slate-600 dark:bg-slate-700 dark:text-white"
+                  >
+                    <option value="user">user</option>
+                    <option value="admin">admin</option>
+                  </select>
+                </td>
+                <td className="py-3 text-slate-500 dark:text-slate-400">
+                  {new Date(user.createdAt).toLocaleDateString()}
+                </td>
+                <td className="py-3">
+                  <button
+                    onClick={() => setUserToDelete({ id: user.id, email: user.email })}
+                    className="text-xs font-medium text-red-500 hover:text-red-700 dark:text-red-400"
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {users.length === 0 && (
+          <p className="mt-4 text-center text-slate-500 dark:text-slate-400">
+            No users found.
+          </p>
+        )}
+      </div>
+
+      <ConfirmModal
+        isOpen={userToDelete !== null}
+        title="Delete user?"
+        description={
+          userToDelete
+            ? `Delete ${userToDelete.email} and remove all of their data from StudyHub.`
+            : ""
+        }
+        confirmLabel="Delete user"
+        busy={deleteBusy}
+        onCancel={() => setUserToDelete(null)}
+        onConfirm={confirmDeleteUser}
+      />
+    </>
   );
 }

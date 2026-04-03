@@ -56,24 +56,37 @@ export function HomeCtaBanner() {
               Join thousands of students using Study Hub today.
             </p>
 
-            {/* Gradient pill button with magnetic hover */}
-            <Link
-              ref={btnRef}
-              href="/register"
-              onMouseMove={handleBtnMouseMove}
-              onMouseLeave={handleBtnMouseLeave}
-              className="mt-8 inline-flex items-center gap-2 rounded-full px-8 py-4 text-base font-semibold text-white shadow-lg transition-all duration-200"
-              style={{
-                background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #06b6d4 100%)",
-                backgroundSize: "200% 200%",
-                boxShadow: "0 10px 30px rgba(99, 102, 241, 0.4)",
-              }}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
-                <path fillRule="evenodd" d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z" clipRule="evenodd" />
-              </svg>
-              Create Free Account
-            </Link>
+            <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
+              {/* Gradient pill button with magnetic hover */}
+              <Link
+                ref={btnRef}
+                href="/register"
+                onMouseMove={handleBtnMouseMove}
+                onMouseLeave={handleBtnMouseLeave}
+                className="inline-flex items-center gap-2 rounded-full px-8 py-4 text-base font-semibold text-white shadow-lg transition-all duration-200"
+                style={{
+                  background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #06b6d4 100%)",
+                  backgroundSize: "200% 200%",
+                  boxShadow: "0 10px 30px rgba(99, 102, 241, 0.4)",
+                }}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
+                  <path fillRule="evenodd" d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z" clipRule="evenodd" />
+                </svg>
+                Create Free Account
+              </Link>
+
+              <Link
+                href="/contact"
+                className="inline-flex items-center gap-2 rounded-full border border-white/35 bg-white/10 px-8 py-4 text-base font-semibold text-white shadow-[0_10px_30px_rgba(15,23,42,0.18)] backdrop-blur-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-white/16 hover:shadow-[0_14px_36px_rgba(15,23,42,0.24)]"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" className="h-5 w-5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 7.5 12 13l8-5.5" />
+                  <rect x="3" y="5.5" width="18" height="13" rx="2.5" />
+                </svg>
+                Contact Us
+              </Link>
+            </div>
           </div>
         </div>
       </motion.div>

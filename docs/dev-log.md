@@ -3296,3 +3296,171 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 **Validation:**
 - `npm.cmd --workspace @studyhub/web run typecheck`
 - DB pushing and Google Sign-in complete e2e.
+
+### Session 126 (Navigation polish, slug URLs, UI cleanup)
+
+**Goal:**
+- Make it crystal clear where the user is in the hierarchy (courses → modules → materials).
+- Make browser tab titles and URL addresses self-descriptive instead of just numeric IDs.
+- Remove all draft-style explanatory text that was leaked from development into production UI.
+
+**URL Structure — Slug URLs implemented:**
+- Created `apps/web/lib/slugify.ts` — utility that transforms titles into URL-safe strings.
+- Restructured routing to use optional catch-all segments (`[[...slug]]`):
+  - `apps/web/app/courses/[id]/[[...slug]]/page.tsx`
+  - `apps/web/app/modules/[id]/[[...slug]]/page.tsx`
+  - `apps/web/app/materials/[id]/[[...slug]]/page.tsx`
+- Old `[id]/page.tsx` files deleted (replaced by the new slug-aware ones).
+- All navigation links throughout the app now append a slug:
+  - `/courses/4/capstone-terminology-and-issues`
+  - `/modules/1/terminology`
+  - `/materials/9/linting`
+- The slug is decorative — the server only uses the numeric ID.
+- Updated link generation in:
+  - `course-card.tsx`, `module-section.tsx`, `module-sidebar.tsx`
+  - `material-row.tsx`, `pinned-material-item.tsx`, `module-pinned-sidebar.tsx`
+  - `module-workspace-header.tsx`, `material-page-client.tsx`
+
+**Browser tab titles — full breadcrumb path:**
+- `generateMetadata` in each route page now builds a path matching the breadcrumbs:
+  - Course page: `Full-Stack Apps with AI — StudyHub`
+  - Module page: `TypeScript Basics › Full-Stack Apps with AI — StudyHub`
+  - Material page: `Video link › TypeScript Basics › Full-Stack Apps with AI — StudyHub`
+
+**UI Cleanup — removed draft/redundant elements:**
+- Removed duplicate sub-header navigation from course and module workspace headers:
+  - `COURSE: ... / MODULE WORKSPACE` row deleted from `module-workspace-header.tsx`
+  - `Course Workspace / Modules` row deleted from `course-workspace-header.tsx`
+  - Breadcrumbs already provide this information.
+- Removed `materialCount / pinnedCount` display from `module-workspace-header.tsx`.
+- Removed `moduleCount` display from `course-workspace-header.tsx`.
+- Removed `Draft Courses` stat pill from `dashboard-hero.tsx` (kept Courses + Pinned Materials).
+- Removed `"Open this course to manage its modules and materials."` from `course-card.tsx`.
+- Cleaned up unused props (`draftCount`, `materialCount`, `pinnedCount`, `moduleCount`) from component interfaces and their callers.
+
+**Files touched:**
+- `apps/web/lib/slugify.ts` [NEW]
+- `apps/web/app/courses/[id]/[[...slug]]/page.tsx` [NEW]
+- `apps/web/app/modules/[id]/[[...slug]]/page.tsx` [NEW]
+- `apps/web/app/materials/[id]/[[...slug]]/page.tsx` [NEW]
+- `apps/web/app/courses/[id]/page.tsx` [DELETED]
+- `apps/web/app/modules/[id]/page.tsx` [DELETED]
+- `apps/web/app/materials/[id]/page.tsx` [DELETED]
+- `apps/web/components/dashboard/dashboard-hero.tsx`
+- `apps/web/components/dashboard/dashboard-client-page.tsx`
+- `apps/web/components/dashboard/course-card.tsx`
+- `apps/web/components/dashboard/pinned-material-item.tsx`
+- `apps/web/components/course/course-workspace-header.tsx`
+- `apps/web/components/course/course-details-client-page.tsx`
+- `apps/web/components/course/module-section.tsx`
+- `apps/web/components/course/material-row.tsx`
+- `apps/web/components/modules/module-workspace-header.tsx`
+- `apps/web/components/modules/module-workspace-client-page.tsx`
+- `apps/web/components/modules/module-sidebar.tsx`
+- `apps/web/components/modules/module-pinned-sidebar.tsx`
+- `apps/web/components/materials/material-page-client.tsx`
+
+**Validation:**
+- All changes are straightforward prop removal and string interpolation — no logic changes.
+- TypeScript check was attempted but tsc hung (environment issue, not code error).
+
+**Next steps for new chat:**
+- Run `npm run typecheck:web` and `npm run build:web` to confirm clean compilation.
+- Check remaining `confirm()` calls in admin panel and migrate to `ConfirmModal`.
+- Continue with admin panel polish.
+- "Shared with Me" feature implementation.
+- Avatar storage (Cloudflare R2).
+- Contact page (still missing from nav).
+- Mobile: test updated navigation on Expo.
+
+### Session 127 (Build verification + admin confirm modal cleanup)
+
+**Goal:**
+- Verify that the slug URL refactor still compiles cleanly.
+- Replace the last remaining native `confirm()` dialogs in the admin panel.
+- Sanity-check the `Contact` page handoff note.
+
+**What changed:**
+- Verified the `Contact` page already exists and is wired in the app:
+  - route: `apps/web/app/contact/page.tsx`
+  - nav links: `apps/web/components/layout/Navbar.tsx`
+- Found the Session 126 typecheck failure cause:
+  - stale generated `.next/types` files were still referencing deleted `[id]/page.tsx` routes after the slug migration
+  - cleaned `apps/web/.next` and `apps/web/tsconfig.tsbuildinfo`, then reran validation successfully
+- Migrated the last admin destructive flows away from browser `confirm()`:
+  - `apps/web/components/admin/users-tab.tsx`
+  - `apps/web/components/admin/materials-tab.tsx`
+  - both tabs now open `ConfirmModal` and keep delete-busy state in React instead of using blocking browser dialogs
+  - delete failures now use the shared `readErrorMessage(...)` helper for cleaner fallback messaging
+
+**Validation:**
+- `npm.cmd run typecheck:web` PASS
+- `npm.cmd run build:web` PASS
+  - `/contact` is present in the production route output
+  - unchanged warning remains from `jose` + Edge runtime (`CompressionStream` / `DecompressionStream`) in `lib/jwt.ts`
+
+**Current follow-up:**
+- `/how-it-works` should be the next page-sized follow-up in a new chat
+- For `/how-it-works`, animations should stop when sections are not visible and should avoid unnecessary looping behavior
+- Keep `/how-it-works` modular: split components early and avoid a monolithic page implementation
+- Continue with broader admin panel polish (tabs, cards, moderation feedback, empty states)
+- "Shared with Me" remains the next large parity feature
+- Avatar storage / R2 demo hardening still remains
+- Mobile should still be retested against the new slug URLs
+
+### Session 128 (Priority reset recorded for next chat)
+
+**Goal:**
+- Record the new implementation order for the next chat so the handoff is unambiguous.
+
+**What changed:**
+- Updated the active `implementation-plan.md` follow-up ordering so the AI chatbot parity pass from v1 is the next recorded priority.
+- Kept the admin panel adaptation pass immediately after it, instead of as the first follow-up.
+
+**Current priority order:**
+- First: AI chatbot parity pass from v1
+- Second: Admin panel polish
+
+**Validation:**
+- Docs-only update; no code changes or build step needed.
+
+### Session 129 (Contact access restored on home page)
+
+**Goal:**
+- Restore a clearer `Contact` entry point on the public home page, not only in the navbar.
+
+**What changed:**
+- `apps/web/components/home/cta-banner.tsx`
+  - kept the primary `Create Free Account` action
+  - added a secondary `Contact Us` CTA button that links to `/contact`
+- `apps/web/app/page.tsx`
+  - added a `Contact` link in the footer link cluster next to `Login` and `Register`
+
+**Why:**
+- `Contact` was already available in the navbar, but the lower-page access pattern from the older public-site flow was missing.
+- This restores a more obvious bottom-of-page route into the contact screen for visitors who scroll through the landing page first.
+
+**Validation:**
+- `npm.cmd run build:web` PASS
+- `npm.cmd run typecheck:web` PASS
+  - note: when run before `next build`, typecheck can fail if `.next/types` has not been regenerated yet
+
+### Session 130 (Handoff reprioritized for How It Works)
+
+**Goal:**
+- Record that the next large page task should be `/how-it-works`, not the AI chatbot pass.
+
+**What changed:**
+- Updated the active handoff order so `/how-it-works` becomes the next page-sized follow-up.
+- Moved the AI chatbot parity pass from v1 later in the queue, after the core page work is ready.
+- Added explicit implementation reminders for the future `/how-it-works` pass:
+  - animations should stop when not visible
+  - avoid unnecessary infinite loops
+  - keep the implementation modular and split into dedicated components early
+
+**Current priority note for next chat:**
+- First: `/how-it-works`
+- AI chatbot stays for later, after the pages are ready
+
+**Validation:**
+- Docs-only update; no code changes or build step needed.
