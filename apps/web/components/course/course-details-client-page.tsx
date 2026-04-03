@@ -185,7 +185,6 @@ export function CourseDetailsClientPage({ initialData }: CourseDetailsClientPage
           <CourseWorkspaceHeader
             title={course.title}
             description={course.description}
-            moduleCount={modules.length}
             showModuleForm={showModuleForm}
             newModuleTitle={newModuleTitle}
             newModuleDescription={newModuleDescription}

@@ -151,14 +151,12 @@ export function DashboardClientPage({
     [courseSearch, courseStatusFilter, courses]
   );
 
-  const draftCount = courses.filter((course) => course.status === "draft").length;
 
   return (
     <>
       <DashboardPageShell>
         <DashboardHero
           courseCount={courses.length}
-          draftCount={draftCount}
           pinnedCount={favorites.length}
           showCreateForm={showCreateForm}
           onToggleCreateForm={() => setShowCreateForm((current) => !current)}

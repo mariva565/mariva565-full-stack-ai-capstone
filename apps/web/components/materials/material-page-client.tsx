@@ -18,6 +18,7 @@ import {
   prepareTagsFromInput,
   type MaterialType,
 } from "../../lib/materials";
+import { slugify } from "../../lib/slugify";
 
 type ToastState = {
   tone: ToastTone;
@@ -132,7 +133,7 @@ export function MaterialPageClient({
       return;
     }
 
-    router.push(`/modules/${moduleInfo.id}`);
+    router.push(`/modules/${moduleInfo.id}/${slugify(moduleInfo.title)}`);
   }
 
   const normalizedTags = useMemo(() => parseTags(material.tags), [material.tags]);
@@ -149,8 +150,8 @@ export function MaterialPageClient({
             <WayfindingBreadcrumbs
               items={[
                 { label: "Dashboard", href: "/dashboard" },
-                { label: course.title, href: `/courses/${course.id}` },
-                { label: moduleInfo.title, href: `/modules/${moduleInfo.id}` },
+                { label: course.title, href: `/courses/${course.id}/${slugify(course.title)}` },
+                { label: moduleInfo.title, href: `/modules/${moduleInfo.id}/${slugify(moduleInfo.title)}` },
                 { label: pageTitle },
               ]}
             />
@@ -163,30 +164,7 @@ export function MaterialPageClient({
                 <h1 className="dashboard-script-title mt-3 text-[clamp(2.5rem,5vw,4rem)]">
                   {pageTitle}
                 </h1>
-                <p className="mt-4 max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-300">
-                  {isEditing
-                    ? "You are editing this material inside the current module. Update the notes, source link, and tags here."
-                    : "This page is for one material inside the current module. Review the saved notes here or switch into edit mode to update it."}
-                </p>
-                <div className="mt-5 flex flex-wrap items-center gap-2 text-sm font-medium text-slate-500 dark:text-slate-400">
-                  <span>
-                    Course{" "}
-                    <span className="text-slate-900 dark:text-white">{course.title}</span>
-                  </span>
-                  <span className="text-slate-300 dark:text-slate-600">/</span>
-                  <span>
-                    Module{" "}
-                    <span className="text-slate-900 dark:text-white">{moduleInfo.title}</span>
-                  </span>
-                </div>
               </div>
-
-              <Link
-                href={`/modules/${moduleInfo.id}`}
-                className="inline-flex w-full items-center justify-center rounded-full border border-slate-200 bg-white/80 px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:-translate-y-0.5 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-300 dark:hover:bg-slate-800 sm:w-auto"
-              >
-                Back to module materials
-              </Link>
             </div>
 
             <div className="mt-5 flex flex-wrap gap-2">

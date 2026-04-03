@@ -4,6 +4,7 @@ import Link from "next/link";
 import { MaterialTypePill } from "../materials/material-type-pill";
 import { TagList } from "../materials/tag-list";
 import { parseTags } from "../../lib/materials";
+import { slugify } from "../../lib/slugify";
 import type { PinnedMaterial } from "./types";
 
 type PinnedMaterialItemProps = {
@@ -20,7 +21,7 @@ export function PinnedMaterialItem({ item }: PinnedMaterialItemProps) {
       className="group rounded-[1.35rem] border border-slate-200/80 bg-white/92 p-4 shadow-sm transition hover:shadow-[0_18px_45px_rgba(15,23,42,0.08)] dark:border-cyan-400/10 dark:bg-slate-950/55 dark:hover:shadow-[0_20px_45px_rgba(6,182,212,0.06)]"
     >
       <Link
-        href={`/materials/${item.materialId}`}
+        href={`/materials/${item.materialId}/${slugify(item.materialTitle)}`}
         className="dashboard-script-title block text-[1.38rem] leading-[1.12] transition duration-300 group-hover:translate-x-0.5"
       >
         {item.materialTitle}
@@ -29,7 +30,7 @@ export function PinnedMaterialItem({ item }: PinnedMaterialItemProps) {
       <div className="mt-2 flex items-center gap-2">
         <MaterialTypePill type={item.materialType} />
         <Link
-          href={`/modules/${item.moduleId}`}
+          href={`/modules/${item.moduleId}/${slugify(item.moduleTitle)}`}
           className="truncate text-xs font-medium text-slate-500 hover:text-brand-600 dark:text-slate-400 dark:hover:text-brand-100"
         >
           {item.moduleTitle}

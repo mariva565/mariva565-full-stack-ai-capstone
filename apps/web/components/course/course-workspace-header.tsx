@@ -5,7 +5,6 @@ import { WayfindingBreadcrumbs } from "../ui/wayfinding-breadcrumbs";
 type CourseWorkspaceHeaderProps = {
   title: string;
   description: string | null;
-  moduleCount: number;
   showModuleForm: boolean;
   newModuleTitle: string;
   newModuleDescription: string;
@@ -18,7 +17,6 @@ type CourseWorkspaceHeaderProps = {
 export function CourseWorkspaceHeader({
   title,
   description,
-  moduleCount,
   showModuleForm,
   newModuleTitle,
   newModuleDescription,
@@ -42,19 +40,14 @@ export function CourseWorkspaceHeader({
 
           <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
             <div className="max-w-3xl">
-              <p className="mt-4 text-[0.68rem] font-semibold uppercase tracking-[0.32em] text-slate-400 dark:text-slate-500">
-                Course
-              </p>
-              <h1 className="dashboard-script-title mt-3 text-4xl md:text-5xl">
+              <h1 className="dashboard-script-title mt-4 text-4xl md:text-5xl">
                 {title}
               </h1>
-              <p className="mt-4 max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-300">
-                {description ||
-                  "You are in the course workspace. Create modules here, then open a module to organize its materials."}
-              </p>
-              <p className="mt-4 text-sm font-medium text-slate-500 dark:text-slate-400">
-                {moduleCount} {moduleCount === 1 ? "module" : "modules"}
-              </p>
+              {description ? (
+                <p className="mt-4 max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-300">
+                  {description}
+                </p>
+              ) : null}
             </div>
 
             <button

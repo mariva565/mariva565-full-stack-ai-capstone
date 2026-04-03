@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import type { ModuleInfo } from "../course/module-section";
+import { slugify } from "../../lib/slugify";
 
 type ModuleSidebarProps = {
   courseId: number;
@@ -18,7 +19,7 @@ export function ModuleSidebar({
   return (
     <aside className="rounded-[1.8rem] border border-slate-200/80 bg-white/85 p-4 shadow-[0_24px_55px_rgba(15,23,42,0.06)] backdrop-blur dark:border-cyan-400/10 dark:bg-slate-950/55 xl:sticky xl:top-24 xl:h-fit">
       <Link
-        href={`/courses/${courseId}`}
+        href={`/courses/${courseId}/${slugify(courseTitle)}`}
         className="inline-flex items-center gap-2 text-sm font-medium text-brand-600 transition hover:text-brand-700 dark:text-brand-100"
       >
         <span aria-hidden="true">&larr;</span>
@@ -32,10 +33,6 @@ export function ModuleSidebar({
         <h2 className="dashboard-script-title block mt-2 text-[1.95rem] leading-[1.12]">
           {courseTitle}
         </h2>
-        <p className="mt-3 text-sm leading-6 text-slate-500 dark:text-slate-400">
-          Switch modules here. The center column always shows the materials
-          workspace for the currently selected module.
-        </p>
       </div>
 
       <div className="mt-5">
@@ -52,7 +49,7 @@ export function ModuleSidebar({
             return (
               <Link
                 key={moduleRow.id}
-                href={`/modules/${moduleRow.id}`}
+                href={`/modules/${moduleRow.id}/${slugify(moduleRow.title)}`}
                 className={`group flex items-center gap-3 rounded-[1.2rem] border px-3 py-3 transition ${
                   active
                     ? "border-brand-200 bg-brand-50/80 text-brand-700 shadow-sm dark:border-brand-400/20 dark:bg-brand-500/10 dark:text-brand-100"

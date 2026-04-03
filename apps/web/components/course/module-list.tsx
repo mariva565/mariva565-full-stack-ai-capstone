@@ -18,16 +18,9 @@ export function ModuleList({
   return (
     <div className="mt-6">
       <div className="mb-4">
-        <p className="text-[0.68rem] font-semibold uppercase tracking-[0.28em] text-slate-400 dark:text-slate-500">
-          Course modules
-        </p>
         <h2 className="dashboard-panel-title mt-2 text-[2rem]">
-          Each module opens its own materials workspace
+          Course Modules
         </h2>
-        <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500 dark:text-slate-400">
-          Use this list to shape the course flow first, then open a module when
-          you are ready to add notes, links, and files inside it.
-        </p>
       </div>
 
       <div className="space-y-4">

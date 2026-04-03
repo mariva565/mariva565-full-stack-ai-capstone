@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import type { CourseMaterial } from "../../lib/course-materials";
 import { normalizeMaterialType, parseTags } from "../../lib/materials";
+import { slugify } from "../../lib/slugify";
 import { MaterialTypePill } from "../materials/material-type-pill";
 import { ExternalLinkIcon, PencilIcon, PinAngleIcon } from "../ui/action-icons";
 import { TagList } from "../materials/tag-list";
@@ -89,7 +90,7 @@ export function MaterialRow({
   pinBusy,
   onTogglePin,
 }: MaterialRowProps) {
-  const materialHref = `/materials/${material.id}`;
+  const materialHref = `/materials/${material.id}/${slugify(material.title)}`;
   const normalizedType = normalizeMaterialType(material.materialType);
   const tags = parseTags(material.tags);
   const preview = getContentPreview(material.content);

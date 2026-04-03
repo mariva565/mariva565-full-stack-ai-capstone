@@ -4,7 +4,6 @@ import { DashboardActionButton } from "./dashboard-controls";
 
 type DashboardHeroProps = {
   courseCount: number;
-  draftCount: number;
   pinnedCount: number;
   showCreateForm: boolean;
   onToggleCreateForm: () => void;
@@ -51,10 +50,6 @@ function HeroHeading() {
           <h1 className="dashboard-script-title text-4xl sm:text-5xl">
             Dashboard
           </h1>
-          <p className="mt-3 max-w-xl text-sm leading-6 text-slate-600 dark:text-slate-300">
-            Courses are your top-level study spaces. Open a course to manage
-            modules, then open a module to organize its materials.
-          </p>
         </div>
       </div>
     </div>
@@ -86,7 +81,6 @@ function HeroActions({ showCreateForm, onToggleCreateForm }: HeroActionsProps) {
 
 export function DashboardHero({
   courseCount,
-  draftCount,
   pinnedCount,
   showCreateForm,
   onToggleCreateForm,
@@ -107,9 +101,8 @@ export function DashboardHero({
         />
       </div>
 
-      <div className="relative mt-6 grid gap-3 sm:grid-cols-3">
+      <div className="relative mt-6 grid gap-3 sm:grid-cols-2">
         <StatCard label="Courses" value={courseCount} />
-        <StatCard label="Draft Courses" value={draftCount} />
         <StatCard label="Pinned Materials" value={pinnedCount} />
       </div>
     </section>

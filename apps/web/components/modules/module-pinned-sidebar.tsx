@@ -3,6 +3,7 @@ import Link from "next/link";
 import { MaterialTypePill } from "../materials/material-type-pill";
 import { TagList } from "../materials/tag-list";
 import { parseTags } from "../../lib/materials";
+import { slugify } from "../../lib/slugify";
 
 type PinnedModuleMaterial = {
   materialId: number;
@@ -36,7 +37,7 @@ export function ModulePinnedSidebar({ items }: ModulePinnedSidebarProps) {
           items.map((item) => (
             <Link
               key={item.materialId}
-              href={`/materials/${item.materialId}`}
+              href={`/materials/${item.materialId}/${slugify(item.materialTitle)}`}
               className="group block rounded-[1.35rem] border border-slate-200/80 bg-white/90 p-4 transition hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(15,23,42,0.08)] dark:border-slate-800 dark:bg-slate-900/80 dark:hover:shadow-[0_18px_40px_rgba(6,182,212,0.06)]"
             >
               <p className="dashboard-script-title block text-[1.25rem] leading-[1.12] transition duration-300 group-hover:translate-x-0.5">

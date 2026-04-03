@@ -1,5 +1,6 @@
 import { FILTER_OPTIONS, SORT_OPTIONS } from "../../lib/course-materials";
 import type { MaterialFilter, MaterialSort } from "../../lib/materials";
+import { slugify } from "../../lib/slugify";
 import { WayfindingBreadcrumbs } from "../ui/wayfinding-breadcrumbs";
 
 type ModuleWorkspaceHeaderProps = {
@@ -7,8 +8,6 @@ type ModuleWorkspaceHeaderProps = {
   courseTitle: string;
   moduleTitle: string;
   moduleDescription: string | null;
-  materialCount: number;
-  pinnedCount: number;
   searchQuery: string;
   sortBy: MaterialSort;
   filterBy: MaterialFilter;
@@ -24,8 +23,6 @@ export function ModuleWorkspaceHeader({
   courseTitle,
   moduleTitle,
   moduleDescription,
-  materialCount,
-  pinnedCount,
   searchQuery,
   sortBy,
   filterBy,
@@ -44,24 +41,19 @@ export function ModuleWorkspaceHeader({
         <WayfindingBreadcrumbs
           items={[
             { label: "Dashboard", href: "/dashboard" },
-            { label: courseTitle, href: `/courses/${courseId}` },
+            { label: courseTitle, href: `/courses/${courseId}/${slugify(courseTitle)}` },
             { label: moduleTitle },
           ]}
         />
 
         <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
           <div className="max-w-3xl">
-            <p className="mt-4 text-[0.68rem] font-semibold uppercase tracking-[0.32em] text-slate-400 dark:text-slate-500">
-              Module
-            </p>
-            <h1 className="dashboard-script-title mt-3 text-4xl md:text-5xl">{moduleTitle}</h1>
-            <p className="mt-4 max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-300">
-              {moduleDescription?.trim() ||
-                "This module is where you collect the materials, notes, links, and file references for one part of the course."}
-            </p>
-            <p className="mt-4 text-sm font-medium text-slate-500 dark:text-slate-400">
-              {materialCount} {materialCount === 1 ? "material" : "materials"} / {pinnedCount} pinned
-            </p>
+            <h1 className="dashboard-script-title mt-4 text-4xl md:text-5xl">{moduleTitle}</h1>
+            {moduleDescription?.trim() ? (
+              <p className="mt-4 max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-300">
+                {moduleDescription.trim()}
+              </p>
+            ) : null}
           </div>
 
           <button

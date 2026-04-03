@@ -209,8 +209,6 @@ export function ModuleWorkspaceClientPage({
                 courseTitle={course.title}
                 moduleTitle={currentModule.title}
                 moduleDescription={currentModule.description}
-                materialCount={materials.length}
-                pinnedCount={pinnedItems.length}
                 searchQuery={searchQuery}
                 sortBy={sortBy}
                 filterBy={filterBy}

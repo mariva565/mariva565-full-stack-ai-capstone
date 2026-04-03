@@ -5,6 +5,7 @@ import {
   DashboardPill,
 } from "./dashboard-controls";
 import type { DashboardCourse } from "./types";
+import { slugify } from "../../lib/slugify";
 
 type CourseCardProps = {
   course: DashboardCourse;
@@ -54,7 +55,7 @@ function CourseCardGlyph() {
 }
 
 export function CourseCard({ course, onEdit, onDelete }: CourseCardProps) {
-  const courseHref = `/courses/${course.id}`;
+  const courseHref = `/courses/${course.id}/${slugify(course.title)}`;
   const shouldShowState = course.status !== "draft";
   const statusTone =
     course.status === "published"
@@ -84,7 +85,7 @@ export function CourseCard({ course, onEdit, onDelete }: CourseCardProps) {
                 <p className="text-[0.68rem] font-semibold uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">
                   Created {new Date(course.createdAt).toLocaleDateString()}
                 </p>
-                <span className="dashboard-script-title mt-1 block truncate text-2xl transition duration-300 group-hover:translate-x-0.5">
+                <span className="dashboard-script-title mt-1 block text-2xl transition duration-300 group-hover:translate-x-0.5">
                   {course.title}
                 </span>
                 {shouldShowState ? (
@@ -106,10 +107,7 @@ export function CourseCard({ course, onEdit, onDelete }: CourseCardProps) {
           </p>
         </Link>
 
-        <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-slate-200/70 pt-4 dark:border-slate-700/70">
-          <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
-            Open this course to manage its modules and materials.
-          </p>
+        <div className="mt-5 flex flex-wrap items-center gap-2 border-t border-slate-200/70 pt-4 dark:border-slate-700/70">
           <div className="flex flex-wrap items-center gap-2">
             <DashboardActionButton
               href={courseHref}

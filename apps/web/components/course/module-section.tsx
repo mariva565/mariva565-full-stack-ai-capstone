@@ -9,6 +9,7 @@ import {
   PencilIcon,
   TrashIcon,
 } from "../ui/action-icons";
+import { slugify } from "../../lib/slugify";
 
 type ModuleInfo = {
   id: number;
@@ -127,10 +128,7 @@ export function ModuleSection({
                     <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-300">
                       {module.description.trim()}
                     </p>
-                    ) : null}
-                    <p className="mt-3 text-sm font-medium text-slate-500 dark:text-slate-400">
-                      Open this module to add, search, and pin its materials.
-                    </p>
+                  ) : null}
                   </>
                 )}
               </div>
@@ -139,7 +137,7 @@ export function ModuleSection({
 
         <div className="flex flex-wrap gap-2 xl:justify-end">
           <Link
-            href={`/modules/${module.id}`}
+            href={`/modules/${module.id}/${slugify(module.title)}`}
             title="Open module"
             aria-label="Open module"
             className="inline-flex items-center gap-2 rounded-full bg-[linear-gradient(135deg,#6366f1_0%,#8b5cf6_55%,#06b6d4_100%)] px-4 py-3 text-sm font-semibold text-white shadow-[0_16px_35px_rgba(99,102,241,0.22)] transition hover:-translate-y-0.5 hover:shadow-[0_20px_45px_rgba(99,102,241,0.28)]"
