@@ -3497,3 +3497,20 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 - `npm.cmd --workspace @studyhub/web run build` PASS
 - `npm.cmd --workspace @studyhub/web run typecheck` PASS
   - note: the first typecheck failed because `.next/types` was stale/missing until `next build` regenerated them
+
+### Session 132 (How It Works - Parity Polish)
+
+**What we implemented:**
+- Further refined the `/how-it-works` page to achieve exact 1:1 visual parity with v1:
+  - Repaired the CSS z-index and overflow context of the 3D Hero scene so it doesn't overlap the global navbar on scroll.
+  - Aligned 3D scene geometry values to precisely match the legacy `howItWorks-3d.js` ring dimensions and scaling.
+  - Expanded background stars to fill the entire hero section, not just the canvas square.
+  - Addressed text clipping issues in the 'Shantell Sans' heading.
+  - Re-implemented v1 AOS (Animate On Scroll) slide-in animations for timeline items using Framer Motion with matching `ease-out-cubic` equivalents.
+  - Restored CSS scroll progress tracking for the connecting timeline stroke.
+  - Repaired SVG gradient icons; they are now properly colored and switch to white on hover instead of being transparent/invisible.
+  - Fixed tailwind animation configurations (removed invalid `translateX(-50%)` from pulse rings, and substituted non-existent `duration-400` with `duration-500`).
+  - Adjusted the Create Course step icon shape to exactly mirror `bi-journal-plus` instead of relying on `clipboard-plus-fill` which looked like a battery.
+
+**Validation:**
+- Micro-reactions and animations visually confirmed to perfectly match the original StudyHub presentation layout.
