@@ -23,12 +23,7 @@ export function ContactForm() {
   return (
     <div className="relative z-10 flex min-h-screen items-center justify-center px-6 pb-8 pt-20">
       <div
-        className="w-full max-w-[480px] rounded-[2rem] border border-white/10 p-8 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] sm:p-10"
-        style={{
-          background: "rgba(255,255,255,0.06)",
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)",
-        }}
+        className="w-full max-w-[480px] rounded-[2rem] border border-white/10 bg-white/[0.06] p-8 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] backdrop-blur-[20px] sm:p-10"
       >
         <AnimatePresence mode="wait">
           {submitted ? (

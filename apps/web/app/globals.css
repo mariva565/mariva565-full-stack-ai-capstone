@@ -438,6 +438,27 @@
   80% { transform: translateX(20px) translateY(-20px) scale(1.03) rotate(1deg); }
 }
 
+/* Contact page CSS-only animation classes (replaces inline styles) */
+.contact-bg {
+  background: linear-gradient(135deg, #0a0a1a 0%, #1a0a2e 25%, #0f0a1f 50%, #0a1a2e 75%, #0a0a1a 100%);
+  background-size: 400% 400%;
+  animation: cosmic-gradient 20s ease infinite;
+}
+
+.aurora-1 {
+  animation: aurora-drift-1 60s ease-in-out infinite;
+}
+
+.aurora-2 {
+  animation: aurora-drift-2 70s ease-in-out infinite;
+  animation-delay: -20s;
+}
+
+.aurora-3 {
+  animation: aurora-drift-3 65s ease-in-out infinite;
+  animation-delay: -35s;
+}
+
 /* Auth glassmorphism inputs */
 .auth-input {
   @apply w-full rounded-2xl px-4 py-3 text-slate-900 placeholder-slate-400 outline-none transition-all duration-200;

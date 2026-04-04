@@ -3514,3 +3514,27 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 
 **Validation:**
 - Micro-reactions and animations visually confirmed to perfectly match the original StudyHub presentation layout.
+
+### Session 133 (Contact Page — Tailwind-Only Compliance)
+
+**Why:**
+- The Contact page violated the project rule "Tailwind only, no inline styles" from `AGENTS.md`.
+- Three components had `style={{...}}` blocks with gradients, blur filters, and CSS animations.
+
+**What we fixed:**
+
+| File | Violation | Fix |
+|---|---|---|
+| `app/contact/page.tsx` | `style={{ background, backgroundSize, animation }}` | Replaced with `.contact-bg` CSS class |
+| `components/contact/contact-aurora.tsx` | 3× `style={{}}` (dimensions, radial-gradient, blur, animation) | Replaced with Tailwind arbitrary values + `.aurora-1/2/3` CSS classes |
+| `components/contact/contact-form.tsx` | `style={{ background, backdropFilter }}` | Replaced with `bg-white/[0.06] backdrop-blur-[20px]` |
+
+- Added `.contact-bg`, `.aurora-1`, `.aurora-2`, `.aurora-3` CSS classes to `app/globals.css`.
+- The `cosmic-gradient` and `aurora-drift-1/2/3` keyframes already existed in `globals.css` — only the class wrappers were missing.
+- Visual output is identical; only the implementation now complies with the project rules.
+
+**Files touched:**
+- `apps/web/app/contact/page.tsx`
+- `apps/web/components/contact/contact-aurora.tsx`
+- `apps/web/components/contact/contact-form.tsx`
+- `apps/web/app/globals.css`
