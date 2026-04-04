@@ -3736,3 +3736,53 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 
 **Why:**
 - The migration idea may still be useful later, but it is risky enough that the current reasoning should be documented before we forget the tradeoffs.
+
+### Session 144 (README adaptation rationale added)
+
+**Goal:**
+- Document clearly in the README why StudyHub v2 adapts the StudyHub v1 business logic instead of switching to a completely different project concept.
+
+**What changed:**
+  - `README.md`
+  - added a new explanation in `Project Story` covering:
+    - the personal practical value of the business logic
+    - the goal of making the idea more viable and maintainable
+    - the learning value of comparing two very different technology stacks on the same domain
+    - the architectural lesson learned from some overly monolithic files in the v1 codebase
+    - the fact that v1 already documented a future refactor direction, and v2 is the place where that intention is actively carried out
+    - the fact that recognizable UI patterns do not mean code copying
+  - expanded the closing notes to state more explicitly that the legacy repo is a reference/comparison baseline, not a source for copied implementation
+
+**Why:**
+- The README should explain the adaptation choice as a deliberate product and engineering decision, not leave it open to interpretation.
+- This gives a clearer capstone narrative: same domain problem, new architecture, better maintainability, and explicit learning goals.
+
+### Session 145 (README real-use note added)
+
+**Goal:**
+- Record more explicitly in the README that StudyHub is already being used in practice during the capstone process.
+
+**What changed:**
+- `README.md`
+  - added a new point in `Project Story` stating that the app is actively used for:
+    - lesson notes
+    - planning the capstone development itself
+  - this strengthens the argument that the project has real current utility, not only theoretical or future value
+
+**Why:**
+- This makes the README more honest and concrete about the project's real role in the workflow.
+- It also supports the product narrative: StudyHub is not just being rebuilt as an exercise, but is already being used as a study and planning tool.
+
+### Session 146 (Material page scroll-to-top button)
+
+**Goal:**
+- Improve the material detail page UX with a direct way to jump back to the top after long reading or editing sessions.
+
+**What changed:**
+- `apps/web/components/materials/material-page-client.tsx`
+  - wired in the existing shared `ScrollToTop` floating button on the material detail page
+  - the button appears after scrolling and smoothly returns the user to the top of the screen
+
+**Why:**
+- Material pages can become long when notes, links, and edit forms grow.
+- A dedicated back-to-top control makes navigation faster and more comfortable without introducing new custom UI code.

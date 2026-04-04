@@ -56,6 +56,14 @@
 StudyHub v2 is a full rewrite of StudyHub v1 with a modern full-stack architecture.
 The goal is a rubric-first LMS that ships clean backend security, responsive web UI, and mobile parity.
 
+**Why this is an adaptation instead of a brand-new concept:**
+- The business logic is personally useful and has real practical value, so the rewrite focuses on turning an already validated idea into a more viable, maintainable, and production-ready product.
+- I actively use the app to keep lesson notes and to plan the development of this capstone itself, which gives the project immediate practical value beyond the course requirement.
+- Rebuilding the same domain with a completely different stack creates a direct comparison between two architectural approaches, which is valuable for the learning goals of this capstone.
+- As StudyHub v1 grew, some files became too monolithic, and it was too risky to break them apart before the original submission. StudyHub v2 is also an intentional attempt to correct that mistake through better modularity and separation of concerns.
+- That architectural lesson was already acknowledged in the StudyHub v1 README itself, where a post-demo refactor direction was explicitly planned for splitting larger files by responsibility. StudyHub v2 is where that intention is carried forward more deliberately from the start.
+- Some interface patterns remain recognizable on purpose, but the implementation is fully rewritten and improved through the new technologies. This is adaptation and redesign, not automatic copying.
+
 **Architecture Complexity Analogy:**
 This project is architecturally equivalent to a medical data software (e.g., Mobile app for patient photos + Web portals for doctors/patients + Admin panel). It implements the same core pillars: multi-platform access, role-based security, and structured data hierarchy.
 </details>
@@ -231,5 +239,6 @@ npm run dev:mobile:android:usb
 
 ## Notes
 
-- Legacy repository is used only as visual/logical reference.
+- Legacy repository is used only as visual/logical reference and as a comparison baseline for the rewrite.
+- The business logic is intentionally preserved, but the implementation is fully rebuilt for the new stack and architecture.
 - No Vanilla JS code is copied into this project.

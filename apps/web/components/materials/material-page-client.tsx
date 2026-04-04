@@ -9,6 +9,7 @@ import { MaterialTypePill } from "./material-type-pill";
 import type { MaterialDetail, MaterialPageData } from "./types";
 import { MaterialViewPanel } from "./material-view-panel";
 import { ConfirmModal } from "../ui/confirm-modal";
+import { ScrollToTop } from "../ui/scroll-to-top";
 import { Toast, type ToastTone } from "../ui/toast";
 import { WayfindingBreadcrumbs } from "../ui/wayfinding-breadcrumbs";
 import { readErrorMessage } from "../../lib/http";
@@ -223,6 +224,8 @@ export function MaterialPageClient({
           </div>
         </div>
       </div>
+
+      <ScrollToTop />
 
       <ConfirmModal
         isOpen={showDeleteModal}
