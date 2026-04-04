@@ -520,3 +520,31 @@ V1 (Vanilla JS) живее на Vercel. Ключови функции за ре�
   - 2. Sharing / "Shared with Me"
   - 3. Avatar upload solution
   - 4. AI chatbot parity pass (from v1)
+
+---
+
+## Session 133 Update (2026-04-04)
+
+- **How It Works CTA** — v1 visual parity achieved:
+  - Added `BohemianParticles` Three.js component (500 particles, spherical distribution, wave motion, glow layer, pulsing opacity — v1-exact port)
+  - Particles are visibility-gated, tab-aware, reduced-motion safe
+  - Canvas now covers full CTA card (absolute inset-0 + isolate)
+  - Rocket icon replaced with correct `bi-rocket-takeoff` SVG from Bootstrap Icons
+  - Auth-aware buttons: logged-in users see gradient "Go to Dashboard" with arrow-circle icon; logged-out see white "Create Free Account" with play icon
+  - Container widened from `max-w-4xl` to `max-w-6xl` to match v1
+  - CTA text translated to English ("Ready to get started?")
+- **How It Works footer** — rebuilt to match v1:
+  - "© 2026 Study Hub. Built with ❤️ for excellence."
+  - Contact link with envelope icon + hover effect
+  - Social icons (Facebook, X, Instagram, LinkedIn) — circular 40x40 buttons with indigo hover lift + glow
+  - Responsive: stacks on mobile, row on md+
+- **Code quality audit** completed:
+  - Inline styles: 38 occurrences in 16 files; `about.tsx` (13) and `glass-card.tsx` (6) are the main offenders — most others are justified dynamic values
+  - Monolith files: `use-progress-page-state.ts` (404 lines, +104 over limit) needs splitting; `hero-3d.tsx` (310 lines) is borderline
+- Recommended next focus order:
+  - 1. **Inline style cleanup** in `about.tsx` and `glass-card.tsx` (replace with Tailwind arbitrary values)
+  - 2. **Split `use-progress-page-state.ts`** into smaller hooks (<300 lines each)
+  - 3. Admin Panel adaptation pass
+  - 4. Sharing / "Shared with Me"
+  - 5. Avatar upload solution
+  - 6. AI chatbot parity pass
