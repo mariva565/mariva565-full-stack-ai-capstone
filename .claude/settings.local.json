@@ -20,7 +20,8 @@
       "Bash(xargs grep:*)",
       "Bash(grep -r ideas 'c:/Users/mariy/Projects/20260327 Capstone/apps/web/app' --include=*.ts --include=*.tsx)",
       "Bash(npx tsc:*)",
-      "Bash(wc -l \"c:/Users/mariy/Projects/20260327 Capstone/apps/web/components/contact/\"*.tsx \"c:/Users/mariy/Projects/20260327 Capstone/apps/web/app/contact/page.tsx\" \"c:/Users/mariy/Projects/20260327 Capstone/apps/web/components/ui/use-reduced-motion.ts\" \"c:/Users/mariy/Projects/20260327 Capstone/apps/web/components/ui/use-visible-animation.ts\")"
+      "Bash(wc -l \"c:/Users/mariy/Projects/20260327 Capstone/apps/web/components/contact/\"*.tsx \"c:/Users/mariy/Projects/20260327 Capstone/apps/web/app/contact/page.tsx\" \"c:/Users/mariy/Projects/20260327 Capstone/apps/web/components/ui/use-reduced-motion.ts\" \"c:/Users/mariy/Projects/20260327 Capstone/apps/web/components/ui/use-visible-animation.ts\")",
+      "Bash(wc -l \"c:\\\\Users\\\\mariy\\\\Projects\\\\20260327 Capstone\\\\apps\\\\web\\\\components\\\\how-it-works\"/*.tsx \"c:\\\\Users\\\\mariy\\\\Projects\\\\20260327 Capstone\\\\apps\\\\web\\\\components\\\\how-it-works\"/*.ts)"
     ]
   }
 }

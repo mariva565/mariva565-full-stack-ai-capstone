@@ -3464,3 +3464,36 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 
 **Validation:**
 - Docs-only update; no code changes or build step needed.
+
+### Session 131 (How It Works page rebuilt with visibility-gated motion)
+
+**Goal:**
+- Replace the monolithic `/how-it-works` page with a modular public-page implementation that follows the animation guardrails.
+
+**What changed:**
+- `apps/web/app/how-it-works/page.tsx`
+  - now exports route metadata and delegates to a dedicated page shell
+- Added a new `apps/web/components/how-it-works/` module set:
+  - `content.ts`
+  - `how-it-works-page.tsx`
+  - `how-it-works-hero.tsx`
+  - `how-it-works-flow-preview.tsx`
+  - `how-it-works-steps.tsx`
+  - `how-it-works-structure-map.tsx`
+  - `how-it-works-highlights.tsx`
+  - `how-it-works-cta.tsx`
+- Replaced the old single-file page with split server/client components and kept every new file under the project size limit.
+- Added two visibility-gated motion areas:
+  - the hero flow preview only cycles while visible
+  - the structure-map highlight only cycles while visible
+- Used `useVisibleAnimation` plus reduced-motion-aware loops instead of always-running background animation.
+- Kept public routing intact and preserved `Contact` access through the navbar, the home-page lower entry points, and the new lower CTA on `/how-it-works`.
+
+**Why:**
+- This keeps the page visually premium without reintroducing noisy off-screen animation or oversized client islands.
+- The new structure also makes future public-page polish easier to continue section by section.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run build` PASS
+- `npm.cmd --workspace @studyhub/web run typecheck` PASS
+  - note: the first typecheck failed because `.next/types` was stale/missing until `next build` regenerated them

@@ -57,11 +57,23 @@ const config: Config = {
         "mascot-float": "mascot-float 3s ease-in-out infinite",
         "text-shimmer": "textShimmer 3s ease-in-out infinite",
         "logo-spotlight": "logoSpotlight 2s ease-in-out infinite",
+        "float-shape": "floatShape 20s ease-in-out infinite",
+        "pulse-ring": "pulseRing 2s ease-out infinite",
       },
       keyframes: {
         float: {
           "0%, 100%": { transform: "translateY(0px)" },
           "50%": { transform: "translateY(-20px)" },
+        },
+        floatShape: {
+          "0%, 100%": { transform: "translate(0, 0) rotate(0deg)" },
+          "25%": { transform: "translate(30px, -30px) rotate(90deg)" },
+          "50%": { transform: "translate(0, 20px) rotate(180deg)" },
+          "75%": { transform: "translate(-30px, -10px) rotate(270deg)" },
+        },
+        pulseRing: {
+          "0%": { transform: "scale(0.8)", opacity: "1" },
+          "100%": { transform: "scale(1.5)", opacity: "0" },
         },
         fadeInUp: {
           from: { opacity: "0", transform: "translateY(30px)" },
