@@ -3673,3 +3673,66 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 
 **Verification:**
 - `npm.cmd run typecheck:web`
+
+### Session 141 (Progress roadmap refresh + mobile backlog planning)
+
+**Goal:**
+- Refresh the `/progress` planning board so it reflects the real current project state.
+- Rework milestone deadlines around the final capstone deadline on `27 May 2026`.
+- Add an explicit mobile backlog split into must-have, nice-to-have, and can-wait work.
+
+**What changed:**
+- Updated the existing progress milestones in the Neon database for the active planning board:
+  - kept completed foundation milestones
+  - replaced outdated future items with a cleaner roadmap from April through the final submission window
+  - marked current reality more honestly (`done`, `in_progress`, `not_started`, `idea`)
+- Added mobile work directly into the progress board:
+  - must-have mobile milestones for material details, favorites/quick access, course-details cleanup, and device/auth hardening
+  - mobile backlog ideas for offline/cache, push notifications, and camera scan uploads
+- Updated deadline events in the same board:
+  - deployment target event moved to the late-May delivery window
+  - final capstone deadline event aligned to `Graduation: capstone project + final quiz`
+
+**Why:**
+- The older progress board still reflected an earlier project plan and several outdated deadlines.
+- The project now has a clearer end date and a much better picture of what is already done versus what still matters.
+- Mobile work needed to become visible in the same planning space instead of living only in docs or memory.
+
+### Session 142 (Progress board follow-up clarity updates)
+
+**Goal:**
+- Refine the refreshed planning board after user review so important backlog items are easier to spot.
+
+**What changed:**
+- Restored the mobile backlog idea items in the Neon-backed progress board after a brief over-trim:
+  - `Mobile nice-to-have: offline/cache support`
+  - `Mobile can-wait: push notifications`
+  - `Mobile can-wait: camera scan uploads`
+- Renamed the AI item so it reads as an explicit chatbot task:
+  - `AI chatbot integration (Gemini / v1 parity)`
+- Added explicit release-planning milestones that were previously only implied:
+  - `Security hardening + auth/access review`
+  - `Testing + smoke regression pass`
+
+**Why:**
+- The board should show the full realistic backlog, not hide optional-but-useful items.
+- AI, security, and testing need to be visible as named deliverables, not only assumed work streams.
+
+### Session 143 (Legacy DB migration assessment note)
+
+**Goal:**
+- Preserve the current thinking about a possible StudyHub v1 → v2 data migration without starting implementation yet.
+
+**What changed:**
+- `docs/implementation-plan.md`
+  - added a dedicated investigation note for a future legacy-database migration
+  - recorded the current conclusion that this would need a custom import/mapping flow, not a direct DB copy
+  - captured the main schema mismatches already identified:
+    - Supabase auth/profiles/roles (`uuid`) vs current app users (`integer`)
+    - old materials model vs current materials model
+    - old `is_pinned` vs current `favorites`
+    - legacy-only shared/contact/security tables without clean 1:1 targets
+  - listed what seems realistically migratable and what would need separate decisions later
+
+**Why:**
+- The migration idea may still be useful later, but it is risky enough that the current reasoning should be documented before we forget the tradeoffs.

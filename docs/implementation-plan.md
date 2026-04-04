@@ -311,6 +311,53 @@ id, user_id (FK→users), action_type, target_id, details (JSON), created_at
   - email send integration or documented dev fallback
   - verification for expired / invalid / reused token paths
 
+### Planned Investigation — Legacy v1 Database Migration
+**Goal:** Keep a written assessment of whether the old StudyHub v1 data can be brought into StudyHub v2 later.
+
+- Current conclusion:
+  - feasible, but **not** as a direct database copy
+  - if we do it, it should be a **custom migration/import script** with explicit field mapping
+- Why it is not a direct import:
+  - v1 uses Supabase auth-oriented data with `uuid` identities (`auth.users`, `profiles`, `user_roles`)
+  - v2 uses the current custom JWT app model with integer `users.id`
+  - the data models differ in several important places, so table-to-table copying would be brittle
+- Key schema mismatches noted so far:
+  - **users/auth model**
+    - v1: Supabase `auth.users` + `profiles` + `user_roles`
+    - v2: single `users` table with `email`, `name`, `password_hash`, `role`, `avatar_url`
+  - **materials model**
+    - v1 materials are centered around `course_id`, `file_path`, later `material_type`, `link_url`, `is_pinned`
+    - v2 materials use `module_id`, `content`, `material_type`, `file_url`, `tags`
+  - **pinning/favorites**
+    - v1 uses material-level `is_pinned`
+    - v2 uses separate `favorites`
+  - **legacy-only tables/features**
+    - v1 includes Supabase-specific and security/shared-flow tables such as `shared_notes`, `contact_messages`, `user_roles`, and security-event related tables
+    - these do not all have a 1:1 destination in v2
+- What seems realistically migratable:
+  - user profile metadata
+  - courses
+  - modules
+  - materials/content metadata
+  - pinned items mapped into `favorites`
+- What needs extra care or a separate decision:
+  - passwords/auth credentials
+    - likely better handled via password reset / new credentials instead of trying to preserve auth state directly
+  - file storage/assets
+    - decide whether to preserve existing public URLs, move files, or re-upload selectively
+  - legacy sharing/contact/security records
+    - decide case by case whether they matter for the capstone demo
+- Recommended migration approach if we revisit this:
+  - 1. read-only export/snapshot from the old database
+  - 2. explicit old→new mapping spec
+  - 3. staged import: users/profile metadata → courses → modules → materials → favorites
+  - 4. separate handling for files and any legacy-only tables
+- Open prerequisite:
+  - when/if we do this for real, we will need access to the old Supabase project or a SQL/CSV export
+- Status:
+  - **observation only for now**
+  - no migration work has started yet
+
 ---
 
 ### ФАЗА 3 — Core CRUD (Courses/Modules/Materials/Favorites)
