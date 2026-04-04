@@ -280,6 +280,37 @@ id, user_id (FK→users), action_type, target_id, details (JSON), created_at
   - web auth button wiring
   - verification for existing-linked-user / existing-email-user / brand-new-user flows
 
+### Planned Auth Extension — Forgot Password Reset
+**Goal:** Add a real forgot-password flow instead of the current login-screen placeholder.
+
+- Keep the current auth model:
+  - this is a recovery flow for email/password accounts, not a replacement for session auth
+  - password change for already logged-in users stays separate from forgot-password recovery
+- Add reset-token storage with Drizzle migration:
+  - recommended table: `password_reset_tokens`
+  - suggested fields: `id`, `user_id`, `token_hash`, `expires_at`, `used_at`, `created_at`
+  - one-time-use tokens only; never store raw reset tokens in the database
+- Add backend recovery flow:
+  - `POST /api/auth/password-reset/request`
+  - `POST /api/auth/password-reset/confirm`
+  - generic request response such as `If an account exists, we sent a reset link.`
+- Add web UI:
+  - wire `Forgot password?` from `/login`
+  - dedicated `/reset-password` page for setting the new password from a recovery token
+- Delivery and security requirements:
+  - use an email provider or a clearly marked dev-safe fallback during local work
+  - enforce token expiry and invalidate tokens after successful use
+  - rate-limit or cooldown the request endpoint
+  - avoid account enumeration in both API responses and UI copy
+  - log password-reset request / confirm activity
+- Planned deliverables:
+  - Drizzle schema + migration for reset tokens
+  - request/confirm API routes
+  - reset-password page and form
+  - login-link wiring for `Forgot password?`
+  - email send integration or documented dev fallback
+  - verification for expired / invalid / reused token paths
+
 ---
 
 ### ФАЗА 3 — Core CRUD (Courses/Modules/Materials/Favorites)
@@ -547,4 +578,5 @@ V1 (Vanilla JS) живее на Vercel. Ключови функции за ре�
   - 3. Admin Panel adaptation pass
   - 4. Sharing / "Shared with Me"
   - 5. Avatar upload solution
-  - 6. AI chatbot parity pass
+  - 6. Forgot-password reset flow
+  - 7. AI chatbot parity pass

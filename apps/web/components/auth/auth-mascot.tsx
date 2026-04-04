@@ -23,6 +23,16 @@ const FLOAT_GLOW_CLASS: Record<AuthVariant, string> = {
     "shadow-[0_0_30px_rgba(236,72,153,0.18),0_10px_30px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,0.4)]",
 };
 
+const SPEECH_BUBBLE_LINES = [
+  "\u0417\u0434\u0440\u0430\u0432\u0435\u0439!",
+  "\u041f\u0440\u0438\u044f\u0442\u043d\u043e \u0443\u0447\u0435\u043d\u0435!",
+] as const;
+
+const SPEECH_SPARKLES = [
+  "-top-3 left-4 h-5 w-5 text-amber-400 drop-shadow-[0_0_12px_rgba(251,191,36,0.42)] [animation:authSparkle_1.6s_ease-in-out_infinite] dark:text-amber-300 motion-reduce:animate-none",
+  "-top-1 right-6 h-3.5 w-3.5 text-orange-400 drop-shadow-[0_0_10px_rgba(251,146,60,0.4)] [animation:authSparkle_2s_ease-in-out_0.45s_infinite] dark:text-orange-300 motion-reduce:animate-none",
+] as const;
+
 export function AuthCardMascot({ variant }: { variant: AuthVariant }) {
   return (
     <motion.div
@@ -70,6 +80,7 @@ export function AuthFloatingMascot({
       className={wrapperClass}
     >
       {isDesktop ? <AuthSpeechBubble /> : null}
+
       <div className="absolute -left-6 top-2 h-14 w-14 rounded-full bg-brand-300/25 blur-2xl" />
       <div className="absolute -right-4 top-8 h-12 w-12 rounded-full bg-pink-300/20 blur-2xl" />
 
@@ -99,11 +110,41 @@ function AuthSpeechBubble() {
       className="absolute -top-[68px] right-[92px] z-10 min-w-[148px] max-w-[210px] rounded-[44px_44px_44px_10px] border-[3px] border-brand-500 bg-[linear-gradient(135deg,#fef3c7,#fce7f3,#e0e7ff)] px-6 py-3.5 text-center shadow-[5px_5px_0px_#ec4899,inset_0_2px_4px_rgba(255,255,255,0.6)] [animation:wiggle_3s_ease-in-out_infinite] dark:border-brand-300 dark:bg-[linear-gradient(135deg,#1f2542,#25223a,#16203b)]"
     >
       <p className="bg-[linear-gradient(135deg,#6366f1,#ec4899)] bg-clip-text font-shantell text-lg font-extrabold leading-snug text-transparent dark:bg-[linear-gradient(135deg,#c4b5fd,#f9a8d4)]">
-        Здравей!
+        {SPEECH_BUBBLE_LINES[0]}
         <br />
-        Приятно учене!
+        {SPEECH_BUBBLE_LINES[1]}
       </p>
-      <span className="absolute -top-2 right-4 text-lg animate-bounce">✨</span>
+
+      <AuthSpeechBubbleSparkles />
     </motion.div>
+  );
+}
+
+function AuthSpeechBubbleSparkles() {
+  return (
+    <>
+      {SPEECH_SPARKLES.map((className) => (
+        <span key={className} className={`absolute ${className}`}>
+          <AuthSparkleIcon />
+        </span>
+      ))}
+    </>
+  );
+}
+
+function AuthSparkleIcon() {
+  return (
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      aria-hidden="true"
+      className="h-full w-full"
+    >
+      <path
+        d="M10 1.5L12.2 7.8L18.5 10L12.2 12.2L10 18.5L7.8 12.2L1.5 10L7.8 7.8L10 1.5Z"
+        fill="currentColor"
+      />
+      <circle cx="10" cy="10" r="1.3" fill="rgba(255,255,255,0.85)" />
+    </svg>
   );
 }

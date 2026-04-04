@@ -24,12 +24,7 @@ export function LoginFormActions({
 
       <AuthSectionDivider label="OR" />
 
-      <AuthGoogleSignIn onError={onGoogleError} />
-
-      <div className="rounded-2xl border border-dashed border-slate-200/80 bg-white/55 px-4 py-2.5 text-[0.72rem] leading-5 text-slate-500 dark:border-slate-700 dark:bg-slate-900/40 dark:text-slate-400">
-        Password reset stays visible for parity, but we will
-        wire it after the base JWT auth flow is fully stable.
-      </div>
+      <AuthGoogleSignIn onError={onGoogleError} variant="login" />
     </div>
   );
 }

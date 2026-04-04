@@ -3538,3 +3538,138 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 - `apps/web/components/contact/contact-aurora.tsx`
 - `apps/web/components/contact/contact-form.tsx`
 - `apps/web/app/globals.css`
+
+### Session 134 (Login copy cleanup + Google button polish)
+
+**Goal:**
+- Remove the extra helper sentence under `Welcome Back` on the login screen.
+- Make the Google login button read in English and feel a bit more polished.
+
+**What changed:**
+- `apps/web/components/auth/login-form-header.tsx`
+  - removed the `Please enter your details to sign in.` paragraph under the main heading
+- `apps/web/components/auth/auth-google-sign-in.tsx`
+  - added a small `variant` prop so the login screen can use a dedicated presentation without changing register
+  - forced the Google button locale to English with `locale="en"`
+  - switched the login CTA text to the sign-in version instead of the broader continue label
+  - added a cleaner framed container plus a rectangular filled style for the login-only variant
+- `apps/web/components/auth/login-form-actions.tsx`
+  - wired the login screen to the new Google button variant
+
+**Why:**
+- The login header now feels cleaner and less repetitive.
+- The Google CTA is more explicit for returning users and no longer depends on browser locale for English copy.
+
+### Session 135 (Login Google button theme correction)
+
+**Goal:**
+- Remove the black Google sign-in button style on the login screen.
+
+**What changed:**
+- `apps/web/components/auth/auth-google-sign-in.tsx`
+  - changed the Google button theme back to `outline`, so the login variant is no longer rendered as a black CTA
+
+**Why:**
+- The previous `filled_black` choice made the Google button feel too heavy against the auth card.
+- `outline` keeps the English label and cleaner shape changes, but fits the existing login UI much better.
+
+### Session 136 (Login badge removal)
+
+**Goal:**
+- Remove the `Study smarter` badge above `Welcome Back` on the login screen.
+
+**What changed:**
+- `apps/web/components/auth/login-form-header.tsx`
+  - removed the top eyebrow badge from the login header
+  - tightened the heading spacing so the layout still feels balanced without it
+
+**Why:**
+- The login screen reads cleaner with just the main heading and account prompt.
+
+### Session 137 (Login heading color polish)
+
+**Goal:**
+- Remove the flat black look from the `Welcome Back` heading on the login screen.
+
+**What changed:**
+- `apps/web/components/auth/login-form-header.tsx`
+  - replaced the plain dark text color with a brand-aligned gradient text treatment
+  - kept dark-mode readability with a softer light-to-cyan gradient instead of pure white
+
+**Why:**
+- The old solid black heading felt too basic against the glassy auth card.
+- The new treatment keeps the screen more premium and visually connected to the StudyHub palette.
+
+### Session 138 (Auth mascot sparkle effect restored)
+
+**Goal:**
+- Bring back the playful sparkle feel around the login mascot speech bubble from v1.
+
+**What changed:**
+- `apps/web/components/auth/auth-mascot.tsx`
+  - rebuilt the speech-bubble decoration into explicit sparkle elements instead of a single inline character
+  - added two animated sparkle icons around the bubble to match the old visual cue more closely
+  - kept the rest of the mascot block lightweight and unchanged
+- `apps/web/app/globals.css`
+  - added `authSparkle` keyframes for the new twinkle motion
+
+**Why:**
+- In v1 the visible "iskri" around the bubble were part of the auth mascot personality.
+- Restoring them brings back the charm from the old login without reintroducing a heavier particle canvas.
+
+### Session 139 (Login helper note removed)
+
+**Goal:**
+- Remove the leftover implementation-note text from the login screen.
+
+**What changed:**
+- `apps/web/components/auth/login-form-actions.tsx`
+  - removed the dashed helper box under Google sign-in about password reset parity and JWT flow stability
+
+**Why:**
+- The message reads like internal development commentary instead of user-facing UI copy.
+- The login screen is cleaner and more production-ready without it.
+
+### Session 140 (Safe refactor pass for home cards and progress state)
+
+**Goal:**
+- Clean up the most worthwhile inline-style hotspots without chasing zero inline styles everywhere.
+- Split the oversized progress page state hook into smaller focused modules.
+- Leave the sensitive `hero-3d.tsx` code untouched.
+
+**What changed:**
+- `apps/web/components/home/about.tsx`
+  - split the section into smaller building blocks
+  - moved benefit-card and mascot-card visuals into dedicated components
+  - replaced static inline gradients/blob styles with Tailwind arbitrary-value classes
+- `apps/web/components/home/about-benefit-card.tsx`
+  - rebuilt the spotlight hover effect with React state + Framer Motion instead of direct DOM style mutation
+  - kept the floating icon interaction while moving static visual styling into classes
+- `apps/web/components/home/about-mascot-card.tsx`
+  - rebuilt the mascot-card shine effect with motion-driven state instead of CSS variable writes through `setProperty`
+  - kept the existing glossy-card presentation and hover feel
+- `apps/web/components/home/glass-card.tsx`
+  - replaced avoidable inline backgrounds, shadows, borders, and transforms with Tailwind classes and motion state
+  - moved the tilt interaction away from direct `element.style.transform` mutation
+- `apps/web/components/progress/use-progress-page-state.ts`
+  - reduced the orchestration hook to a smaller composition layer
+- `apps/web/components/progress/use-progress-derived-state.ts`
+  - extracted milestone filtering, counts, and filter-option derivation
+- `apps/web/components/progress/use-progress-request.ts`
+  - extracted timeout-aware fetch helpers and progress snapshot loading
+- `apps/web/components/progress/use-progress-mutations.ts`
+  - extracted add/edit/promote/status/reorder milestone mutations
+- `apps/web/components/progress/use-progress-delete-mutation.ts`
+  - extracted delete modal state and delete confirmation logic
+- `apps/web/components/progress/use-progress-page-state.types.ts`
+  - added shared response/state types for the split progress hooks
+- `docs/implementation-plan.md`
+  - added a planned forgot-password reset task so the auth follow-up does not get lost
+
+**Why:**
+- `about.tsx` and `glass-card.tsx` were the most worthwhile cleanup targets because they mixed static styling with inline blocks and direct DOM style writes.
+- The progress state hook was well beyond the project line-limit guidance and was carrying too many responsibilities in one file.
+- Keeping the rest of the dynamic inline styles in the app avoids unnecessary churn where inline values are still the right tool.
+
+**Verification:**
+- `npm.cmd run typecheck:web`

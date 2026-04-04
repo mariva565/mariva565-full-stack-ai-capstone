@@ -2,40 +2,55 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { useRef, useCallback, useState } from "react";
+import { useRef, useState, type MouseEvent } from "react";
 
 interface GlassCardProps {
+  delay?: number;
+  description: string;
   icon: string;
   title: string;
-  description: string;
-  delay?: number;
 }
 
-export function GlassCard({ icon, title, description, delay = 0 }: GlassCardProps) {
+type TiltState = {
+  rotateX: number;
+  rotateY: number;
+};
+
+const INITIAL_TILT: TiltState = {
+  rotateX: 0,
+  rotateY: 0,
+};
+
+export function GlassCard({
+  icon,
+  title,
+  description,
+  delay = 0,
+}: GlassCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [hovered, setHovered] = useState(false);
+  const [tilt, setTilt] = useState<TiltState>(INITIAL_TILT);
 
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+  function handleMouseMove(event: MouseEvent<HTMLDivElement>) {
     const card = cardRef.current;
     if (!card) return;
+
     const rect = card.getBoundingClientRect();
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
-    const rotateX = (mouseY - centerY) / 10;
-    const rotateY = (centerX - mouseX) / 10;
-    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-10px)`;
-  }, []);
+    const mouseX = event.clientX - rect.left;
+    const mouseY = event.clientY - rect.top;
 
-  const handleMouseEnter = useCallback(() => setHovered(true), []);
+    setTilt({
+      rotateX: (mouseY - centerY) / 10,
+      rotateY: (centerX - mouseX) / 10,
+    });
+  }
 
-  const handleMouseLeave = useCallback(() => {
-    const card = cardRef.current;
-    if (!card) return;
-    card.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0)";
+  function handleMouseLeave() {
+    setTilt(INITIAL_TILT);
     setHovered(false);
-  }, []);
+  }
 
   return (
     <motion.div
@@ -43,62 +58,46 @@ export function GlassCard({ icon, title, description, delay = 0 }: GlassCardProp
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.6, delay }}
-      className="h-full"
+      className="h-full [perspective:1000px]"
     >
-      <div
+      <motion.div
         ref={cardRef}
         onMouseMove={handleMouseMove}
-        onMouseEnter={handleMouseEnter}
+        onMouseEnter={() => setHovered(true)}
         onMouseLeave={handleMouseLeave}
-        className="relative h-full rounded-2xl overflow-hidden"
-        style={{
-          padding: "2.5rem",
-          background: "rgba(255, 255, 255, 0.7)",
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)",
-          border: "1px solid rgba(255, 255, 255, 0.3)",
-          boxShadow: hovered
-            ? "0 25px 50px -12px rgba(99, 102, 241, 0.25)"
-            : "0 8px 32px rgba(31, 38, 135, 0.1)",
-          borderColor: hovered ? "transparent" : "rgba(255, 255, 255, 0.3)",
-          transition: "transform 0.1s ease-out, box-shadow 0.3s ease, border-color 0.3s ease",
-          transformStyle: "preserve-3d",
-          willChange: "transform",
+        animate={{
+          rotateX: tilt.rotateX,
+          rotateY: tilt.rotateY,
+          y: hovered ? -10 : 0,
         }}
+        transition={{
+          duration: 0.18,
+          ease: "easeOut",
+        }}
+        className={`relative h-full overflow-hidden rounded-2xl border bg-white/70 p-10 backdrop-blur-[20px] [transform-style:preserve-3d] will-change-transform ${
+          hovered
+            ? "border-transparent shadow-[0_25px_50px_-12px_rgba(99,102,241,0.25)]"
+            : "border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]"
+        }`}
       >
-        {/* Gradient overlay — opacity 0 → 1 on hover (the key effect!) */}
         <div
-          className="absolute inset-0 z-0 pointer-events-none"
-          style={{
-            background: "linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)",
-            opacity: hovered ? 1 : 0,
-            transition: "opacity 0.4s ease",
-          }}
+          className={`pointer-events-none absolute inset-0 z-0 bg-[linear-gradient(135deg,#8b5cf6_0%,#ec4899_100%)] transition-opacity duration-500 ${
+            hovered ? "opacity-100" : "opacity-0"
+          }`}
         />
 
-        {/* Top gradient accent bar */}
         <div
-          className="absolute top-0 left-0 right-0 h-1 rounded-t-2xl z-20"
-          style={{
-            background: "linear-gradient(90deg, #8b5cf6, #ec4899, #06b6d4)",
-            transform: hovered ? "scaleX(1)" : "scaleX(0)",
-            transformOrigin: "left",
-            transition: "transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)",
-          }}
+          className={`absolute left-0 right-0 top-0 z-20 h-1 origin-left rounded-t-2xl bg-[linear-gradient(90deg,#8b5cf6,#ec4899,#06b6d4)] transition-transform duration-500 [transition-timing-function:cubic-bezier(0.34,1.56,0.64,1)] ${
+            hovered ? "scale-x-100" : "scale-x-0"
+          }`}
         />
 
-        {/* Icon — scale(1.15) rotate(5deg) + heavy drop-shadow on hover */}
         <div
-          className="relative z-10 mb-6"
-          style={{
-            width: 90,
-            height: 90,
-            transform: hovered ? "scale(1.15) rotate(5deg)" : "scale(1) rotate(0deg)",
-            filter: hovered
-              ? "drop-shadow(0 5px 15px rgba(0, 0, 0, 0.3))"
-              : "drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1))",
-            transition: "transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.4s ease",
-          }}
+          className={`relative z-10 mb-6 h-[90px] w-[90px] transition-all duration-500 [transition-timing-function:cubic-bezier(0.34,1.56,0.64,1)] ${
+            hovered
+              ? "scale-[1.15] rotate-[5deg] [filter:drop-shadow(0_5px_15px_rgba(0,0,0,0.3))]"
+              : "[filter:drop-shadow(0_2px_4px_rgba(0,0,0,0.1))]"
+          }`}
         >
           <Image
             src={`/assets/v1/icons/${icon}`}
@@ -109,30 +108,25 @@ export function GlassCard({ icon, title, description, delay = 0 }: GlassCardProp
           />
         </div>
 
-        {/* Text — turns white on hover */}
         <div className="relative z-10">
           <h3
-            className="home-ink-title mb-3 text-xl"
-            style={{
-              color: hovered ? "#ffffff" : undefined,
-              transition: "color 0.4s ease",
-              WebkitTextFillColor: hovered ? "#ffffff" : undefined,
-              backgroundImage: hovered ? "none" : undefined,
-            }}
+            className={`home-ink-title mb-3 text-xl transition-colors duration-500 ${
+              hovered
+                ? "[background-image:none] !text-white [-webkit-text-fill-color:#ffffff]"
+                : ""
+            }`}
           >
             {title}
           </h3>
           <p
-            className="leading-relaxed"
-            style={{
-              color: hovered ? "rgba(255,255,255,0.9)" : "#64748b",
-              transition: "color 0.4s ease",
-            }}
+            className={`leading-relaxed transition-colors duration-500 ${
+              hovered ? "text-white/90" : "text-slate-500"
+            }`}
           >
             {description}
           </p>
         </div>
-      </div>
+      </motion.div>
     </motion.div>
   );
 }
