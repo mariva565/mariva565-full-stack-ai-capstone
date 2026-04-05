@@ -1,4 +1,8 @@
-<!-- Hero banner — will be added when UI is ready -->
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:6366F1,50:8B5CF6,100:06B6D4&height=200&section=header&text=Study%20Hub%20v2&fontSize=60&fontColor=ffffff&animation=fadeIn&fontAlignY=38&desc=Your%20Personal%20Learning%20Platform&descAlignY=60&descAlign=50" width="100%"/>
+
+<p align="center">
+  <img src="docs/assets/readme/hero.svg" width="100%" alt="StudyHub v2 animated hero banner" />
+</p>
 
 <p align="center">
   <b>Full-stack LMS capstone for SoftUni "Full Stack Apps with AI"</b>
@@ -14,43 +18,267 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/Status-In%20Progress-F59E0B?style=flat-square" alt="Status in progress" />
-  <img src="https://img.shields.io/badge/MVP%20Roadmap-75%25-0EA5E9?style=flat-square" alt="MVP roadmap progress 75 percent" />
   <img src="https://img.shields.io/badge/Commits-60%2B-22C55E?style=flat-square" alt="60 plus commits" />
-  <img src="https://img.shields.io/badge/TypeScript-Strict%20Mode-1D4ED8?style=flat-square" alt="TypeScript strict mode" />
+  <img src="https://img.shields.io/badge/TypeScript-Strict%20Mode-6366F1?style=flat-square" alt="TypeScript strict mode" />
+  <img src="https://img.shields.io/badge/Tables-9-8B5CF6?style=flat-square" alt="9 database tables" />
+  <img src="https://img.shields.io/badge/API-25%20endpoints-06B6D4?style=flat-square" alt="25 API endpoints" />
+  <img src="https://img.shields.io/badge/Web-14%20pages-6366F1?style=flat-square" alt="14 web pages" />
+  <img src="https://img.shields.io/badge/Mobile-3%20screens-8B5CF6?style=flat-square" alt="3 mobile screens" />
 </p>
 
 <p align="center">
-  <a href="#database-schema"><img src="https://img.shields.io/badge/DB-Schema%20Diagram-FF6B6B?style=flat-square" alt="DB schema diagram" /></a>
-  <a href="#progress-roadmap"><img src="https://img.shields.io/badge/Roadmap-Delivery%20Phases-7A5CFF?style=flat-square" alt="Delivery phases" /></a>
-  <a href="#quick-setup"><img src="https://img.shields.io/badge/Setup-Quick%20Start-17C2B5?style=flat-square" alt="Quick setup" /></a>
-  <a href="#project-details"><img src="https://img.shields.io/badge/Docs-Project%20Details-FF9F43?style=flat-square" alt="Project details" /></a>
+  <a href="#system-architecture"><img src="https://img.shields.io/badge/Architecture-System%20Overview-8B5CF6?style=flat-square" alt="Architecture" /></a>
+  <a href="#database-schema"><img src="https://img.shields.io/badge/DB-Schema%20Diagram-6366F1?style=flat-square" alt="DB schema diagram" /></a>
+  <a href="#user-roles"><img src="https://img.shields.io/badge/Roles-User%20%2B%20Admin-06B6D4?style=flat-square" alt="User roles" /></a>
+  <a href="#demo-walkthrough"><img src="https://img.shields.io/badge/Demo-Walkthrough-8B5CF6?style=flat-square" alt="Demo walkthrough" /></a>
+  <a href="#api-endpoints-25"><img src="https://img.shields.io/badge/API-Endpoints-6366F1?style=flat-square" alt="API endpoints" /></a>
 </p>
+
+---
 
 ## Live Demo
 
 - Live Web App: `TBD` (deployment planned as final phase)
-- Mobile Demo (Expo): local only — see [Quick Setup](#quick-setup)
+- Mobile Demo (Expo): local only — see [Quick Setup](#-quick-setup)
 
-<!-- Screenshots and animated previews will be added when UI is ready -->
+Demo credentials: see [Demo Credentials](#demo-credentials)
+
+### Animated Previews
+
+<table>
+<tr>
+<td align="center"><b>Web App Flow</b></td>
+<td align="center"><b>Mobile App Flow</b></td>
+</tr>
+<tr>
+<td><img src="docs/assets/readme/web-preview.svg" width="450" alt="Web app animated preview" /></td>
+<td><img src="docs/assets/readme/mobile-preview.svg" width="450" alt="Mobile app animated preview" /></td>
+</tr>
+</table>
+
+<!-- Real screenshots will be added when UI polish is complete -->
+
+---
+
+## About the Project
+
+StudyHub v2 is a full rewrite of [StudyHub v1](https://github.com/mariva565/Test-Capstone-Project-StudyHub) (Vanilla JS + Supabase) with a modern full-stack architecture: **Next.js + Expo monorepo**.
+
+The app is a personal **Learning Management System (LMS)** — a structured electronic notebook where users organize study materials hierarchically (`Courses -> Modules -> Materials`), track progress with milestones, and plan with a calendar.
+
+**Why a rewrite instead of a new concept:**
+- The business logic is personally useful — I actively use StudyHub to organize my own SoftUni notes and plan this capstone.
+- Rebuilding the same domain with a completely different stack creates a direct comparison between two architectural approaches.
+- StudyHub v1 had monolithic files that were too risky to refactor before submission. v2 corrects that from day one with modular components.
+- Some interface patterns remain recognizable on purpose, but the implementation is fully rewritten. This is adaptation and redesign, not copying.
+
+---
 
 ## Progress Roadmap
 
-`MVP delivery pulse: [######....] 75% (6/8 phases complete)`
-
 | Phase | Scope | Status |
 |---|---|---|
-| Phase 0 | Monorepo bootstrap | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
+| Phase 0 | Monorepo bootstrap (npm workspaces) | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
 | Phase 1 | DB schema + Drizzle migrations (9 tables) | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
-| Phase 2 | Auth + JWT guards + Google OAuth | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
+| Phase 2 | Auth (JWT + Google OAuth + role guards) | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
 | Phase 3 | Courses / modules / materials CRUD + favorites | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
 | Phase 4 | Profile + milestones + calendar + progress tracking | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
-| Phase 5 | Mobile app (3 screens) | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
-| Phase 6 | Deployment (Vercel/Netlify) | ![Planned](https://img.shields.io/badge/Planned-64748B?style=flat-square) |
-| Phase 7 | Docs + demo polish | ![Planned](https://img.shields.io/badge/Planned-64748B?style=flat-square) |
+| Phase 5 | Mobile app (3 screens, tested on real device) | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
+| Phase 6 | Admin panel (user management, moderation, logs) | ![In Progress](https://img.shields.io/badge/In%20Progress-F59E0B?style=flat-square) |
+| Phase 7 | File storage (Cloudflare R2 — PDF upload, export) | ![Planned](https://img.shields.io/badge/Planned-64748B?style=flat-square) |
+| Phase 8 | Deployment (Vercel/Netlify) | ![Planned](https://img.shields.io/badge/Planned-64748B?style=flat-square) |
+| Phase 9 | Docs + demo polish | ![Planned](https://img.shields.io/badge/Planned-64748B?style=flat-square) |
+
+---
+
+## System Architecture
+
+### Overview
+
+```mermaid
+graph TB
+    subgraph CLIENT["Client Layer"]
+        direction LR
+        WEB["<b>Next.js Web App</b><br/>React 19 + TypeScript<br/>Tailwind CSS<br/>14 pages"]
+        MOBILE["<b>Expo Mobile App</b><br/>React Native<br/>Android / iOS<br/>3 screens"]
+    end
+
+    subgraph SERVER["Server Layer — Next.js API Routes"]
+        direction LR
+        AUTH["Auth<br/><i>JWT + Google OAuth</i><br/><i>httpOnly cookies</i><br/><i>role guards</i>"]
+        CRUD["CRUD<br/><i>Courses</i><br/><i>Modules</i><br/><i>Materials</i>"]
+        FEATURES["Features<br/><i>Favorites</i><br/><i>Milestones</i><br/><i>Events</i>"]
+        ADMIN["Admin<br/><i>Users</i><br/><i>Moderation</i><br/><i>Activity Logs</i>"]
+    end
+
+    subgraph ORM["Data Access — Drizzle ORM"]
+        DRIZZLE["TypeScript schema<br/>Type-safe queries<br/>SQL migrations"]
+    end
+
+    subgraph DATA["Data Layer"]
+        DB[("Neon PostgreSQL<br/><i>Serverless — EU region</i><br/>9 tables + relationships")]
+    end
+
+    WEB -->|"REST API<br/>25 endpoints"| SERVER
+    MOBILE -->|"REST API<br/>same backend"| SERVER
+    SERVER --> ORM
+    ORM --> DB
+
+    style CLIENT fill:#1e1b4b,stroke:#7c3aed,color:#e0e7ff
+    style SERVER fill:#0c4a6e,stroke:#0ea5e9,color:#e0f2fe
+    style ORM fill:#1a2e05,stroke:#84cc16,color:#ecfccb
+    style DATA fill:#1c1917,stroke:#f59e0b,color:#fef3c7
+    style WEB fill:#2e1065,stroke:#a78bfa,color:#ede9fe
+    style MOBILE fill:#2e1065,stroke:#a78bfa,color:#ede9fe
+    style AUTH fill:#0c4a6e,stroke:#38bdf8,color:#e0f2fe
+    style CRUD fill:#0c4a6e,stroke:#38bdf8,color:#e0f2fe
+    style FEATURES fill:#0c4a6e,stroke:#38bdf8,color:#e0f2fe
+    style ADMIN fill:#0c4a6e,stroke:#38bdf8,color:#e0f2fe
+    style DRIZZLE fill:#1a2e05,stroke:#a3e635,color:#ecfccb
+    style DB fill:#422006,stroke:#fbbf24,color:#fef9c3
+```
+
+### Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Frontend Web | Next.js 15 + React 19 + TypeScript (strict) + Tailwind CSS |
+| Backend API | Next.js API Routes — 25 RESTful endpoints |
+| Database | Neon PostgreSQL (serverless) + Drizzle ORM + SQL migrations |
+| Auth | Custom JWT (jose, HS256, httpOnly cookies) + Google OAuth |
+| Mobile | React Native + Expo SDK 54 |
+| Monorepo | npm workspaces (`apps/web`, `apps/mobile`, `packages/shared`) |
+
+---
+
+## Authentication Flow
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant F as Frontend (Web / Mobile)
+    participant M as Middleware
+    participant A as API Route
+    participant D as Database
+
+    Note over U,D: Registration
+    U->>F: Fills register form
+    F->>A: POST /api/auth/register
+    A->>A: Hash password (bcryptjs)
+    A->>D: INSERT user
+    A->>A: Sign JWT (jose, HS256, 7d expiry)
+    A-->>F: Set httpOnly cookie "token"
+    F-->>U: Redirect to /dashboard
+
+    Note over U,D: Login
+    U->>F: Fills login form
+    F->>A: POST /api/auth/login
+    A->>D: SELECT user by email
+    A->>A: Verify password hash
+    A->>A: Sign JWT
+    A-->>F: Set httpOnly cookie "token"
+    F-->>U: Redirect to /dashboard
+
+    Note over U,D: Protected Route Access
+    U->>F: Navigates to /dashboard
+    F->>M: Request with cookie
+    M->>M: Verify JWT from cookie
+    alt Valid token
+        M-->>A: Forward request
+        A->>A: requireAuth() extracts user
+        A->>D: Query data
+        A-->>F: Return response
+    else Invalid / expired / missing
+        M-->>F: Redirect to /login
+    end
+
+    Note over U,D: Admin-Only Access
+    U->>F: Navigates to /admin
+    M->>M: Verify JWT + check role
+    alt role === admin
+        M-->>A: Forward request
+        A->>A: requireAdmin()
+        A-->>F: Return admin data
+    else role !== admin
+        M-->>F: Redirect to /forbidden
+    end
+```
+
+---
+
+## Content Access Flow
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant F as Frontend
+    participant A as API
+    participant D as Database
+
+    U->>F: Opens Dashboard
+    F->>A: GET /api/courses
+    A->>D: SELECT courses WHERE created_by = user.id
+    D-->>A: Return courses list
+    A-->>F: JSON response
+    F-->>U: Render course cards
+
+    U->>F: Clicks on a Course
+    F->>A: GET /api/courses/[id]/modules
+    A->>D: SELECT modules WHERE course_id = id ORDER BY order_index
+    D-->>A: Return modules
+    A-->>F: JSON response
+    F-->>U: Render modules list
+
+    U->>F: Clicks on a Module
+    F->>A: GET /api/modules/[id]/materials
+    A->>D: SELECT materials WHERE module_id = id
+    D-->>A: Return materials
+    A-->>F: JSON response
+    F-->>U: Render materials (text / link / file)
+
+    U->>F: Bookmarks a Material
+    F->>A: POST /api/favorites {materialId}
+    A->>D: INSERT favorite (unique constraint)
+    A-->>F: 201 Created
+    F-->>U: Show filled bookmark icon
+```
+
+---
+
+## User Roles
+
+### Student (role: `user`)
+
+| Action | Where |
+|---|---|
+| Register / login / logout | `/register`, `/login` |
+| Create, edit, delete own courses | `/dashboard` |
+| Create modules inside own courses | `/courses/[id]` |
+| Create, edit, delete materials (text, link, file) | `/materials/[id]` |
+| Bookmark materials as favorites | Any material card |
+| Track progress with milestones | `/progress` |
+| Plan with calendar events | `/calendar` |
+| Edit profile and avatar | `/profile` |
+
+### Admin (role: `admin`)
+
+Everything a student can do, plus:
+
+| Action | Where |
+|---|---|
+| View all users | `/admin` |
+| Change user roles (user / admin) | `/admin` |
+| Delete users (with self-protection) | `/admin` |
+| View and delete any material | `/admin` |
+| View activity logs (audit trail) | `/admin` |
+
+Admin cannot delete themselves or change their own role (self-protection enforced server-side).
+
+---
 
 ## Database Schema
 
-9 tables with foreign key relationships, cascade deletes, and unique constraints:
+9 tables with foreign key relationships, cascade deletes, and unique constraints (minimum required: 4):
 
 ```mermaid
 erDiagram
@@ -162,88 +390,165 @@ erDiagram
     milestones ||--o{ events : "linked to"
 ```
 
-## Project Details
+### Table Descriptions
 
-<details open>
-  <summary><b>Project Story</b></summary>
+| # | Table | Purpose | Key relationships |
+|---|---|---|---|
+| 1 | `users` | User accounts with email, hashed password, role | Referenced by almost all tables via `created_by` or `user_id` |
+| 2 | `courses` | Top-level containers for learning content | Created by user; contains modules |
+| 3 | `modules` | Ordered sections within a course | Belongs to course (cascade delete); contains materials |
+| 4 | `materials` | Learning content — text notes, links, or files | Belongs to module (cascade delete); can be favorited |
+| 5 | `favorites` | Bookmarked materials per user | Unique constraint on (user_id, material_id) prevents duplicates |
+| 6 | `milestones` | Personal progress goals with status workflow | not_started -> in_progress -> done; linkable to calendar events |
+| 7 | `events` | Calendar entries with type and color | Optionally linked to a course or milestone |
+| 8 | `activity_logs` | Audit trail for all user actions | Stores action_type + structured JSON details |
+| 9 | `oauth_accounts` | External auth provider identities | Links Google OAuth to user; unique on (provider, provider_user_id) |
 
-StudyHub v2 is a full rewrite of StudyHub v1 with a modern full-stack architecture.
-The goal is a rubric-first LMS that ships clean backend security, responsive web UI, and mobile parity.
+---
 
-**Why this is an adaptation instead of a brand-new concept:**
-- The business logic is personally useful and has real practical value, so the rewrite focuses on turning an already validated idea into a more viable, maintainable, and production-ready product.
-- I actively use the app to keep lesson notes and to plan the development of this capstone itself, which gives the project immediate practical value beyond the course requirement.
-- Rebuilding the same domain with a completely different stack creates a direct comparison between two architectural approaches, which is valuable for the learning goals of this capstone.
-- As StudyHub v1 grew, some files became too monolithic, and it was too risky to break them apart before the original submission. StudyHub v2 is also an intentional attempt to correct that mistake through better modularity and separation of concerns.
-- That architectural lesson was already acknowledged in the StudyHub v1 README itself, where a post-demo refactor direction was explicitly planned for splitting larger files by responsibility. StudyHub v2 is where that intention is carried forward more deliberately from the start.
-- Some interface patterns remain recognizable on purpose, but the implementation is fully rewritten and improved through the new technologies. This is adaptation and redesign, not automatic copying.
+## Screens
 
-**Architecture Complexity Analogy:**
-This project is architecturally equivalent to a medical data software (e.g., Mobile app for patient photos + Web portals for doctors/patients + Admin panel). It implements the same core pillars: multi-platform access, role-based security, and structured data hierarchy.
-</details>
+### Web — 14 pages
 
-<details open>
-  <summary><b>Architecture</b></summary>
+| # | Route | Description | Auth |
+|---|---|---|---|
+| 1 | `/` | Landing page with animated hero and feature sections | Public |
+| 2 | `/how-it-works` | Feature overview with visual explanations | Public |
+| 3 | `/contact` | Contact form | Public |
+| 4 | `/register` | User registration | Public |
+| 5 | `/login` | Login (email/password + Google OAuth) | Public |
+| 6 | `/dashboard` | Course cards + aggregated stats | Protected |
+| 7 | `/courses/[id]` | Course detail — modules list with CRUD | Protected |
+| 8 | `/modules/[id]` | Module detail — materials list with CRUD | Protected |
+| 9 | `/materials/[id]` | Material view and edit (text, link, file) | Protected |
+| 10 | `/profile` | Edit name, avatar upload | Protected |
+| 11 | `/progress` | Milestones tracker with status workflow | Protected |
+| 12 | `/calendar` | Calendar with events (deadlines, reminders, exams) | Protected |
+| 13 | `/admin` | Admin panel — users, materials, activity logs | Admin only |
+| 14 | `/forbidden` | 403 access denied page | Auto-redirect |
 
-### System Overview
+### Mobile — 3 screens
 
-```
-┌─────────────────────────────────────────────────────┐
-│                    Client Layer                      │
-│  ┌──────────────────┐    ┌───────────────────────┐  │
-│  │   Next.js Web    │    │   Expo Mobile (RN)    │  │
-│  │   React + TS     │    │   Android / iOS       │  │
-│  │   Tailwind CSS   │    │   3 screens           │  │
-│  │   14 pages       │    │                       │  │
-│  └────────┬─────────┘    └───────────┬───────────┘  │
-│           │         REST API         │              │
-└───────────┼──────────────────────────┼──────────────┘
-            │                          │
-┌───────────▼──────────────────────────▼──────────────┐
-│                  Server Layer                        │
-│  ┌──────────────────────────────────────────────┐   │
-│  │         Next.js API Routes (25 endpoints)     │   │
-│  │  Auth (JWT + Google OAuth) │ CRUD │ Admin     │   │
-│  └──────────────────┬───────────────────────────┘   │
-│                     │                                │
-│  ┌──────────────────▼───────────────────────────┐   │
-│  │           Drizzle ORM (TypeScript)             │   │
-│  └──────────────────┬───────────────────────────┘   │
-└─────────────────────┼───────────────────────────────┘
-                      │
-┌─────────────────────▼───────────────────────────────┐
-│                  Data Layer                           │
-│  ┌──────────────────────────────────────────────┐   │
-│  │     Neon PostgreSQL (serverless, EU region)    │   │
-│  │     9 tables │ migrations │ relationships      │   │
-│  └──────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────┘
-```
+| # | Screen | Description |
+|---|---|---|
+| 1 | Login | Email/password authentication against the same API |
+| 2 | Courses List | Browse all user courses |
+| 3 | Course Detail | View modules and materials within a course |
 
-### Tech Stack
+The mobile app connects to the **same Next.js backend** — no separate API needed.
 
-| Layer | Technology |
+---
+
+## API Endpoints (25)
+
+### Auth (8 endpoints)
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/api/auth/register` | Create account (email, name, password) |
+| `POST` | `/api/auth/login` | Login — returns JWT in httpOnly cookie |
+| `POST` | `/api/auth/logout` | Clear auth cookie |
+| `GET` | `/api/auth/me` | Get current user profile |
+| `PUT` | `/api/auth/me` | Update profile (name, etc.) |
+| `PUT` | `/api/auth/password` | Change password |
+| `POST` | `/api/auth/avatar` | Upload avatar image |
+| `POST` | `/api/auth/google` | Google OAuth login |
+
+### Content CRUD (8 endpoints)
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/api/courses` | List user's courses |
+| `POST` | `/api/courses` | Create course |
+| `GET/PUT/DELETE` | `/api/courses/[id]` | Course by id |
+| `GET/POST` | `/api/courses/[id]/modules` | List / create modules for course |
+| `GET/PUT/DELETE` | `/api/modules/[id]` | Module by id |
+| `GET/POST` | `/api/modules/[id]/materials` | List / create materials for module |
+| `GET/PUT/DELETE` | `/api/materials/[id]` | Material by id |
+
+### Features (5 endpoints)
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/api/favorites` | List user's bookmarked materials |
+| `POST/DELETE` | `/api/favorites` | Add / remove favorite |
+| `GET/POST` | `/api/milestones` | List / create milestones |
+| `GET/PUT/DELETE` | `/api/milestones/[id]` | Milestone by id |
+| `GET/POST` | `/api/events` | List / create calendar events |
+| `GET/PUT/DELETE` | `/api/events/[id]` | Event by id |
+
+### Dashboard & Admin (4 endpoints)
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/api/dashboard` | Aggregated stats (courses, materials, favorites count) |
+| `GET` | `/api/admin/users` | List all users (admin only) |
+| `PUT/DELETE` | `/api/admin/users/[id]` | Change role / delete user (admin only) |
+| `GET` | `/api/admin/materials` | List all materials for moderation (admin only) |
+| `DELETE` | `/api/admin/materials/[id]` | Delete any material (admin only) |
+| `GET` | `/api/admin/activity-logs` | View audit trail (admin only) |
+| `GET` | `/api/health` | Server health check |
+
+---
+
+## Security Baseline
+
+| Measure | Implementation |
 |---|---|
-| Frontend Web | Next.js 15 + React 19 + TypeScript (strict) + Tailwind CSS |
-| Backend API | Next.js API Routes — 25 RESTful endpoints |
-| Database | Neon PostgreSQL (serverless) + Drizzle ORM + migrations |
-| Auth | Custom JWT (jose, HS256, httpOnly cookies) + Google OAuth |
-| Mobile | React Native + Expo SDK 54 |
-| Monorepo | npm workspaces (`apps/web`, `apps/mobile`, `packages/shared`) |
+| Password hashing | bcryptjs (server-side only) |
+| JWT tokens | jose library, HS256, 7-day expiry, httpOnly cookie |
+| Route protection | `middleware.ts` — validates JWT on every protected request |
+| Admin guards | `requireAdmin()` — server-side role check per endpoint |
+| Self-protection | Admin cannot delete self or change own role |
+| No client-side tokens | JWT never stored in localStorage — only httpOnly cookie |
+| Input validation | Server-side validation before database operations |
+| No secrets in errors | Error payloads never expose stack traces or sensitive data |
+| TypeScript strict | Catches type errors at compile time across the entire codebase |
 
-### Authentication Flow
+---
 
-1. User submits credentials via `/login` or `/register`
-2. Server validates, hashes password (bcryptjs), creates JWT (7-day expiry)
-3. JWT stored in httpOnly cookie — no localStorage tokens
-4. `middleware.ts` guards protected routes, checks admin role
-5. API helpers `requireAuth()` / `requireAdmin()` enforce per-endpoint access
-6. Google OAuth available as alternative login method
+## Demo Walkthrough
 
-</details>
+> Step-by-step guide for testing the app (for jury review).
 
-<details>
-  <summary><b>Key Folders and Files</b></summary>
+### As a Student
+
+1. **Register** — go to `/register`, create a new account
+2. **Dashboard** — see the empty dashboard, create your first course
+3. **Course** — open the course, add a module
+4. **Module** — open the module, add materials (text note, link)
+5. **Favorites** — bookmark a material, see it highlighted
+6. **Progress** — go to `/progress`, create a milestone, change its status
+7. **Calendar** — go to `/calendar`, create an event (deadline, exam, reminder)
+8. **Profile** — go to `/profile`, change your name and upload an avatar
+
+### As an Admin
+
+1. **Login** with admin credentials (see [Demo Credentials](#demo-credentials))
+2. **Admin Panel** — go to `/admin`
+3. **Users tab** — see all registered users, change a user's role
+4. **Materials tab** — see all materials across all users
+5. **Activity Logs tab** — see the audit trail of all actions
+
+### On Mobile
+
+1. **Connect** phone via USB (see [Quick Setup](#-quick-setup))
+2. **Login** — same credentials as web
+3. **Courses List** — browse courses
+4. **Course Detail** — tap a course, see modules and materials
+
+---
+
+## Demo Credentials
+
+| Role | Email | Password |
+|---|---|---|
+| Admin | admin@studyhub.dev | admin123 |
+| User | user@studyhub.dev | user123 |
+
+---
+
+## Key Folders and Files
 
 ```
 studyhub-v2/
@@ -305,14 +610,14 @@ studyhub-v2/
 │
 ├── drizzle/
 │   ├── schema.ts                     # All 9 table definitions
-│   └── migrations/                   # SQL migration files
+│   └── migrations/                   # SQL migration files (committed)
 │
 ├── docs/
 │   ├── assignment.md                 # Course assignment requirements
 │   ├── implementation-plan.md        # Development roadmap
 │   ├── dev-log.md                    # Session-by-session dev log
 │   ├── mobile-phone-testing-handoff.md  # Expo setup + troubleshooting
-│   └── legacy-notes/                 # Notes from v1
+│   └── legacy-notes/                 # Reference notes from v1
 │
 ├── drizzle.config.ts                 # Drizzle Kit configuration
 ├── package.json                      # Monorepo root (npm workspaces)
@@ -320,154 +625,31 @@ studyhub-v2/
 └── README.md
 ```
 
-</details>
-
-<details>
-  <summary><b>Feature Scope</b></summary>
-
-**Implemented:**
-- JWT auth with httpOnly cookies + Google OAuth
-- Roles (`user`, `admin`) with middleware + per-endpoint guards
-- Courses -> modules -> materials hierarchy with full CRUD
-- Favorites (bookmark materials) + activity logging
-- Milestones tracking with status workflow (not started / in progress / done)
-- Calendar with events (deadlines, reminders, exams, personal)
-- Dashboard with aggregated stats
-- Profile with avatar upload
-- Landing page, How It Works, Contact
-- 14 responsive web pages
-- 3 mobile screens (login, courses list, course details)
-
-**Planned:**
-- **Admin Panel:** Full admin UI with user management, content moderation, and activity logs
-- **File Storage (Cloudflare R2):** Upload PDFs and documents, convert PDF to notes and notes to PDF
-- **Sharing & Permissions:** Share materials/notes between users with granular access
-- **AI Integration:** Summarize/Quiz/Chat powered by Gemini API
-- **Deployment:** Vercel/Netlify with serverless backend
-
-</details>
-
-<details>
-  <summary><b>Screens</b></summary>
-
-**Web (14 pages):**
-
-| # | Route | Description |
-|---|---|---|
-| 1 | `/` | Landing page with animated hero |
-| 2 | `/register` | User registration |
-| 3 | `/login` | Login (credentials + Google OAuth) |
-| 4 | `/dashboard` | Course overview + stats |
-| 5 | `/courses/[id]` | Course detail with modules |
-| 6 | `/modules/[id]` | Module detail with materials |
-| 7 | `/materials/[id]` | Material view/edit |
-| 8 | `/profile` | Edit name, avatar |
-| 9 | `/progress` | Milestones tracker |
-| 10 | `/calendar` | Events calendar |
-| 11 | `/admin` | Admin panel |
-| 12 | `/how-it-works` | Feature overview |
-| 13 | `/contact` | Contact page |
-| 14 | `/forbidden` | 403 access denied |
-
-**Mobile (3 screens):**
-
-| # | Screen | Description |
-|---|---|---|
-| 1 | Login | Credentials-based auth |
-| 2 | Courses List | Browse all courses |
-| 3 | Course Detail | View modules and materials |
-
-</details>
-
-<details>
-  <summary><b>Database Tables</b></summary>
-
-9 tables with relationships (minimum required: 4):
-
-| # | Table | Purpose | Key relationships |
-|---|---|---|---|
-| 1 | `users` | User accounts + roles | Referenced by almost all tables |
-| 2 | `courses` | Course containers | Created by user, contains modules |
-| 3 | `modules` | Course sections | Belongs to course, contains materials |
-| 4 | `materials` | Learning content | Belongs to module, can be favorited |
-| 5 | `favorites` | Bookmarked materials | Links user to material (unique constraint) |
-| 6 | `milestones` | Progress tracking | Belongs to user, linkable to events |
-| 7 | `events` | Calendar entries | Belongs to user, optionally linked to course/milestone |
-| 8 | `activity_logs` | Audit trail | Logs all user actions with JSON details |
-| 9 | `oauth_accounts` | External auth providers | Links OAuth identity to user |
-
-</details>
-
-<details>
-  <summary><b>API Endpoints (25)</b></summary>
-
-**Auth (7):**
-- `POST /api/auth/register` — create account
-- `POST /api/auth/login` — login, returns JWT cookie
-- `POST /api/auth/logout` — clear auth cookie
-- `GET /api/auth/me` — current user profile
-- `PUT /api/auth/me` — update profile
-- `PUT /api/auth/password` — change password
-- `POST /api/auth/avatar` — upload avatar
-- `POST /api/auth/google` — Google OAuth login
-
-**Courses (3):**
-- `GET /api/courses` — list courses
-- `POST /api/courses` — create course
-- `GET/PUT/DELETE /api/courses/[id]` — course by id
-
-**Modules (3):**
-- `GET/POST /api/courses/[id]/modules` — list/create modules for course
-- `GET/PUT/DELETE /api/modules/[id]` — module by id
-
-**Materials (3):**
-- `GET/POST /api/modules/[id]/materials` — list/create materials for module
-- `GET/PUT/DELETE /api/materials/[id]` — material by id
-
-**Favorites (2):**
-- `GET /api/favorites` — list user favorites
-- `POST/DELETE /api/favorites` — add/remove favorite
-
-**Milestones (2):**
-- `GET/POST /api/milestones` — list/create milestones
-- `GET/PUT/DELETE /api/milestones/[id]` — milestone by id
-
-**Events (2):**
-- `GET/POST /api/events` — list/create events
-- `GET/PUT/DELETE /api/events/[id]` — event by id
-
-**Dashboard (1):**
-- `GET /api/dashboard` — aggregated stats
-
-**Admin (3):**
-- `GET /api/admin/users` + `PUT/DELETE /api/admin/users/[id]` — user management
-- `GET /api/admin/materials` + `DELETE /api/admin/materials/[id]` — content moderation
-- `GET /api/admin/activity-logs` — audit log viewer
-
-**Health (1):**
-- `GET /api/health` — server health check
-
-</details>
+---
 
 ## Quick Setup
 
-Requirements:
+### Requirements
+
 - Node.js 20+
 - npm 10+
 
-Install:
+### Install
+
 ```bash
 npm install
 cp .env.example .env
 ```
 
-Run web:
+### Run Web
+
 ```bash
 npm run dev:web
 ```
 Open: `http://localhost:3000`
 
-Run mobile (Android USB — recommended):
+### Run Mobile (Android USB — recommended)
+
 ```bash
 # Terminal 1: start web API
 npm run dev:web
@@ -500,26 +682,38 @@ npm run dev:mobile:lan
 npm run dev:mobile:usb
 ```
 
-## Demo Credentials
-
-| Role | Email | Password |
-|---|---|---|
-| Admin | admin@studyhub.dev | admin123 |
-| User | user@studyhub.dev | user123 |
+---
 
 ## v1 -> v2 Transformation
 
 | Topic | StudyHub v1 | StudyHub v2 |
 |---|---|---|
-| Frontend | Vanilla JS | React + Next.js + TypeScript |
-| Backend | Supabase-centric | Next.js API + Neon + Drizzle |
-| Auth | Supabase Auth | Custom JWT + Google OAuth |
-| Mobile | None | React Native + Expo |
-| Database | 6 tables | 9 tables with richer relationships |
-| Structure | Single app, monolithic files | Monorepo + modular components |
+| Frontend | Vanilla JS + Bootstrap | React + Next.js + TypeScript + Tailwind |
+| Backend | Supabase (BaaS) | Next.js API Routes (custom) |
+| Auth | Supabase Auth (GoTrue) | Custom JWT + Google OAuth |
+| Database | Supabase PostgreSQL (6 tables) | Neon PostgreSQL + Drizzle ORM (9 tables) |
+| Mobile | None | React Native + Expo (3 screens) |
+| File structure | Single app, monolithic files | Monorepo + modular components (<300 LOC each) |
+| Deployment | Netlify + Vercel (dual) | Planned: Vercel |
+| Security | RLS + CSP + MFA (partial) | JWT guards + middleware + role-based endpoints |
 
-## Notes
+---
 
-- Legacy repository is used only as visual/logical reference and as a comparison baseline for the rewrite.
-- The business logic is intentionally preserved, but the implementation is fully rebuilt for the new stack and architecture.
-- No Vanilla JS code is copied into this project.
+## Planned Features
+
+These features are planned for upcoming phases and are **not yet implemented**:
+
+| Feature | Description | Phase |
+|---|---|---|
+| Admin Panel UI | Full admin interface with user management, moderation, activity logs | Phase 6 |
+| Cloudflare R2 Storage | Upload PDFs and documents, PDF-to-notes conversion, notes-to-PDF export | Phase 7 |
+| Sharing & Permissions | Share materials/notes between users with access control | Future |
+| AI Integration | Summarize / Quiz / Chat powered by Gemini API | Future |
+
+---
+
+<div align="center">
+  <b>Built for the <a href="https://softuni.bg">SoftUni</a> "Full Stack Apps with AI" capstone.</b>
+</div>
+
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:06B6D4,50:8B5CF6,100:6366F1&height=100&section=footer" width="100%"/>
