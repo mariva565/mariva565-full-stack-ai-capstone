@@ -24,6 +24,9 @@
       "Bash(wc -l \"c:\\\\Users\\\\mariy\\\\Projects\\\\20260327 Capstone\\\\apps\\\\web\\\\components\\\\how-it-works\"/*.tsx \"c:\\\\Users\\\\mariy\\\\Projects\\\\20260327 Capstone\\\\apps\\\\web\\\\components\\\\how-it-works\"/*.ts)",
       "Bash(npm.cmd --workspace @studyhub/web run typecheck)",
       "WebFetch(domain:raw.githubusercontent.com)"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\mariy\\Projects\\Visual-Studio-Capstone-Project-StudyHub-interface-v3\\public"
     ]
   }
 }

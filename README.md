@@ -1,8 +1,8 @@
 <img src="https://capsule-render.vercel.app/api?type=waving&color=0:6366F1,50:8B5CF6,100:06B6D4&height=200&section=header&text=Study%20Hub%20v2&fontSize=60&fontColor=ffffff&animation=fadeIn&fontAlignY=38&desc=Your%20Personal%20Learning%20Platform&descAlignY=60&descAlign=50" width="100%"/>
 
-<p align="center">
-  <img src="docs/assets/readme/hero.svg" width="100%" alt="StudyHub v2 animated hero banner" />
-</p>
+<div align="center">
+  <img src="docs/assets/readme/mascot.gif" width="200" style="border-radius: 12px;" alt="Study Hub mascot animation" />
+</div>
 
 <p align="center">
   <b>Full-stack LMS capstone for SoftUni "Full Stack Apps with AI"</b>
@@ -90,6 +90,10 @@ The app is a personal **Learning Management System (LMS)** — a structured elec
 | Phase 9 | Docs + demo polish | ![Planned](https://img.shields.io/badge/Planned-64748B?style=flat-square) |
 
 ---
+
+<p align="center">
+  <img src="docs/assets/readme/hero.svg" width="100%" alt="StudyHub v2 — architecture overview banner" />
+</p>
 
 ## System Architecture
 
