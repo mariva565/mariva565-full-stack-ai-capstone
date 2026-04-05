@@ -43,20 +43,7 @@
 
 Demo credentials: see [Demo Credentials](#demo-credentials)
 
-### Animated Previews
-
-<table>
-<tr>
-<td align="center"><b>Web App Flow</b></td>
-<td align="center"><b>Mobile App Flow</b></td>
-</tr>
-<tr>
-<td><img src="docs/assets/readme/web-preview.svg" width="450" alt="Web app animated preview" /></td>
-<td><img src="docs/assets/readme/mobile-preview.svg" width="450" alt="Mobile app animated preview" /></td>
-</tr>
-</table>
-
-<!-- Real screenshots will be added when UI polish is complete -->
+<!-- Screenshots / GIF recordings of real UI will be added after UI polish -->
 
 ---
 
@@ -717,7 +704,7 @@ These features are planned for upcoming phases and are **not yet implemented**:
 ---
 
 <div align="center">
-  <b>Built for the <a href="https://softuni.bg">SoftUni</a> "Full Stack Apps with AI" capstone.</b>
+  <strong>Made with ❤️ for the <a href="https://softuni.bg">SoftUni</a> "Full Stack Apps with AI" capstone.</strong>
 </div>
 
 <img src="https://capsule-render.vercel.app/api?type=waving&color=0:06B6D4,50:8B5CF6,100:6366F1&height=100&section=footer" width="100%"/>
