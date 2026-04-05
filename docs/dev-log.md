@@ -3786,3 +3786,25 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 **Why:**
 - Material pages can become long when notes, links, and edit forms grow.
 - A dedicated back-to-top control makes navigation faster and more comfortable without introducing new custom UI code.
+
+### Session 147 (Auth password visibility toggle)
+
+**Goal:**
+- Make password entry easier on the web login and register screens by letting users verify what they typed before submitting.
+
+**What changed:**
+- `apps/web/components/auth/auth-icon-field.tsx`
+  - turned the shared auth field into a client component
+  - added local password visibility state for `type="password"` inputs
+  - added a show/hide toggle button with accessible labels
+- `apps/web/components/auth/auth-icons.tsx`
+  - added eye and eye-off icons for the new visibility control
+
+**Why:**
+- This reduces friction from mistyped passwords during sign-in and account creation.
+- Keeping the behavior inside the shared auth field avoids duplicate logic between the login and register forms.
+
+**Verification:**
+- `npm.cmd run typecheck:web`
+- `npm.cmd run build:web`
+- `npm.cmd run lint:web` could not complete because `next lint` is still prompting for initial ESLint setup in this workspace.

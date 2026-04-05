@@ -71,6 +71,40 @@ export function LockIcon({ className, ...props }: AuthIconProps) {
   );
 }
 
+export function EyeIcon({ className, ...props }: AuthIconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      className={buildIconClassName(className)}
+      {...props}
+    >
+      <path d="M2.5 12s3.4-6 9.5-6 9.5 6 9.5 6-3.4 6-9.5 6-9.5-6-9.5-6Z" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  );
+}
+
+export function EyeOffIcon({ className, ...props }: AuthIconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      className={buildIconClassName(className)}
+      {...props}
+    >
+      <path d="M3 3l18 18" />
+      <path d="M10.6 6.3A10.7 10.7 0 0 1 12 6c6.1 0 9.5 6 9.5 6a17.7 17.7 0 0 1-4.3 4.8" />
+      <path d="M6.5 6.5A17.8 17.8 0 0 0 2.5 12s3.4 6 9.5 6c1.2 0 2.3-.2 3.4-.6" />
+      <path d="M9.9 9.9A3 3 0 0 0 14.1 14.1" />
+    </svg>
+  );
+}
+
 export function MoonIcon({ className, ...props }: AuthIconProps) {
   return (
     <svg

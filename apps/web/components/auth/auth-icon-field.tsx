@@ -1,4 +1,8 @@
-import type { ChangeEventHandler, ReactNode } from "react";
+"use client";
+
+import { useState, type ChangeEventHandler, type ReactNode } from "react";
+
+import { EyeIcon, EyeOffIcon } from "./auth-icons";
 
 type AuthIconFieldProps = {
   id: string;
@@ -25,6 +29,10 @@ export function AuthIconField({
   minLength,
   required = true,
 }: AuthIconFieldProps) {
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const isPasswordField = type === "password";
+  const inputType = isPasswordField && isPasswordVisible ? "text" : type;
+
   return (
     <div className="space-y-1.5">
       <label
@@ -41,15 +49,29 @@ export function AuthIconField({
 
         <input
           id={id}
-          type={type}
+          type={inputType}
           value={value}
           onChange={onChange}
           autoComplete={autoComplete}
           minLength={minLength}
           required={required}
           placeholder={placeholder}
-          className="auth-field-input w-full bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400 dark:text-slate-100 dark:placeholder:text-slate-500"
+          className="auth-field-input min-w-0 flex-1 bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400 dark:text-slate-100 dark:placeholder:text-slate-500"
         />
+
+        {isPasswordField ? (
+          <button
+            type="button"
+            aria-controls={id}
+            aria-label={isPasswordVisible ? "Hide password" : "Show password"}
+            aria-pressed={isPasswordVisible}
+            onMouseDown={(event) => event.preventDefault()}
+            onClick={() => setIsPasswordVisible((current) => !current)}
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-slate-500 transition hover:bg-slate-100 hover:text-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400/60 dark:text-slate-400 dark:hover:bg-slate-700/70 dark:hover:text-brand-100"
+          >
+            {isPasswordVisible ? <EyeOffIcon /> : <EyeIcon />}
+          </button>
+        ) : null}
       </div>
     </div>
   );
