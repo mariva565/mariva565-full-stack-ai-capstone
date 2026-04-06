@@ -3674,6 +3674,20 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 **Verification:**
 - `npm.cmd run typecheck:web`
 
+### Session 154 (Favicon dark-mode fill fix)
+
+**Goal:**
+- Ensure the favicon stays visible on dark tabs by filling the mascot interior with solid white.
+
+**What changed:**
+- `apps/web/public/assets/v1/favicon.png`
+  - filled enclosed transparent regions with white to match the filled mascot style
+- `apps/web/public/assets/v1/icons/favicon.png`
+  - applied the same filled interior to keep the legacy asset in sync
+
+**Why:**
+- The previous favicon had transparent interior areas, which disappeared against dark browser chrome.
+
 ### Session 154 (Profile password visibility + copy polish)
 
 **Goal:**
