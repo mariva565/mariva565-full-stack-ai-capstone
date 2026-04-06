@@ -29,6 +29,13 @@
       "when": 1775236163106,
       "tag": "0003_deep_hex",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1775477200519,
+      "tag": "0004_flowery_zombie",
+      "breakpoints": true
     }
   ]
 }

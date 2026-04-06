@@ -209,10 +209,10 @@ export function MaterialPageClient({
             </div>
           </div>
 
-          {!isEditing && material.content ? (
+          {!isEditing && (material.content || savedAiOutputs.length > 0) ? (
             <div className="mt-6 rounded-[2rem] border border-brand-200/40 bg-white/90 p-5 shadow-[0_24px_55px_rgba(15,23,42,0.06)] backdrop-blur dark:border-brand-400/10 dark:bg-slate-950/55">
               <AiToolsPanel
-                content={material.content}
+                content={material.content ?? ""}
                 materialId={material.id}
                 savedOutputs={savedAiOutputs}
                 onOutputSaved={handleAiOutputSaved}

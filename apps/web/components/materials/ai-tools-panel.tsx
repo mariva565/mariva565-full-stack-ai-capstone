@@ -61,6 +61,7 @@ export function AiToolsPanel({
   onOutputSaved,
   onInsertIntoNote,
 }: AiToolsPanelProps) {
+  const hasSourceContent = content.trim().length > 0;
   const [loading, setLoading] = useState<ToolName | null>(null);
   const [result, setResult] = useState<ToolResult | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -162,7 +163,7 @@ export function AiToolsPanel({
           <button
             key={tool.name}
             type="button"
-            disabled={loading !== null}
+            disabled={loading !== null || !hasSourceContent}
             onClick={() => runTool(tool.name)}
             className={`group flex flex-col items-center gap-2.5 rounded-2xl px-3 py-5 text-xs font-semibold shadow-sm transition hover:-translate-y-1 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50 ${
               loading === tool.name
@@ -187,6 +188,12 @@ export function AiToolsPanel({
           </button>
         ))}
       </div>
+
+      {!hasSourceContent ? (
+        <div className="rounded-xl border border-dashed border-slate-300/80 bg-slate-50/80 px-4 py-3 text-sm text-slate-500 dark:border-slate-700 dark:bg-slate-900/50 dark:text-slate-400">
+          Add or restore some material notes if you want to generate new AI results. Your saved AI entries stay available below.
+        </div>
+      ) : null}
 
       {error ? (
         <div className="rounded-xl border border-red-200 bg-red-50/80 px-4 py-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-300">

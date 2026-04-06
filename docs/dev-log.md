@@ -3852,3 +3852,76 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 **Verification:**
 - `npm.cmd run typecheck:web`
 - `npm.cmd run build:web`
+
+### Session 150 (Saved AI outputs under materials + auth-route chat hide)
+
+**Goal:**
+- Let AI tool results be saved as separate records under a material instead of disappearing on refresh.
+- Add an `Insert into note` flow so saved or freshly generated AI content can be appended into the material editor when needed.
+- Keep the AI chatbot out of `/login` and `/register`.
+
+**What changed:**
+- Database / migrations
+  - `drizzle/schema.ts`
+    - added new `ai_tool_outputs` table with:
+      - `user_id`
+      - `material_id`
+      - `tool`
+      - `data` (`jsonb`)
+      - `created_at`
+    - added indexes for `(user_id, material_id)` and `(material_id, created_at)`
+  - generated Drizzle migration files:
+    - `drizzle/migrations/0004_flowery_zombie.sql`
+    - `drizzle/migrations/meta/0004_snapshot.json`
+    - updated `drizzle/migrations/meta/_journal.json`
+- Shared AI output handling
+  - `apps/web/lib/ai-tool-outputs.ts`
+    - centralized AI tool names, saved-output/result types, validators, labels, preview text, and note-formatting helpers
+  - `apps/web/lib/ai-tool-output-data.ts`
+    - added material-scoped saved AI output loading and row mapping
+  - `apps/web/lib/material-detail-data.ts`
+    - material page data now includes saved AI outputs for the current user and material
+  - `apps/web/components/materials/types.ts`
+    - extended `MaterialPageData` with `aiOutputs`
+- Material page + AI tools UI
+  - `apps/web/app/api/materials/[id]/ai-outputs/route.ts`
+    - added authenticated `GET`/`POST` API for loading and saving AI outputs per material
+  - `apps/web/components/materials/ai-tools-panel.tsx`
+    - added `Save result`
+    - added `Insert into note`
+    - renders saved AI outputs below the current result
+    - disables new generation when the material has no content, while still showing previously saved AI entries
+  - `apps/web/components/materials/ai-tool-result-content.tsx`
+    - extracted summary/quiz/flashcard/definition result rendering into a dedicated component
+  - `apps/web/components/materials/saved-ai-output-list.tsx`
+    - added the saved-results list under the material with expandable entries and `Insert into note`
+  - `apps/web/components/materials/material-page-client.tsx`
+    - keeps saved AI outputs in page state
+    - appends selected AI output into the note editor instead of overwriting the existing note
+    - shows a toast reminding the user to save the material after inserting AI content into the editor
+- Auth-route chatbot visibility
+  - `apps/web/components/chat/chat-route-visibility.tsx`
+    - added pathname-based hiding for `/login` and `/register`
+  - `apps/web/components/chat/chat-gate.tsx`
+    - now routes authenticated chat rendering through the visibility gate instead of mounting the widget directly everywhere
+
+**Why:**
+- The AI tool results were previously session-only UI state.
+- Saving them as separate DB-backed records keeps them reusable without polluting the main material note.
+- `Insert into note` keeps the saved AI output and the main note as two separate concepts: snapshot first, merge into notes only when wanted.
+- The chatbot should stay available inside the signed-in app, but it should not appear on the auth screens.
+
+**Verification:**
+- `npm.cmd run typecheck:web`
+- `npm.cmd run build:web`
+  - build passed
+  - existing `jose` Edge-runtime warnings are still present and were not introduced by this session
+- `npx.cmd drizzle-kit generate`
+- attempted `npx.cmd drizzle-kit migrate`
+  - migrate stalled again on the Neon websocket path in this environment
+  - applied the `ai_tool_outputs` table and indexes directly to the current Neon database via Neon HTTP
+  - verified the table exists afterward
+
+**Audit note:**
+- Reviewed the current worktree before updating `dev-log`.
+- No additional unfinished source-file diffs from other agents were present in `git status` beyond this session's material-AI changes and the generated migration files.
