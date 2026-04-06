@@ -7,6 +7,7 @@ import type {
   MaterialModuleSummary,
   MaterialPageData,
 } from "../components/materials/types";
+import { listAiToolOutputsForMaterial } from "./ai-tool-output-data";
 import { db } from "./db";
 import { isMaterialPinned } from "./favorites-data";
 
@@ -75,9 +76,11 @@ export async function getMaterialPageData(
   }
 
   const pinned = await isMaterialPinned(userId, materialId);
+  const aiOutputs = await listAiToolOutputsForMaterial(userId, materialId);
 
   return {
     ...detail,
     isPinned: pinned,
+    aiOutputs,
   };
 }

@@ -1,3 +1,5 @@
+import type { SavedAiToolOutput } from "../../lib/ai-tool-outputs";
+
 export type MaterialDetail = {
   id: number;
   title: string;
@@ -27,4 +29,5 @@ export type MaterialPageData = {
   module: MaterialModuleSummary;
   course: MaterialCourseSummary;
   isPinned: boolean;
+  aiOutputs: SavedAiToolOutput[];
 };

@@ -21,6 +21,11 @@ import {
   type MaterialType,
 } from "../../lib/materials";
 import { slugify } from "../../lib/slugify";
+import {
+  formatAiToolOutputForNote,
+  type SavedAiToolOutput,
+  type ToolResult,
+} from "../../lib/ai-tool-outputs";
 
 type ToastState = {
   tone: ToastTone;
@@ -49,6 +54,7 @@ export function MaterialPageClient({
   const [fileUrl, setFileUrl] = useState(initialData.material.fileUrl ?? "");
   const [tagsInput, setTagsInput] = useState(parseTags(initialData.material.tags).join(", "));
   const [isPinned, setIsPinned] = useState(initialData.isPinned);
+  const [savedAiOutputs, setSavedAiOutputs] = useState(initialData.aiOutputs);
   const [saving, setSaving] = useState(false);
   const [pinBusy, setPinBusy] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -65,6 +71,22 @@ export function MaterialPageClient({
     setMaterialType(normalizeMaterialType(currentMaterial.materialType));
     setFileUrl(currentMaterial.fileUrl ?? "");
     setTagsInput(parseTags(currentMaterial.tags).join(", "));
+  }
+
+  function handleAiOutputSaved(output: SavedAiToolOutput) {
+    setSavedAiOutputs((current) => [output, ...current]);
+    pushToast("AI result saved under this material.", "success");
+  }
+
+  function handleInsertAiOutput(result: ToolResult | SavedAiToolOutput) {
+    const formatted = formatAiToolOutputForNote(result);
+
+    setContent((current) => {
+      const trimmedCurrent = current.trim();
+      return trimmedCurrent ? `${trimmedCurrent}\n\n${formatted}` : formatted;
+    });
+    setIsEditing(true);
+    pushToast("AI result inserted into the editor. Save material to keep it.", "success");
   }
 
   async function handleSave(event: FormEvent) {
@@ -189,7 +211,13 @@ export function MaterialPageClient({
 
           {!isEditing && material.content ? (
             <div className="mt-6 rounded-[2rem] border border-brand-200/40 bg-white/90 p-5 shadow-[0_24px_55px_rgba(15,23,42,0.06)] backdrop-blur dark:border-brand-400/10 dark:bg-slate-950/55">
-              <AiToolsPanel content={material.content} />
+              <AiToolsPanel
+                content={material.content}
+                materialId={material.id}
+                savedOutputs={savedAiOutputs}
+                onOutputSaved={handleAiOutputSaved}
+                onInsertIntoNote={handleInsertAiOutput}
+              />
             </div>
           ) : null}
 

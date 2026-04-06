@@ -8,6 +8,7 @@ import {
   timestamp,
   date,
   jsonb,
+  index,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
 
@@ -90,6 +91,26 @@ export const favorites = pgTable(
 );
 
 // ─── 6. milestones ──────────────────────────────────────────
+export const aiToolOutputs = pgTable(
+  "ai_tool_outputs",
+  {
+    id: serial("id").primaryKey(),
+    userId: integer("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    materialId: integer("material_id")
+      .notNull()
+      .references(() => materials.id, { onDelete: "cascade" }),
+    tool: varchar("tool", { length: 32 }).notNull(),
+    data: jsonb("data").notNull(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) => [
+    index("ai_tool_outputs_user_material_idx").on(table.userId, table.materialId),
+    index("ai_tool_outputs_material_created_idx").on(table.materialId, table.createdAt),
+  ]
+);
+
 export const milestones = pgTable("milestones", {
   id: serial("id").primaryKey(),
   userId: integer("user_id")
