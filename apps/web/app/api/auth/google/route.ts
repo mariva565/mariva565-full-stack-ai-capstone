@@ -2,27 +2,40 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "../../../../lib/db";
 import { users, oauthAccounts } from "../../../../../../drizzle/schema";
 import { signToken } from "../../../../lib/jwt";
-import { verifyGoogleIdToken } from "../../../../lib/google";
+import { verifyGoogleIdToken, verifyGoogleAccessToken } from "../../../../lib/google";
 import { eq, and } from "drizzle-orm";
 import { hashPassword } from "../../../../lib/auth";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { token } = body;
+    const { token, type } = body;
 
+    // We can receive either an 'id_token' (from standard GSI component)
+    // or an 'access_token' (from custom useGoogleLogin hook)
     if (!token) {
       return NextResponse.json(
-        { code: "MISSING_TOKEN", message: "Google ID token is required" },
+        { code: "MISSING_TOKEN", message: "Google token is required" },
         { status: 400 }
       );
     }
 
     // 1. Verify the token with Google
-    const payload = await verifyGoogleIdToken(token);
-    const googleUserId = payload.sub;
-    const googleEmail = payload.email!;
-    const googleName = payload.name || "Google User";
+    let googleUserId: string;
+    let googleEmail: string;
+    let googleName: string;
+
+    if (type === "access_token") {
+      const profile = await verifyGoogleAccessToken(token);
+      googleUserId = profile.sub;
+      googleEmail = profile.email;
+      googleName = profile.name || "Google User";
+    } else {
+      const payload = await verifyGoogleIdToken(token);
+      googleUserId = payload.sub;
+      googleEmail = payload.email!;
+      googleName = payload.name || "Google User";
+    }
 
     if (!googleUserId || !googleEmail) {
       return NextResponse.json(

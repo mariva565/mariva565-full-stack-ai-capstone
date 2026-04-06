@@ -20,3 +20,21 @@ export async function verifyGoogleIdToken(token: string) {
 
   return payload;
 }
+
+export async function verifyGoogleAccessToken(accessToken: string) {
+  const response = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch user info with access token");
+  }
+
+  const data = await response.json();
+  return {
+    sub: data.sub,
+    email: data.email,
+    name: data.name,
+    picture: data.picture,
+  };
+}

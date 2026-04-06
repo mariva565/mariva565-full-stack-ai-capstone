@@ -92,7 +92,7 @@ export function RegisterForm() {
 
         <AuthSectionDivider label="OR" />
 
-        <AuthGoogleSignIn onError={handleGoogleError} />
+        <AuthGoogleSignIn onError={handleGoogleError} variant="login" />
       </form>
     </>
   );

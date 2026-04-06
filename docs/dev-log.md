@@ -4037,3 +4037,22 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 
 **Verification:**
 - `npm.cmd run typecheck:web`
+
+---
+
+### Session 154 (Google Button Beautification + Fix)
+
+**What we implemented:**
+- Fixed a critical syntax error in `apps/web/components/auth/auth-google-sign-in.tsx` (duplicate `return` statement).
+- Upgraded the Google Sign-In button to a premium "wow" state:
+    - **Glassmorphism**: Enhanced `backdrop-blur` and semi-transparent backgrounds with refined borders.
+    - **Shine Animation**: Added a CSS-based "sweep" shine effect that triggers on hover.
+    - **Hover Glow**: Integrated a radial gradient glow matching the brand's primary purple.
+    - **Typography**: Applied `font-shantell` and bold weights for a more premium, friendly feel.
+    - **Micro-interactions**: Refined Framer Motion transitions (spring ease, subtle scale/lift).
+- Unified the button style across both `/login` and `/register` by using `variant="login"`.
+- Improved the `default` variant for future reuse in other parts of the app.
+
+**Verification:**
+- `npm.cmd run build` PASS (`apps/web`)
+- Manual verification: Button renders correctly on both auth pages with all animations active.

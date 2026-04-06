@@ -1,8 +1,11 @@
 "use client";
 
-import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
+import { useGoogleLogin } from "@react-oauth/google";
 import { useRouter } from "next/navigation";
 import { readErrorMessage } from "@/lib/http";
+import { motion } from "framer-motion";
+import { useState } from "react";
+import { GoogleIcon } from "./auth-icons";
 
 type AuthGoogleSignInProps = {
   onError: (msg: string) => void;
@@ -14,49 +17,69 @@ export function AuthGoogleSignIn({
   variant = "default",
 }: AuthGoogleSignInProps) {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
   const isLoginVariant = variant === "login";
 
-  async function handleSuccess(credentialResponse: CredentialResponse) {
+  async function handleSuccess(token: string, type: "id_token" | "access_token" = "id_token") {
+    setIsLoading(true);
     try {
       const response = await fetch("/api/auth/google", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token: credentialResponse.credential }),
+        body: JSON.stringify({ token, type }),
       });
 
       if (!response.ok) {
-        onError(await readErrorMessage(response, "Google login failed."));
-        return;
+        throw new Error(await readErrorMessage(response, "Google login failed."));
       }
 
       router.replace("/dashboard");
-    } catch {
-      onError("Something went wrong with Google sign-in.");
+    } catch (err: any) {
+      onError(err.message || "Something went wrong with Google sign-in.");
+      setIsLoading(false);
     }
   }
 
+  const login = useGoogleLogin({
+    onSuccess: (tokenResponse) => handleSuccess(tokenResponse.access_token, "access_token"),
+    onError: () => onError("Google login was cancelled or failed."),
+  });
+
   return (
-    <div
+    <motion.button
+      type="button"
+      onClick={() => login()}
+      disabled={isLoading}
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+      whileHover={{ scale: 1.015, y: -1 }}
+      whileTap={{ scale: 0.985 }}
       className={
         isLoginVariant
-          ? "rounded-[1.4rem] border border-slate-200/80 bg-white/70 p-2.5 shadow-[0_18px_40px_-28px_rgba(15,23,42,0.45)] backdrop-blur-md dark:border-white/10 dark:bg-slate-950/40"
-          : "flex w-full justify-center"
+          ? "group relative flex w-full items-center justify-center gap-3 overflow-hidden rounded-[1.25rem] border border-white/40 bg-white/40 p-3.5 text-sm font-bold text-slate-700 shadow-lg backdrop-blur-md transition-all duration-300 hover:border-primary-400/50 hover:bg-white/60 hover:text-primary-700 hover:shadow-primary-500/20 disabled:opacity-50 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:border-primary-400/30 dark:hover:bg-white/10 dark:hover:text-primary-300"
+          : "group flex items-center gap-2 rounded-full border border-slate-200 bg-white px-6 py-2.5 text-sm font-bold transition-all duration-300 hover:border-primary-200 hover:bg-slate-50 hover:text-primary-600 hover:shadow-md dark:border-white/10 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-primary-500/30 dark:hover:bg-slate-800 dark:hover:text-primary-300"
       }
     >
-      <GoogleLogin
-        onSuccess={handleSuccess}
-        onError={() => onError("Google login was cancelled or failed.")}
-        theme="outline"
-        size="large"
-        shape={isLoginVariant ? "rectangular" : "pill"}
-        text="signin_with"
-        logo_alignment="left"
-        containerProps={{
-          className: isLoginVariant
-            ? "flex w-full justify-center"
-            : "flex justify-center",
-        }}
-      />
-    </div>
+      {/* Premium Shine Effect */}
+      {isLoginVariant && (
+        <div className="absolute inset-0 -z-10 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 transition-opacity duration-500 group-hover:animate-[shineSwipe_2s_infinite] group-hover:opacity-100" />
+      )}
+
+      <div className="relative flex items-center gap-3">
+        {isLoading ? (
+          <div className="h-5 w-5 animate-spin rounded-full border-2 border-primary-500 border-t-transparent" />
+        ) : (
+          <GoogleIcon className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" />
+        )}
+        <span className="font-shantell tracking-tight">
+          {isLoading ? "Signing in..." : "Continue with Google"}
+        </span>
+      </div>
+
+      {isLoginVariant && (
+        <div className="absolute inset-0 -z-20 bg-[radial-gradient(circle_at_50%_120%,rgba(139,92,246,0.15),transparent)] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+      )}
+    </motion.button>
   );
 }
