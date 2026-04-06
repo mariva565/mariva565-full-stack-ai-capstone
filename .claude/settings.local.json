@@ -23,7 +23,10 @@
       "Bash(wc -l \"c:/Users/mariy/Projects/20260327 Capstone/apps/web/components/contact/\"*.tsx \"c:/Users/mariy/Projects/20260327 Capstone/apps/web/app/contact/page.tsx\" \"c:/Users/mariy/Projects/20260327 Capstone/apps/web/components/ui/use-reduced-motion.ts\" \"c:/Users/mariy/Projects/20260327 Capstone/apps/web/components/ui/use-visible-animation.ts\")",
       "Bash(wc -l \"c:\\\\Users\\\\mariy\\\\Projects\\\\20260327 Capstone\\\\apps\\\\web\\\\components\\\\how-it-works\"/*.tsx \"c:\\\\Users\\\\mariy\\\\Projects\\\\20260327 Capstone\\\\apps\\\\web\\\\components\\\\how-it-works\"/*.ts)",
       "Bash(npm.cmd --workspace @studyhub/web run typecheck)",
-      "WebFetch(domain:raw.githubusercontent.com)"
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(wc -l \"/c/Users/mariy/Projects/20260327 Capstone/apps/web/components/materials\"/*)",
+      "Bash(grep -l \"material\\\\|Material\" \"/c/Users/mariy/Projects/20260327 Capstone/apps/web/lib\"/*.ts)",
+      "Bash(xargs -I {} basename {})"
     ],
     "additionalDirectories": [
       "c:\\Users\\mariy\\Projects\\Visual-Studio-Capstone-Project-StudyHub-interface-v3\\public"

@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { ThemeScript } from "@/components/theme/theme-script";
 import { Navbar } from "@/components/navbar";
+import { ChatGate } from "@/components/chat/chat-gate";
 import { Providers } from "@/components/providers";
 import "./globals.css";
 
@@ -43,6 +44,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <Providers>
           <Navbar />
           {children}
+          <ChatGate />
         </Providers>
       </body>
     </html>

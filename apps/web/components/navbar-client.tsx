@@ -62,6 +62,7 @@ export function NavbarClient({ initialUser }: NavbarClientProps) {
   }
 
   const links = [
+    { href: "/", label: "Home" },
     { href: "/dashboard", label: "Dashboard" },
     { href: "/progress", label: "Progress" },
     { href: "/calendar", label: "Calendar" },
@@ -78,7 +79,7 @@ export function NavbarClient({ initialUser }: NavbarClientProps) {
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/80 backdrop-blur-xl dark:border-cyan-400/10 dark:bg-[linear-gradient(180deg,rgba(2,8,22,0.94)_0%,rgba(3,11,28,0.88)_100%)]">
       <nav className="font-poppins mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
-        <Link href="/dashboard" className="group inline-flex items-center gap-3">
+        <Link href="/" className="group inline-flex items-center gap-3">
           <BrandMark />
           <span className="inline-block bg-[linear-gradient(135deg,#8b5cf6,#ec4899)] bg-[length:100%_100%] bg-no-repeat bg-clip-text pb-[0.16em] font-shantell text-[1.6rem] font-bold leading-[1.05] text-transparent [-webkit-text-fill-color:transparent] transition-all duration-300 group-hover:-translate-y-0.5 group-hover:scale-[1.02] dark:bg-[linear-gradient(135deg,#dccbff_0%,#c79dff_48%,#f4b4da_100%)]">
             StudyHub
@@ -91,7 +92,7 @@ export function NavbarClient({ initialUser }: NavbarClientProps) {
               key={link.href}
               href={link.href}
               className={`rounded-full px-3 py-1.5 text-sm font-medium transition ${
-                pathname.startsWith(link.href)
+                (link.href === "/" ? pathname === "/" : pathname.startsWith(link.href))
                   ? "bg-[linear-gradient(135deg,#6366f1_0%,#8b5cf6_55%,#06b6d4_100%)] text-white shadow-[0_12px_30px_rgba(99,102,241,0.22)]"
                   : "text-slate-600 hover:bg-white/70 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-900/60 dark:hover:text-white"
               }`}

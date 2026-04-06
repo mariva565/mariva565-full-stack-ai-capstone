@@ -4,6 +4,7 @@ import { FormEvent, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+import { AiToolsPanel } from "./ai-tools-panel";
 import { MaterialEditorForm } from "./material-editor-form";
 import { MaterialTypePill } from "./material-type-pill";
 import type { MaterialDetail, MaterialPageData } from "./types";
@@ -186,6 +187,12 @@ export function MaterialPageClient({
             </div>
           </div>
 
+          {!isEditing && material.content ? (
+            <div className="mt-6 rounded-[2rem] border border-brand-200/40 bg-white/90 p-5 shadow-[0_24px_55px_rgba(15,23,42,0.06)] backdrop-blur dark:border-brand-400/10 dark:bg-slate-950/55">
+              <AiToolsPanel content={material.content} />
+            </div>
+          ) : null}
+
           <div className="mt-6 rounded-[2rem] border border-slate-200/80 bg-white/88 p-6 shadow-[0_24px_55px_rgba(15,23,42,0.08)] backdrop-blur dark:border-slate-800 dark:bg-slate-950/55">
             {isEditing ? (
               <MaterialEditorForm
@@ -222,6 +229,7 @@ export function MaterialPageClient({
               />
             )}
           </div>
+
         </div>
       </div>
 

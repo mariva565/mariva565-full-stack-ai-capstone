@@ -43,10 +43,7 @@ export function MaterialViewPanel({
           <p className="text-[0.68rem] font-semibold uppercase tracking-[0.28em] text-slate-400 dark:text-slate-500">
             Saved {formattedCreatedAt}
           </p>
-          <p className="mt-3 text-[0.68rem] font-semibold uppercase tracking-[0.28em] text-slate-400 dark:text-slate-500">
-            Material title
-          </p>
-          <h2 className="mt-1 text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">
+          <h2 className="mt-3 bg-[linear-gradient(135deg,#6366f1_0%,#8b5cf6_40%,#06b6d4_100%)] bg-clip-text text-2xl font-bold tracking-tight text-transparent dark:from-brand-300 dark:to-cyan-300">
             {title}
           </h2>
           <div className="mt-3 flex flex-wrap items-center gap-2">
