@@ -3,6 +3,8 @@ import { db } from "../../../../../lib/db";
 import { users, courses, modules, materials, favorites, activityLogs } from "../../../../../../../drizzle/schema";
 import { requireAuth, requireAdmin } from "../../../../../lib/api-utils";
 import { logActivity } from "../../../../../lib/activity";
+import { hashPassword } from "../../../../../lib/auth";
+import { isStrongPassword } from "../../../../../lib/password-validation";
 import { eq } from "drizzle-orm";
 
 type RouteParams = { params: Promise<{ id: string }> };
@@ -24,27 +26,67 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
   }
 
   const body = await request.json();
-  const { role } = body;
+  const { role, name, email, password, blocked } = body;
 
-  if (!role || !["user", "admin"].includes(role)) {
-    return NextResponse.json(
-      { code: "INVALID_ROLE", message: "Role must be 'user' or 'admin'" },
-      { status: 400 }
-    );
+  // Build set of fields to update
+  const setValues: Record<string, unknown> = {};
+  const changedFields: string[] = [];
+
+  if (role) {
+    if (!["user", "admin"].includes(role)) {
+      return NextResponse.json(
+        { code: "INVALID_ROLE", message: "Role must be 'user' or 'admin'" },
+        { status: 400 }
+      );
+    }
+    if (userId === auth.user.sub) {
+      return NextResponse.json(
+        { code: "SELF_ROLE_CHANGE", message: "Cannot change your own role" },
+        { status: 400 }
+      );
+    }
+    setValues.role = role;
+    changedFields.push("role");
   }
 
-  if (userId === auth.user.sub) {
+  if (name && typeof name === "string") {
+    setValues.name = name.trim();
+    changedFields.push("name");
+  }
+
+  if (email && typeof email === "string") {
+    setValues.email = email.trim();
+    changedFields.push("email");
+  }
+
+  if (password && typeof password === "string") {
+    if (!isStrongPassword(password)) {
+      return NextResponse.json(
+        { code: "WEAK_PASSWORD", message: "Password does not meet strength requirements" },
+        { status: 400 }
+      );
+    }
+    setValues.passwordHash = hashPassword(password);
+    changedFields.push("password");
+  }
+
+  if (typeof blocked === "boolean") {
+    setValues.blocked = blocked;
+    changedFields.push("blocked");
+  }
+
+  if (changedFields.length === 0) {
     return NextResponse.json(
-      { code: "SELF_ROLE_CHANGE", message: "Cannot change your own role" },
+      { code: "NO_CHANGES", message: "No fields to update" },
       { status: 400 }
     );
   }
 
   const [updated] = await db
     .update(users)
-    .set({ role })
+    .set(setValues)
     .where(eq(users.id, userId))
-    .returning({ id: users.id, email: users.email, name: users.name, role: users.role });
+    .returning({ id: users.id, email: users.email, name: users.name, role: users.role, blocked: users.blocked });
 
   if (!updated) {
     return NextResponse.json(
@@ -53,7 +95,8 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     );
   }
 
-  await logActivity(auth.user.sub, "change_user_role", userId, { newRole: role });
+  const actionType = changedFields.includes("role") ? "change_user_role" : "admin_edit_user";
+  await logActivity(auth.user.sub, actionType, userId, { changed: changedFields });
 
   return NextResponse.json({ user: updated });
 }

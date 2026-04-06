@@ -3925,3 +3925,50 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 **Audit note:**
 - Reviewed the current worktree before updating `dev-log`.
 - No additional unfinished source-file diffs from other agents were present in `git status` beyond this session's material-AI changes and the generated migration files.
+
+### Session 151 (Progress board milestone refresh after feature review)
+
+**Goal:**
+- Sync the `/progress` milestone board with the real current project state after reviewing the latest completed features.
+
+**What changed:**
+- Updated the Neon-backed progress milestones for the active planning board (`user_id = 1`):
+  - marked Google auth as completed:
+    - `Google sign-in (web auth)`
+  - replaced the outdated AI-summary-only idea with a completed broader AI-tools milestone:
+    - `AI material tools: summary, quiz, flashcards, definitions`
+  - moved the chatbot work from backlog idea into the active lane:
+    - `AI chatbot integration polish (Gemini)` -> `in_progress`
+  - refreshed milestone ordering so the new completed items sit with the completed delivery track and the AI chatbot work sits near the active roadmap instead of inside the ideas backlog
+
+**Why:**
+- The progress page is database-backed, so the board had drifted behind the actual app state.
+- Google sign-in and the material AI tools are already real features, not future ideas.
+- The chatbot also exists already, so it is more honest to track it as active polish work than as untouched backlog.
+
+**Verification:**
+- Queried the updated `milestones` rows from Neon after the write and confirmed the refreshed titles, statuses, due dates, and ordering.
+
+### Session 152 (Recovered standalone error-page note into dev log)
+
+**Goal:**
+- Preserve the useful history from an old standalone `update-log.js` helper and retire the helper itself.
+
+**What changed:**
+- Recorded the previously unlogged custom error-page work in the main session log:
+  - `apps/web/app/not-found.tsx`
+  - `apps/web/components/not-found/not-found-client.tsx`
+  - `apps/web/app/forbidden/page.tsx`
+  - `apps/web/components/forbidden/forbidden-client.tsx`
+  - premium custom `404` and `403` screens with dark mode, animated mascot treatment, and reduced-motion awareness
+- Removed the root-level `update-log.js` helper after confirming it was:
+  - not referenced by `package.json`
+  - not part of build/dev flows
+  - only appending a hard-coded text block into `docs/dev-log.md`
+
+**Why:**
+- The custom error pages are worth keeping in the real project history.
+- The helper script had become a stale one-off utility and was easy to mistake for an active project script.
+
+**Note:**
+- The old helper also mentioned spinner cleanup, but spinner work is already documented elsewhere in `docs/dev-log.md`, so that part was not duplicated here.

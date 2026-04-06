@@ -36,6 +36,13 @@
       "when": 1775477200519,
       "tag": "0004_flowery_zombie",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1775482058416,
+      "tag": "0005_supreme_mesmero",
+      "breakpoints": true
     }
   ]
 }

@@ -1,9 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 
 import { readErrorMessage } from "../../lib/http";
 import { ConfirmModal } from "../ui/confirm-modal";
+import { EditModal } from "./edit-modal";
+import { BulkActionToolbar } from "./bulk-action-toolbar";
+import { useBulkSelection } from "./use-bulk-selection";
+import { useAdminContext } from "./admin-context";
+import { useFilteredData } from "./use-filtered-data";
+import { Pagination } from "./pagination";
+import { ExportButton } from "./export-button";
+import { SkeletonTable } from "./skeleton-table";
 
 type AdminMaterial = {
   id: number;
@@ -16,15 +24,32 @@ type AdminMaterial = {
   authorEmail: string;
 };
 
+const SEARCHABLE: (keyof AdminMaterial)[] = ["title", "materialType", "courseTitle", "authorName"];
+
 export function MaterialsTab() {
   const [materials, setMaterials] = useState<AdminMaterial[]>([]);
   const [loading, setLoading] = useState(true);
   const [materialToDelete, setMaterialToDelete] = useState<Pick<AdminMaterial, "id" | "title"> | null>(null);
   const [deleteBusy, setDeleteBusy] = useState(false);
+  const [editingMaterial, setEditingMaterial] = useState<AdminMaterial | null>(null);
+  const [bulkDeleteBusy, setBulkDeleteBusy] = useState(false);
+  const [page, setPage] = useState(1);
+  const headerCheckboxRef = useRef<HTMLInputElement>(null);
+
+  const { searchQuery, viewAsFilter, settings } = useAdminContext();
+  const filtered = useFilteredData(materials, searchQuery, SEARCHABLE, viewAsFilter, "authorEmail");
+  const paged = filtered.slice((page - 1) * settings.itemsPerPage, page * settings.itemsPerPage);
+  const pagedIds = useMemo(() => paged.map((m) => m.id), [paged]);
+  const bulk = useBulkSelection(pagedIds);
+
+  useEffect(() => { setPage(1); }, [searchQuery]);
+  useEffect(() => { fetchMaterials(); }, []);
 
   useEffect(() => {
-    fetchMaterials();
-  }, []);
+    if (headerCheckboxRef.current) {
+      headerCheckboxRef.current.indeterminate = bulk.checkboxState === "some";
+    }
+  }, [bulk.checkboxState]);
 
   async function fetchMaterials() {
     const res = await fetch("/api/admin/materials");
@@ -36,14 +61,10 @@ export function MaterialsTab() {
   }
 
   async function confirmDeleteMaterial() {
-    if (!materialToDelete) {
-      return;
-    }
-
+    if (!materialToDelete) return;
     setDeleteBusy(true);
     const res = await fetch(`/api/admin/materials/${materialToDelete.id}`, { method: "DELETE" });
     setDeleteBusy(false);
-
     if (res.ok) {
       setMaterials((prev) => prev.filter((m) => m.id !== materialToDelete.id));
       setMaterialToDelete(null);
@@ -52,16 +73,48 @@ export function MaterialsTab() {
     }
   }
 
+  async function handleBulkDelete() {
+    const ids = Array.from(bulk.selectedIds);
+    setBulkDeleteBusy(true);
+    const res = await fetch("/api/admin/materials/bulk-delete", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ids }),
+    });
+    setBulkDeleteBusy(false);
+    if (res.ok) {
+      bulk.deselectAll();
+      await fetchMaterials();
+    }
+  }
+
   if (loading) {
-    return <p className="text-slate-500 dark:text-slate-400">Loading materials...</p>;
+    return <SkeletonTable rows={5} columns={7} />;
   }
 
   return (
     <>
+      <div className="mb-4">
+        <ExportButton
+          data={filtered as unknown as Record<string, unknown>[]}
+          headers={["Title", "Type", "Course", "Author", "Created"]}
+          keys={["title", "materialType", "courseTitle", "authorName", "createdAt"]}
+          filename="materials"
+        />
+      </div>
       <div className="overflow-x-auto">
         <table className="w-full text-left text-sm">
           <thead>
             <tr className="border-b border-slate-200 dark:border-slate-700">
+              <th className="pb-3 w-8">
+                <input
+                  ref={headerCheckboxRef}
+                  type="checkbox"
+                  checked={bulk.checkboxState === "all"}
+                  onChange={bulk.toggleAll}
+                  className="rounded border-slate-300 dark:border-slate-600"
+                />
+              </th>
               <th className="pb-3 font-medium text-slate-500 dark:text-slate-400">Title</th>
               <th className="pb-3 font-medium text-slate-500 dark:text-slate-400">Type</th>
               <th className="pb-3 font-medium text-slate-500 dark:text-slate-400">Course</th>
@@ -71,57 +124,55 @@ export function MaterialsTab() {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
-            {materials.map((mat) => (
-              <tr key={mat.id}>
-                <td className="py-3 font-medium text-slate-900 dark:text-white">
-                  {mat.title}
+            {paged.map((mat) => (
+              <tr key={mat.id} className={bulk.isSelected(mat.id) ? "bg-brand-50/50 dark:bg-brand-500/5" : ""}>
+                <td className="py-3">
+                  <input
+                    type="checkbox"
+                    checked={bulk.isSelected(mat.id)}
+                    onChange={() => bulk.toggle(mat.id)}
+                    className="rounded border-slate-300 dark:border-slate-600"
+                  />
                 </td>
+                <td className="py-3 font-medium text-slate-900 dark:text-white">{mat.title}</td>
                 <td className="py-3">
                   <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600 dark:bg-slate-700 dark:text-slate-300">
                     {mat.materialType}
                   </span>
                 </td>
-                <td className="py-3 text-slate-600 dark:text-slate-400">
-                  {mat.courseTitle}
-                </td>
-                <td className="py-3 text-slate-600 dark:text-slate-400">
-                  {mat.authorName}
-                </td>
+                <td className="py-3 text-slate-600 dark:text-slate-400">{mat.courseTitle}</td>
+                <td className="py-3 text-slate-600 dark:text-slate-400">{mat.authorName}</td>
                 <td className="py-3 text-slate-500 dark:text-slate-400">
                   {new Date(mat.createdAt).toLocaleDateString()}
                 </td>
-                <td className="py-3">
-                  <button
-                    onClick={() => setMaterialToDelete({ id: mat.id, title: mat.title })}
-                    className="text-xs font-medium text-red-500 hover:text-red-700 dark:text-red-400"
-                  >
-                    Delete
-                  </button>
+                <td className="py-3 flex gap-2">
+                  <button onClick={() => setEditingMaterial(mat)} className="text-xs font-medium text-brand-500 hover:text-brand-700 dark:text-brand-400">Edit</button>
+                  <button onClick={() => setMaterialToDelete({ id: mat.id, title: mat.title })} className="text-xs font-medium text-red-500 hover:text-red-700 dark:text-red-400">Delete</button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-        {materials.length === 0 && (
-          <p className="mt-4 text-center text-slate-500 dark:text-slate-400">
-            No materials found.
-          </p>
+        {filtered.length === 0 && (
+          <p className="mt-4 text-center text-slate-500 dark:text-slate-400">No materials found.</p>
         )}
       </div>
+
+      <Pagination currentPage={page} totalItems={filtered.length} itemsPerPage={settings.itemsPerPage} onPageChange={setPage} />
+
+      <BulkActionToolbar selectedCount={bulk.selectedIds.size} onDelete={handleBulkDelete} onCancel={bulk.deselectAll} busy={bulkDeleteBusy} />
 
       <ConfirmModal
         isOpen={materialToDelete !== null}
         title="Delete material?"
-        description={
-          materialToDelete
-            ? `Delete "${materialToDelete.title}" from the admin moderation list. This action cannot be undone.`
-            : ""
-        }
+        description={materialToDelete ? `Delete "${materialToDelete.title}". This action cannot be undone.` : ""}
         confirmLabel="Delete material"
         busy={deleteBusy}
         onCancel={() => setMaterialToDelete(null)}
         onConfirm={confirmDeleteMaterial}
       />
+
+      <EditModal isOpen={editingMaterial !== null} entityType="material" entity={editingMaterial} onClose={() => setEditingMaterial(null)} onSaved={fetchMaterials} />
     </>
   );
 }

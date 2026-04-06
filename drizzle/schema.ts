@@ -20,6 +20,7 @@ export const users = pgTable("users", {
   passwordHash: text("password_hash").notNull(),
   role: varchar("role", { length: 20 }).notNull().default("user"), // 'user' | 'admin'
   avatarUrl: text("avatar_url"),
+  blocked: boolean("blocked").notNull().default(false),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
