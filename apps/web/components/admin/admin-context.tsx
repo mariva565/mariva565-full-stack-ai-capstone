@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useCallback, type ReactNode } from "react";
+import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from "react";
 
 type AdminSettings = {
   itemsPerPage: number;
@@ -18,22 +18,20 @@ type AdminContextValue = {
 const STORAGE_KEY = "adminSettings";
 const DEFAULT_SETTINGS: AdminSettings = { itemsPerPage: 10 };
 
-function loadSettings(): AdminSettings {
-  if (typeof window === "undefined") return DEFAULT_SETTINGS;
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? { ...DEFAULT_SETTINGS, ...JSON.parse(raw) } : DEFAULT_SETTINGS;
-  } catch {
-    return DEFAULT_SETTINGS;
-  }
-}
-
 const AdminContext = createContext<AdminContextValue | null>(null);
 
 export function AdminProvider({ children }: { children: ReactNode }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [viewAsFilter, setViewAsFilter] = useState("all");
-  const [settings, setSettings] = useState<AdminSettings>(loadSettings);
+  const [settings, setSettings] = useState<AdminSettings>(DEFAULT_SETTINGS);
+
+  // Load settings from localStorage after mount to avoid SSR hydration mismatch
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) setSettings((prev) => ({ ...prev, ...JSON.parse(raw) }));
+    } catch {}
+  }, []);
 
   const updateSettings = useCallback((patch: Partial<AdminSettings>) => {
     setSettings((prev) => {
