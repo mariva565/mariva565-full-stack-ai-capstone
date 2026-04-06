@@ -41,6 +41,7 @@ function BrandMark() {
         alt="StudyHub mascot"
         width={70}
         height={93}
+        priority
         className="relative z-10 h-[3.02rem] w-auto object-contain drop-shadow-[0_8px_18px_rgba(15,23,42,0.14)] transition duration-300 group-hover:-translate-y-[1px] group-hover:scale-[1.015] dark:drop-shadow-[0_10px_22px_rgba(6,182,212,0.08)]"
       />
     </span>

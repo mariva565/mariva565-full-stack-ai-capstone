@@ -15,9 +15,37 @@ interface GeminiOptions {
   history?: GeminiMessage[];
   maxTokens?: number;
   temperature?: number;
+  responseMimeType?: "application/json";
+  responseJsonSchema?: unknown;
 }
 
-export async function askGemini(options: GeminiOptions): Promise<string> {
+interface GeminiApiResponse {
+  candidates?: Array<{
+    content?: {
+      parts?: Array<{ text?: string }>;
+    };
+    finishReason?: string;
+  }>;
+  error?: {
+    message?: string;
+  };
+}
+
+function normalizeJsonText(text: string) {
+  const cleaned = text
+    .replace(/```(?:json)?\s*/gi, "")
+    .replace(/```/g, "")
+    .trim();
+
+  if (cleaned.startsWith("{") || cleaned.startsWith("[")) {
+    return cleaned;
+  }
+
+  const match = cleaned.match(/(\{[\s\S]*\}|\[[\s\S]*\])/);
+  return match?.[0] ?? cleaned;
+}
+
+async function requestGemini(options: GeminiOptions): Promise<string> {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     throw new Error("GEMINI_API_KEY is not configured");
@@ -29,6 +57,8 @@ export async function askGemini(options: GeminiOptions): Promise<string> {
     history = [],
     maxTokens = 2048,
     temperature = 0.4,
+    responseMimeType,
+    responseJsonSchema,
   } = options;
 
   const contents = [
@@ -42,7 +72,12 @@ export async function askGemini(options: GeminiOptions): Promise<string> {
   const body = {
     systemInstruction: { parts: [{ text: systemPrompt }] },
     contents,
-    generationConfig: { maxOutputTokens: maxTokens, temperature },
+    generationConfig: {
+      maxOutputTokens: maxTokens,
+      temperature,
+      ...(responseMimeType ? { responseMimeType } : {}),
+      ...(responseJsonSchema ? { responseJsonSchema } : {}),
+    },
   };
 
   let lastError = "";
@@ -56,14 +91,20 @@ export async function askGemini(options: GeminiOptions): Promise<string> {
         body: JSON.stringify(body),
       });
 
-      const data = await res.json();
+      const data = (await res.json()) as GeminiApiResponse;
 
       if (!res.ok) {
         lastError = data?.error?.message || `HTTP ${res.status}`;
         continue;
       }
 
-      const parts = data?.candidates?.[0]?.content?.parts;
+      const candidate = data?.candidates?.[0];
+      if (candidate?.finishReason === "MAX_TOKENS") {
+        lastError = `Response from ${model} was truncated`;
+        continue;
+      }
+
+      const parts = candidate?.content?.parts;
       if (!Array.isArray(parts)) continue;
 
       const text = parts
@@ -78,4 +119,25 @@ export async function askGemini(options: GeminiOptions): Promise<string> {
   }
 
   throw new Error(`All Gemini models failed. Last error: ${lastError}`);
+}
+
+export async function askGemini(options: GeminiOptions): Promise<string> {
+  return requestGemini(options);
+}
+
+export async function askGeminiJson<T>(
+  options: Omit<GeminiOptions, "responseMimeType">,
+): Promise<T> {
+  const text = await requestGemini({
+    ...options,
+    responseMimeType: "application/json",
+  });
+
+  try {
+    return JSON.parse(normalizeJsonText(text)) as T;
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Unknown JSON parse error";
+    throw new Error(`Gemini returned invalid JSON. ${message}`);
+  }
 }

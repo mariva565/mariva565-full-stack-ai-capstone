@@ -3808,3 +3808,47 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 - `npm.cmd run typecheck:web`
 - `npm.cmd run build:web`
 - `npm.cmd run lint:web` could not complete because `next lint` is still prompting for initial ESLint setup in this workspace.
+
+### Session 148 (AI tools JSON hardening)
+
+**Goal:**
+- Stop `/api/ai/tools` from returning truncated or malformed quiz/flashcard/definition payloads when Gemini cuts off mid-response.
+
+**What changed:**
+- `apps/web/lib/gemini.ts`
+  - added a shared request helper that supports Gemini JSON mode through `responseMimeType: "application/json"`
+  - added `askGeminiJson()` for structured tool responses
+  - detect `finishReason === "MAX_TOKENS"` and treat that model response as truncated instead of accepting partial output
+  - kept a small JSON normalization fallback so fenced JSON can still be parsed safely if needed
+- `apps/web/app/api/ai/tools/route.ts`
+  - moved `quiz`, `flashcards`, and `definitions` to structured JSON requests instead of free-form text parsing
+  - added per-tool response schemas and runtime validators before data is returned to the UI
+  - tightened prompts so quiz explanations and other generated items stay concise
+  - replaced the old "return raw text if parsing fails" path with a safe `AI_INVALID_RESPONSE` error for incomplete model output
+  - removed the noisy raw/cleaned JSON debug flow that was printing chunks of model output
+
+**Why:**
+- The previous flow relied on Gemini obeying a plain-text prompt and then regex-cleaning the response.
+- When the model stopped mid-array, the route could end up with broken JSON like the truncated quiz payload from this session.
+- Structured JSON mode plus validation makes the API fail safely instead of leaking malformed data into the client.
+
+**Verification:**
+- `npm.cmd run typecheck:web`
+- `npm.cmd run build:web`
+
+### Session 149 (Dev script correction after invalid Next flag)
+
+**Goal:**
+- Restore the web dev script after a failed attempt to force a different local bundler flag.
+
+**What changed:**
+- `apps/web/package.json`
+  - reverted the web workspace `dev` script back to `next dev`
+
+**Why:**
+- In this project setup (`next@15.5.14`), `next dev --webpack` is not a valid CLI option.
+- Production build still passes, so the right immediate move was to restore the standard dev command instead of leaving a broken script in place.
+
+**Verification:**
+- `npm.cmd run typecheck:web`
+- `npm.cmd run build:web`

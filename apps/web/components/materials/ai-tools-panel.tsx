@@ -61,7 +61,24 @@ export function AiToolsPanel({ content }: AiToolsPanelProps) {
       }
 
       const data = await res.json();
-      setResult({ tool, data: data.data } as ToolResult);
+      console.log("AI client data:", typeof data.data, Array.isArray(data.data), JSON.stringify(data.data).slice(0, 200));
+      let parsed = data.data;
+
+      // If the API returned a string instead of parsed JSON, try to parse it
+      if (typeof parsed === "string" && ["quiz", "flashcards", "definitions"].includes(tool)) {
+        try {
+          const jsonMatch = parsed.match(/\[[\s\S]*\]/);
+          if (jsonMatch) parsed = JSON.parse(jsonMatch[0]);
+        } catch {
+          // leave as string — will show as error
+        }
+      }
+
+      if (["quiz", "flashcards", "definitions"].includes(tool) && !Array.isArray(parsed)) {
+        throw new Error("AI returned an unexpected format. Please try again.");
+      }
+
+      setResult({ tool, data: parsed } as ToolResult);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {

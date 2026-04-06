@@ -58,6 +58,41 @@ function formatMessage(text: string): string {
     .replace(/\n/g, "<br>");
 }
 
+function CopyButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
+
+  function handleCopy() {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={handleCopy}
+      className="mt-1 flex items-center gap-1 rounded-md px-2 py-0.5 text-[0.65rem] text-slate-400 transition hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300"
+    >
+      {copied ? (
+        <>
+          <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+          </svg>
+          Copied!
+        </>
+      ) : (
+        <>
+          <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15.666 3.888A2.25 2.25 0 0013.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 01-.75.75H9.75a.75.75 0 01-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 011.927-.184" />
+          </svg>
+          Copy
+        </>
+      )}
+    </button>
+  );
+}
+
 export function ChatWidget() {
   const pathname = usePathname();
   const isLanding = pathname === "/";
@@ -184,8 +219,8 @@ export function ChatWidget() {
             <Image
               src="/assets/v1/AI-icon-3.png"
               alt="StudyHub Mentor"
-              width={52}
-              height={52}
+              width={54}
+              height={36}
               className="rounded-xl drop-shadow-[0_4px_8px_rgba(0,0,0,0.2)]"
             />
           </div>
@@ -211,8 +246,8 @@ export function ChatWidget() {
               <Image
                 src="/assets/v1/AI-icon-3.png"
                 alt="AI"
-                width={64}
-                height={64}
+                width={72}
+                height={48}
                 className="animate-[gentleFloat_4s_ease-in-out_infinite] drop-shadow-[0_8px_16px_rgba(99,102,241,0.2)]"
               />
               <p className="mt-4 text-sm font-semibold text-slate-700 dark:text-slate-200">
@@ -234,21 +269,26 @@ export function ChatWidget() {
                     <Image
                       src="/assets/v1/AI-icon-3.png"
                       alt=""
-                      width={28}
-                      height={28}
+                      width={30}
+                      height={20}
                       className="mb-1 shrink-0 rounded-lg"
                     />
                   ) : null}
-                  <div
-                    className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
-                      msg.role === "user"
-                        ? "rounded-br-md bg-[linear-gradient(135deg,#6366f1,#8b5cf6)] text-white"
-                        : "rounded-bl-md border border-slate-200/80 bg-slate-50 text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
-                    }`}
-                    dangerouslySetInnerHTML={{
-                      __html: formatMessage(msg.text),
-                    }}
-                  />
+                  <div className="relative max-w-[80%]">
+                    <div
+                      className={`rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
+                        msg.role === "user"
+                          ? "rounded-br-md bg-[linear-gradient(135deg,#6366f1,#8b5cf6)] text-white"
+                          : "rounded-bl-md border border-slate-200/80 bg-slate-50 text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+                      }`}
+                      dangerouslySetInnerHTML={{
+                        __html: formatMessage(msg.text),
+                      }}
+                    />
+                    {msg.role === "model" ? (
+                      <CopyButton text={msg.text} />
+                    ) : null}
+                  </div>
                 </div>
               ))}
               {isLoading ? (
@@ -256,8 +296,8 @@ export function ChatWidget() {
                   <Image
                     src="/assets/v1/AI-icon-3.png"
                     alt=""
-                    width={28}
-                    height={28}
+                    width={30}
+                    height={20}
                     className="mb-1 shrink-0 animate-[thinkingBob_0.9s_ease-in-out_infinite] rounded-lg"
                   />
                   <div className="rounded-2xl rounded-bl-md border border-slate-200/80 bg-slate-50 dark:border-slate-700 dark:bg-slate-800">
@@ -285,6 +325,7 @@ export function ChatWidget() {
                 }
               }}
               placeholder="Ask a question..."
+              suppressHydrationWarning
               className="flex-1 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm outline-none transition focus:border-brand-400 focus:ring-2 focus:ring-brand-100 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:focus:border-brand-500 dark:focus:ring-brand-500/20"
             />
             <button
