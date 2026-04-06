@@ -25,7 +25,7 @@ export function HomeCtaBanner() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="bg-white py-20 dark:bg-slate-900">
+    <section ref={sectionRef} className="bg-white py-20">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={isInView ? { opacity: 1, scale: 1 } : {}}

@@ -20,7 +20,7 @@ export function ProfilePageHeader() {
           My Profile
         </h1>
         <p className="mt-3 text-sm leading-6 text-slate-600 sm:text-base dark:text-slate-300">
-          Manage your account details, avatar link, and sign-in settings in one
+          Keep your profile details and account settings in one
           place.
         </p>
       </div>

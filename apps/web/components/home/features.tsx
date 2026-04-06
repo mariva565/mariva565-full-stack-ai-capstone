@@ -44,7 +44,7 @@ export function HomeFeatures() {
           <h2 className="home-display-title mx-auto block max-w-5xl text-4xl sm:text-5xl lg:text-6xl">
             Everything you need to succeed
           </h2>
-          <p className="mx-auto mt-6 max-w-2xl text-lg text-slate-500 dark:text-slate-400">
+          <p className="mx-auto mt-6 max-w-2xl text-lg text-slate-500">
             Our platform provides powerful tools to keep your educational life organized and efficient.
           </p>
         </div>

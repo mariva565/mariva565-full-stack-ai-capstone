@@ -94,16 +94,6 @@ export function ProfileHeroCard({
           <StatTile label="Status" value={status.label} icon={<SparklesIcon className="h-4 w-4" />} />
         </div>
 
-        <div className="mt-6 rounded-[1.5rem] border border-brand-100/80 bg-brand-50/80 p-4 text-sm text-slate-700 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-slate-200">
-          <p className="font-semibold text-slate-900 dark:text-white">
-            Direct avatar uploads are still pending.
-          </p>
-          <p className="mt-1 leading-6 text-slate-600 dark:text-slate-300">
-            External `https://` image URLs work today. Direct uploads stay paused until
-            the storage flow is finalized.
-          </p>
-        </div>
-
         <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
           <Link
             href="/dashboard"

@@ -21,8 +21,8 @@ export function Navbar() {
     <nav
       className={`sticky top-0 z-50 transition-all duration-300 border-b ${
         isScrolled
-          ? "bg-white/95 dark:bg-slate-900/95 backdrop-blur-[20px] border-white/30 shadow-[0_4px_20px_rgba(0,0,0,0.1)]"
-          : "bg-white/70 dark:bg-slate-900/70 backdrop-blur-[20px] border-white/30"
+          ? "bg-white/95 backdrop-blur-[20px] border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.1)]"
+          : "bg-white/70 backdrop-blur-[20px] border-transparent"
       }`}
     >
       <div className="container mx-auto px-6 flex items-center justify-between">

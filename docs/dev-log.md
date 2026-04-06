@@ -3674,6 +3674,33 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 **Verification:**
 - `npm.cmd run typecheck:web`
 
+### Session 154 (Profile password visibility + copy polish)
+
+**Goal:**
+- Finish removing leftover developer-style copy from the profile page and make password entry easier during profile updates.
+
+**What changed:**
+- `apps/web/components/profile/profile-page-header.tsx`
+  - shortened the page intro to a cleaner user-facing summary
+- `apps/web/components/profile/profile-details-card.tsx`
+  - replaced the remaining edit/status copy with simpler saved-state messaging
+- `apps/web/components/profile/profile-security-card.tsx`
+  - kept the password section copy concise and user-facing
+- `apps/web/components/profile/profile-admin-card.tsx`
+  - trimmed the admin description to a straightforward CTA
+- `apps/web/lib/profile.ts`
+  - rewrote the missing-avatar status text so it explains the current URL-based flow without "planned" wording
+- `apps/web/components/profile/profile-field.tsx`
+  - added the same show/hide password toggle used on login forms
+  - applied it to password fields in the profile security form via the shared field component
+
+**Why:**
+- The profile page should read like a finished product, not like internal implementation notes.
+- Showing typed passwords on demand reduces mistakes during password changes and matches the login experience.
+
+**Verification:**
+- `npm.cmd run typecheck:web`
+
 ### Session 141 (Progress roadmap refresh + mobile backlog planning)
 
 **Goal:**
@@ -3972,3 +3999,27 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 
 **Note:**
 - The old helper also mentioned spinner cleanup, but spinner work is already documented elsewhere in `docs/dev-log.md`, so that part was not duplicated here.
+
+### Session 153 (Profile copy cleanup for admin view)
+
+**Goal:**
+- Remove developer-facing notes and extra implementation copy from the profile experience, especially the admin-only section.
+
+**What changed:**
+- `apps/web/components/profile/profile-admin-card.tsx`
+  - simplified the admin card to a short user-facing message plus the admin-panel CTA
+  - removed the extra highlight blocks about role checks and logs
+- `apps/web/components/profile/profile-hero-card.tsx`
+  - removed the avatar-upload status note that read like an implementation update
+- `apps/web/components/profile/profile-details-card.tsx`
+  - trimmed the profile-details intro copy
+  - removed the temporary avatar URL helper note
+- `apps/web/components/profile/profile-security-card.tsx`
+  - replaced the "Current backend rule" label with a cleaner user-facing password tip
+
+**Why:**
+- The profile page should feel finished and user-facing, not like a staging area for development notes.
+- Admin users especially do not need extra explanatory boxes when a direct route to the admin panel is already available.
+
+**Verification:**
+- `npm.cmd run typecheck:web`

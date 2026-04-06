@@ -36,7 +36,7 @@ export function ProfileDetailsCard({
         </span>
         <h2 className="dashboard-script-title text-2xl">Personal info</h2>
         <p className="text-sm leading-6 text-slate-600 dark:text-slate-300">
-          Keep the basics recognizable. Email stays read-only on this screen.
+          Edit the name and avatar shown on your profile.
         </p>
       </div>
 
@@ -73,7 +73,6 @@ export function ProfileDetailsCard({
           autoComplete="url"
           required={false}
           onChange={(event) => onAvatarUrlChange(event.target.value)}
-          helperText="Use an external https:// image for now."
         />
 
         <div className="grid gap-4 sm:grid-cols-2">
@@ -99,7 +98,7 @@ export function ProfileDetailsCard({
 
         <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            {hasChanges ? "You have unsaved profile edits." : "Profile details are up to date."}
+            {hasChanges ? "Changes ready to save." : "Everything is saved."}
           </p>
 
           <button

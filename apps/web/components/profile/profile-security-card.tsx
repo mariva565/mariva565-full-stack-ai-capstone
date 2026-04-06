@@ -32,7 +32,7 @@ export function ProfileSecurityCard({
         </span>
         <h2 className="dashboard-script-title text-2xl">Change password</h2>
         <p className="text-sm leading-6 text-slate-600 dark:text-slate-300">
-          This updates the password used for your current email sign-in flow.
+          Choose a new password for this account.
         </p>
       </div>
 
@@ -71,10 +71,10 @@ export function ProfileSecurityCard({
         </div>
 
         <div className="rounded-[1.4rem] border border-brand-100/80 bg-brand-50/80 p-4 text-sm text-slate-700 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-slate-200">
-          <p className="font-semibold text-slate-900 dark:text-white">Current backend rule</p>
+          <p className="font-semibold text-slate-900 dark:text-white">Password tips</p>
           <p className="mt-1 leading-6 text-slate-600 dark:text-slate-300">
-            The minimum remains 6 characters. For a stronger password, aim for 10+
-            characters with mixed case, numbers, and a symbol.
+            Use at least 6 characters. For a stronger password, aim for 10+ characters
+            with mixed case, numbers, and a symbol.
           </p>
         </div>
 

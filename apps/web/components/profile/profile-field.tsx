@@ -1,4 +1,8 @@
-import type { ChangeEventHandler, ReactNode } from "react";
+"use client";
+
+import { useState, type ChangeEventHandler, type ReactNode } from "react";
+
+import { EyeIcon, EyeOffIcon } from "../auth/auth-icons";
 
 type ProfileFieldProps = {
   id: string;
@@ -29,6 +33,10 @@ export function ProfileField({
   required = true,
   onChange,
 }: ProfileFieldProps) {
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const isPasswordField = type === "password" && !readOnly;
+  const inputType = isPasswordField && isPasswordVisible ? "text" : type;
+
   const shellClassName = readOnly
     ? "border-slate-200/80 bg-slate-50/80 dark:border-slate-700/80 dark:bg-slate-900/60"
     : "border-white/70 bg-white/85 shadow-sm focus-within:-translate-y-px focus-within:border-brand-400 focus-within:bg-white focus-within:shadow-[0_0_0_4px_rgba(99,102,241,0.14)] dark:border-white/10 dark:bg-slate-800/80 dark:focus-within:border-brand-400 dark:focus-within:bg-slate-800 dark:focus-within:shadow-[0_0_0_4px_rgba(99,102,241,0.2)]";
@@ -51,7 +59,7 @@ export function ProfileField({
 
         <input
           id={id}
-          type={type}
+          type={inputType}
           value={value}
           onChange={onChange}
           readOnly={readOnly}
@@ -59,8 +67,22 @@ export function ProfileField({
           minLength={minLength}
           required={required}
           placeholder={placeholder}
-          className="w-full bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400 read-only:cursor-default dark:text-slate-100 dark:placeholder:text-slate-500"
+          className="min-w-0 flex-1 bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400 read-only:cursor-default dark:text-slate-100 dark:placeholder:text-slate-500"
         />
+
+        {isPasswordField ? (
+          <button
+            type="button"
+            aria-controls={id}
+            aria-label={isPasswordVisible ? "Hide password" : "Show password"}
+            aria-pressed={isPasswordVisible}
+            onMouseDown={(event) => event.preventDefault()}
+            onClick={() => setIsPasswordVisible((current) => !current)}
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-slate-500 transition hover:bg-slate-100 hover:text-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400/60 dark:text-slate-400 dark:hover:bg-slate-700/70 dark:hover:text-brand-100"
+          >
+            {isPasswordVisible ? <EyeOffIcon /> : <EyeIcon />}
+          </button>
+        ) : null}
       </div>
 
       {helperText ? (

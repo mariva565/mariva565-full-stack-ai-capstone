@@ -81,7 +81,7 @@ export function getProfileStatus(hasAvatar: boolean, hasUnsavedChanges: boolean)
 
   return {
       label: "Photo missing",
-      description: "Photo upload is planned. For now, paste an image URL or keep the initials-based avatar.",
+      description: "Use an image URL for your avatar, or leave it blank to keep your initials.",
     };
 }
 
