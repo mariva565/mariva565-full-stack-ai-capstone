@@ -31,7 +31,13 @@
       "Bash(python3 -c \"from PIL import Image; im=Image.open\\('apps/web/public/assets/v1/AI-icon-3.png'\\); print\\(im.size\\)\")",
       "Bash(mkdir -p \"c:/Users/mariy/Projects/20260327 Capstone/apps/web/app/api/admin/courses/[id]\")",
       "Bash(mkdir -p \"c:/Users/mariy/Projects/20260327 Capstone/apps/web/app/api/admin/modules/[id]\")",
-      "Bash(npx --workspace @studyhub/web tsc --noEmit)"
+      "Bash(npx --workspace @studyhub/web tsc --noEmit)",
+      "Bash(ls -la *.js *.json *.ts)",
+      "Bash(npm cache:*)",
+      "Bash(tasklist)",
+      "Bash(npm --workspace @studyhub/mobile run dev:mobile:lan)",
+      "Bash(taskkill /PID 5244 /F)",
+      "Bash(cmd.exe /c \"taskkill /PID 5244 /F\")"
     ],
     "additionalDirectories": [
       "c:\\Users\\mariy\\Projects\\Visual-Studio-Capstone-Project-StudyHub-interface-v3\\public"

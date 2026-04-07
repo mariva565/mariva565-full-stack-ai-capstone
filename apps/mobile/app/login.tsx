@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,7 +7,9 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
+  Animated,
 } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import { Stack } from "expo-router";
 import { useAuth } from "../lib/auth-context";
 import { ApiError } from "../lib/api";
@@ -18,6 +20,26 @@ export default function LoginScreen() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [emailFocused, setEmailFocused] = useState(false);
+  const [passwordFocused, setPasswordFocused] = useState(false);
+
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(30)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 600,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 600,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, []);
 
   async function handleLogin() {
     if (!email.trim() || !password.trim()) {
@@ -41,78 +63,134 @@ export default function LoginScreen() {
   }
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    <LinearGradient
+      colors={["#2e1d7a", "#4d33c4", "#7c5ce7"]}
+      style={styles.gradient}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
     >
-      <Stack.Screen options={{ headerShown: false }} />
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <Stack.Screen options={{ headerShown: false }} />
 
-      <View style={styles.card}>
-        <Text style={styles.logo}>📚</Text>
-        <Text style={styles.title}>StudyHub</Text>
-        <Text style={styles.subtitle}>Sign in to continue</Text>
-
-        {error ? <Text style={styles.error}>{error}</Text> : null}
-
-        <TextInput
-          style={styles.input}
-          placeholder="Email"
-          placeholderTextColor="#94a3b8"
-          value={email}
-          onChangeText={setEmail}
-          autoCapitalize="none"
-          keyboardType="email-address"
-          textContentType="emailAddress"
-        />
-
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          placeholderTextColor="#94a3b8"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-          textContentType="password"
-        />
-
-        <TouchableOpacity
-          style={[styles.button, loading && styles.buttonDisabled]}
-          onPress={handleLogin}
-          disabled={loading}
-          activeOpacity={0.8}
+        <Animated.View
+          style={[
+            styles.card,
+            { opacity: fadeAnim, transform: [{ translateY: slideAnim }] },
+          ]}
         >
-          <Text style={styles.buttonText}>
-            {loading ? "Signing in..." : "Sign In"}
-          </Text>
-        </TouchableOpacity>
+          {/* Logo area */}
+          <View style={styles.logoContainer}>
+            <View style={styles.logoCircle}>
+              <Text style={styles.logoEmoji}>📚</Text>
+            </View>
+          </View>
+          <Text style={styles.title}>StudyHub</Text>
+          <Text style={styles.subtitle}>Sign in to continue</Text>
 
-        <Text style={styles.hint}>Demo: admin@studyhub.dev / admin123</Text>
-      </View>
-    </KeyboardAvoidingView>
+          {error ? (
+            <View style={styles.errorBox}>
+              <Text style={styles.errorText}>{error}</Text>
+            </View>
+          ) : null}
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.inputLabel}>Email</Text>
+            <TextInput
+              style={[styles.input, emailFocused && styles.inputFocused]}
+              placeholder="your@email.com"
+              placeholderTextColor="#94a3b8"
+              value={email}
+              onChangeText={setEmail}
+              onFocus={() => setEmailFocused(true)}
+              onBlur={() => setEmailFocused(false)}
+              autoCapitalize="none"
+              keyboardType="email-address"
+              textContentType="emailAddress"
+            />
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.inputLabel}>Password</Text>
+            <TextInput
+              style={[styles.input, passwordFocused && styles.inputFocused]}
+              placeholder="••••••••"
+              placeholderTextColor="#94a3b8"
+              value={password}
+              onChangeText={setPassword}
+              onFocus={() => setPasswordFocused(true)}
+              onBlur={() => setPasswordFocused(false)}
+              secureTextEntry
+              textContentType="password"
+            />
+          </View>
+
+          <TouchableOpacity
+            style={[styles.button, loading && styles.buttonDisabled]}
+            onPress={handleLogin}
+            disabled={loading}
+            activeOpacity={0.8}
+          >
+            <LinearGradient
+              colors={["#4d33c4", "#7c5ce7"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.buttonGradient}
+            >
+              <Text style={styles.buttonText}>
+                {loading ? "Signing in..." : "Sign In"}
+              </Text>
+            </LinearGradient>
+          </TouchableOpacity>
+
+          <View style={styles.divider}>
+            <View style={styles.dividerLine} />
+            <Text style={styles.dividerText}>demo</Text>
+            <View style={styles.dividerLine} />
+          </View>
+
+          <Text style={styles.hint}>admin@studyhub.dev / admin123</Text>
+        </Animated.View>
+      </KeyboardAvoidingView>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
+  gradient: {
+    flex: 1,
+  },
   container: {
     flex: 1,
-    backgroundColor: "#f8f6ff",
     justifyContent: "center",
     paddingHorizontal: 24,
   },
   card: {
     backgroundColor: "#ffffff",
-    borderRadius: 16,
+    borderRadius: 20,
     padding: 32,
-    shadowColor: "#2e1d7a",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 4,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.15,
+    shadowRadius: 24,
+    elevation: 8,
   },
-  logo: {
-    fontSize: 48,
-    textAlign: "center",
+  logoContainer: {
+    alignItems: "center",
     marginBottom: 8,
+  },
+  logoCircle: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    backgroundColor: "#f0ecff",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  logoEmoji: {
+    fontSize: 36,
   },
   title: {
     fontSize: 28,
@@ -124,49 +202,91 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: "#64748b",
     textAlign: "center",
-    marginBottom: 24,
+    marginBottom: 28,
     marginTop: 4,
   },
-  error: {
+  errorBox: {
     backgroundColor: "#fef2f2",
+    borderWidth: 1,
+    borderColor: "#fecaca",
+    borderRadius: 10,
+    padding: 12,
+    marginBottom: 16,
+  },
+  errorText: {
     color: "#dc2626",
     fontSize: 14,
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 16,
     textAlign: "center",
-    overflow: "hidden",
+  },
+  inputGroup: {
+    marginBottom: 16,
+  },
+  inputLabel: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: "#475569",
+    marginBottom: 6,
+    marginLeft: 2,
   },
   input: {
     backgroundColor: "#f8fafc",
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderColor: "#e2e8f0",
-    borderRadius: 10,
+    borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 14,
     fontSize: 16,
     color: "#0f172a",
-    marginBottom: 12,
+  },
+  inputFocused: {
+    borderColor: "#4d33c4",
+    backgroundColor: "#faf9ff",
+    shadowColor: "#4d33c4",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 2,
   },
   button: {
-    backgroundColor: "#4d33c4",
-    borderRadius: 10,
-    paddingVertical: 16,
+    borderRadius: 12,
     marginTop: 8,
+    overflow: "hidden",
   },
   buttonDisabled: {
     opacity: 0.6,
+  },
+  buttonGradient: {
+    paddingVertical: 16,
+    alignItems: "center",
   },
   buttonText: {
     color: "#ffffff",
     fontSize: 16,
     fontWeight: "700",
-    textAlign: "center",
   },
-  hint: {
+  divider: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 24,
+    marginBottom: 8,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: "#e2e8f0",
+  },
+  dividerText: {
     fontSize: 12,
     color: "#94a3b8",
+    fontWeight: "600",
+    textTransform: "uppercase",
+    letterSpacing: 1,
+    marginHorizontal: 12,
+  },
+  hint: {
+    fontSize: 13,
+    color: "#64748b",
     textAlign: "center",
-    marginTop: 16,
+    fontFamily: Platform.OS === "ios" ? "Menlo" : "monospace",
   },
 });

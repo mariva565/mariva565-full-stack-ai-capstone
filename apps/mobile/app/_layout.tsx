@@ -1,5 +1,6 @@
 import { Stack, useRouter, useSegments, useRootNavigationState } from "expo-router";
 import { useEffect } from "react";
+import { StatusBar } from "expo-status-bar";
 import { AuthProvider, useAuth } from "../lib/auth-context";
 import { ActivityIndicator, View } from "react-native";
 
@@ -24,20 +25,25 @@ function AuthGate() {
 
   if (isLoading) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#f8f6ff" }}>
-        <ActivityIndicator size="large" color="#4d33c4" />
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#2e1d7a" }}>
+        <ActivityIndicator size="large" color="#ffffff" />
       </View>
     );
   }
 
   return (
-    <Stack
-      screenOptions={{
-        headerStyle: { backgroundColor: "#f8f6ff" },
-        headerTintColor: "#2e1d7a",
-        headerTitleStyle: { fontWeight: "700" },
-      }}
-    />
+    <>
+      <StatusBar style="light" backgroundColor="#2e1d7a" />
+      <Stack
+        screenOptions={{
+          headerStyle: { backgroundColor: "#2e1d7a" },
+          headerTintColor: "#ffffff",
+          headerTitleStyle: { fontWeight: "700" },
+          headerShadowVisible: false,
+          contentStyle: { backgroundColor: "#f8f6ff" },
+        }}
+      />
+    </>
   );
 }
 

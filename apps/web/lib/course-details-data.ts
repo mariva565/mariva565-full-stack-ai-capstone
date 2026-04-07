@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { asc, eq } from "drizzle-orm";
 
 import { courses, modules } from "../../../drizzle/schema";
@@ -5,7 +6,7 @@ import type { ModuleInfo } from "../components/course/module-section";
 import type { CourseDetailsData, CourseSummary } from "../components/course/types";
 import { db } from "./db";
 
-export async function getCourseSummaryById(courseId: number): Promise<CourseSummary | null> {
+export const getCourseSummaryById = cache(async function getCourseSummaryById(courseId: number): Promise<CourseSummary | null> {
   const [course] = await db
     .select({
       id: courses.id,
@@ -17,7 +18,7 @@ export async function getCourseSummaryById(courseId: number): Promise<CourseSumm
     .limit(1);
 
   return course ?? null;
-}
+});
 
 export async function getCourseModules(courseId: number): Promise<ModuleInfo[]> {
   return db

@@ -174,16 +174,37 @@ export function ContactConstellation() {
     if (!canvas || reducedMotion) return;
 
     const resize = () => {
+      const prevW = canvas.width;
+      const prevH = canvas.height;
       const dpr = Math.min(window.devicePixelRatio, 2);
-      canvas.width = window.innerWidth * dpr;
-      canvas.height = window.innerHeight * dpr;
+      const newW = window.innerWidth * dpr;
+      const newH = window.innerHeight * dpr;
+      canvas.width = newW;
+      canvas.height = newH;
       canvas.style.width = "100%";
       canvas.style.height = "100%";
       const ctx = canvas.getContext("2d");
       if (ctx) ctx.scale(dpr, dpr);
 
       const count = window.innerWidth < 768 ? STAR_COUNT_MOBILE : STAR_COUNT_DESKTOP;
-      starsRef.current = createStars(count, window.innerWidth, window.innerHeight);
+      if (starsRef.current.length === 0 || prevW === 0 || prevH === 0) {
+        starsRef.current = createStars(count, window.innerWidth, window.innerHeight);
+      } else {
+        // Rescale existing stars to new dimensions instead of recreating
+        const scaleX = window.innerWidth / (prevW / Math.min(window.devicePixelRatio, 2));
+        const scaleY = window.innerHeight / (prevH / Math.min(window.devicePixelRatio, 2));
+        for (const star of starsRef.current) {
+          star.x *= scaleX;
+          star.y *= scaleY;
+        }
+        // Adjust count if needed (e.g. mobile <-> desktop breakpoint)
+        if (count > starsRef.current.length) {
+          const extra = createStars(count - starsRef.current.length, window.innerWidth, window.innerHeight);
+          starsRef.current.push(...extra);
+        } else if (count < starsRef.current.length) {
+          starsRef.current.length = count;
+        }
+      }
     };
 
     const handleMouse = (e: MouseEvent) => {

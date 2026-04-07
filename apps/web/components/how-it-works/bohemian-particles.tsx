@@ -63,8 +63,8 @@ function initParticles(container: HTMLElement, shouldAnimate: boolean) {
 
   const renderer = new THREE.WebGLRenderer({
     alpha: true,
-    antialias: true,
-    powerPreference: "high-performance",
+    antialias: false,
+    powerPreference: "low-power",
   });
   renderer.setSize(container.clientWidth, container.clientHeight);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
