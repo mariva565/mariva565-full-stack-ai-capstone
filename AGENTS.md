@@ -10,11 +10,13 @@ The old project is at `C:\Users\mariy\Projects\Visual-Studio-Capstone-Project-St
 
 ## Tech Stack (mandatory)
 
-- **Frontend Web:** Next.js + React + TypeScript + Tailwind CSS
+- **Frontend Web:** Next.js + React + TypeScript + Tailwind CSS + Framer Motion
 - **Backend API:** Next.js API Routes (RESTful)
 - **Database:** Neon serverless PostgreSQL + Drizzle ORM
-- **Auth:** JWT tokens (register, login, logout) + roles (user, admin)
+- **Auth:** JWT tokens (register, login, logout) + Google OAuth + roles (user, admin)
 - **Mobile:** React Native + Expo
+- **AI:** Google Gemini API (chat, summarize, quiz generation)
+- **3D/Visuals:** Three.js (landing page scenes)
 - **Storage:** Cloudflare R2 (optional, for file uploads)
 - **Deploy:** Vercel or Netlify
 
@@ -25,31 +27,71 @@ Monorepo with two apps communicating via REST API:
 ```
 capstone/
 ├── apps/
-│   ├── web/          ← Next.js (backend API + web client)
-│   └── mobile/       ← Expo (React Native mobile client)
+│   ├── web/                  ← Next.js (backend API + web client)
+│   │   ├── app/
+│   │   │   ├── api/          ← RESTful API routes
+│   │   │   ├── register/
+│   │   │   ├── login/
+│   │   │   ├── dashboard/
+│   │   │   ├── courses/[id]/
+│   │   │   ├── modules/[id]/
+│   │   │   ├── materials/[id]/
+│   │   │   ├── calendar/
+│   │   │   ├── progress/
+│   │   │   ├── profile/
+│   │   │   ├── admin/
+│   │   │   ├── how-it-works/
+│   │   │   └── contact/
+│   │   ├── components/       ← UI components (by page + shared ui/)
+│   │   ├── lib/              ← Helpers (auth, db, AI, etc.)
+│   │   └── middleware.ts
+│   └── mobile/               ← Expo (React Native mobile client)
+│       └── app/
+│           ├── login.tsx
+│           ├── index.tsx     ← Courses List
+│           └── course/[id].tsx
 ├── packages/
-│   └── shared/       ← Shared types, utils, API client
-├── drizzle/          ← DB schema + migrations
-├── docs/             ← Documentation
-├── AGENTS.md         ← This file
+│   └── shared/               ← Shared types, utils, API client
+├── drizzle/                  ← DB schema + migrations
+├── docs/                     ← Documentation
+├── AGENTS.md                 ← This file
 └── README.md
 ```
 
-## Database Tables (6 tables, Drizzle ORM)
+## Database Tables (9 tables, Drizzle ORM)
 
-- **users** — id, email, name, password_hash, role (user/admin), avatar_url, created_at
+- **users** — id, email, name, password_hash, role (user/admin), avatar_url, blocked, created_at
 - **courses** — id, title, description, created_by (FK→users), is_public, status, created_at
-- **modules** — id, course_id (FK→courses), title, order_index, created_by (FK→users)
-- **materials** — id, module_id (FK→modules), title, content, material_type, file_url, tags, created_by (FK→users)
+- **modules** — id, course_id (FK→courses), title, description, order_index, created_by (FK→users)
+- **materials** — id, module_id (FK→modules), title, content, material_type, file_url, tags, created_by (FK→users), created_at
 - **favorites** — id, user_id (FK→users), material_id (FK→materials), created_at
+- **milestones** — id, user_id (FK→users), title, description, status, due_date, completed_at, order_index, created_at
+- **events** — id, user_id (FK→users), title, description, date, type, color, course_id (FK→courses), milestone_id (FK→milestones), created_at
 - **activity_logs** — id, user_id (FK→users), action_type, target_id, details (JSON), created_at
+- **oauth_accounts** — id, user_id (FK→users), provider, provider_user_id, provider_email, created_at
+- **ai_tool_outputs** — id, user_id (FK→users), material_id (FK→materials), tool, data (JSON), created_at
 
 Every schema change MUST use Drizzle migrations. Migration SQL scripts must be committed.
 
-## Web Screens (7 screens, responsive)
+## Web Screens (13 screens, responsive)
 
-1. Register, 2. Login, 3. Dashboard (courses list), 4. Course Details (modules → materials),
-5. Material View/Edit, 6. Profile, 7. Admin Panel (user management + content moderation)
+| # | Screen | Path | Access |
+|---|---|---|---|
+| 1 | Landing Page | `/` | public |
+| 2 | How It Works | `/how-it-works` | public |
+| 3 | Contact | `/contact` | public |
+| 4 | Register | `/register` | public |
+| 5 | Login | `/login` | public |
+| 6 | Dashboard | `/dashboard` | login |
+| 7 | Course Details | `/courses/[id]` | login |
+| 8 | Module Workspace | `/modules/[id]` | login |
+| 9 | Material View/Edit | `/materials/[id]` | login |
+| 10 | Calendar | `/calendar` | login |
+| 11 | Progress | `/progress` | login |
+| 12 | Profile | `/profile` | login |
+| 13 | Admin Panel | `/admin` | admin |
+
+Additional: `/forbidden` (error page for unauthorized access)
 
 ## Mobile Screens (3 screens)
 
