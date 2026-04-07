@@ -88,13 +88,35 @@ export async function apiFetch<T>(
     body: body ? JSON.stringify(body) : undefined,
   });
 
-  const data = await res.json();
+  const text = await res.text();
+  const data = text ? tryParseJson(text) : null;
 
   if (!res.ok) {
-    throw new ApiError(data.code || "UNKNOWN", data.message || "Request failed", res.status);
+    const code = isApiErrorPayload(data) ? data.code : "UNKNOWN";
+    const message = isApiErrorPayload(data) ? data.message : "Request failed";
+    throw new ApiError(code, message, res.status);
   }
 
   return data as T;
+}
+
+function tryParseJson(text: string): unknown {
+  try {
+    return JSON.parse(text);
+  } catch {
+    return null;
+  }
+}
+
+function isApiErrorPayload(
+  value: unknown
+): value is { code: string; message: string } {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const payload = value as Record<string, unknown>;
+  return typeof payload.code === "string" && typeof payload.message === "string";
 }
 
 export class ApiError extends Error {

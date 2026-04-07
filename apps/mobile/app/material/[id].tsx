@@ -1,14 +1,15 @@
-import { useEffect, useState, useCallback } from "react";
+import { useCallback, useState } from "react";
 import {
+  Alert,
   View,
   Text,
   ScrollView,
   StyleSheet,
-  ActivityIndicator,
   TouchableOpacity,
   RefreshControl,
   Linking,
 } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { apiFetch } from "../../lib/api";
@@ -38,7 +39,13 @@ export default function MaterialScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState("");
 
-  const fetchMaterial = useCallback(async () => {
+  const fetchMaterial = useCallback(async (isRefresh = false) => {
+    if (isRefresh) {
+      setRefreshing(true);
+    } else {
+      setLoading(true);
+    }
+
     try {
       setError("");
       const data = await apiFetch<{ material: Material }>(`/api/materials/${id}`);
@@ -51,13 +58,27 @@ export default function MaterialScreen() {
     }
   }, [id]);
 
-  useEffect(() => {
-    fetchMaterial();
-  }, [fetchMaterial]);
+  useFocusEffect(
+    useCallback(() => {
+      fetchMaterial();
+    }, [fetchMaterial])
+  );
 
-  function onRefresh() {
-    setRefreshing(true);
-    fetchMaterial();
+  async function handleOpenUrl() {
+    if (!material?.fileUrl) {
+      return;
+    }
+
+    try {
+      const supported = await Linking.canOpenURL(material.fileUrl);
+      if (!supported) {
+        Alert.alert("Invalid link", "This URL cannot be opened on your device.");
+        return;
+      }
+      await Linking.openURL(material.fileUrl);
+    } catch {
+      Alert.alert("Open failed", "Could not open this link.");
+    }
   }
 
   if (loading) {
@@ -74,7 +95,7 @@ export default function MaterialScreen() {
       <View style={styles.centered}>
         <Stack.Screen options={{ title: "Error" }} />
         <Text style={styles.errorText}>{error || "Material not found"}</Text>
-        <TouchableOpacity style={styles.retryBtn} onPress={fetchMaterial}>
+        <TouchableOpacity style={styles.retryBtn} onPress={() => fetchMaterial()}>
           <Text style={styles.retryBtnText}>Retry</Text>
         </TouchableOpacity>
       </View>
@@ -89,7 +110,7 @@ export default function MaterialScreen() {
       refreshControl={
         <RefreshControl
           refreshing={refreshing}
-          onRefresh={onRefresh}
+          onRefresh={() => fetchMaterial(true)}
           tintColor="#4d33c4"
         />
       }
@@ -127,7 +148,7 @@ export default function MaterialScreen() {
       {material.fileUrl ? (
         <TouchableOpacity
           style={styles.linkCard}
-          onPress={() => Linking.openURL(material.fileUrl!)}
+          onPress={handleOpenUrl}
           activeOpacity={0.7}
         >
           <Text style={styles.linkLabel}>

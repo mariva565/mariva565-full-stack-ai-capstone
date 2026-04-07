@@ -1,20 +1,21 @@
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useCallback, useRef, useState } from "react";
 import {
-  View,
-  Text,
-  FlatList,
-  TouchableOpacity,
-  StyleSheet,
-  ActivityIndicator,
-  RefreshControl,
+  Alert,
   Animated,
+  FlatList,
+  RefreshControl,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Stack, useRouter } from "expo-router";
-import { useAuth } from "../lib/auth-context";
-import { apiFetch } from "../lib/api";
-import { BrandedSpinner } from "../components/branded-spinner";
 import { EmptyState } from "../components/empty-state";
+import { BrandedSpinner } from "../components/branded-spinner";
+import { useAuth } from "../lib/auth-context";
+import { ApiError, apiFetch } from "../lib/api";
 
 type Course = {
   id: number;
@@ -25,38 +26,42 @@ type Course = {
   createdAt: string;
 };
 
-function CourseCard({ item, index, onPress }: { item: Course; index: number; onPress: () => void }) {
+type CourseCardProps = {
+  item: Course;
+  index: number;
+  onOpen: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
+};
+
+function CourseCard({ item, index, onOpen, onEdit, onDelete }: CourseCardProps) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(20)).current;
 
-  useEffect(() => {
-    Animated.parallel([
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 400,
-        delay: index * 80,
-        useNativeDriver: true,
-      }),
-      Animated.timing(slideAnim, {
-        toValue: 0,
-        duration: 400,
-        delay: index * 80,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      Animated.parallel([
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 400,
+          delay: index * 80,
+          useNativeDriver: true,
+        }),
+        Animated.timing(slideAnim, {
+          toValue: 0,
+          duration: 400,
+          delay: index * 80,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    }, [fadeAnim, index, slideAnim])
+  );
 
   return (
-    <Animated.View
-      style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}
-    >
-      <TouchableOpacity
-        style={styles.courseCard}
-        onPress={onPress}
-        activeOpacity={0.7}
-      >
+    <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
+      <View style={styles.courseCard}>
         <View style={styles.cardAccent} />
-        <View style={styles.cardContent}>
+        <TouchableOpacity style={styles.cardContent} onPress={onOpen} activeOpacity={0.75}>
           <Text style={styles.courseTitle} numberOfLines={1}>
             {item.title}
           </Text>
@@ -68,8 +73,26 @@ function CourseCard({ item, index, onPress }: { item: Course; index: number; onP
           <Text style={styles.courseDate}>
             {new Date(item.createdAt).toLocaleDateString()}
           </Text>
+        </TouchableOpacity>
+        <View style={styles.inlineActions}>
+          <TouchableOpacity
+            style={[styles.inlineActionBtn, styles.inlineEditBtn]}
+            onPress={onEdit}
+            activeOpacity={0.8}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          >
+            <Text style={[styles.inlineActionText, styles.inlineEditText]}>Edit</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.inlineActionBtn, styles.inlineDeleteBtn]}
+            onPress={onDelete}
+            activeOpacity={0.8}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          >
+            <Text style={[styles.inlineActionText, styles.inlineDeleteText]}>Delete</Text>
+          </TouchableOpacity>
         </View>
-      </TouchableOpacity>
+      </View>
     </Animated.View>
   );
 }
@@ -82,7 +105,13 @@ export default function CoursesListScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState("");
 
-  const fetchCourses = useCallback(async () => {
+  const fetchCourses = useCallback(async (isRefresh = false) => {
+    if (isRefresh) {
+      setRefreshing(true);
+    } else {
+      setLoading(true);
+    }
+
     try {
       setError("");
       const data = await apiFetch<{ courses: Course[] }>("/api/courses");
@@ -95,34 +124,43 @@ export default function CoursesListScreen() {
     }
   }, []);
 
-  useEffect(() => {
-    fetchCourses();
-  }, [fetchCourses]);
+  useFocusEffect(
+    useCallback(() => {
+      fetchCourses();
+    }, [fetchCourses])
+  );
 
-  function onRefresh() {
-    setRefreshing(true);
-    fetchCourses();
-  }
-
-  function renderCourse({ item, index }: { item: Course; index: number }) {
-    return (
-      <CourseCard
-        item={item}
-        index={index}
-        onPress={() => router.push(`/course/${item.id}`)}
-      />
-    );
-  }
+  const handleDeleteCourse = useCallback(
+    (course: Course) => {
+      Alert.alert(
+        "Delete course",
+        `Delete "${course.title}"? This will also remove its modules and materials.`,
+        [
+          { text: "Cancel", style: "cancel" },
+          {
+            text: "Delete",
+            style: "destructive",
+            onPress: async () => {
+              try {
+                await apiFetch(`/api/courses/${course.id}`, { method: "DELETE" });
+                setCourses((current) => current.filter((item) => item.id !== course.id));
+              } catch (error) {
+                const message =
+                  error instanceof ApiError ? error.message : "Failed to delete course";
+                Alert.alert("Delete failed", message);
+              }
+            },
+          },
+        ]
+      );
+    },
+    []
+  );
 
   return (
     <View style={styles.container}>
-      <Stack.Screen
-        options={{
-          headerShown: false,
-        }}
-      />
+      <Stack.Screen options={{ headerShown: false }} />
 
-      {/* Branded header */}
       <LinearGradient
         colors={["#2e1d7a", "#4d33c4"]}
         start={{ x: 0, y: 0 }}
@@ -131,16 +169,11 @@ export default function CoursesListScreen() {
       >
         <View style={styles.headerContent}>
           <View>
-            <Text style={styles.headerGreeting}>
-              Welcome back,
-            </Text>
+            <Text style={styles.headerGreeting}>Welcome back,</Text>
             <Text style={styles.headerName}>{user?.name ?? "Student"}</Text>
           </View>
           <View style={styles.headerRight}>
-            <TouchableOpacity
-              onPress={() => router.push("/profile" as any)}
-              style={styles.profileBtn}
-            >
+            <TouchableOpacity onPress={() => router.push("/profile" as any)} style={styles.profileBtn}>
               <Text style={styles.profileBtnText}>Profile</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={logout} style={styles.logoutBtn}>
@@ -148,70 +181,68 @@ export default function CoursesListScreen() {
             </TouchableOpacity>
           </View>
         </View>
+
         <View style={styles.statsRow}>
           <View style={styles.statItem}>
             <Text style={styles.statNumber}>{courses.length}</Text>
-            <Text style={styles.statLabel}>
-              {courses.length === 1 ? "Course" : "Courses"}
-            </Text>
+            <Text style={styles.statLabel}>{courses.length === 1 ? "Course" : "Courses"}</Text>
           </View>
           <View style={styles.statItem}>
             <Text style={styles.statNumber}>
-              {courses.filter((c) => c.status === "published").length}
+              {courses.filter((course) => course.status === "published").length}
             </Text>
             <Text style={styles.statLabel}>Published</Text>
           </View>
           <View style={styles.statItem}>
             <Text style={styles.statNumber}>
-              {courses.filter((c) => c.status === "draft").length}
+              {courses.filter((course) => course.status === "draft").length}
             </Text>
             <Text style={styles.statLabel}>Drafts</Text>
           </View>
         </View>
       </LinearGradient>
 
-      {/* Content */}
       {loading ? (
         <BrandedSpinner message="Loading courses..." />
       ) : error ? (
         <View style={styles.centered}>
           <Text style={styles.errorText}>{error}</Text>
-          <TouchableOpacity style={styles.retryBtn} onPress={fetchCourses}>
+          <TouchableOpacity style={styles.retryBtn} onPress={() => fetchCourses()}>
             <Text style={styles.retryText}>Retry</Text>
           </TouchableOpacity>
         </View>
       ) : courses.length === 0 ? (
-        <EmptyState
-          icon="📖"
-          title="No courses yet"
-          subtitle="Tap + to create your first course"
-        />
+        <EmptyState icon="Courses" title="No courses yet" subtitle="Tap + to create your first course" />
       ) : (
         <FlatList
           data={courses}
           keyExtractor={(item) => String(item.id)}
-          renderItem={renderCourse}
           contentContainerStyle={styles.list}
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
-              onRefresh={onRefresh}
+              onRefresh={() => fetchCourses(true)}
               tintColor="#4d33c4"
             />
           }
+          renderItem={({ item, index }) => (
+            <CourseCard
+              item={item}
+              index={index}
+              onOpen={() => router.push(`/course/${item.id}`)}
+              onEdit={() => router.push(`/course/${item.id}/edit` as any)}
+              onDelete={() => handleDeleteCourse(item)}
+            />
+          )}
         />
       )}
 
-      {/* FAB */}
       <TouchableOpacity
         style={styles.fab}
         onPress={() => router.push("/create-course" as any)}
         activeOpacity={0.8}
       >
-        <LinearGradient
-          colors={["#4d33c4", "#7c5ce7"]}
-          style={styles.fabGradient}
-        >
+        <LinearGradient colors={["#4d33c4", "#7c5ce7"]} style={styles.fabGradient}>
           <Text style={styles.fabText}>+</Text>
         </LinearGradient>
       </TouchableOpacity>
@@ -220,61 +251,26 @@ export default function CoursesListScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#f8f6ff",
-  },
-  headerGradient: {
-    paddingTop: 56,
-    paddingBottom: 20,
-    paddingHorizontal: 20,
-  },
+  container: { flex: 1, backgroundColor: "#f8f6ff" },
+  headerGradient: { paddingTop: 56, paddingBottom: 20, paddingHorizontal: 20 },
   headerContent: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start",
   },
-  headerGreeting: {
-    fontSize: 14,
-    color: "rgba(255,255,255,0.7)",
-    fontWeight: "500",
-  },
-  headerName: {
-    fontSize: 22,
-    fontWeight: "800",
-    color: "#ffffff",
-    marginTop: 2,
-  },
-  headerRight: {
-    alignItems: "flex-end",
-    gap: 8,
-  },
+  headerGreeting: { fontSize: 14, color: "rgba(255,255,255,0.7)", fontWeight: "500" },
+  headerName: { fontSize: 22, fontWeight: "800", color: "#ffffff", marginTop: 2 },
+  headerRight: { alignItems: "flex-end", gap: 8 },
   profileBtn: {
     backgroundColor: "rgba(255,255,255,0.15)",
     paddingHorizontal: 12,
     paddingVertical: 5,
     borderRadius: 8,
   },
-  profileBtnText: {
-    fontSize: 12,
-    fontWeight: "600",
-    color: "#ffffff",
-    textTransform: "capitalize",
-  },
-  logoutBtn: {
-    paddingHorizontal: 4,
-    paddingVertical: 2,
-  },
-  logoutText: {
-    color: "rgba(255,255,255,0.6)",
-    fontWeight: "600",
-    fontSize: 13,
-  },
-  statsRow: {
-    flexDirection: "row",
-    marginTop: 20,
-    gap: 12,
-  },
+  profileBtnText: { fontSize: 12, fontWeight: "600", color: "#ffffff" },
+  logoutBtn: { paddingHorizontal: 4, paddingVertical: 2 },
+  logoutText: { color: "rgba(255,255,255,0.6)", fontWeight: "600", fontSize: 13 },
+  statsRow: { flexDirection: "row", marginTop: 20, gap: 12 },
   statItem: {
     flex: 1,
     backgroundColor: "rgba(255,255,255,0.1)",
@@ -282,24 +278,17 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     alignItems: "center",
   },
-  statNumber: {
-    fontSize: 20,
-    fontWeight: "800",
-    color: "#ffffff",
-  },
+  statNumber: { fontSize: 20, fontWeight: "800", color: "#ffffff" },
   statLabel: {
     fontSize: 11,
     color: "rgba(255,255,255,0.6)",
     fontWeight: "600",
     marginTop: 2,
   },
-  list: {
-    padding: 16,
-  },
+  list: { padding: 16, paddingBottom: 96 },
   courseCard: {
     backgroundColor: "#ffffff",
     borderRadius: 14,
-    flexDirection: "row",
     overflow: "hidden",
     shadowColor: "#2e1d7a",
     shadowOffset: { width: 0, height: 2 },
@@ -308,104 +297,57 @@ const styles = StyleSheet.create({
     elevation: 2,
     marginBottom: 12,
   },
-  cardAccent: {
-    width: 4,
-    backgroundColor: "#4d33c4",
-  },
-  cardContent: {
-    flex: 1,
-    padding: 16,
-  },
-  courseHeader: {
+  cardAccent: { height: 4, backgroundColor: "#4d33c4" },
+  cardContent: { paddingHorizontal: 16, paddingTop: 16, paddingBottom: 10 },
+  courseTitle: { fontSize: 17, fontWeight: "700", color: "#0f172a" },
+  inlineActions: {
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 6,
+    justifyContent: "flex-end",
+    gap: 8,
+    paddingHorizontal: 16,
+    paddingBottom: 14,
   },
-  courseTitle: {
-    fontSize: 17,
-    fontWeight: "700",
-    color: "#0f172a",
-    flex: 1,
-    marginRight: 8,
+  inlineActionBtn: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 10,
+    borderWidth: 1,
   },
-  badge: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 6,
+  inlineEditBtn: {
+    backgroundColor: "#f5f3ff",
+    borderColor: "#c4b5fd",
   },
-  badgePublished: {
-    backgroundColor: "#dcfce7",
+  inlineDeleteBtn: {
+    backgroundColor: "#fff1f2",
+    borderColor: "#fda4af",
   },
-  badgeDraft: {
-    backgroundColor: "#fef3c7",
-  },
-  badgeText: {
-    fontSize: 11,
-    fontWeight: "600",
-    textTransform: "capitalize",
-  },
-  badgeTextPublished: {
-    color: "#166534",
-  },
-  badgeTextDraft: {
-    color: "#92400e",
-  },
-  courseDesc: {
-    fontSize: 14,
-    color: "#64748b",
-    lineHeight: 20,
-    marginBottom: 8,
-  },
-  courseDate: {
+  inlineActionText: {
     fontSize: 12,
-    color: "#94a3b8",
+    fontWeight: "700",
   },
+  inlineEditText: {
+    color: "#5b21b6",
+  },
+  inlineDeleteText: {
+    color: "#be123c",
+  },
+  courseDesc: { fontSize: 14, color: "#64748b", lineHeight: 20, marginTop: 8 },
+  courseDate: { fontSize: 12, color: "#94a3b8", marginTop: 10 },
   centered: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 32,
   },
-  errorText: {
-    fontSize: 16,
-    color: "#dc2626",
-    marginBottom: 16,
-    textAlign: "center",
-  },
+  errorText: { fontSize: 16, color: "#dc2626", marginBottom: 16, textAlign: "center" },
   retryBtn: {
     backgroundColor: "#4d33c4",
     paddingHorizontal: 24,
     paddingVertical: 10,
     borderRadius: 8,
   },
-  retryText: {
-    color: "#ffffff",
-    fontWeight: "600",
-  },
-  emptyIconCircle: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: "#f0ecff",
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  emptyIcon: {
-    fontSize: 36,
-  },
-  emptyText: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: "#334155",
-    marginBottom: 4,
-  },
-  emptyHint: {
-    fontSize: 14,
-    color: "#94a3b8",
-    textAlign: "center",
-  },
+  retryText: { color: "#ffffff", fontWeight: "600" },
   fab: {
     position: "absolute",
     bottom: 24,
@@ -424,10 +366,5 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  fabText: {
-    fontSize: 28,
-    fontWeight: "600",
-    color: "#ffffff",
-    marginTop: -2,
-  },
+  fabText: { fontSize: 28, fontWeight: "600", color: "#ffffff", marginTop: -2 },
 });

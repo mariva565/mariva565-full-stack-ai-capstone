@@ -4197,3 +4197,31 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 **Тествано:**
 - `tsc --noEmit` — PASS
 - Expo Go на физическо устройство — Create Course работи, курсът се появява в списъка
+### Session 158 (Mobile CRUD actions + refresh hardening)
+
+**What we changed:**
+- Hardened `apps/mobile/lib/api.ts` so mobile requests no longer assume every response is valid JSON.
+- Added focus-driven refresh on the main mobile list/detail flows so returning from create/edit screens reloads current data instead of showing stale state.
+- Added shared mobile action UI:
+  - `apps/mobile/components/entity-actions.tsx`
+- Added edit screens:
+  - `apps/mobile/app/course/[id]/edit.tsx`
+  - `apps/mobile/app/module/[id]/edit.tsx`
+  - `apps/mobile/app/material/[id]/edit.tsx`
+- Added `Edit` / `Delete` actions directly on mobile containers:
+  - course cards in `apps/mobile/app/index.tsx`
+  - module cards in `apps/mobile/app/course/[id]/index.tsx`
+  - material cards in `apps/mobile/app/course/[id]/index.tsx`
+- Added delete confirmations for courses, modules, and materials.
+- Updated the material details screen to:
+  - refresh on focus
+  - guard external URL opening with `Linking.canOpenURL`
+  - show a safer fallback alert on invalid or broken links
+
+**Why:**
+- Mobile create/edit flows were returning to stale parent screens because the parent data only loaded on first mount.
+- The user wanted direct editing and deletion from the visible course/module/material containers instead of needing separate indirect flows.
+- The API client and external-link handling needed a small resilience pass to avoid fragile runtime behavior.
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/mobile typecheck`
