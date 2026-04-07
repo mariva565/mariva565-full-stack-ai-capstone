@@ -4056,3 +4056,41 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 **Verification:**
 - `npm.cmd run build` PASS (`apps/web`)
 - Manual verification: Button renders correctly on both auth pages with all animations active.
+
+---
+
+## 2026-04-07
+
+### Session 155 (Dev Server Performance Optimisation)
+
+**Problem:**
+- The Next.js dev server was compiling pages very slowly and navigation between routes took a long time.
+
+**Root-cause analysis:**
+1. **Three.js statically imported** (~600 KB) in `hero-3d-scene.tsx` and `bohemian-particles.tsx` — bundled into the main chunk even for pages that never use 3D.
+2. **Zero `next/dynamic` usage** across the entire project — every heavy component (Three.js, ChatWidget) was statically imported.
+3. **Rubik font loaded 7 weights** (300–900) but weight 300 (`font-light`) was never used anywhere.
+4. **Double JWT verification per request** — both `<Navbar />` and `<ChatGate />` in root layout independently called `getRequestUserOrNull()`, running JWT decode twice on every navigation.
+
+**What changed:**
+
+- `apps/web/components/how-it-works/how-it-works-hero.tsx`
+  - Replaced static `import { Hero3dScene }` with `next/dynamic` + `{ ssr: false }` — Three.js is now code-split and only loaded when the how-it-works page is visited.
+
+- `apps/web/components/how-it-works/how-it-works-cta.tsx`
+  - Replaced static `import { BohemianParticles }` with `next/dynamic` + `{ ssr: false }` — same treatment for the second Three.js consumer.
+
+- `apps/web/components/chat/chat-route-visibility.tsx`
+  - Replaced static `import { ChatWidget }` with `next/dynamic` + `{ ssr: false }` — chat widget JS is no longer included in the initial page bundle.
+
+- `apps/web/app/layout.tsx`
+  - Removed Rubik weight `"300"` from the font declaration (6 weights instead of 7).
+
+- `apps/web/lib/server-auth.ts`
+  - Wrapped `getRequestUserOrNull` with React `cache()` so that multiple calls within the same server request (Navbar + ChatGate) only run JWT verification once.
+
+**What we investigated but left unchanged:**
+- The landing-page `Navbar` (`components/layout/Navbar.tsx`) used by `/` and `/how-it-works` is a separate component from the global auth-aware navbar (`components/navbar.tsx`). The global navbar already hides itself on public routes via `PUBLIC_PATHS` check, so there is no visual duplication.
+
+**Verification:**
+- `tsc --noEmit` — PASS, zero errors.

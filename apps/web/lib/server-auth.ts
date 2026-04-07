@@ -1,8 +1,9 @@
+import { cache } from "react";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { type JwtPayload, verifyToken } from "./jwt";
 
-export async function getRequestUserOrNull(): Promise<JwtPayload | null> {
+export const getRequestUserOrNull = cache(async (): Promise<JwtPayload | null> => {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
 
@@ -11,7 +12,7 @@ export async function getRequestUserOrNull(): Promise<JwtPayload | null> {
   }
 
   return (await verifyToken(token)) ?? null;
-}
+});
 
 export async function getRequestUserOrRedirect(): Promise<JwtPayload> {
   const user = await getRequestUserOrNull();

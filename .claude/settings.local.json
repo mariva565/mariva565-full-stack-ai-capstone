@@ -30,7 +30,8 @@
       "Bash(node -e \"const sharp = require\\('sharp'\\); sharp\\('apps/web/public/assets/v1/AI-icon-3.png'\\).metadata\\(\\).then\\(m => console.log\\(m.width, m.height\\)\\)\")",
       "Bash(python3 -c \"from PIL import Image; im=Image.open\\('apps/web/public/assets/v1/AI-icon-3.png'\\); print\\(im.size\\)\")",
       "Bash(mkdir -p \"c:/Users/mariy/Projects/20260327 Capstone/apps/web/app/api/admin/courses/[id]\")",
-      "Bash(mkdir -p \"c:/Users/mariy/Projects/20260327 Capstone/apps/web/app/api/admin/modules/[id]\")"
+      "Bash(mkdir -p \"c:/Users/mariy/Projects/20260327 Capstone/apps/web/app/api/admin/modules/[id]\")",
+      "Bash(npx --workspace @studyhub/web tsc --noEmit)"
     ],
     "additionalDirectories": [
       "c:\\Users\\mariy\\Projects\\Visual-Studio-Capstone-Project-StudyHub-interface-v3\\public"

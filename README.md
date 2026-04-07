@@ -18,10 +18,10 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/Status-In%20Progress-F59E0B?style=flat-square" alt="Status in progress" />
-  <img src="https://img.shields.io/badge/Commits-60%2B-22C55E?style=flat-square" alt="60 plus commits" />
+  <img src="https://img.shields.io/badge/Commits-75%2B-22C55E?style=flat-square" alt="75 plus commits" />
   <img src="https://img.shields.io/badge/TypeScript-Strict%20Mode-6366F1?style=flat-square" alt="TypeScript strict mode" />
-  <img src="https://img.shields.io/badge/Tables-9-8B5CF6?style=flat-square" alt="9 database tables" />
-  <img src="https://img.shields.io/badge/API-25%20endpoints-06B6D4?style=flat-square" alt="25 API endpoints" />
+  <img src="https://img.shields.io/badge/Tables-10-8B5CF6?style=flat-square" alt="10 database tables" />
+  <img src="https://img.shields.io/badge/API-37%20endpoints-06B6D4?style=flat-square" alt="37 API endpoints" />
   <img src="https://img.shields.io/badge/Web-14%20pages-6366F1?style=flat-square" alt="14 web pages" />
   <img src="https://img.shields.io/badge/Mobile-3%20screens-8B5CF6?style=flat-square" alt="3 mobile screens" />
 </p>
@@ -31,7 +31,7 @@
   <a href="#database-schema"><img src="https://img.shields.io/badge/DB-Schema%20Diagram-6366F1?style=flat-square" alt="DB schema diagram" /></a>
   <a href="#user-roles"><img src="https://img.shields.io/badge/Roles-User%20%2B%20Admin-06B6D4?style=flat-square" alt="User roles" /></a>
   <a href="#demo-walkthrough"><img src="https://img.shields.io/badge/Demo-Walkthrough-8B5CF6?style=flat-square" alt="Demo walkthrough" /></a>
-  <a href="#api-endpoints-25"><img src="https://img.shields.io/badge/API-Endpoints-6366F1?style=flat-square" alt="API endpoints" /></a>
+  <a href="#api-endpoints-37"><img src="https://img.shields.io/badge/API-Endpoints-6366F1?style=flat-square" alt="API endpoints" /></a>
 </p>
 
 ---
@@ -66,15 +66,16 @@ The app is a personal **Learning Management System (LMS)** — a structured elec
 | Phase | Scope | Status |
 |---|---|---|
 | Phase 0 | Monorepo bootstrap (npm workspaces) | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
-| Phase 1 | DB schema + Drizzle migrations (9 tables) | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
+| Phase 1 | DB schema + Drizzle migrations (10 tables) | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
 | Phase 2 | Auth (JWT + Google OAuth + role guards) | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
 | Phase 3 | Courses / modules / materials CRUD + favorites | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
 | Phase 4 | Profile + milestones + calendar + progress tracking | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
 | Phase 5 | Mobile app (3 screens, tested on real device) | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
-| Phase 6 | Admin panel (user management, moderation, logs) | ![In Progress](https://img.shields.io/badge/In%20Progress-F59E0B?style=flat-square) |
-| Phase 7 | File storage (Cloudflare R2 — PDF upload, export) | ![Planned](https://img.shields.io/badge/Planned-64748B?style=flat-square) |
-| Phase 8 | Deployment (Vercel/Netlify) | ![Planned](https://img.shields.io/badge/Planned-64748B?style=flat-square) |
-| Phase 9 | Docs + demo polish | ![Planned](https://img.shields.io/badge/Planned-64748B?style=flat-square) |
+| Phase 6 | Admin panel (user management, moderation, logs) | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
+| Phase 7 | AI study tools (Gemini chat, summarize, quiz) | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
+| Phase 8 | UI polish (landing, how-it-works, contact, animations) | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
+| Phase 9 | File storage (Cloudflare R2 — PDF upload, export) | ![Planned](https://img.shields.io/badge/Planned-64748B?style=flat-square) |
+| Phase 10 | Deployment (Vercel/Netlify) | ![Planned](https://img.shields.io/badge/Planned-64748B?style=flat-square) |
 
 ---
 
@@ -90,7 +91,7 @@ The app is a personal **Learning Management System (LMS)** — a structured elec
 graph TB
     subgraph CLIENT["Client Layer"]
         direction LR
-        WEB["<b>Next.js Web App</b><br/>React 19 + TypeScript<br/>Tailwind CSS<br/>14 pages"]
+        WEB["<b>Next.js Web App</b><br/>React 19 + TypeScript<br/>Tailwind CSS + Three.js<br/>14 pages"]
         MOBILE["<b>Expo Mobile App</b><br/>React Native<br/>Android / iOS<br/>3 screens"]
     end
 
@@ -99,6 +100,7 @@ graph TB
         AUTH["Auth<br/><i>JWT + Google OAuth</i><br/><i>httpOnly cookies</i><br/><i>role guards</i>"]
         CRUD["CRUD<br/><i>Courses</i><br/><i>Modules</i><br/><i>Materials</i>"]
         FEATURES["Features<br/><i>Favorites</i><br/><i>Milestones</i><br/><i>Events</i>"]
+        AI["AI Tools<br/><i>Gemini Chat</i><br/><i>Summarize</i><br/><i>Quiz</i>"]
         ADMIN["Admin<br/><i>Users</i><br/><i>Moderation</i><br/><i>Activity Logs</i>"]
     end
 
@@ -107,10 +109,10 @@ graph TB
     end
 
     subgraph DATA["Data Layer"]
-        DB[("Neon PostgreSQL<br/><i>Serverless — EU region</i><br/>9 tables + relationships")]
+        DB[("Neon PostgreSQL<br/><i>Serverless — EU region</i><br/>10 tables + relationships")]
     end
 
-    WEB -->|"REST API<br/>25 endpoints"| SERVER
+    WEB -->|"REST API<br/>37 endpoints"| SERVER
     MOBILE -->|"REST API<br/>same backend"| SERVER
     SERVER --> ORM
     ORM --> DB
@@ -124,6 +126,7 @@ graph TB
     style AUTH fill:#0c4a6e,stroke:#38bdf8,color:#e0f2fe
     style CRUD fill:#0c4a6e,stroke:#38bdf8,color:#e0f2fe
     style FEATURES fill:#0c4a6e,stroke:#38bdf8,color:#e0f2fe
+    style AI fill:#0c4a6e,stroke:#38bdf8,color:#e0f2fe
     style ADMIN fill:#0c4a6e,stroke:#38bdf8,color:#e0f2fe
     style DRIZZLE fill:#1a2e05,stroke:#a3e635,color:#ecfccb
     style DB fill:#422006,stroke:#fbbf24,color:#fef9c3
@@ -134,7 +137,7 @@ graph TB
 | Layer | Technology |
 |---|---|
 | Frontend Web | Next.js 15 + React 19 + TypeScript (strict) + Tailwind CSS |
-| Backend API | Next.js API Routes — 25 RESTful endpoints |
+| Backend API | Next.js API Routes — 37 RESTful endpoints |
 | Database | Neon PostgreSQL (serverless) + Drizzle ORM + SQL migrations |
 | Auth | Custom JWT (jose, HS256, httpOnly cookies) + Google OAuth |
 | Mobile | React Native + Expo SDK 54 |
@@ -269,7 +272,7 @@ Admin cannot delete themselves or change their own role (self-protection enforce
 
 ## Database Schema
 
-9 tables with foreign key relationships, cascade deletes, and unique constraints (minimum required: 4):
+10 tables with foreign key relationships, cascade deletes, and unique constraints (minimum required: 4):
 
 ```mermaid
 erDiagram
@@ -355,6 +358,15 @@ erDiagram
         timestamp created_at
     }
 
+    ai_tool_outputs {
+        serial id PK
+        integer user_id FK
+        integer material_id FK
+        varchar tool "summarize | quiz | chat"
+        jsonb data
+        timestamp created_at
+    }
+
     oauth_accounts {
         serial id PK
         integer user_id FK
@@ -376,6 +388,8 @@ erDiagram
     courses ||--o{ modules : contains
     modules ||--o{ materials : contains
     materials ||--o{ favorites : bookmarked
+    materials ||--o{ ai_tool_outputs : "analyzed by"
+    users ||--o{ ai_tool_outputs : generates
 
     courses ||--o{ events : "linked to"
     milestones ||--o{ events : "linked to"
@@ -393,7 +407,8 @@ erDiagram
 | 6 | `milestones` | Personal progress goals with status workflow | not_started -> in_progress -> done; linkable to calendar events |
 | 7 | `events` | Calendar entries with type and color | Optionally linked to a course or milestone |
 | 8 | `activity_logs` | Audit trail for all user actions | Stores action_type + structured JSON details |
-| 9 | `oauth_accounts` | External auth provider identities | Links Google OAuth to user; unique on (provider, provider_user_id) |
+| 9 | `ai_tool_outputs` | Saved AI analysis results (summaries, quizzes) | Per user + material; indexed for fast lookup |
+| 10 | `oauth_accounts` | External auth provider identities | Links Google OAuth to user; unique on (provider, provider_user_id) |
 
 ---
 
@@ -430,7 +445,7 @@ The mobile app connects to the **same Next.js backend** — no separate API need
 
 ---
 
-## API Endpoints (25)
+## API Endpoints (37)
 
 ### Auth (8 endpoints)
 
@@ -457,7 +472,7 @@ The mobile app connects to the **same Next.js backend** — no separate API need
 | `GET/POST` | `/api/modules/[id]/materials` | List / create materials for module |
 | `GET/PUT/DELETE` | `/api/materials/[id]` | Material by id |
 
-### Features (5 endpoints)
+### Features (7 endpoints)
 
 | Method | Endpoint | Description |
 |---|---|---|
@@ -467,17 +482,34 @@ The mobile app connects to the **same Next.js backend** — no separate API need
 | `GET/PUT/DELETE` | `/api/milestones/[id]` | Milestone by id |
 | `GET/POST` | `/api/events` | List / create calendar events |
 | `GET/PUT/DELETE` | `/api/events/[id]` | Event by id |
+| `GET` | `/api/dashboard` | Aggregated stats (courses, materials, favorites count) |
 
-### Dashboard & Admin (4 endpoints)
+### AI Tools (3 endpoints)
 
 | Method | Endpoint | Description |
 |---|---|---|
-| `GET` | `/api/dashboard` | Aggregated stats (courses, materials, favorites count) |
+| `POST` | `/api/ai/chat` | Gemini-powered chat about material content |
+| `POST` | `/api/ai/tools` | AI analysis tools (summarize, quiz, explain) |
+| `GET/POST/DELETE` | `/api/materials/[id]/ai-outputs` | Saved AI results per material |
+
+### Admin (11 endpoints)
+
+| Method | Endpoint | Description |
+|---|---|---|
 | `GET` | `/api/admin/users` | List all users (admin only) |
 | `PUT/DELETE` | `/api/admin/users/[id]` | Change role / delete user (admin only) |
-| `GET` | `/api/admin/materials` | List all materials for moderation (admin only) |
-| `DELETE` | `/api/admin/materials/[id]` | Delete any material (admin only) |
+| `GET` | `/api/admin/courses` | List all courses for moderation |
+| `DELETE` | `/api/admin/courses/[id]` | Delete any course |
+| `POST` | `/api/admin/courses/bulk-delete` | Bulk delete courses |
+| `GET` | `/api/admin/modules` | List all modules for moderation |
+| `DELETE` | `/api/admin/modules/[id]` | Delete any module |
+| `POST` | `/api/admin/modules/bulk-delete` | Bulk delete modules |
+| `GET` | `/api/admin/materials` | List all materials for moderation |
+| `DELETE` | `/api/admin/materials/[id]` | Delete any material |
+| `POST` | `/api/admin/materials/bulk-delete` | Bulk delete materials |
 | `GET` | `/api/admin/activity-logs` | View audit trail (admin only) |
+| `GET` | `/api/admin/activity-stats` | Activity statistics and charts |
+| `GET` | `/api/admin/stats` | Dashboard overview stats |
 | `GET` | `/api/health` | Server health check |
 
 ---
@@ -546,16 +578,17 @@ studyhub-v2/
 ├── apps/
 │   ├── web/                          # Next.js web app + API backend
 │   │   ├── app/
-│   │   │   ├── api/                  # 25 REST API endpoints
+│   │   │   ├── api/                  # 37 REST API endpoints
 │   │   │   │   ├── auth/             #   register, login, logout, me, password, avatar, google
 │   │   │   │   ├── courses/          #   CRUD + nested modules
 │   │   │   │   ├── modules/          #   CRUD + nested materials
-│   │   │   │   ├── materials/        #   CRUD
+│   │   │   │   ├── materials/        #   CRUD + AI outputs
 │   │   │   │   ├── favorites/        #   create, list, remove
 │   │   │   │   ├── milestones/       #   CRUD
 │   │   │   │   ├── events/           #   CRUD
+│   │   │   │   ├── ai/              #   Gemini chat + analysis tools
 │   │   │   │   ├── dashboard/        #   aggregated stats
-│   │   │   │   ├── admin/            #   users, materials, activity-logs
+│   │   │   │   ├── admin/            #   users, courses, modules, materials, logs, stats
 │   │   │   │   └── health/           #   health check
 │   │   │   ├── login/                # Login page
 │   │   │   ├── register/             # Register page
@@ -571,18 +604,22 @@ studyhub-v2/
 │   │   │   ├── contact/              # Contact page
 │   │   │   └── forbidden/            # 403 page
 │   │   ├── components/               # Reusable UI components
-│   │   │   ├── ui/                   #   Base components (buttons, cards, etc.)
-│   │   │   ├── admin/                #   Admin panel tabs
+│   │   │   ├── ui/                   #   Base components (buttons, cards, modals, etc.)
+│   │   │   ├── admin/                #   Admin panel tabs + management
 │   │   │   ├── home/                 #   Landing page sections
+│   │   │   ├── how-it-works/         #   How It Works page sections + 3D scenes
+│   │   │   ├── contact/              #   Contact page + aurora background
 │   │   │   ├── dashboard/            #   Dashboard widgets
 │   │   │   ├── course/               #   Course-related components
 │   │   │   ├── materials/            #   Material editor/viewer
+│   │   │   ├── chat/                 #   AI chat widget + tools panel
 │   │   │   ├── calendar/             #   Calendar components
 │   │   │   └── progress/             #   Milestone components
 │   │   ├── lib/                      # Server utilities
 │   │   │   ├── db.ts                 #   Neon + Drizzle connection
 │   │   │   ├── jwt.ts                #   JWT sign/verify (jose)
 │   │   │   ├── auth.ts               #   Password hash/verify (bcryptjs)
+│   │   │   ├── google.ts             #   Google OAuth token verification
 │   │   │   ├── api-utils.ts          #   requireAuth(), requireAdmin()
 │   │   │   └── activity.ts           #   Activity logging helper
 │   │   └── middleware.ts             # Route protection + role guards
@@ -600,7 +637,7 @@ studyhub-v2/
 │   └── shared/                       # Shared TypeScript types/utils
 │
 ├── drizzle/
-│   ├── schema.ts                     # All 9 table definitions
+│   ├── schema.ts                     # All 10 table definitions
 │   └── migrations/                   # SQL migration files (committed)
 │
 ├── docs/
@@ -682,7 +719,7 @@ npm run dev:mobile:usb
 | Frontend | Vanilla JS + Bootstrap | React + Next.js + TypeScript + Tailwind |
 | Backend | Supabase (BaaS) | Next.js API Routes (custom) |
 | Auth | Supabase Auth (GoTrue) | Custom JWT + Google OAuth |
-| Database | Supabase PostgreSQL (6 tables) | Neon PostgreSQL + Drizzle ORM (9 tables) |
+| Database | Supabase PostgreSQL (6 tables) | Neon PostgreSQL + Drizzle ORM (10 tables) |
 | Mobile | None | React Native + Expo (3 screens) |
 | File structure | Single app, monolithic files | Monorepo + modular components (<300 LOC each) |
 | Deployment | Netlify + Vercel (dual) | Planned: Vercel |
@@ -692,14 +729,12 @@ npm run dev:mobile:usb
 
 ## Planned Features
 
-These features are planned for upcoming phases and are **not yet implemented**:
-
-| Feature | Description | Phase |
+| Feature | Description | Status |
 |---|---|---|
-| Admin Panel UI | Full admin interface with user management, moderation, activity logs | Phase 6 |
-| Cloudflare R2 Storage | Upload PDFs and documents, PDF-to-notes conversion, notes-to-PDF export | Phase 7 |
-| Sharing & Permissions | Share materials/notes between users with access control | Future |
-| AI Integration | Summarize / Quiz / Chat powered by Gemini API | Future |
+| Cloudflare R2 Storage | Upload PDFs and documents, avatar file storage | Planned |
+| Sharing & Permissions | Share materials/notes between users with access control | Planned |
+| Forgot Password | Email-based password reset flow with secure tokens | Planned |
+| Deployment | Live production deploy on Vercel/Netlify | Final phase |
 
 ---
 

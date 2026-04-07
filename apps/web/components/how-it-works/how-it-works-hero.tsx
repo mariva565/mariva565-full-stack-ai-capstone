@@ -3,8 +3,13 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
+import dynamic from "next/dynamic";
 import { useVisibleAnimation } from "../ui/use-visible-animation";
-import { Hero3dScene } from "./hero-3d-scene";
+
+const Hero3dScene = dynamic(
+  () => import("./hero-3d-scene").then((m) => m.Hero3dScene),
+  { ssr: false }
+);
 
 function HeroStars() {
   const [stars, setStars] = useState<

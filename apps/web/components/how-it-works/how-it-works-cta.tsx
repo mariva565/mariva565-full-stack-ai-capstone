@@ -4,8 +4,13 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
+import dynamic from "next/dynamic";
 import { useVisibleAnimation } from "../ui/use-visible-animation";
-import { BohemianParticles } from "./bohemian-particles";
+
+const BohemianParticles = dynamic(
+  () => import("./bohemian-particles").then((m) => m.BohemianParticles),
+  { ssr: false }
+);
 
 export function HowItWorksCta() {
   const { ref, isVisible, hasEntered, shouldAnimate } =
