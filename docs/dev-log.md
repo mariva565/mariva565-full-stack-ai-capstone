@@ -4225,3 +4225,65 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 
 **Verification:**
 - `npm.cmd run --workspace @studyhub/mobile typecheck`
+
+### Session 159 (Mobile refactor handoff backfill)
+
+**Goal:**
+- Preserve the missed planning note from the previous chat before starting the next mobile implementation pass.
+
+**What we aligned on:**
+- The current mobile information architecture needs a clearer split:
+  - `course/[id]` should stay a cleaner course overview
+  - `module/[id]` should become the dedicated workspace for module-level material management
+  - `material/[id]` remains the detail/edit destination
+- The next highest-value mobile refactor should happen in this order:
+  - add a standalone `module/[id]` screen
+  - move the material list out of the course screen and into that module screen
+  - clean up `apps/mobile/app/course/[id]/index.tsx` so it stops carrying mixed responsibilities
+  - continue later with search/filter and favorites
+
+**Why:**
+- The current course screen is doing too much at once, which mixes navigation intent and makes the UX feel less app-like.
+- A dedicated module route will make the flow more natural on mobile and create a safer base for later CRUD polish, search, favorites, and spacing improvements.
+
+**Implementation note for the next session:**
+- Keep the refactor component-first and use it as an opportunity to split the oversized mobile screen files into smaller route-specific pieces.
+
+### Session 160 (Mobile module workspace refactor)
+
+**What we changed:**
+- Added a dedicated mobile module workspace route:
+  - `apps/mobile/app/module/[id]/index.tsx`
+- Moved material-list responsibility out of the course screen:
+  - `apps/mobile/app/course/[id]/index.tsx` now focuses on course overview + module navigation
+  - tapping a module now opens `/module/[id]`
+- Added shared mobile building blocks for the refactor:
+  - `apps/mobile/components/module-list-card.tsx`
+  - `apps/mobile/components/material-card.tsx`
+  - `apps/mobile/lib/studyhub-types.ts`
+  - `apps/mobile/lib/material-utils.ts`
+- Updated the module workspace flow to include:
+  - module header/hero
+  - material list
+  - `Add Material`
+  - `Edit Module`
+  - `Delete Module`
+  - material-level `Edit` / `Delete`
+- Simplified the course screen UX:
+  - clearer "Course overview" hero
+  - dedicated modules section with cleaner hierarchy
+  - per-module card copy that points the user toward the workspace model
+- Reused the new shared material helpers in:
+  - `apps/mobile/app/material/[id].tsx`
+  - tags now use shared parsing instead of route-local duplication
+
+**Why:**
+- The old mobile course screen was carrying course overview, module actions, and material workspace responsibilities all at once.
+- Splitting course -> module -> material makes navigation clearer, keeps each route more focused, and gives a safer base for the next mobile polish steps.
+
+**Code quality outcome:**
+- `apps/mobile/app/course/[id]/index.tsx` dropped below the 300-line guardrail.
+- `apps/mobile/app/module/[id]/index.tsx` was added as a focused workspace route instead of growing the course screen further.
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/mobile typecheck`

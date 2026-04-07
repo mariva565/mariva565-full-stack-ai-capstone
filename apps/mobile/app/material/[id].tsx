@@ -14,6 +14,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { apiFetch } from "../../lib/api";
 import { BrandedSpinner } from "../../components/branded-spinner";
+import { getMaterialTypeConfig, splitTags } from "../../lib/material-utils";
 
 type Material = {
   id: number;
@@ -23,13 +24,6 @@ type Material = {
   fileUrl: string | null;
   tags: string | null;
   createdAt: string;
-};
-
-const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  note: { label: "Note", color: "#7c5ce7", bg: "#f0ecff" },
-  link: { label: "Link", color: "#0ea5e9", bg: "#e0f2fe" },
-  file: { label: "File", color: "#f59e0b", bg: "#fef3c7" },
-  video: { label: "Video", color: "#ef4444", bg: "#fef2f2" },
 };
 
 export default function MaterialScreen() {
@@ -102,7 +96,8 @@ export default function MaterialScreen() {
     );
   }
 
-  const cfg = TYPE_CONFIG[material.materialType] ?? TYPE_CONFIG.note;
+  const cfg = getMaterialTypeConfig(material.materialType);
+  const tags = splitTags(material.tags);
 
   return (
     <ScrollView
@@ -161,13 +156,13 @@ export default function MaterialScreen() {
       ) : null}
 
       {/* Tags */}
-      {material.tags ? (
+      {tags.length > 0 ? (
         <View style={styles.tagsCard}>
           <Text style={styles.tagsLabel}>Tags</Text>
           <View style={styles.tagsRow}>
-            {material.tags.split(",").map((tag) => (
-              <View key={tag.trim()} style={styles.tag}>
-                <Text style={styles.tagText}>{tag.trim()}</Text>
+            {tags.map((tag) => (
+              <View key={tag} style={styles.tag}>
+                <Text style={styles.tagText}>{tag}</Text>
               </View>
             ))}
           </View>
