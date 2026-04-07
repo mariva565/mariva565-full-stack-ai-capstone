@@ -4131,3 +4131,69 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 - `tsc --noEmit` — PASS
 - Expo Go на физическо устройство (LAN mode) — всички 4 екрана работят
 - Login → Courses List → Course Details → Material View — навигация ✅
+
+### Session 157 (Mobile — нови екрани + CRUD)
+
+**Какво направихме:**
+
+- **Register екран (`apps/mobile/app/register.tsx`):**
+  - Gradient фон, 3 полета (name, email, password), fade-in анимация
+  - Линк към Login ("Already have an account? Sign In")
+  - AuthGate обновен да позволява `/register` без auth
+
+- **Profile екран (`apps/mobile/app/profile.tsx`):**
+  - Gradient hero с initials аватар, име, роля
+  - Edit name с inline TextInput, Save/Cancel бутони
+  - Success/error feedback след запис
+  - Pull-to-refresh
+
+- **Create Course екран (`apps/mobile/app/create-course.tsx`):**
+  - Title + Description полета, gradient бутон
+  - FAB бутон (+) добавен в Courses List за бърз достъп
+  - След създаване — автоматично връщане към списъка
+
+- **Add Module екран (`apps/mobile/app/course/[id]/add-module.tsx`):**
+  - Title + Description полета
+  - Dashed "Add Module" бутон в Course Details
+
+- **Add Material екран (`apps/mobile/app/module/[id]/add-material.tsx`):**
+  - Type selector (Note/Link/File/Video) с цветни chips
+  - Title, Content (multiline), URL (условно), Tags полета
+  - Dashed "Add Material" бутон в expanded module
+
+- **Навигация обновена:**
+  - Login ↔ Register линкове
+  - Courses List → Profile бутон в header-а
+  - Courses List → Create Course (FAB)
+  - Course Details → Add Module
+  - Module (expanded) → Add Material
+  - `register` функция добавена в `auth-context.tsx`
+
+- **Споделени компоненти:**
+  - `components/branded-spinner.tsx` — purple кръг с ActivityIndicator + message текст, интегриран в Courses List, Course Details, Material View, Profile
+  - `components/empty-state.tsx` — icon в кръг + title + subtitle, интегриран в Courses List и Course Details
+
+- **Структурна промяна:**
+  - `app/course/[id].tsx` преместен в `app/course/[id]/index.tsx` за поддръжка на nested routes (`add-module`)
+
+- **Махнат draft/published badge** от course картите в Courses List (по желание на потребителя)
+
+**Файлове (нови):**
+- `apps/mobile/app/register.tsx`
+- `apps/mobile/app/profile.tsx`
+- `apps/mobile/app/create-course.tsx`
+- `apps/mobile/app/course/[id]/add-module.tsx`
+- `apps/mobile/app/module/[id]/add-material.tsx`
+- `apps/mobile/components/branded-spinner.tsx`
+- `apps/mobile/components/empty-state.tsx`
+
+**Файлове (променени):**
+- `apps/mobile/lib/auth-context.tsx` — добавена `register()` функция
+- `apps/mobile/app/login.tsx` — добавен линк към Register
+- `apps/mobile/app/_layout.tsx` — AuthGate поддържа register екран
+- `apps/mobile/app/index.tsx` — FAB бутон, Profile бутон, BrandedSpinner, EmptyState
+- `apps/mobile/app/course/[id]/index.tsx` — Add Module/Material бутони, преместен от `[id].tsx`
+
+**Тествано:**
+- `tsc --noEmit` — PASS
+- Expo Go на физическо устройство — Create Course работи, курсът се появява в списъка
