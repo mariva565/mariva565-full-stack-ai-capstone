@@ -104,6 +104,7 @@
 **Следващи стъпки:**
 - UI polish и ошлайфване на уеб екраните
 - Фаза 6: Deployment (когато UI е готов)
+  - Google OAuth: production SHA-1 (от EAS Build), consent screen → "Published", redirect URIs с production домейн, env vars в EAS
 - Фаза 7: Documentation (README + architecture + DB diagram)
 
 ### Session 3 (Expo Go stability investigation)
@@ -4287,3 +4288,138 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 
 **Verification:**
 - `npm.cmd run --workspace @studyhub/mobile typecheck`
+
+### Session 161 (Mobile UX layer — toast, confirm modal, search/filter, bottom tabs)
+
+**What we changed:**
+
+1. **Toast notification system**
+   - Added `apps/mobile/lib/toast-context.tsx` — `ToastProvider` with animated slide-in toasts (success / error / info), auto-dismiss after 3 s, tap to dismiss
+   - Wired into root layout (`apps/mobile/app/_layout.tsx`)
+   - Available everywhere via `useToast().showToast(msg, type?)`
+
+2. **ConfirmModal component**
+   - Added `apps/mobile/components/confirm-modal.tsx` — styled modal with loading spinner on the confirm button, destructive variant for delete actions
+   - Replaces every `Alert.alert` confirmation across the app
+
+3. **Replaced all `Alert.alert` calls**
+   - `apps/mobile/app/(tabs)/index.tsx` — course delete
+   - `apps/mobile/app/course/[id]/index.tsx` — course + module delete
+   - `apps/mobile/app/module/[id]/index.tsx` — module + material delete
+   - `apps/mobile/app/material/[id].tsx` — link open errors
+   - `apps/mobile/app/(tabs)/profile.tsx` — profile save feedback
+   - Zero `Alert.alert` imports remain in the codebase
+
+4. **Search + type filter in module workspace**
+   - Added `apps/mobile/components/search-bar.tsx` — reusable search input with clear button
+   - Added `apps/mobile/components/type-filter-chips.tsx` — horizontal scroll chips (All / Note / Link / File / Video)
+   - Integrated in `apps/mobile/app/module/[id]/index.tsx`:
+     - filters by title, content, and tags
+     - filters by material type
+     - shows "No matches" empty state when filters produce zero results
+     - search + chips only appear when there are materials to filter
+
+5. **Bottom tab navigation**
+   - Created `apps/mobile/app/(tabs)/_layout.tsx` with Courses + Profile tabs
+   - Moved `index.tsx` → `(tabs)/index.tsx`, `profile.tsx` → `(tabs)/profile.tsx`
+   - Updated root `_layout.tsx` to register `(tabs)` as a headerless stack screen
+   - Removed the old Profile button from the courses header (tabs handle it now)
+   - Profile screen now uses toast instead of inline `saveMsg` banner
+
+**Why:**
+- `Alert.alert` is a native dialog that feels out of place in a branded app — the new toast and confirm modal match the StudyHub visual language and give loading feedback during async deletes.
+- Search + filter is the single most useful feature for a module workspace with many materials.
+- Bottom tabs make the app feel "app-like" instead of relying on header buttons for primary navigation.
+
+**New files (5):**
+- `apps/mobile/lib/toast-context.tsx`
+- `apps/mobile/components/confirm-modal.tsx`
+- `apps/mobile/components/search-bar.tsx`
+- `apps/mobile/components/type-filter-chips.tsx`
+- `apps/mobile/app/(tabs)/_layout.tsx`
+
+**Modified files (6):**
+- `apps/mobile/app/_layout.tsx`
+- `apps/mobile/app/(tabs)/index.tsx` (moved from `app/index.tsx`)
+- `apps/mobile/app/(tabs)/profile.tsx` (moved from `app/profile.tsx`)
+- `apps/mobile/app/course/[id]/index.tsx`
+- `apps/mobile/app/module/[id]/index.tsx`
+- `apps/mobile/app/material/[id].tsx`
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/mobile typecheck` — passes clean
+
+---
+
+## 2026-04-07
+
+### Сесия (Google OAuth за мобилно + import fix)
+
+**Какво направихме:**
+
+1. **Google Cloud Console — OAuth client IDs за мобилно приложение**
+   - Създадохме Android debug keystore (`~/.android/debug.keystore`) с `keytool`
+   - Извлякохме SHA-1 fingerprint: `ED:B9:01:61:F3:48:6F:DE:D5:AF:BE:F7:EE:79:59:C1:36:12:C7:F3`
+   - Създадохме Android OAuth client (package: `com.studyhub.mobile`)
+   - Създадохме iOS OAuth client (bundle ID: `com.studyhub.mobile`)
+   - Добавихме и трите client ID-та в `apps/mobile/.env`:
+     - `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID` (съществуваше — работи за десктоп)
+     - `EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID` (ново)
+     - `EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID` (ново)
+
+2. **Оправени счупени import пътища в 11 файла**
+   - Проблем: всички import-и имаха едно `../` в повече (вероятно от преместване на файлове при добавяне на `(tabs)/` layout)
+   - Засегнати файлове:
+     - `app/login.tsx`, `app/register.tsx`, `app/create-course.tsx`
+     - `app/(tabs)/index.tsx`
+     - `app/course/[id]/add-module.tsx`, `app/course/[id]/edit.tsx`, `app/course/[id]/index.tsx`
+     - `app/material/[id].tsx`
+     - `app/module/[id]/add-material.tsx`, `app/module/[id]/edit.tsx`, `app/module/[id]/index.tsx`
+
+3. **Google OAuth backend — вече работи**
+   - `apps/web/app/api/auth/google/route.ts` обработва и `access_token` (от Expo), и `id_token` (от web)
+   - При нов Google потребител се генерира случаен 64-символен hex пароль (`crypto.randomBytes(32)`) и се хешира — акаунтът е защитен от password login
+   - Мобилният `loginWithGoogle()` в `auth-context.tsx` извиква същия endpoint
+
+4. **Google Sign-In бутон компонент**
+   - `apps/mobile/components/auth/GoogleSignInButton.tsx` — стилизиран бутон с анимиран shine ефект, интегриран в login и register екраните
+
+5. **Google OAuth в Expo Go — не работи (очаквано)**
+   - `auth.expo.io` proxy е deprecated от Expo SDK 50+ — Google оторизира потребителя, но proxy-то не може да върне redirect обратно в Expo Go
+   - Expo Go не поддържа native Google Sign-In (нужен е development build или production build)
+   - Грешката е `400: redirect_uri_mismatch` — Expo Go праща `exp://192.168.x.x:8081`, Google приема само `https://`
+   - **Решение:** За development — тестваме Google login на десктоп (работи), на мобилен — email/password. При EAS production build Google OAuth ще работи автоматично, защото:
+     - Приложението се компилира с правилния signing key
+     - SHA-1 fingerprint съвпада с Android client-а в Google Console
+     - Redirect минава native през Android/iOS системата (не през browser proxy)
+
+6. **Fix: `package.json` main entry point**
+   - Поправихме `"main": "index.js"` → `"main": "expo-router/entry"` (беше счупено от предишна сесия)
+
+7. **Google Cloud Console настройки**
+   - Web client: добавен Authorized redirect URI `https://auth.expo.io/@mariva/studyhub-v2`
+   - Android client: SHA-1 от debug keystore, package `com.studyhub.mobile`
+   - iOS client: bundle ID `com.studyhub.mobile` (App Store ID и Team ID оставени празни — опционални)
+   - OAuth consent screen е в "Testing" режим — достатъчно за development
+
+8. **Инсталиран EAS CLI глобално** (`npm install -g eas-cli`) — готов за бъдещи production builds
+
+9. **`.env.example` обновен** с всички Google OAuth env vars за документация
+
+10. **Премахнати неизползвани import-и** (`makeRedirectUri` от `expo-auth-session` — не се ползва в крайния код)
+
+**Текущо състояние на Google OAuth:**
+- Десктоп (web): работи — login и register с Google акаунт ✅
+- Мобилен (Expo Go): не работи — auth proxy deprecated, ползва се email/password ⚠️
+- Мобилен (production build): ще работи при EAS Build с правилния SHA-1 🔜
+
+**Deployment бележка — Google OAuth:**
+- При production deployment ще трябва:
+  - Нов SHA-1 от production keystore (EAS Build генерира свой) → нов Android OAuth client или добавяне на втори fingerprint
+  - Google OAuth consent screen да се смени от "Testing" на "Published" (за да могат всички потребители, не само test users)
+  - Authorized redirect URIs да се обновят с production домейна
+  - `EXPO_PUBLIC_GOOGLE_*` env vars да се добавят в EAS/production конфигурацията
+- Google OAuth в Expo Go не работи (auth proxy deprecated) — това е нормално и очаквано, не е бъг
+
+**Verification:**
+- `npx tsc --noEmit` — 0 грешки

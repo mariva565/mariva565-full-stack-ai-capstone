@@ -1,6 +1,5 @@
 import { useCallback, useState } from "react";
 import {
-  Alert,
   View,
   Text,
   ScrollView,
@@ -14,6 +13,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { apiFetch } from "../../lib/api";
 import { BrandedSpinner } from "../../components/branded-spinner";
+import { useToast } from "../../lib/toast-context";
 import { getMaterialTypeConfig, splitTags } from "../../lib/material-utils";
 
 type Material = {
@@ -28,6 +28,7 @@ type Material = {
 
 export default function MaterialScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const { showToast } = useToast();
   const [material, setMaterial] = useState<Material | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -66,12 +67,12 @@ export default function MaterialScreen() {
     try {
       const supported = await Linking.canOpenURL(material.fileUrl);
       if (!supported) {
-        Alert.alert("Invalid link", "This URL cannot be opened on your device.");
+        showToast("This URL cannot be opened on your device", "error");
         return;
       }
       await Linking.openURL(material.fileUrl);
     } catch {
-      Alert.alert("Open failed", "Could not open this link.");
+      showToast("Could not open this link", "error");
     }
   }
 

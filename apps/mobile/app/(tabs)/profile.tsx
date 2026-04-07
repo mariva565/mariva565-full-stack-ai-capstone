@@ -5,15 +5,14 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  ActivityIndicator,
   ScrollView,
   RefreshControl,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { Stack } from "expo-router";
-import { useAuth } from "../lib/auth-context";
-import { apiFetch, ApiError } from "../lib/api";
-import { BrandedSpinner } from "../components/branded-spinner";
+import { useAuth } from "../../lib/auth-context";
+import { useToast } from "../../lib/toast-context";
+import { apiFetch, ApiError } from "../../lib/api";
+import { BrandedSpinner } from "../../components/branded-spinner";
 
 type ProfileUser = {
   id: number;
@@ -26,6 +25,7 @@ type ProfileUser = {
 
 export default function ProfileScreen() {
   const { user } = useAuth();
+  const { showToast } = useToast();
   const [profile, setProfile] = useState<ProfileUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -34,7 +34,6 @@ export default function ProfileScreen() {
   const [editing, setEditing] = useState(false);
   const [editName, setEditName] = useState("");
   const [saving, setSaving] = useState(false);
-  const [saveMsg, setSaveMsg] = useState("");
 
   const fetchProfile = useCallback(async () => {
     try {
@@ -57,7 +56,6 @@ export default function ProfileScreen() {
   async function handleSave() {
     if (!editName.trim()) return;
     setSaving(true);
-    setSaveMsg("");
     try {
       const data = await apiFetch<{ user: ProfileUser }>("/api/auth/me", {
         method: "PUT",
@@ -65,29 +63,22 @@ export default function ProfileScreen() {
       });
       setProfile(data.user);
       setEditing(false);
-      setSaveMsg("Profile updated!");
-      setTimeout(() => setSaveMsg(""), 3000);
+      showToast("Profile updated!");
     } catch (e) {
       const msg = e instanceof ApiError ? e.message : "Failed to save";
-      setSaveMsg(msg);
+      showToast(msg, "error");
     } finally {
       setSaving(false);
     }
   }
 
   if (loading) {
-    return (
-      <>
-        <Stack.Screen options={{ title: "Profile" }} />
-        <BrandedSpinner message="Loading profile..." />
-      </>
-    );
+    return <BrandedSpinner message="Loading profile..." />;
   }
 
   if (error || !profile) {
     return (
       <View style={styles.centered}>
-        <Stack.Screen options={{ title: "Profile" }} />
         <Text style={styles.errorText}>{error || "Not found"}</Text>
         <TouchableOpacity style={styles.retryBtn} onPress={fetchProfile}>
           <Text style={styles.retryBtnText}>Retry</Text>
@@ -117,8 +108,6 @@ export default function ProfileScreen() {
         />
       }
     >
-      <Stack.Screen options={{ title: "Profile" }} />
-
       <LinearGradient
         colors={["#2e1d7a", "#4d33c4"]}
         start={{ x: 0, y: 0 }}
@@ -133,12 +122,6 @@ export default function ProfileScreen() {
           <Text style={styles.heroBadgeText}>{profile.role}</Text>
         </View>
       </LinearGradient>
-
-      {saveMsg ? (
-        <View style={[styles.msgBox, saveMsg.includes("updated") ? styles.msgSuccess : styles.msgError]}>
-          <Text style={styles.msgText}>{saveMsg}</Text>
-        </View>
-      ) : null}
 
       {/* Info card */}
       <View style={styles.card}>
@@ -278,24 +261,6 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#ffffff",
     textTransform: "capitalize",
-  },
-  msgBox: {
-    marginHorizontal: 16,
-    marginTop: 12,
-    padding: 12,
-    borderRadius: 10,
-  },
-  msgSuccess: {
-    backgroundColor: "#dcfce7",
-  },
-  msgError: {
-    backgroundColor: "#fef2f2",
-  },
-  msgText: {
-    fontSize: 14,
-    fontWeight: "600",
-    textAlign: "center",
-    color: "#334155",
   },
   card: {
     backgroundColor: "#ffffff",

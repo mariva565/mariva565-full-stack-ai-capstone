@@ -14,9 +14,14 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Stack, useRouter } from "expo-router";
 import { useAuth } from "../lib/auth-context";
 import { ApiError } from "../lib/api";
+import * as WebBrowser from "expo-web-browser";
+import * as Google from "expo-auth-session/providers/google";
+import { GoogleSignInButton } from "../components/auth/GoogleSignInButton";
+
+WebBrowser.maybeCompleteAuthSession();
 
 export default function RegisterScreen() {
-  const { register } = useAuth();
+  const { register, loginWithGoogle } = useAuth();
   const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -27,6 +32,34 @@ export default function RegisterScreen() {
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(30)).current;
+
+  // Google Auth Hook
+  const redirectUri = "https://auth.expo.io/@mariva/studyhub-v2";
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    clientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+    redirectUri,
+  });
+
+  useEffect(() => {
+    if (response?.type === "success") {
+      const { authentication } = response;
+      if (authentication?.accessToken) {
+        handleGoogleLogin(authentication.accessToken);
+      }
+    }
+  }, [response]);
+
+  async function handleGoogleLogin(token: string) {
+    setLoading(true);
+    setError("");
+    try {
+      await loginWithGoogle(token, "access_token");
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : "Google sign-in failed");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   useEffect(() => {
     Animated.parallel([
@@ -168,6 +201,12 @@ export default function RegisterScreen() {
                 </Text>
               </LinearGradient>
             </TouchableOpacity>
+
+            <GoogleSignInButton
+              onPress={() => promptAsync()}
+              loading={loading}
+              disabled={!request}
+            />
 
             <TouchableOpacity
               onPress={() => router.replace("/login")}

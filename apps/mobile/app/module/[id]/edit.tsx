@@ -38,7 +38,7 @@ export default function EditModuleScreen() {
         const data = await apiFetch<ModuleResponse>(`/api/modules/${id}`);
         setTitle(data.module.title);
         setDescription(data.module.description ?? "");
-      } catch (error) {
+      } catch (error: any) {
         const message = error instanceof ApiError ? error.message : "Failed to load module";
         setError(message);
       } finally {

@@ -1,6 +1,5 @@
 import { useCallback, useRef, useState } from "react";
 import {
-  Alert,
   Animated,
   FlatList,
   RefreshControl,
@@ -11,11 +10,13 @@ import {
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
-import { Stack, useRouter } from "expo-router";
-import { EmptyState } from "../components/empty-state";
-import { BrandedSpinner } from "../components/branded-spinner";
-import { useAuth } from "../lib/auth-context";
-import { ApiError, apiFetch } from "../lib/api";
+import { useRouter } from "expo-router";
+import { EmptyState } from "../../components/empty-state";
+import { BrandedSpinner } from "../../components/branded-spinner";
+import { ConfirmModal } from "../../components/confirm-modal";
+import { useAuth } from "../../lib/auth-context";
+import { useToast } from "../../lib/toast-context";
+import { ApiError, apiFetch } from "../../lib/api";
 
 type Course = {
   id: number;
@@ -100,10 +101,14 @@ function CourseCard({ item, index, onOpen, onEdit, onDelete }: CourseCardProps) 
 export default function CoursesListScreen() {
   const { user, logout } = useAuth();
   const router = useRouter();
+  const { showToast } = useToast();
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState("");
+
+  const [confirmVisible, setConfirmVisible] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<Course | null>(null);
 
   const fetchCourses = useCallback(async (isRefresh = false) => {
     if (isRefresh) {
@@ -130,37 +135,27 @@ export default function CoursesListScreen() {
     }, [fetchCourses])
   );
 
-  const handleDeleteCourse = useCallback(
-    (course: Course) => {
-      Alert.alert(
-        "Delete course",
-        `Delete "${course.title}"? This will also remove its modules and materials.`,
-        [
-          { text: "Cancel", style: "cancel" },
-          {
-            text: "Delete",
-            style: "destructive",
-            onPress: async () => {
-              try {
-                await apiFetch(`/api/courses/${course.id}`, { method: "DELETE" });
-                setCourses((current) => current.filter((item) => item.id !== course.id));
-              } catch (error) {
-                const message =
-                  error instanceof ApiError ? error.message : "Failed to delete course";
-                Alert.alert("Delete failed", message);
-              }
-            },
-          },
-        ]
-      );
-    },
-    []
-  );
+  function openDeleteCourse(course: Course) {
+    setDeleteTarget(course);
+    setConfirmVisible(true);
+  }
+
+  async function handleConfirmDelete() {
+    if (!deleteTarget) return;
+    try {
+      await apiFetch(`/api/courses/${deleteTarget.id}`, { method: "DELETE" });
+      setCourses((current) => current.filter((item) => item.id !== deleteTarget.id));
+      showToast("Course deleted");
+      setConfirmVisible(false);
+    } catch (err) {
+      const message = err instanceof ApiError ? err.message : "Failed to delete course";
+      showToast(message, "error");
+      setConfirmVisible(false);
+    }
+  }
 
   return (
     <View style={styles.container}>
-      <Stack.Screen options={{ headerShown: false }} />
-
       <LinearGradient
         colors={["#2e1d7a", "#4d33c4"]}
         start={{ x: 0, y: 0 }}
@@ -172,14 +167,9 @@ export default function CoursesListScreen() {
             <Text style={styles.headerGreeting}>Welcome back,</Text>
             <Text style={styles.headerName}>{user?.name ?? "Student"}</Text>
           </View>
-          <View style={styles.headerRight}>
-            <TouchableOpacity onPress={() => router.push("/profile" as any)} style={styles.profileBtn}>
-              <Text style={styles.profileBtnText}>Profile</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={logout} style={styles.logoutBtn}>
-              <Text style={styles.logoutText}>Logout</Text>
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity onPress={logout} style={styles.logoutBtn}>
+            <Text style={styles.logoutText}>Logout</Text>
+          </TouchableOpacity>
         </View>
 
         <View style={styles.statsRow}>
@@ -231,7 +221,7 @@ export default function CoursesListScreen() {
               index={index}
               onOpen={() => router.push(`/course/${item.id}`)}
               onEdit={() => router.push(`/course/${item.id}/edit` as any)}
-              onDelete={() => handleDeleteCourse(item)}
+              onDelete={() => openDeleteCourse(item)}
             />
           )}
         />
@@ -246,6 +236,16 @@ export default function CoursesListScreen() {
           <Text style={styles.fabText}>+</Text>
         </LinearGradient>
       </TouchableOpacity>
+
+      <ConfirmModal
+        visible={confirmVisible}
+        title="Delete course"
+        message={`Delete "${deleteTarget?.title}"? This will also remove its modules and materials.`}
+        confirmLabel="Delete"
+        destructive
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setConfirmVisible(false)}
+      />
     </View>
   );
 }
@@ -260,16 +260,13 @@ const styles = StyleSheet.create({
   },
   headerGreeting: { fontSize: 14, color: "rgba(255,255,255,0.7)", fontWeight: "500" },
   headerName: { fontSize: 22, fontWeight: "800", color: "#ffffff", marginTop: 2 },
-  headerRight: { alignItems: "flex-end", gap: 8 },
-  profileBtn: {
-    backgroundColor: "rgba(255,255,255,0.15)",
+  logoutBtn: {
+    backgroundColor: "rgba(255,255,255,0.12)",
     paddingHorizontal: 12,
-    paddingVertical: 5,
+    paddingVertical: 6,
     borderRadius: 8,
   },
-  profileBtnText: { fontSize: 12, fontWeight: "600", color: "#ffffff" },
-  logoutBtn: { paddingHorizontal: 4, paddingVertical: 2 },
-  logoutText: { color: "rgba(255,255,255,0.6)", fontWeight: "600", fontSize: 13 },
+  logoutText: { color: "rgba(255,255,255,0.8)", fontWeight: "600", fontSize: 13 },
   statsRow: { flexDirection: "row", marginTop: 20, gap: 12 },
   statItem: {
     flex: 1,

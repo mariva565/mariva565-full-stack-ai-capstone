@@ -1,23 +1,29 @@
 import { useCallback, useState } from "react";
-import { Alert, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 
 import { BrandedSpinner } from "../../../components/branded-spinner";
+import { ConfirmModal } from "../../../components/confirm-modal";
 import { EmptyState } from "../../../components/empty-state";
 import { ModuleListCard } from "../../../components/module-list-card";
 import { ApiError, apiFetch } from "../../../lib/api";
+import { useToast } from "../../../lib/toast-context";
 import type { Course, Module } from "../../../lib/studyhub-types";
 
 export default function CourseDetailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const { showToast } = useToast();
   const [course, setCourse] = useState<Course | null>(null);
   const [modules, setModules] = useState<Module[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState("");
+
+  const [confirmVisible, setConfirmVisible] = useState(false);
+  const [confirmTarget, setConfirmTarget] = useState<{ type: "course" } | { type: "module"; module: Module } | null>(null);
 
   const fetchCourse = useCallback(async (isRefresh = false) => {
     if (isRefresh) {
@@ -48,55 +54,54 @@ export default function CourseDetailsScreen() {
     }, [fetchCourse])
   );
 
-  const handleDeleteCourse = useCallback(() => {
-    if (!course) {
-      return;
+  function openDeleteCourse() {
+    setConfirmTarget({ type: "course" });
+    setConfirmVisible(true);
+  }
+
+  function openDeleteModule(module: Module) {
+    setConfirmTarget({ type: "module", module });
+    setConfirmVisible(true);
+  }
+
+  async function handleConfirmDelete() {
+    if (!confirmTarget) return;
+    if (confirmTarget.type === "course" && course) {
+      try {
+        await apiFetch(`/api/courses/${course.id}`, { method: "DELETE" });
+        showToast("Course deleted");
+        setConfirmVisible(false);
+        router.replace("/" as any);
+      } catch (err) {
+        const message = err instanceof ApiError ? err.message : "Failed to delete course";
+        showToast(message, "error");
+        setConfirmVisible(false);
+      }
+    } else if (confirmTarget.type === "module") {
+      const { module } = confirmTarget;
+      try {
+        await apiFetch(`/api/modules/${module.id}`, { method: "DELETE" });
+        setModules((current) => current.filter((item) => item.id !== module.id));
+        showToast("Module deleted");
+        setConfirmVisible(false);
+      } catch (err) {
+        const message = err instanceof ApiError ? err.message : "Failed to delete module";
+        showToast(message, "error");
+        setConfirmVisible(false);
+      }
     }
+  }
 
-    Alert.alert(
-      "Delete course",
-      `Delete "${course.title}"? This will also remove its modules and materials.`,
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Delete",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              await apiFetch(`/api/courses/${course.id}`, { method: "DELETE" });
-              router.replace("/");
-            } catch (err) {
-              const message = err instanceof ApiError ? err.message : "Failed to delete course";
-              Alert.alert("Delete failed", message);
-            }
-          },
-        },
-      ]
-    );
-  }, [course, router]);
-
-  const handleDeleteModule = useCallback((module: Module) => {
-    Alert.alert(
-      "Delete module",
-      `Delete "${module.title}" and all its materials?`,
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Delete",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              await apiFetch(`/api/modules/${module.id}`, { method: "DELETE" });
-              setModules((current) => current.filter((item) => item.id !== module.id));
-            } catch (err) {
-              const message = err instanceof ApiError ? err.message : "Failed to delete module";
-              Alert.alert("Delete failed", message);
-            }
-          },
-        },
-      ]
-    );
-  }, []);
+  const confirmTitle =
+    confirmTarget?.type === "course"
+      ? "Delete course"
+      : "Delete module";
+  const confirmMessage =
+    confirmTarget?.type === "course"
+      ? `Delete "${course?.title}"? This will also remove its modules and materials.`
+      : confirmTarget?.type === "module"
+        ? `Delete "${confirmTarget.module.title}" and all its materials?`
+        : "";
 
   if (loading) {
     return (
@@ -120,67 +125,79 @@ export default function CourseDetailsScreen() {
   }
 
   return (
-    <ScrollView
-      style={styles.container}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={() => fetchCourse(true)} tintColor="#4d33c4" />
-      }
-    >
-      <Stack.Screen options={{ title: course.title }} />
+    <View style={styles.container}>
+      <ScrollView
+        style={styles.container}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={() => fetchCourse(true)} tintColor="#4d33c4" />
+        }
+      >
+        <Stack.Screen options={{ title: course.title }} />
 
-      <LinearGradient colors={["#2e1d7a", "#4d33c4", "#7c5ce7"]} style={styles.hero}>
-        <Text style={styles.heroEyebrow}>Course overview</Text>
-        <Text style={styles.heroTitle}>{course.title}</Text>
-        {course.description ? <Text style={styles.heroDesc}>{course.description}</Text> : null}
-        <View style={styles.heroMetaRow}>
-          <Text style={styles.heroMeta}>{modules.length} modules</Text>
-          <Text style={styles.heroMeta}>Created {new Date(course.createdAt).toLocaleDateString()}</Text>
-        </View>
-        <View style={styles.courseActionsRow}>
-          <TouchableOpacity
-            style={[styles.courseActionBtn, styles.courseEditBtn]}
-            onPress={() => router.push(`/course/${id}/edit` as any)}
-            activeOpacity={0.8}
-          >
-            <Text style={[styles.courseActionText, styles.courseEditText]}>Edit Course</Text>
+        <LinearGradient colors={["#2e1d7a", "#4d33c4", "#7c5ce7"]} style={styles.hero}>
+          <Text style={styles.heroEyebrow}>Course overview</Text>
+          <Text style={styles.heroTitle}>{course.title}</Text>
+          {course.description ? <Text style={styles.heroDesc}>{course.description}</Text> : null}
+          <View style={styles.heroMetaRow}>
+            <Text style={styles.heroMeta}>{modules.length} modules</Text>
+            <Text style={styles.heroMeta}>Created {new Date(course.createdAt).toLocaleDateString()}</Text>
+          </View>
+          <View style={styles.courseActionsRow}>
+            <TouchableOpacity
+              style={[styles.courseActionBtn, styles.courseEditBtn]}
+              onPress={() => router.push(`/course/${id}/edit` as any)}
+              activeOpacity={0.8}
+            >
+              <Text style={[styles.courseActionText, styles.courseEditText]}>Edit Course</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.courseActionBtn, styles.courseDeleteBtn]}
+              onPress={openDeleteCourse}
+              activeOpacity={0.8}
+            >
+              <Text style={[styles.courseActionText, styles.courseDeleteText]}>Delete Course</Text>
+            </TouchableOpacity>
+          </View>
+        </LinearGradient>
+
+        <View style={styles.sectionHeader}>
+          <View>
+            <Text style={styles.sectionTitle}>Modules</Text>
+            <Text style={styles.sectionSubtitle}>Open a module to manage its materials in a dedicated workspace.</Text>
+          </View>
+          <TouchableOpacity style={styles.addModuleBtn} onPress={() => router.push(`/course/${id}/add-module` as any)}>
+            <Text style={styles.addModuleBtnText}>Add</Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.courseActionBtn, styles.courseDeleteBtn]}
-            onPress={handleDeleteCourse}
-            activeOpacity={0.8}
-          >
-            <Text style={[styles.courseActionText, styles.courseDeleteText]}>Delete Course</Text>
-          </TouchableOpacity>
         </View>
-      </LinearGradient>
 
-      <View style={styles.sectionHeader}>
-        <View>
-          <Text style={styles.sectionTitle}>Modules</Text>
-          <Text style={styles.sectionSubtitle}>Open a module to manage its materials in a dedicated workspace.</Text>
-        </View>
-        <TouchableOpacity style={styles.addModuleBtn} onPress={() => router.push(`/course/${id}/add-module` as any)}>
-          <Text style={styles.addModuleBtnText}>Add</Text>
-        </TouchableOpacity>
-      </View>
+        {modules.length === 0 ? (
+          <EmptyState icon="Modules" title="No modules yet" subtitle="Add your first module to start organizing materials." />
+        ) : (
+          modules.map((module, index) => (
+            <ModuleListCard
+              key={module.id}
+              index={index}
+              module={module}
+              onOpen={() => router.push(`/module/${module.id}` as any)}
+              onEdit={() => router.push(`/module/${module.id}/edit` as any)}
+              onDelete={() => openDeleteModule(module)}
+            />
+          ))
+        )}
 
-      {modules.length === 0 ? (
-        <EmptyState icon="Modules" title="No modules yet" subtitle="Add your first module to start organizing materials." />
-      ) : (
-        modules.map((module, index) => (
-          <ModuleListCard
-            key={module.id}
-            index={index}
-            module={module}
-            onOpen={() => router.push(`/module/${module.id}` as any)}
-            onEdit={() => router.push(`/module/${module.id}/edit` as any)}
-            onDelete={() => handleDeleteModule(module)}
-          />
-        ))
-      )}
+        <View style={styles.bottomSpacer} />
+      </ScrollView>
 
-      <View style={styles.bottomSpacer} />
-    </ScrollView>
+      <ConfirmModal
+        visible={confirmVisible}
+        title={confirmTitle}
+        message={confirmMessage}
+        confirmLabel="Delete"
+        destructive
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setConfirmVisible(false)}
+      />
+    </View>
   );
 }
 

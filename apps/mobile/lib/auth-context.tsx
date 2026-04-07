@@ -12,6 +12,7 @@ type AuthState = {
   user: User | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
+  loginWithGoogle: (token: string, type: "id_token" | "access_token") => Promise<void>;
   register: (email: string, name: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
 };
@@ -58,13 +59,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(data.user);
   }, []);
 
+  const loginWithGoogle = useCallback(async (token: string, type: "id_token" | "access_token") => {
+    const data = await apiFetch<{ token: string; user: User }>(
+      "/api/auth/google",
+      { method: "POST", body: { token, type }, auth: false }
+    );
+    await setToken(data.token);
+    setUser(data.user);
+  }, []);
+
   const logout = useCallback(async () => {
     await removeToken();
     setUser(null);
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, isLoading, login, loginWithGoogle, register, logout }}>
       {children}
     </AuthContext.Provider>
   );

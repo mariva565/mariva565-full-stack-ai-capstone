@@ -38,7 +38,7 @@ export default function CreateCourseScreen() {
         },
       });
       router.back();
-    } catch (e) {
+    } catch (e: any) {
       const msg =
         e instanceof ApiError ? e.message : "Failed to create course";
       setError(msg);

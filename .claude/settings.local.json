@@ -37,7 +37,19 @@
       "Bash(tasklist)",
       "Bash(npm --workspace @studyhub/mobile run dev:mobile:lan)",
       "Bash(taskkill /PID 5244 /F)",
-      "Bash(cmd.exe /c \"taskkill /PID 5244 /F\")"
+      "Bash(cmd.exe /c \"taskkill /PID 5244 /F\")",
+      "Bash(npm.cmd run:*)",
+      "Bash(keytool -list -v -keystore __TRACKED_VAR__/.android/debug.keystore -alias androiddebugkey -storepass android)",
+      "Bash(where.exe keytool:*)",
+      "Read(//c/Program Files/Java/**)",
+      "Read(//c/Program Files/Android/Android Studio/jbr/**)",
+      "Bash(\"C:/Program Files/Java/jre1.8.0_461/bin/keytool\" -list -v -keystore \"C:/Users/mariy/.android/debug.keystore\" -alias androiddebugkey -storepass android)",
+      "Bash(mkdir -p \"C:/Users/mariy/.android\")",
+      "Bash(\"C:/Program Files/Java/jre1.8.0_461/bin/keytool\" -genkey -v -keystore \"C:/Users/mariy/.android/debug.keystore\" -alias androiddebugkey -storepass android -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname \"CN=Android Debug,O=Android,C=US\")",
+      "Bash(npx expo:*)",
+      "Bash(taskkill /PID 7652 /F)",
+      "Bash(cmd.exe /c \"taskkill /PID 7652 /F\")",
+      "Bash(npx eas:*)"
     ],
     "additionalDirectories": [
       "c:\\Users\\mariy\\Projects\\Visual-Studio-Capstone-Project-StudyHub-interface-v3\\public"

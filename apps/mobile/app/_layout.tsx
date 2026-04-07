@@ -2,6 +2,7 @@ import { Stack, useRouter, useSegments, useRootNavigationState } from "expo-rout
 import { useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
 import { AuthProvider, useAuth } from "../lib/auth-context";
+import { ToastProvider } from "../lib/toast-context";
 import { ActivityIndicator, View } from "react-native";
 
 function AuthGate() {
@@ -14,12 +15,13 @@ function AuthGate() {
     if (isLoading) return;
     if (!navigationState?.key) return;
 
-    const onAuthScreen = segments[0] === "login" || segments[0] === "register";
+    const firstSegment = segments[0];
+    const onAuthScreen = firstSegment === "login" || firstSegment === "register";
 
     if (!user && !onAuthScreen) {
       router.replace("/login");
     } else if (user && onAuthScreen) {
-      router.replace("/");
+      router.replace("/" as any);
     }
   }, [user, isLoading, segments, navigationState?.key]);
 
@@ -42,7 +44,11 @@ function AuthGate() {
           headerShadowVisible: false,
           contentStyle: { backgroundColor: "#f8f6ff" },
         }}
-      />
+      >
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="login" options={{ headerShown: false }} />
+        <Stack.Screen name="register" options={{ title: "Register" }} />
+      </Stack>
     </>
   );
 }
@@ -50,7 +56,9 @@ function AuthGate() {
 export default function RootLayout() {
   return (
     <AuthProvider>
-      <AuthGate />
+      <ToastProvider>
+        <AuthGate />
+      </ToastProvider>
     </AuthProvider>
   );
 }

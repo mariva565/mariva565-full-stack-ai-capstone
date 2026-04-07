@@ -6,6 +6,13 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
+    "ios": {
+      "bundleIdentifier": "com.studyhub.mobile",
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.studyhub.mobile"
+    },
     "plugins": [
       "expo-router",
       "expo-secure-store"
@@ -17,7 +24,10 @@
       "enabled": false
     },
     "extra": {
-      "router": {}
+      "router": {},
+      "eas": {
+        "projectId": "1908016d-5259-43b9-ab21-17dd2320e3a9"
+      }
     }
   }
 }

@@ -1,13 +1,17 @@
-import { useCallback, useState } from "react";
-import { Alert, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useCallback, useMemo, useState } from "react";
+import { RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 
 import { BrandedSpinner } from "../../../components/branded-spinner";
+import { ConfirmModal } from "../../../components/confirm-modal";
 import { EmptyState } from "../../../components/empty-state";
 import { MaterialCard } from "../../../components/material-card";
+import { SearchBar } from "../../../components/search-bar";
+import { TypeFilterChips } from "../../../components/type-filter-chips";
 import { ApiError, apiFetch } from "../../../lib/api";
+import { useToast } from "../../../lib/toast-context";
 import type { Material, ModuleContext } from "../../../lib/studyhub-types";
 
 type ModuleResponse = {
@@ -22,11 +26,20 @@ type ModuleResponse = {
 export default function ModuleWorkspaceScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const { showToast } = useToast();
   const [context, setContext] = useState<ModuleResponse | null>(null);
   const [materials, setMaterials] = useState<Material[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState("");
+
+  // Search and filter
+  const [searchQuery, setSearchQuery] = useState("");
+  const [typeFilter, setTypeFilter] = useState<string | null>(null);
+
+  // Confirm modal state
+  const [confirmVisible, setConfirmVisible] = useState(false);
+  const [confirmTarget, setConfirmTarget] = useState<{ type: "module" } | { type: "material"; material: Material } | null>(null);
 
   const fetchModule = useCallback(async (isRefresh = false) => {
     if (isRefresh) {
@@ -57,55 +70,73 @@ export default function ModuleWorkspaceScreen() {
     }, [fetchModule])
   );
 
-  const handleDeleteModule = useCallback(() => {
-    if (!context) {
-      return;
+  function openDeleteModule() {
+    setConfirmTarget({ type: "module" });
+    setConfirmVisible(true);
+  }
+
+  function openDeleteMaterial(material: Material) {
+    setConfirmTarget({ type: "material", material });
+    setConfirmVisible(true);
+  }
+
+  async function handleConfirmDelete() {
+    if (!confirmTarget) return;
+    if (confirmTarget.type === "module" && context) {
+      try {
+        await apiFetch(`/api/modules/${context.module.id}`, { method: "DELETE" });
+        showToast("Module deleted");
+        setConfirmVisible(false);
+        router.replace(`/course/${context.course.id}` as any);
+      } catch (err) {
+        const message = err instanceof ApiError ? err.message : "Failed to delete module";
+        showToast(message, "error");
+        setConfirmVisible(false);
+      }
+    } else if (confirmTarget.type === "material") {
+      const { material } = confirmTarget;
+      try {
+        await apiFetch(`/api/materials/${material.id}`, { method: "DELETE" });
+        setMaterials((current) => current.filter((item) => item.id !== material.id));
+        showToast("Material deleted");
+        setConfirmVisible(false);
+      } catch (err) {
+        const message = err instanceof ApiError ? err.message : "Failed to delete material";
+        showToast(message, "error");
+        setConfirmVisible(false);
+      }
     }
+  }
 
-    Alert.alert(
-      "Delete module",
-      `Delete "${context.module.title}" and all its materials?`,
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Delete",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              await apiFetch(`/api/modules/${context.module.id}`, { method: "DELETE" });
-              router.replace(`/course/${context.course.id}` as any);
-            } catch (err) {
-              const message = err instanceof ApiError ? err.message : "Failed to delete module";
-              Alert.alert("Delete failed", message);
-            }
-          },
-        },
-      ]
-    );
-  }, [context, router]);
+  const filteredMaterials = useMemo(() => {
+    let result = materials;
+    if (typeFilter) {
+      result = result.filter((m) => m.materialType === typeFilter);
+    }
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter(
+        (m) =>
+          m.title.toLowerCase().includes(q) ||
+          m.content?.toLowerCase().includes(q) ||
+          m.tags?.toLowerCase().includes(q)
+      );
+    }
+    return result;
+  }, [materials, searchQuery, typeFilter]);
 
-  const handleDeleteMaterial = useCallback((material: Material) => {
-    Alert.alert(
-      "Delete material",
-      `Delete "${material.title}"?`,
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Delete",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              await apiFetch(`/api/materials/${material.id}`, { method: "DELETE" });
-              setMaterials((current) => current.filter((item) => item.id !== material.id));
-            } catch (err) {
-              const message = err instanceof ApiError ? err.message : "Failed to delete material";
-              Alert.alert("Delete failed", message);
-            }
-          },
-        },
-      ]
-    );
-  }, []);
+  const hasFilters = searchQuery.trim().length > 0 || typeFilter !== null;
+
+  const confirmTitle =
+    confirmTarget?.type === "module"
+      ? "Delete module"
+      : "Delete material";
+  const confirmMessage =
+    confirmTarget?.type === "module"
+      ? `Delete "${context?.module.title}" and all its materials?`
+      : confirmTarget?.type === "material"
+        ? `Delete "${confirmTarget.material.title}"?`
+        : "";
 
   if (loading) {
     return (
@@ -129,69 +160,98 @@ export default function ModuleWorkspaceScreen() {
   }
 
   return (
-    <ScrollView
-      style={styles.container}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={() => fetchModule(true)} tintColor="#4d33c4" />
-      }
-    >
-      <Stack.Screen options={{ title: context.module.title }} />
+    <View style={styles.container}>
+      <ScrollView
+        style={styles.container}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={() => fetchModule(true)} tintColor="#4d33c4" />
+        }
+      >
+        <Stack.Screen options={{ title: context.module.title }} />
 
-      <LinearGradient colors={["#2e1d7a", "#4d33c4", "#7c5ce7"]} style={styles.hero}>
-        <TouchableOpacity
-          style={styles.coursePill}
-          onPress={() => router.push(`/course/${context.course.id}` as any)}
-          activeOpacity={0.8}
-        >
-          <Text style={styles.coursePillText}>{context.course.title}</Text>
-        </TouchableOpacity>
-        <Text style={styles.heroTitle}>{context.module.title}</Text>
-        <Text style={styles.heroDesc}>
-          {context.module.description?.trim() || "Module workspace for managing your study materials."}
-        </Text>
-        <Text style={styles.heroMeta}>{materials.length} materials in this workspace</Text>
-        <View style={styles.heroActions}>
+        <LinearGradient colors={["#2e1d7a", "#4d33c4", "#7c5ce7"]} style={styles.hero}>
           <TouchableOpacity
-            style={[styles.heroBtn, styles.heroGhostBtn]}
-            onPress={() => router.push(`/module/${id}/edit` as any)}
+            style={styles.coursePill}
+            onPress={() => router.push(`/course/${context.course.id}` as any)}
             activeOpacity={0.8}
           >
-            <Text style={styles.heroGhostBtnText}>Edit Module</Text>
+            <Text style={styles.coursePillText}>{context.course.title}</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.heroBtn, styles.heroDangerBtn]} onPress={handleDeleteModule} activeOpacity={0.8}>
-            <Text style={styles.heroDangerBtnText}>Delete Module</Text>
+          <Text style={styles.heroTitle}>{context.module.title}</Text>
+          <Text style={styles.heroDesc}>
+            {context.module.description?.trim() || "Module workspace for managing your study materials."}
+          </Text>
+          <Text style={styles.heroMeta}>{materials.length} materials in this workspace</Text>
+          <View style={styles.heroActions}>
+            <TouchableOpacity
+              style={[styles.heroBtn, styles.heroGhostBtn]}
+              onPress={() => router.push(`/module/${id}/edit` as any)}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.heroGhostBtnText}>Edit Module</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.heroBtn, styles.heroDangerBtn]} onPress={openDeleteModule} activeOpacity={0.8}>
+              <Text style={styles.heroDangerBtnText}>Delete Module</Text>
+            </TouchableOpacity>
+          </View>
+        </LinearGradient>
+
+        <View style={styles.sectionHeader}>
+          <View>
+            <Text style={styles.sectionTitle}>Materials</Text>
+            <Text style={styles.sectionSubtitle}>Open any item for detail view and editing.</Text>
+          </View>
+          <TouchableOpacity style={styles.addBtn} onPress={() => router.push(`/module/${id}/add-material` as any)}>
+            <Text style={styles.addBtnText}>Add</Text>
           </TouchableOpacity>
         </View>
-      </LinearGradient>
 
-      <View style={styles.sectionHeader}>
-        <View>
-          <Text style={styles.sectionTitle}>Materials</Text>
-          <Text style={styles.sectionSubtitle}>Open any item for detail view and editing.</Text>
-        </View>
-        <TouchableOpacity style={styles.addBtn} onPress={() => router.push(`/module/${id}/add-material` as any)}>
-          <Text style={styles.addBtnText}>Add</Text>
-        </TouchableOpacity>
-      </View>
-
-      {materials.length === 0 ? (
-        <EmptyState icon="Notes" title="No materials yet" subtitle="Add a note, link, file, or video to start this module." />
-      ) : (
-        <View style={styles.materialsList}>
-          {materials.map((material) => (
-            <MaterialCard
-              key={material.id}
-              material={material}
-              onOpen={() => router.push(`/material/${material.id}` as any)}
-              onEdit={() => router.push(`/material/${material.id}/edit` as any)}
-              onDelete={() => handleDeleteMaterial(material)}
+        {materials.length > 0 ? (
+          <>
+            <SearchBar
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              placeholder="Search materials..."
             />
-          ))}
-        </View>
-      )}
+            <TypeFilterChips selected={typeFilter} onSelect={setTypeFilter} />
+          </>
+        ) : null}
 
-      <View style={styles.bottomSpacer} />
-    </ScrollView>
+        {materials.length === 0 ? (
+          <EmptyState icon="Notes" title="No materials yet" subtitle="Add a note, link, file, or video to start this module." />
+        ) : filteredMaterials.length === 0 ? (
+          <EmptyState
+            icon="Search"
+            title="No matches"
+            subtitle={hasFilters ? "Try a different search or filter." : "No materials found."}
+          />
+        ) : (
+          <View style={styles.materialsList}>
+            {filteredMaterials.map((material) => (
+              <MaterialCard
+                key={material.id}
+                material={material}
+                onOpen={() => router.push(`/material/${material.id}` as any)}
+                onEdit={() => router.push(`/material/${material.id}/edit` as any)}
+                onDelete={() => openDeleteMaterial(material)}
+              />
+            ))}
+          </View>
+        )}
+
+        <View style={styles.bottomSpacer} />
+      </ScrollView>
+
+      <ConfirmModal
+        visible={confirmVisible}
+        title={confirmTitle}
+        message={confirmMessage}
+        confirmLabel="Delete"
+        destructive
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setConfirmVisible(false)}
+      />
+    </View>
   );
 }
 

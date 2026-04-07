@@ -13,9 +13,14 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Stack, useRouter } from "expo-router";
 import { useAuth } from "../lib/auth-context";
 import { ApiError } from "../lib/api";
+import * as WebBrowser from "expo-web-browser";
+import * as Google from "expo-auth-session/providers/google";
+import { GoogleSignInButton } from "../components/auth/GoogleSignInButton";
+
+WebBrowser.maybeCompleteAuthSession();
 
 export default function LoginScreen() {
-  const { login } = useAuth();
+  const { login, loginWithGoogle } = useAuth();
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,6 +28,34 @@ export default function LoginScreen() {
   const [error, setError] = useState("");
   const [emailFocused, setEmailFocused] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(false);
+
+  // Google Auth Hook
+  const redirectUri = "https://auth.expo.io/@mariva/studyhub-v2";
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    clientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+    redirectUri,
+  });
+
+  useEffect(() => {
+    if (response?.type === "success") {
+      const { authentication } = response;
+      if (authentication?.accessToken) {
+        handleGoogleLogin(authentication.accessToken);
+      }
+    }
+  }, [response]);
+
+  async function handleGoogleLogin(token: string) {
+    setLoading(true);
+    setError("");
+    try {
+      await loginWithGoogle(token, "access_token");
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : "Google sign-in failed");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(30)).current;
@@ -145,6 +178,12 @@ export default function LoginScreen() {
               </Text>
             </LinearGradient>
           </TouchableOpacity>
+
+          <GoogleSignInButton
+            onPress={() => promptAsync()}
+            loading={loading}
+            disabled={!request}
+          />
 
           <View style={styles.divider}>
             <View style={styles.dividerLine} />
