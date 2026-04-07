@@ -4094,3 +4094,40 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 
 **Verification:**
 - `tsc --noEmit` — PASS, zero errors.
+
+### Session 156 (Mobile UI Polish + Material Screen)
+
+**Какво направихме:**
+
+- **UI polish на всички mobile екрани:**
+  - **Login** — purple→indigo gradient фон, fade-in + slide-up анимация на картата, input labels с focus states (purple border + glow), gradient бутон, demo credentials с divider
+  - **Courses List** — gradient header с welcome message + role badge + stats ред (courses/published/drafts), purple left accent на картите, staggered fade-in анимации, махнат draft/published badge от картите
+  - **Course Details** — gradient hero секция, module номера в кръгчета, material type icons като цветни кръгове (N/L/F/V) вместо emoji, material count badge на модулите, LayoutAnimation за expand/collapse
+  - **Global** — StatusBar light style с purple фон, header с тъмно purple + бял текст, loading screen с purple фон
+
+- **Нов екран — Material View (`apps/mobile/app/material/[id].tsx`):**
+  - Gradient header с тип badge (Note/Link/File/Video)
+  - Пълен текст на материала (без numberOfLines ограничение)
+  - Link/File URL бутон с Linking.openURL
+  - Tags секция
+  - Pull-to-refresh
+
+- **Материалите в Course Details са натискаеми** — при tap навигират към `/material/[id]`
+
+- **Добавен `expo-linear-gradient`** — за gradient фонове на всички екрани
+
+- **Обновен `docs/mobile-phone-testing-handoff.md`** — пренаписан с LAN golden path като препоръчан метод, USB като алтернатива, recovery checklist
+
+**Файлове:**
+- `apps/mobile/app/login.tsx` — redesign
+- `apps/mobile/app/index.tsx` — redesign
+- `apps/mobile/app/course/[id].tsx` — redesign + material navigation
+- `apps/mobile/app/material/[id].tsx` — нов екран
+- `apps/mobile/app/_layout.tsx` — StatusBar + header config
+- `apps/mobile/package.json` — expo-linear-gradient dependency
+- `docs/mobile-phone-testing-handoff.md` — пренаписан
+
+**Тествано:**
+- `tsc --noEmit` — PASS
+- Expo Go на физическо устройство (LAN mode) — всички 4 екрана работят
+- Login → Courses List → Course Details → Material View — навигация ✅

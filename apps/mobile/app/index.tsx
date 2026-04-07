@@ -13,6 +13,8 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Stack, useRouter } from "expo-router";
 import { useAuth } from "../lib/auth-context";
 import { apiFetch } from "../lib/api";
+import { BrandedSpinner } from "../components/branded-spinner";
+import { EmptyState } from "../components/empty-state";
 
 type Course = {
   id: number;
@@ -135,9 +137,12 @@ export default function CoursesListScreen() {
             <Text style={styles.headerName}>{user?.name ?? "Student"}</Text>
           </View>
           <View style={styles.headerRight}>
-            <View style={styles.roleBadge}>
-              <Text style={styles.roleBadgeText}>{user?.role}</Text>
-            </View>
+            <TouchableOpacity
+              onPress={() => router.push("/profile" as any)}
+              style={styles.profileBtn}
+            >
+              <Text style={styles.profileBtnText}>Profile</Text>
+            </TouchableOpacity>
             <TouchableOpacity onPress={logout} style={styles.logoutBtn}>
               <Text style={styles.logoutText}>Logout</Text>
             </TouchableOpacity>
@@ -167,9 +172,7 @@ export default function CoursesListScreen() {
 
       {/* Content */}
       {loading ? (
-        <View style={styles.centered}>
-          <ActivityIndicator size="large" color="#4d33c4" />
-        </View>
+        <BrandedSpinner message="Loading courses..." />
       ) : error ? (
         <View style={styles.centered}>
           <Text style={styles.errorText}>{error}</Text>
@@ -178,15 +181,11 @@ export default function CoursesListScreen() {
           </TouchableOpacity>
         </View>
       ) : courses.length === 0 ? (
-        <View style={styles.centered}>
-          <View style={styles.emptyIconCircle}>
-            <Text style={styles.emptyIcon}>📖</Text>
-          </View>
-          <Text style={styles.emptyText}>No courses yet</Text>
-          <Text style={styles.emptyHint}>
-            Create courses from the web app to see them here
-          </Text>
-        </View>
+        <EmptyState
+          icon="📖"
+          title="No courses yet"
+          subtitle="Tap + to create your first course"
+        />
       ) : (
         <FlatList
           data={courses}
@@ -202,6 +201,20 @@ export default function CoursesListScreen() {
           }
         />
       )}
+
+      {/* FAB */}
+      <TouchableOpacity
+        style={styles.fab}
+        onPress={() => router.push("/create-course" as any)}
+        activeOpacity={0.8}
+      >
+        <LinearGradient
+          colors={["#4d33c4", "#7c5ce7"]}
+          style={styles.fabGradient}
+        >
+          <Text style={styles.fabText}>+</Text>
+        </LinearGradient>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -236,13 +249,13 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
     gap: 8,
   },
-  roleBadge: {
+  profileBtn: {
     backgroundColor: "rgba(255,255,255,0.15)",
-    paddingHorizontal: 10,
-    paddingVertical: 4,
+    paddingHorizontal: 12,
+    paddingVertical: 5,
     borderRadius: 8,
   },
-  roleBadgeText: {
+  profileBtnText: {
     fontSize: 12,
     fontWeight: "600",
     color: "#ffffff",
@@ -392,5 +405,29 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#94a3b8",
     textAlign: "center",
+  },
+  fab: {
+    position: "absolute",
+    bottom: 24,
+    right: 20,
+    borderRadius: 28,
+    shadowColor: "#4d33c4",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  fabGradient: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  fabText: {
+    fontSize: 28,
+    fontWeight: "600",
+    color: "#ffffff",
+    marginTop: -2,
   },
 });

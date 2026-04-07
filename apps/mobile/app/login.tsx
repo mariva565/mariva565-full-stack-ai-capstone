@@ -10,12 +10,13 @@ import {
   Animated,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import { useAuth } from "../lib/auth-context";
 import { ApiError } from "../lib/api";
 
 export default function LoginScreen() {
   const { login } = useAuth();
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -152,6 +153,15 @@ export default function LoginScreen() {
           </View>
 
           <Text style={styles.hint}>admin@studyhub.dev / admin123</Text>
+
+          <TouchableOpacity
+            onPress={() => router.replace("/register")}
+            style={styles.switchLink}
+          >
+            <Text style={styles.switchText}>
+              Don't have an account? <Text style={styles.switchBold}>Sign Up</Text>
+            </Text>
+          </TouchableOpacity>
         </Animated.View>
       </KeyboardAvoidingView>
     </LinearGradient>
@@ -288,5 +298,17 @@ const styles = StyleSheet.create({
     color: "#64748b",
     textAlign: "center",
     fontFamily: Platform.OS === "ios" ? "Menlo" : "monospace",
+  },
+  switchLink: {
+    marginTop: 20,
+    alignItems: "center",
+  },
+  switchText: {
+    fontSize: 14,
+    color: "#64748b",
+  },
+  switchBold: {
+    color: "#4d33c4",
+    fontWeight: "700",
   },
 });

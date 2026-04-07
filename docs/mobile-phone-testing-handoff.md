@@ -1,118 +1,98 @@
 # Mobile Phone Testing Handoff (StudyHub v2)
 
-Last updated: 2026-03-28
+Last updated: 2026-04-07
 
-## 1) Какво е направено досега
+## 1) Golden Path — LAN (без кабел, препоръчан)
 
-- Mobile стекът е ъпгрейднат до Expo SDK 54 в `apps/mobile`.
-- `expo-doctor --verbose` минава успешно: `17/17 checks passed`.
-- Добавени са локални mobile scripts:
-  - `dev:mobile:tunnel`
-  - `dev:mobile:lan`
-  - `dev:mobile:usb`
-  - `android:usb`
-- Добавен е USB reverse helper: `apps/mobile/scripts/usb-reverse.js`.
-- Добавен е по-устойчив API base fallback в mobile:
-  - `EXPO_PUBLIC_API_URL` override
-  - auto-detect host от Expo config
-  - fallback за emulator (`10.0.2.2`) и web (`localhost`)
-- Потвърдено е, че web app работи локално: `http://localhost:3000/login` връща `200`.
+### Еднократна настройка
+- WiFi мрежата на компютъра трябва да е **Private** (не Public)
+  - Windows: Settings → Network → Wi-Fi → Properties → Private
+- При prompt от Windows Firewall за Node.js → **Allow**
+- Телефонът и компютърът трябва да са на **същата WiFi мрежа**
 
-## 2) Какви проблеми срещнахме и защо
+### Стъпки за стартиране
 
-### A) `failed to download remote update`
-- Първоначално имаше dependency drift и липсващ peer.
-- След фиксовете и SDK 54 upgrade проблемът не е от dependency compatibility.
-
-### B) Expo Go SDK mismatch (SDK 54 app vs SDK 53 project)
-- Проектът беше на SDK 53, Expo Go на телефона беше за SDK 54.
-- Решение: ъпгрейд към SDK 54 (вече е направено).
-
-### C) Red screen `500` по време на mobile runtime
-- Реална причина: stale Next.js процес на `3000` + нов `dev:web` на `3001`.
-- Mobile app вика API към `3000`, но е удрял грешен backend процес.
-- Решение: kill stale Next процеси и стартиране само на `next dev` на `3000`.
-
-### D) Expo Go показва само сиво квадратче "StudyHub v2"
-- Това е observed проблем в launcher UX на Expo Go.
-- Текущо е open item: web работи, Metro/API работят, но UI поведението в Expo Go е нестабилно.
-
-## 3) Golden Path (следващ път изпълняваме само това)
-
-1. Стартирай backend web:
+**Терминал 1 — Web backend:**
 ```bash
 npm run dev:web
 ```
-Провери:
+Изчакай `✓ Ready` и провери че е на порт **3000** (не 3001).
+Ако е на 3001 → има стар процес на 3000. Виж Recovery секцията.
+
+**Терминал 2 — Mobile Metro:**
 ```bash
-http://localhost:3000/login
+npm --workspace @studyhub/mobile run dev:mobile:lan
 ```
 
-2. Свържи Android по USB:
-- USB mode: `File transfer (MTP)`
-- Developer options: `USB debugging = ON`
-- При prompt: `Allow` (+ по избор `Always allow`)
+**На телефона:**
+1. Отвори **Expo Go**
+2. Сканирай **QR кода** от Metro терминала
+3. Приложението се зарежда
 
-3. Проверка за устройство:
+### API URL
+- Файл: `apps/mobile/.env`
+- Стойност: `EXPO_PUBLIC_API_URL=http://192.168.1.9:3000`
+- Ако си сменила мрежа, провери IP-то с `ipconfig` и обнови `.env`
+
+---
+
+## 2) Алтернатива — USB (с кабел)
+
+1. Свържи Android по USB (File transfer mode, USB debugging ON)
+2. Провери: `adb devices` → трябва да покаже устройството
+3. Стартирай:
 ```bash
-adb devices
+npm run dev:mobile:usb
 ```
-Очаквано: `<serial>    device`
+4. В Expo Go въведи: `exp://127.0.0.1:8081`
 
-4. Стартирай mobile Metro (localhost):
-```bash
-npm --workspace @studyhub/mobile run start -- --localhost -c
-```
+---
 
-5. Направи reverse на портовете:
-```bash
-adb reverse tcp:8081 tcp:8081
-adb reverse tcp:3000 tcp:3000
-adb reverse tcp:19000 tcp:19000
-adb reverse tcp:19001 tcp:19001
-adb reverse tcp:19002 tcp:19002
-adb reverse --list
-```
+## 3) Recovery checklist
 
-6. Отвори app-а в Expo Go:
-```bash
-exp://127.0.0.1:8081
-```
-
-## 4) Бърз recovery checklist
-
-Ако mobile не тръгне:
-
-1. Провери портове:
+### Порт 3000 е зает
 ```bash
 netstat -ano | findstr :3000
-netstat -ano | findstr :8081
 ```
-
-2. Ако `dev:web` е на `3001` вместо `3000`:
-- има stale процес на `3000`
-- спри Next.js процесите и пусни `npm run dev:web` наново
-
-3. Ако `adb devices` е празно:
-- смени USB кабел/порт
-- потвърди RSA prompt
-- `Revoke USB debugging authorizations` и повтори
-
-4. Ако има red screen:
-- вземи първия ред на грешката от екрана
-- и/или пусни:
+Намери PID-а и го спри:
 ```bash
-adb logcat -d ReactNativeJS:I Expo:I *:S
+taskkill /PID <номер> /F
 ```
+После пусни `npm run dev:web` наново.
 
-## 5) Какво да НЕ правим
+### "Failed to download remote update"
+- Провери че телефонът и компютърът са на **същата WiFi мрежа**
+- Затвори Expo Go напълно (swipe away) и отвори наново
+- Провери WiFi профил — трябва да е **Private**
 
-- Да стартираме едновременно различни web режими (`next start` и `next dev`) и да смесим портовете.
-- Да разчитаме на `--tunnel` като единствен път (ngrok често timeout-ва).
-- Да дебъгваме mobile преди да потвърдим, че web API е стабилно на `3000`.
+### Metro порт 8081 зает
+Спри стария Metro процес или ползвай:
+```bash
+cmd.exe /c "taskkill /IM node.exe /F"
+```
+И стартирай наново.
 
-## 6) Текущ статус
+### Стар bundle (не виждам промените)
+- Натисни `r` в Metro терминала за reload
+- Или shake телефона → Reload от менюто
 
-- Web: работи локално (`/login` е достъпен).
-- Mobile compatibility: SDK 54 + `expo-doctor` е чист.
-- Mobile phone launcher UX: има нестабилно поведение (сиво квадратче), нужно е следващата сесия да се фиксира конкретно с live screen + свеж log capture.
+---
+
+## 4) Какво да НЕ правим
+
+- Да не разчитаме на `--tunnel` (ngrok е нестабилен, timeout-ва често)
+- Да не смесваме `next start` и `next dev` — ползваме само `dev:web`
+- Да не дебъгваме mobile преди да потвърдим, че web API е на порт **3000**
+- Да не пускаме Metro от Claude CLI — да се ползват реални терминали
+
+---
+
+## 5) Текущ статус (2026-04-07)
+
+- **4 екрана** работят на физическо устройство:
+  1. Login — gradient фон, анимирана карта
+  2. Courses List — gradient header със статистика, card accents
+  3. Course Details — gradient hero, модули с expand/collapse, материали натискаеми
+  4. Material View — пълен текст, тип badge, тагове, линк бутон
+- LAN mode е стабилен при правилна мрежова конфигурация
+- Expo SDK 54, React Native 0.81.5

@@ -14,11 +14,11 @@ function AuthGate() {
     if (isLoading) return;
     if (!navigationState?.key) return;
 
-    const onLoginScreen = segments[0] === "login";
+    const onAuthScreen = segments[0] === "login" || segments[0] === "register";
 
-    if (!user && !onLoginScreen) {
+    if (!user && !onAuthScreen) {
       router.replace("/login");
-    } else if (user && onLoginScreen) {
+    } else if (user && onAuthScreen) {
       router.replace("/");
     }
   }, [user, isLoading, segments, navigationState?.key]);

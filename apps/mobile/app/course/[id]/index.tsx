@@ -13,7 +13,9 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 
-import { apiFetch } from "../../lib/api";
+import { apiFetch } from "../../../lib/api";
+import { BrandedSpinner } from "../../../components/branded-spinner";
+import { EmptyState } from "../../../components/empty-state";
 
 type Course = {
   id: number;
@@ -122,10 +124,10 @@ export default function CourseDetailsScreen() {
 
   if (loading) {
     return (
-      <View style={styles.centered}>
+      <>
         <Stack.Screen options={{ title: "Loading..." }} />
-        <ActivityIndicator size="large" color="#4d33c4" />
-      </View>
+        <BrandedSpinner message="Loading course..." />
+      </>
     );
   }
 
@@ -195,11 +197,21 @@ export default function CourseDetailsScreen() {
         </View>
       </View>
 
+      <TouchableOpacity
+        style={styles.addModuleBtn}
+        onPress={() => router.push(`/course/${id}/add-module` as any)}
+        activeOpacity={0.7}
+      >
+        <Text style={styles.addModulePlus}>+</Text>
+        <Text style={styles.addModuleText}>Add Module</Text>
+      </TouchableOpacity>
+
       {modules.length === 0 ? (
-        <View style={styles.emptyCard}>
-          <Text style={styles.emptyIcon}>📂</Text>
-          <Text style={styles.emptyText}>No modules yet</Text>
-        </View>
+        <EmptyState
+          icon="📂"
+          title="No modules yet"
+          subtitle="Tap 'Add Module' above to get started"
+        />
       ) : (
         modules.map((mod, idx) => {
           const isExpanded = expandedModule === mod.id;
@@ -297,6 +309,14 @@ export default function CourseDetailsScreen() {
                       );
                     })
                   )}
+                  <TouchableOpacity
+                    style={styles.addMaterialBtn}
+                    onPress={() => router.push(`/module/${mod.id}/add-material` as any)}
+                    activeOpacity={0.7}
+                  >
+                    <Text style={styles.addMaterialPlus}>+</Text>
+                    <Text style={styles.addMaterialText}>Add Material</Text>
+                  </TouchableOpacity>
                 </View>
               )}
             </View>
@@ -548,6 +568,51 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: "#4d33c4",
     fontWeight: "500",
+  },
+  addModuleBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+    marginHorizontal: 16,
+    marginBottom: 12,
+    paddingVertical: 12,
+    borderWidth: 2,
+    borderColor: "#4d33c4",
+    borderRadius: 12,
+    borderStyle: "dashed",
+  },
+  addModulePlus: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#4d33c4",
+  },
+  addModuleText: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#4d33c4",
+  },
+  addMaterialBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 4,
+    marginTop: 10,
+    paddingVertical: 8,
+    borderWidth: 1.5,
+    borderColor: "#e2e8f0",
+    borderRadius: 8,
+    borderStyle: "dashed",
+  },
+  addMaterialPlus: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: "#64748b",
+  },
+  addMaterialText: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#64748b",
   },
   bottomSpacer: {
     height: 32,

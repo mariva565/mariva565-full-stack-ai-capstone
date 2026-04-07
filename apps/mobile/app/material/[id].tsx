@@ -12,6 +12,7 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { apiFetch } from "../../lib/api";
+import { BrandedSpinner } from "../../components/branded-spinner";
 
 type Material = {
   id: number;
@@ -61,10 +62,10 @@ export default function MaterialScreen() {
 
   if (loading) {
     return (
-      <View style={styles.centered}>
+      <>
         <Stack.Screen options={{ title: "Loading..." }} />
-        <ActivityIndicator size="large" color="#4d33c4" />
-      </View>
+        <BrandedSpinner message="Loading material..." />
+      </>
     );
   }
 

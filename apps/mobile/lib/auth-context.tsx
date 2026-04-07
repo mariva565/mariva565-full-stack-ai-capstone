@@ -12,6 +12,7 @@ type AuthState = {
   user: User | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
+  register: (email: string, name: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
 };
 
@@ -48,13 +49,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(data.user);
   }, []);
 
+  const register = useCallback(async (email: string, name: string, password: string) => {
+    const data = await apiFetch<{ token: string; user: User }>(
+      "/api/auth/register",
+      { method: "POST", body: { email, name, password }, auth: false }
+    );
+    await setToken(data.token);
+    setUser(data.user);
+  }, []);
+
   const logout = useCallback(async () => {
     await removeToken();
     setUser(null);
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, logout }}>
+    <AuthContext.Provider value={{ user, isLoading, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );
