@@ -1,10 +1,10 @@
 import { Tabs } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
 
-function TabIcon({ label, focused }: { label: string; focused: boolean }) {
+function TabIcon({ emoji, focused }: { emoji: string; focused: boolean }) {
   return (
-    <View style={styles.iconWrap}>
-      <Text style={[styles.iconText, focused && styles.iconTextActive]}>{label}</Text>
+    <View style={[styles.iconWrap, focused && styles.iconWrapActive]}>
+      <Text style={styles.iconText}>{emoji}</Text>
     </View>
   );
 }
@@ -38,14 +38,14 @@ export default function TabsLayout() {
         options={{
           title: "Courses",
           headerShown: false,
-          tabBarIcon: ({ focused }) => <TabIcon label="C" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon emoji="📚" focused={focused} />,
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
           title: "Profile",
-          tabBarIcon: ({ focused }) => <TabIcon label="P" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon emoji="👤" focused={focused} />,
         }}
       />
     </Tabs>
@@ -59,13 +59,12 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     justifyContent: "center",
     alignItems: "center",
+    opacity: 0.5,
+  },
+  iconWrapActive: {
+    opacity: 1,
   },
   iconText: {
-    fontSize: 16,
-    fontWeight: "800",
-    color: "#94a3b8",
-  },
-  iconTextActive: {
-    color: "#4d33c4",
+    fontSize: 18,
   },
 });

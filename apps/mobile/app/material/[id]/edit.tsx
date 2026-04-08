@@ -15,10 +15,10 @@ import { BrandedSpinner } from "../../../components/branded-spinner";
 import { ApiError, apiFetch } from "../../../lib/api";
 
 const MATERIAL_TYPES = [
-  { key: "note", label: "Note", icon: "N", color: "#7c5ce7", bg: "#f0ecff" },
-  { key: "link", label: "Link", icon: "L", color: "#0ea5e9", bg: "#e0f2fe" },
-  { key: "file", label: "File", icon: "F", color: "#f59e0b", bg: "#fef3c7" },
-  { key: "video", label: "Video", icon: "V", color: "#ef4444", bg: "#fef2f2" },
+  { key: "note", label: "Note", icon: "📝", color: "#7c5ce7", bg: "#f0ecff" },
+  { key: "link", label: "Link", icon: "🔗", color: "#0ea5e9", bg: "#e0f2fe" },
+  { key: "file", label: "File", icon: "📄", color: "#f59e0b", bg: "#fef3c7" },
+  { key: "video", label: "Video", icon: "🎬", color: "#ef4444", bg: "#fef2f2" },
 ];
 
 type MaterialResponse = {

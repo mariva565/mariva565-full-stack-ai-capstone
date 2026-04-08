@@ -4423,3 +4423,21 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 
 **Verification:**
 - `npx tsc --noEmit` — 0 грешки
+
+---
+
+## 2026-04-08
+
+### Сесия 161
+
+**Какво направихме:**
+- Преглед и анализ на мобилното приложение — идентифицирани 50 подобрения по приоритет (UX, code quality, липсващи функции)
+- **UI polish — emoji иконки вместо букви:**
+  - Tab bar: "C" → 📚, "P" → 👤 (с opacity fade за inactive състояние)
+  - Material types: "N" → 📝, "L" → 🔗, "F" → 📄, "V" → 🎬
+  - Променени файлове: `app/(tabs)/_layout.tsx`, `lib/material-utils.ts`, `app/module/[id]/add-material.tsx`, `app/material/[id]/edit.tsx`
+
+**Забележки от анализа (за следващи сесии):**
+- High priority: офлайн кеширане (React Query), по-добро error handling в api.ts, type safety (премахване на `any`)
+- Medium: form validation в реално време, accessibility labels, централизиране на дублиран MATERIAL_TYPES, color constants файл, logout в Profile вместо в header
+- Липсващи функции: progress tracking, favorites/bookmarks, глобално търсене, dark mode, course publish/draft toggle от мобилното

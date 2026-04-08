@@ -132,10 +132,10 @@ export function MaterialEditorForm({
           Content
         </label>
         <textarea
-          rows={12}
+          rows={16}
           value={content}
           onChange={(event) => onContentChange(event.target.value)}
-          className="mt-2 block w-full rounded-[1.4rem] border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-200/50 dark:border-slate-700 dark:bg-slate-950/70 dark:text-white dark:focus:border-brand-400 dark:focus:ring-brand-500/20"
+          className="mt-2 block min-h-[18rem] w-full rounded-[1.4rem] border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-200/50 dark:border-slate-700 dark:bg-slate-950/70 dark:text-white dark:focus:border-brand-400 dark:focus:ring-brand-500/20"
         />
       </div>
 
