@@ -32,3 +32,15 @@ export type Material = {
   tags: string | null;
   createdAt?: string;
 };
+
+export type FavoriteItem = {
+  id: number;
+  materialId: number;
+  materialTitle: string;
+  materialType: string;
+  tags: string | null;
+  moduleId: number;
+  moduleTitle: string;
+  courseId: number;
+  courseTitle: string;
+};

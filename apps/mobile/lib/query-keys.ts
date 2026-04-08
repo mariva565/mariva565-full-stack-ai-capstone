@@ -31,6 +31,10 @@ export const queryKeys = {
     detail: (materialId: QueryEntityId) =>
       ["materials", "detail", toKeyId(materialId)] as const,
   },
+  favorites: {
+    all: ["favorites"] as const,
+    lists: () => ["favorites", "list"] as const,
+  },
 } as const;
 
 export async function invalidateAuthMe(queryClient: QueryClient): Promise<void> {
@@ -69,4 +73,8 @@ export async function invalidateMaterialQueries(
   await queryClient.invalidateQueries({
     queryKey: queryKeys.materials.detail(materialId),
   });
+}
+
+export async function invalidateFavoritesList(queryClient: QueryClient): Promise<void> {
+  await queryClient.invalidateQueries({ queryKey: queryKeys.favorites.lists() });
 }

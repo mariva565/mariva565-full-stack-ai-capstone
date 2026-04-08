@@ -4506,6 +4506,72 @@ Missing features (later phase):
 **Verification:**
 - `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
 
+**Continuity checklist:**
+- Added `docs/mobile-execution-checklist.md` with Sprint 1 / Sprint 2 tasks, acceptance criteria, and current status checkboxes.
+
+### Session 172 (Kickoff prompt master checklist mirrored in dev-log)
+
+**Requested continuity update:**
+- Mirrored all mobile tasks from the kickoff prompt directly inside `docs/dev-log.md` (not only in a separate checklist file), so future chats can continue from one source.
+
+**Kickoff baseline assessment (reference):**
+- Mobile core CRUD + data layer: `8/10`
+- Parity vs desktop: `6/10`
+- Production readiness (mobile standards): `5.5/10`
+- Overall current MVP: `7/10`
+
+**Master checklist from kickoff prompt:**
+- [x] Feature parity: Favorites (pin/unpin + favorites list + tab access).
+- [ ] Feature parity: Progress/Milestones mobile (read + basic create/edit/status update).
+- [ ] Feature parity: Calendar mobile (read + basic create/edit/delete).
+- [ ] Feature parity: AI entry points on mobile (summarize/quiz/chat) or read-only AI outputs.
+
+- [ ] React Query RN lifecycle: integrate `focusManager` with `AppState`.
+- [ ] React Query RN lifecycle: integrate `onlineManager` with `NetInfo`.
+- [ ] Validate foreground/online refetch behavior across key mobile screens.
+
+- [ ] Cache policy: define single source of truth between React Query persistence and `apiFetch` AsyncStorage cache.
+- [ ] Cache policy: decide where `apiFetch` cache must be disabled for query-managed read paths.
+- [ ] Cache policy: document policy in `README.md` and enforce in mobile data calls.
+
+- [ ] Guardrails refactor: split `apps/mobile/app/module/[id]/index.tsx` (<300 lines; extract hooks/components).
+- [ ] Guardrails refactor: split `apps/mobile/app/(tabs)/profile.tsx` (<300 lines; extract hooks/components).
+- [ ] Guardrails refactor: split `apps/mobile/app/(tabs)/index.tsx` (<300 lines; extract hooks/components).
+- [ ] Guardrails refactor: split `apps/mobile/app/register.tsx` (<300 lines; extract hooks/components).
+- [ ] Guardrails refactor: split `apps/mobile/app/login.tsx` (<300 lines; extract hooks/components).
+- [ ] Guardrails: keep functions under 60 lines during refactors/new work.
+
+- [ ] Mobile UX standards: add haptics for destructive/success actions.
+- [ ] Mobile UX standards: add richer skeleton loading states for major flows.
+- [ ] Mobile UX standards: improve empty/offline states for core screens.
+- [ ] Mobile UX standards: verify Dynamic Type / font scaling behavior.
+- [ ] Mobile UX standards: verify VoiceOver/TalkBack navigation flow.
+- [ ] Mobile UX standards: verify hardware back behavior on all CRUD screens.
+
+- [ ] Release readiness: add mobile e2e smoke suite (auth + CRUD happy path + offline/online recovery).
+- [ ] Release readiness: add crash/error telemetry (Sentry or equivalent).
+- [ ] Release readiness: finalize mobile release checklist in docs.
+
+**Sprint plan tracking (from kickoff):**
+
+Sprint 1 - Parity
+- [x] Task 1: Favorites.
+- [ ] Task 2: Progress/Milestones.
+- [ ] Task 3: Calendar.
+- [ ] Task 4: Material AI section.
+- [ ] Task 5: Query keys + invalidate rules for new domains.
+
+Sprint 2 - Production standards
+- [ ] Task 1: lifecycle integration (`focusManager`/`onlineManager`).
+- [ ] Task 2: cache policy hardening.
+- [ ] Task 3: guardrail-driven file splitting.
+- [ ] Task 4: UX hardening.
+- [ ] Task 5: quality gates (e2e + telemetry + release checklist).
+
+**Acceptance gates mirrored from kickoff:**
+- [ ] Sprint 1 complete when parity tasks are implemented and visible without manual `useEffect` fetch patterns.
+- [ ] Sprint 2 complete when lifecycle/offline stability and smoke quality gates pass, and docs are fully synced.
+
 **Backlog status update (Session 162 list):**
 - [x] Better API error handling end-to-end.
 - [x] Type safety hardening (`any`/route casts removed in mobile app).
@@ -4710,3 +4776,26 @@ Missing features (later phase):
 
 **Verification:**
 - Documentation-only update (no runtime code changes in this session).
+
+### Session 171 (Mobile Favorites parity: tab + pin/unpin)
+
+**What we changed:**
+- Implemented mobile Favorites domain wiring:
+  - Added `FavoriteItem` mobile shared type in `apps/mobile/lib/studyhub-types.ts`.
+  - Added `apps/mobile/lib/favorites.ts` with favorites API helpers and optimistic list helpers.
+  - Extended React Query key map with `queryKeys.favorites.lists()` and `invalidateFavoritesList(...)` in `apps/mobile/lib/query-keys.ts`.
+- Added a dedicated Favorites tab screen:
+  - New route `apps/mobile/app/(tabs)/favorites.tsx`.
+  - Reads `/api/favorites` via React Query, supports pull-to-refresh, empty/error states.
+  - Includes quick-access actions to open linked `Course`, `Module`, and `Material`.
+  - Supports `Unpin` with optimistic UI update and rollback on failure.
+- Updated tab navigation to expose Favorites:
+  - `apps/mobile/app/(tabs)/_layout.tsx` now includes `Favorites` tab with icon.
+- Added pin/unpin on Material details:
+  - `apps/mobile/app/material/[id].tsx` now loads favorites list, computes pin state, and toggles with optimistic cache updates.
+  - Refetch/invalidation flows now include favorites on focus and after mutation settle.
+- Refactored material screen styling for file-size guardrail:
+  - Moved style definitions from `app/material/[id].tsx` into `app/material/material-screen.styles.ts`.
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass

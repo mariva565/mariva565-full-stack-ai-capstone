@@ -5,7 +5,7 @@ import { AntDesign } from "@expo/vector-icons";
 import { COLORS } from "../../lib/colors";
 
 type TabIconProps = {
-  name: "book" | "user";
+  name: "book" | "heart" | "user";
   focused: boolean;
 };
 
@@ -56,6 +56,13 @@ export default function TabsLayout() {
           title: "Courses",
           headerShown: false,
           tabBarIcon: ({ focused }) => <TabIcon name="book" focused={focused} />,
+        }}
+      />
+      <Tabs.Screen
+        name="favorites"
+        options={{
+          title: "Favorites",
+          tabBarIcon: ({ focused }) => <TabIcon name="heart" focused={focused} />,
         }}
       />
       <Tabs.Screen

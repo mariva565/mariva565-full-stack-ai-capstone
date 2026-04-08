@@ -1,0 +1,98 @@
+import { StyleSheet } from "react-native";
+
+import { COLORS } from "../../lib/colors";
+
+export const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: COLORS.canvas },
+  hero: {
+    paddingTop: 56,
+    paddingBottom: 18,
+    paddingHorizontal: 20,
+  },
+  heroLabel: {
+    fontSize: 12,
+    color: "rgba(255,255,255,0.62)",
+    fontWeight: "700",
+    textTransform: "uppercase",
+    letterSpacing: 0.8,
+  },
+  heroTitle: {
+    marginTop: 6,
+    fontSize: 24,
+    fontWeight: "800",
+    color: COLORS.textOnBrand,
+  },
+  heroMeta: {
+    marginTop: 8,
+    fontSize: 13,
+    color: "rgba(255,255,255,0.72)",
+  },
+  centered: { flex: 1, justifyContent: "center", alignItems: "center", paddingHorizontal: 28 },
+  errorText: { color: COLORS.danger, fontSize: 15, textAlign: "center", marginBottom: 16 },
+  retryBtn: {
+    backgroundColor: COLORS.brandPrimary,
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 24,
+  },
+  retryText: {
+    color: COLORS.textOnBrand,
+    fontWeight: "700",
+  },
+  list: { padding: 16, paddingBottom: 28 },
+  card: {
+    backgroundColor: COLORS.surface,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: COLORS.borderSubtle,
+    padding: 14,
+    marginBottom: 12,
+    shadowColor: COLORS.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  cardMain: { gap: 6 },
+  cardTitle: { fontSize: 16, fontWeight: "700", color: COLORS.textPrimary },
+  cardMeta: { fontSize: 13, color: COLORS.textSecondary },
+  tagsRow: { flexDirection: "row", flexWrap: "wrap", gap: 6, marginTop: 10 },
+  tag: {
+    borderRadius: 6,
+    backgroundColor: COLORS.violetSoft,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+  },
+  tagText: { fontSize: 11, color: COLORS.violetText, fontWeight: "600" },
+  cardActions: {
+    marginTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.borderSubtle,
+    paddingTop: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  linkBtn: {
+    borderRadius: 9,
+    borderWidth: 1,
+    borderColor: COLORS.violetBorder,
+    backgroundColor: COLORS.violetSoft,
+    paddingHorizontal: 10,
+    paddingVertical: 7,
+  },
+  linkBtnText: { color: COLORS.violetText, fontWeight: "700", fontSize: 12 },
+  unpinBtn: {
+    marginLeft: "auto",
+    borderRadius: 9,
+    borderWidth: 1,
+    borderColor: COLORS.dangerBorder,
+    backgroundColor: COLORS.dangerSoft,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+  },
+  unpinBtnDisabled: {
+    opacity: 0.7,
+  },
+  unpinBtnText: { color: COLORS.dangerText, fontSize: 12, fontWeight: "700" },
+});

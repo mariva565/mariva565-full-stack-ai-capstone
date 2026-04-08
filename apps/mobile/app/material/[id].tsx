@@ -1,32 +1,45 @@
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import {
   View,
   Text,
   ScrollView,
-  StyleSheet,
   TouchableOpacity,
   RefreshControl,
   Linking,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { LinearGradient } from "expo-linear-gradient";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { apiFetch, getUserFriendlyError } from "../../lib/api";
 import { BrandedSpinner } from "../../components/branded-spinner";
 import { COLORS, GRADIENTS } from "../../lib/colors";
+import {
+  addFavorite,
+  appendOptimisticFavorite,
+  fetchFavorites,
+  isFavoriteMaterial,
+  removeFavorite,
+  removeOptimisticFavorite,
+} from "../../lib/favorites";
 import { useToast } from "../../lib/toast-context";
 import { getMaterialTypeConfig, splitTags } from "../../lib/material-utils";
-import { queryKeys } from "../../lib/query-keys";
+import { invalidateFavoritesList, queryKeys } from "../../lib/query-keys";
+import type { FavoriteItem, Material } from "../../lib/studyhub-types";
+import { styles } from "./material-screen.styles";
 
-type Material = {
-  id: number;
-  title: string;
-  content: string | null;
-  materialType: string;
-  fileUrl: string | null;
-  tags: string | null;
-  createdAt: string;
+type MaterialDetailResponse = {
+  material: Material & {
+    createdAt: string;
+  };
+  module: {
+    id: number;
+    title: string;
+  };
+  course: {
+    id: number;
+    title: string;
+  };
 };
 
 export default function MaterialScreen() {
@@ -34,21 +47,74 @@ export default function MaterialScreen() {
   const routeId = String(id);
   const queryClient = useQueryClient();
   const { showToast } = useToast();
+
   const materialQuery = useQuery({
     queryKey: queryKeys.materials.detail(routeId),
     queryFn: async () => {
-      const data = await apiFetch<{ material: Material }>(`/api/materials/${routeId}`);
-      return data.material;
+      return apiFetch<MaterialDetailResponse>(`/api/materials/${routeId}`);
+    },
+  });
+
+  const favoritesQuery = useQuery({
+    queryKey: queryKeys.favorites.lists(),
+    queryFn: fetchFavorites,
+  });
+
+  const toggleFavoriteMutation = useMutation({
+    mutationFn: async ({ materialId, isPinned }: { materialId: number; isPinned: boolean }) => {
+      if (isPinned) {
+        await removeFavorite(materialId);
+        return { isPinned: false };
+      }
+
+      await addFavorite(materialId);
+      return { isPinned: true };
+    },
+    onMutate: async ({ materialId, isPinned }) => {
+      await queryClient.cancelQueries({ queryKey: queryKeys.favorites.lists() });
+      const previousFavorites =
+        queryClient.getQueryData<FavoriteItem[]>(queryKeys.favorites.lists()) ?? [];
+
+      if (isPinned) {
+        queryClient.setQueryData<FavoriteItem[]>(
+          queryKeys.favorites.lists(),
+          removeOptimisticFavorite(previousFavorites, materialId)
+        );
+      } else if (materialQuery.data) {
+        queryClient.setQueryData<FavoriteItem[]>(
+          queryKeys.favorites.lists(),
+          appendOptimisticFavorite(previousFavorites, materialQuery.data)
+        );
+      }
+
+      return { previousFavorites };
+    },
+    onError: (error, _variables, context) => {
+      if (context?.previousFavorites) {
+        queryClient.setQueryData(queryKeys.favorites.lists(), context.previousFavorites);
+      }
+      showToast(getUserFriendlyError(error, "Could not update favorites"), "error");
+    },
+    onSuccess: ({ isPinned }) => {
+      showToast(isPinned ? "Material pinned." : "Material unpinned.");
+    },
+    onSettled: async () => {
+      await invalidateFavoritesList(queryClient);
     },
   });
 
   useFocusEffect(
     useCallback(() => {
-      void queryClient.invalidateQueries({ queryKey: queryKeys.materials.detail(routeId) });
+      void Promise.all([
+        queryClient.invalidateQueries({ queryKey: queryKeys.materials.detail(routeId) }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.favorites.lists() }),
+      ]);
     }, [queryClient, routeId])
   );
 
-  const material = materialQuery.data ?? null;
+  const materialData = materialQuery.data ?? null;
+  const material = materialData?.material ?? null;
+  const isPinned = material ? isFavoriteMaterial(favoritesQuery.data, material.id) : false;
   const loading = materialQuery.isPending && !material;
   const refreshing = materialQuery.isRefetching && !materialQuery.isPending;
   const error = materialQuery.error
@@ -69,6 +135,21 @@ export default function MaterialScreen() {
       await Linking.openURL(material.fileUrl);
     } catch {
       showToast("Could not open this link", "error");
+    }
+  }
+
+  async function handleToggleFavorite() {
+    if (!material || toggleFavoriteMutation.isPending) {
+      return;
+    }
+
+    try {
+      await toggleFavoriteMutation.mutateAsync({
+        materialId: material.id,
+        isPinned,
+      });
+    } catch {
+      // Error toast is handled in mutation callbacks.
     }
   }
 
@@ -118,7 +199,6 @@ export default function MaterialScreen() {
     >
       <Stack.Screen options={{ title: material.title }} />
 
-      {/* Header */}
       <LinearGradient
         colors={GRADIENTS.hero}
         start={{ x: 0, y: 0 }}
@@ -134,9 +214,27 @@ export default function MaterialScreen() {
         <Text style={styles.heroDate}>
           {new Date(material.createdAt).toLocaleDateString()}
         </Text>
+        <TouchableOpacity
+          style={[styles.pinBtn, isPinned ? styles.pinBtnDanger : styles.pinBtnNeutral]}
+          onPress={() => {
+            void handleToggleFavorite();
+          }}
+          disabled={toggleFavoriteMutation.isPending}
+          accessibilityRole="button"
+          accessibilityLabel={
+            isPinned ? "Unpin material from favorites" : "Pin material to favorites"
+          }
+        >
+          <Text style={styles.pinBtnText}>
+            {toggleFavoriteMutation.isPending
+              ? "Updating..."
+              : isPinned
+                ? "Unpin from Favorites"
+                : "Pin to Favorites"}
+          </Text>
+        </TouchableOpacity>
       </LinearGradient>
 
-      {/* Content */}
       <View style={styles.contentCard}>
         {material.content ? (
           <Text style={styles.contentText}>{material.content}</Text>
@@ -145,7 +243,6 @@ export default function MaterialScreen() {
         )}
       </View>
 
-      {/* Link / File URL */}
       {material.fileUrl ? (
         <TouchableOpacity
           style={styles.linkCard}
@@ -165,7 +262,6 @@ export default function MaterialScreen() {
         </TouchableOpacity>
       ) : null}
 
-      {/* Tags */}
       {tags.length > 0 ? (
         <View style={styles.tagsCard}>
           <Text style={styles.tagsLabel}>Tags</Text>
@@ -183,131 +279,3 @@ export default function MaterialScreen() {
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.canvas,
-  },
-  centered: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: COLORS.canvas,
-    paddingHorizontal: 32,
-  },
-  errorText: {
-    fontSize: 16,
-    color: COLORS.danger,
-    marginBottom: 16,
-    textAlign: "center",
-  },
-  retryBtn: {
-    backgroundColor: COLORS.brandPrimary,
-    paddingHorizontal: 24,
-    paddingVertical: 10,
-    borderRadius: 8,
-  },
-  retryBtnText: {
-    color: COLORS.textOnBrand,
-    fontWeight: "600",
-  },
-  hero: {
-    paddingTop: 20,
-    paddingBottom: 24,
-    paddingHorizontal: 20,
-  },
-  typeBadge: {
-    alignSelf: "flex-start",
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 8,
-    marginBottom: 12,
-  },
-  typeBadgeText: {
-    fontSize: 12,
-    fontWeight: "700",
-  },
-  heroTitle: {
-    fontSize: 22,
-    fontWeight: "800",
-    color: COLORS.textOnBrand,
-    marginBottom: 6,
-  },
-  heroDate: {
-    fontSize: 12,
-    color: "rgba(255,255,255,0.5)",
-  },
-  contentCard: {
-    backgroundColor: COLORS.surface,
-    margin: 16,
-    borderRadius: 14,
-    padding: 20,
-    shadowColor: COLORS.brandDeep,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    elevation: 2,
-  },
-  contentText: {
-    fontSize: 15,
-    color: COLORS.textPrimary,
-    lineHeight: 24,
-  },
-  noContent: {
-    fontSize: 14,
-    color: COLORS.textMuted,
-    textAlign: "center",
-    paddingVertical: 12,
-  },
-  linkCard: {
-    backgroundColor: COLORS.surface,
-    marginHorizontal: 16,
-    marginBottom: 12,
-    borderRadius: 14,
-    padding: 16,
-    borderLeftWidth: 4,
-    borderLeftColor: COLORS.link,
-  },
-  linkLabel: {
-    fontSize: 14,
-    fontWeight: "700",
-    color: COLORS.link,
-    marginBottom: 4,
-  },
-  linkUrl: {
-    fontSize: 13,
-    color: COLORS.textSecondary,
-  },
-  tagsCard: {
-    backgroundColor: COLORS.surface,
-    marginHorizontal: 16,
-    borderRadius: 14,
-    padding: 16,
-  },
-  tagsLabel: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: COLORS.textTertiary,
-    marginBottom: 8,
-  },
-  tagsRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8,
-  },
-  tag: {
-    backgroundColor: COLORS.violetSoft,
-    paddingHorizontal: 12,
-    paddingVertical: 5,
-    borderRadius: 8,
-  },
-  tagText: {
-    fontSize: 13,
-    color: COLORS.brandPrimary,
-    fontWeight: "500",
-  },
-  bottomSpacer: {
-    height: 32,
-  },
-});
