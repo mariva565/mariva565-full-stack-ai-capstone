@@ -12,6 +12,7 @@ import {
   queryPersister,
   REACT_QUERY_MAX_AGE_MS,
 } from "../lib/query-client";
+import { configureReactQueryLifecycle } from "../lib/react-query-lifecycle";
 
 function AuthGate() {
   const { user, isLoading } = useAuth();
@@ -62,6 +63,10 @@ function AuthGate() {
 }
 
 export default function RootLayout() {
+  useEffect(() => {
+    configureReactQueryLifecycle();
+  }, []);
+
   return (
     <SafeAreaProvider>
       <PersistQueryClientProvider

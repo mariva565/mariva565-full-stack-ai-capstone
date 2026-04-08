@@ -690,6 +690,12 @@ npm install
 cp .env.example .env
 ```
 
+### AI env note (Gemini)
+
+- The web AI routes (`/api/ai/chat`, `/api/ai/tools`) read `GEMINI_API_KEY` from `apps/web/.env` in local development.
+- The root `.env` may still be empty for `GEMINI_API_KEY` without breaking local web AI, as long as `apps/web/.env` is configured.
+- For production, set `GEMINI_API_KEY` in your deployment environment variables (Vercel/Netlify).
+
 If `npm install --workspace ...` fails with the npm/arborist error `Cannot read properties of null (reading 'location')`, install mobile-only dependencies from `apps/mobile`:
 
 ```bash

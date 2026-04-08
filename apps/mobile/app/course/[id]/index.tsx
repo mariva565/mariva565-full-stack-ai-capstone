@@ -27,7 +27,9 @@ export default function CourseDetailsScreen() {
   const courseQuery = useQuery({
     queryKey: queryKeys.courses.detail(routeId),
     queryFn: async () => {
-      const data = await apiFetch<{ course: Course }>(`/api/courses/${routeId}`);
+      const data = await apiFetch<{ course: Course }>(`/api/courses/${routeId}`, {
+        cache: false,
+      });
       return data.course;
     },
   });
@@ -35,7 +37,9 @@ export default function CourseDetailsScreen() {
   const modulesQuery = useQuery({
     queryKey: queryKeys.courses.modules(routeId),
     queryFn: async () => {
-      const data = await apiFetch<{ modules: Module[] }>(`/api/courses/${routeId}/modules`);
+      const data = await apiFetch<{ modules: Module[] }>(`/api/courses/${routeId}/modules`, {
+        cache: false,
+      });
       return data.modules;
     },
   });

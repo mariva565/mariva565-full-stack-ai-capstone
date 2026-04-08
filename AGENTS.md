@@ -93,9 +93,19 @@ Every schema change MUST use Drizzle migrations. Migration SQL scripts must be c
 
 Additional: `/forbidden` (error page for unauthorized access)
 
-## Mobile Screens (3 screens)
+## Mobile Scope (Current, 2026-04-08)
 
-1. Login, 2. Courses List, 3. Course Details
+In-scope mobile product flows:
+1. Auth (`/login`, `/register`)
+2. Courses list + course details
+3. Module workspace + material view/edit
+4. Favorites (pin/unpin + favorites list tab)
+5. Profile (basic account actions)
+
+Out-of-scope on mobile for this capstone:
+- Progress/Milestones pages (web working pages for development tracking)
+- Calendar page (web working page for development tracking)
+- Admin Panel (web-first; do not build full mobile admin unless explicitly requested)
 
 ## Key Rules
 

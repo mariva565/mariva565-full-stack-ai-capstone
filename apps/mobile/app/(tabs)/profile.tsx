@@ -36,7 +36,9 @@ export default function ProfileScreen() {
   const profileQuery = useQuery({
     queryKey: queryKeys.auth.me(),
     queryFn: async () => {
-      const data = await apiFetch<{ user: ProfileUser }>("/api/auth/me");
+      const data = await apiFetch<{ user: ProfileUser }>("/api/auth/me", {
+        cache: false,
+      });
       return data.user;
     },
   });

@@ -4506,6 +4506,63 @@ Missing features (later phase):
 **Verification:**
 - `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
 
+### Session 175 (Mobile roadmap reprioritized: quality-first + QR scope decision)
+
+**Context from planning discussion:**
+- Mobile standards score (`5.5/10`) was treated as a signal to prioritize app quality/stability over decorative expansion.
+- Requested scope decisions:
+  - move mobile AI work later,
+  - do not build Admin QR,
+  - keep focus on improving existing mobile experience first.
+
+**What we changed:**
+- Reworked `docs/mobile-execution-checklist.md` into a quality-first roadmap:
+  - `Phase 1`: lifecycle + cache correctness first.
+  - `Phase 2`: guardrail-driven refactors + UX hardening.
+  - `Phase 3`: quality gates, then optional expansion.
+- Added/confirmed scope statuses:
+  - `DEFERRED`: mobile AI entry points/tools.
+  - `DE-SCOPED`: Admin QR.
+  - `Optional later`: profile QR handoff (social-ready future idea).
+- Updated "Next Recommended Task" to start with lifecycle integration (`focusManager` + `onlineManager`) and cache policy hardening.
+
+**Why:**
+- For this capstone stage, reliability and maintainability improve the mobile quality score more than adding new AI feature surface area.
+- This order also fits the current learning path and reduces implementation risk.
+
+**Verification:**
+- Docs-only planning update (no runtime code changes in this session).
+
+### Session 174 (AI env location clarification for continuity)
+
+**What we changed:**
+- Updated `README.md` with a dedicated AI env note clarifying where `GEMINI_API_KEY` is read from in local development and what is required in production deploys.
+  - Local dev (web AI routes): key is expected in `apps/web/.env`.
+  - Root `.env` can remain empty for `GEMINI_API_KEY` without breaking local web AI if `apps/web/.env` is configured.
+  - Production: `GEMINI_API_KEY` must be set in Vercel/Netlify environment variables.
+
+**Why:**
+- Prevent repeated confusion across sessions about "empty root `.env` vs working AI endpoints".
+
+**Verification:**
+- Docs-only update (no runtime code changes in this session).
+
+### Session 173 (AGENTS.md scope sync with current mobile direction)
+
+**What we changed:**
+- Updated `AGENTS.md` mobile definition from fixed "3 screens" to current in-scope/out-of-scope mobile product scope.
+  - In-scope: auth, courses, module/material workspace, favorites, profile.
+  - Out-of-scope: mobile Progress/Milestones, mobile Calendar, and full mobile Admin Panel (web-first unless explicitly requested).
+- Synced docs wording with the same decision:
+  - `docs/dev-log.md` scope-decision reason text for mobile admin de-scope.
+  - `docs/mobile-execution-checklist.md` admin de-scope reason text.
+
+**Why:**
+- Keep AI execution instructions aligned with real product direction, so future sessions do not re-open de-scoped work by mistake.
+
+**Verification:**
+- Documentation + instruction sync only (no runtime code changes in this session).
+
 **Continuity checklist:**
 - Added `docs/mobile-execution-checklist.md` with Sprint 1 / Sprint 2 tasks, acceptance criteria, and current status checkboxes.
 
@@ -4520,10 +4577,17 @@ Missing features (later phase):
 - Production readiness (mobile standards): `5.5/10`
 - Overall current MVP: `7/10`
 
+**Scope decisions (2026-04-08):**
+- Progress/Milestones mobile MVP is de-scoped (internal work-notes pages, not end-user mobile value for this capstone).
+- Calendar mobile MVP is de-scoped (internal work-notes usage, low product value for mobile scope).
+- Admin panel on mobile is de-scoped by default for this project.
+  - Reason: web-first admin scope for this capstone; implement mobile admin only if explicitly requested.
+  - Practical note: full admin panels are commonly web-first due complexity, lower frequency of admin actions, and better desktop workflow.
+
 **Master checklist from kickoff prompt:**
 - [x] Feature parity: Favorites (pin/unpin + favorites list + tab access).
-- [ ] Feature parity: Progress/Milestones mobile (read + basic create/edit/status update).
-- [ ] Feature parity: Calendar mobile (read + basic create/edit/delete).
+- [x] DE-SCOPED: Progress/Milestones mobile (read + basic create/edit/status update).
+- [x] DE-SCOPED: Calendar mobile (read + basic create/edit/delete).
 - [ ] Feature parity: AI entry points on mobile (summarize/quiz/chat) or read-only AI outputs.
 
 - [ ] React Query RN lifecycle: integrate `focusManager` with `AppState`.
@@ -4556,8 +4620,8 @@ Missing features (later phase):
 
 Sprint 1 - Parity
 - [x] Task 1: Favorites.
-- [ ] Task 2: Progress/Milestones.
-- [ ] Task 3: Calendar.
+- [x] DE-SCOPED: Task 2 (Progress/Milestones).
+- [x] DE-SCOPED: Task 3 (Calendar).
 - [ ] Task 4: Material AI section.
 - [ ] Task 5: Query keys + invalidate rules for new domains.
 
@@ -4569,7 +4633,7 @@ Sprint 2 - Production standards
 - [ ] Task 5: quality gates (e2e + telemetry + release checklist).
 
 **Acceptance gates mirrored from kickoff:**
-- [ ] Sprint 1 complete when parity tasks are implemented and visible without manual `useEffect` fetch patterns.
+- [ ] Sprint 1 complete when remaining in-scope parity tasks are implemented and visible without manual `useEffect` fetch patterns.
 - [ ] Sprint 2 complete when lifecycle/offline stability and smoke quality gates pass, and docs are fully synced.
 
 **Backlog status update (Session 162 list):**

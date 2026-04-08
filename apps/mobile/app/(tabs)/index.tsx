@@ -123,7 +123,9 @@ export default function CoursesListScreen() {
   const coursesQuery = useQuery({
     queryKey: queryKeys.courses.lists(),
     queryFn: async () => {
-      const data = await apiFetch<{ courses: Course[] }>("/api/courses");
+      const data = await apiFetch<{ courses: Course[] }>("/api/courses", {
+        cache: false,
+      });
       return data.courses;
     },
   });
