@@ -12,6 +12,7 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { apiFetch, ApiError } from "../../../lib/api";
+import { COLORS, GRADIENTS } from "../../../lib/colors";
 import {
   DEFAULT_MATERIAL_TYPE,
   isUrlMaterialType,
@@ -102,7 +103,7 @@ export default function AddMaterialScreen() {
               <Text
                 style={[
                   styles.typeChipIcon,
-                  { color: materialType === t.key ? t.color : "#94a3b8" },
+                  { color: materialType === t.key ? t.color : COLORS.textMuted },
                 ]}
               >
                 {t.icon}
@@ -125,7 +126,7 @@ export default function AddMaterialScreen() {
             <TextInput
               style={[styles.input, focusedField === "title" && styles.inputFocused]}
               placeholder="Material title"
-              placeholderTextColor="#94a3b8"
+              placeholderTextColor={COLORS.textMuted}
               value={title}
               onChangeText={setTitle}
               onFocus={() => setFocusedField("title")}
@@ -143,7 +144,7 @@ export default function AddMaterialScreen() {
                 focusedField === "content" && styles.inputFocused,
               ]}
               placeholder="Write your notes here..."
-              placeholderTextColor="#94a3b8"
+              placeholderTextColor={COLORS.textMuted}
               value={content}
               onChangeText={setContent}
               onFocus={() => setFocusedField("content")}
@@ -160,7 +161,7 @@ export default function AddMaterialScreen() {
               <TextInput
                 style={[styles.input, focusedField === "url" && styles.inputFocused]}
                 placeholder="https://..."
-                placeholderTextColor="#94a3b8"
+                placeholderTextColor={COLORS.textMuted}
                 value={fileUrl}
                 onChangeText={setFileUrl}
                 onFocus={() => setFocusedField("url")}
@@ -176,7 +177,7 @@ export default function AddMaterialScreen() {
             <TextInput
               style={[styles.input, focusedField === "tags" && styles.inputFocused]}
               placeholder="e.g. javascript, basics, intro"
-              placeholderTextColor="#94a3b8"
+              placeholderTextColor={COLORS.textMuted}
               value={tags}
               onChangeText={setTags}
               onFocus={() => setFocusedField("tags")}
@@ -196,7 +197,7 @@ export default function AddMaterialScreen() {
             accessibilityLabel="Add material"
           >
             <LinearGradient
-              colors={["#4d33c4", "#7c5ce7"]}
+              colors={GRADIENTS.primaryAction}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
               style={styles.createBtnGradient}
@@ -222,21 +223,21 @@ export default function AddMaterialScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f8f6ff" },
+  container: { flex: 1, backgroundColor: COLORS.canvas },
   scrollContent: { padding: 16 },
   iconContainer: { alignItems: "center", marginVertical: 16 },
   iconCircle: {
     width: 56, height: 56, borderRadius: 28,
-    backgroundColor: "#f0ecff",
+    backgroundColor: COLORS.violetSoft,
     justifyContent: "center", alignItems: "center", marginBottom: 10,
   },
-  iconText: { fontSize: 24, fontWeight: "700", color: "#4d33c4" },
-  heading: { fontSize: 20, fontWeight: "800", color: "#2e1d7a" },
+  iconText: { fontSize: 24, fontWeight: "700", color: COLORS.brandPrimary },
+  heading: { fontSize: 20, fontWeight: "800", color: COLORS.brandDeep },
   errorBox: {
-    backgroundColor: "#fef2f2", borderWidth: 1, borderColor: "#fecaca",
+    backgroundColor: COLORS.dangerSoftAlt, borderWidth: 1, borderColor: COLORS.dangerBorderSoft,
     borderRadius: 10, padding: 12, marginBottom: 16,
   },
-  errorText: { color: "#dc2626", fontSize: 14, textAlign: "center" },
+  errorText: { color: COLORS.danger, fontSize: 14, textAlign: "center" },
   typeRow: {
     flexDirection: "row",
     gap: 8,
@@ -248,8 +249,8 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 10,
     borderWidth: 1.5,
-    borderColor: "#e2e8f0",
-    backgroundColor: "#ffffff",
+    borderColor: COLORS.borderMuted,
+    backgroundColor: COLORS.surface,
   },
   typeChipIcon: {
     fontSize: 16,
@@ -259,34 +260,34 @@ const styles = StyleSheet.create({
   typeChipLabel: {
     fontSize: 11,
     fontWeight: "500",
-    color: "#64748b",
+    color: COLORS.textSecondary,
   },
   card: {
-    backgroundColor: "#ffffff", borderRadius: 14, padding: 20,
-    shadowColor: "#2e1d7a", shadowOffset: { width: 0, height: 2 },
+    backgroundColor: COLORS.surface, borderRadius: 14, padding: 20,
+    shadowColor: COLORS.brandDeep, shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.06, shadowRadius: 8, elevation: 2,
   },
   inputGroup: { marginBottom: 16 },
   inputLabel: {
-    fontSize: 13, fontWeight: "600", color: "#475569",
+    fontSize: 13, fontWeight: "600", color: COLORS.textTertiary,
     marginBottom: 6, marginLeft: 2,
   },
   input: {
-    backgroundColor: "#f8fafc", borderWidth: 1.5, borderColor: "#e2e8f0",
+    backgroundColor: COLORS.surfaceSoft, borderWidth: 1.5, borderColor: COLORS.borderMuted,
     borderRadius: 12, paddingHorizontal: 16, paddingVertical: 14,
-    fontSize: 16, color: "#0f172a",
+    fontSize: 16, color: COLORS.textPrimary,
   },
   textArea: { minHeight: 120, paddingTop: 14 },
-  inputFocused: { borderColor: "#4d33c4", backgroundColor: "#faf9ff" },
+  inputFocused: { borderColor: COLORS.brandPrimary, backgroundColor: COLORS.surfaceHighlight },
   actions: { marginTop: 20, gap: 12 },
   createBtn: { borderRadius: 12, overflow: "hidden" },
   createBtnDisabled: { opacity: 0.6 },
   createBtnGradient: { paddingVertical: 16, alignItems: "center" },
-  createBtnText: { color: "#ffffff", fontSize: 16, fontWeight: "700" },
+  createBtnText: { color: COLORS.textOnBrand, fontSize: 16, fontWeight: "700" },
   cancelBtn: {
-    borderWidth: 2, borderColor: "#e2e8f0", borderRadius: 12,
+    borderWidth: 2, borderColor: COLORS.borderMuted, borderRadius: 12,
     paddingVertical: 14, alignItems: "center",
   },
-  cancelBtnText: { fontSize: 16, fontWeight: "600", color: "#64748b" },
+  cancelBtnText: { fontSize: 16, fontWeight: "600", color: COLORS.textSecondary },
 });
 

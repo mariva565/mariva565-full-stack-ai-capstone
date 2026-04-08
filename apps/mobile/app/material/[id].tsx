@@ -13,6 +13,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { apiFetch } from "../../lib/api";
 import { BrandedSpinner } from "../../components/branded-spinner";
+import { COLORS, GRADIENTS } from "../../lib/colors";
 import { useToast } from "../../lib/toast-context";
 import { getMaterialTypeConfig, splitTags } from "../../lib/material-utils";
 
@@ -112,7 +113,7 @@ export default function MaterialScreen() {
         <RefreshControl
           refreshing={refreshing}
           onRefresh={() => fetchMaterial(true)}
-          tintColor="#4d33c4"
+          tintColor={COLORS.brandPrimary}
         />
       }
     >
@@ -120,7 +121,7 @@ export default function MaterialScreen() {
 
       {/* Header */}
       <LinearGradient
-        colors={["#2e1d7a", "#4d33c4"]}
+        colors={GRADIENTS.hero}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.hero}
@@ -187,29 +188,29 @@ export default function MaterialScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8f6ff",
+    backgroundColor: COLORS.canvas,
   },
   centered: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#f8f6ff",
+    backgroundColor: COLORS.canvas,
     paddingHorizontal: 32,
   },
   errorText: {
     fontSize: 16,
-    color: "#dc2626",
+    color: COLORS.danger,
     marginBottom: 16,
     textAlign: "center",
   },
   retryBtn: {
-    backgroundColor: "#4d33c4",
+    backgroundColor: COLORS.brandPrimary,
     paddingHorizontal: 24,
     paddingVertical: 10,
     borderRadius: 8,
   },
   retryBtnText: {
-    color: "#ffffff",
+    color: COLORS.textOnBrand,
     fontWeight: "600",
   },
   hero: {
@@ -231,7 +232,7 @@ const styles = StyleSheet.create({
   heroTitle: {
     fontSize: 22,
     fontWeight: "800",
-    color: "#ffffff",
+    color: COLORS.textOnBrand,
     marginBottom: 6,
   },
   heroDate: {
@@ -239,11 +240,11 @@ const styles = StyleSheet.create({
     color: "rgba(255,255,255,0.5)",
   },
   contentCard: {
-    backgroundColor: "#ffffff",
+    backgroundColor: COLORS.surface,
     margin: 16,
     borderRadius: 14,
     padding: 20,
-    shadowColor: "#2e1d7a",
+    shadowColor: COLORS.brandDeep,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.06,
     shadowRadius: 8,
@@ -251,36 +252,36 @@ const styles = StyleSheet.create({
   },
   contentText: {
     fontSize: 15,
-    color: "#1e293b",
+    color: COLORS.textPrimary,
     lineHeight: 24,
   },
   noContent: {
     fontSize: 14,
-    color: "#94a3b8",
+    color: COLORS.textMuted,
     textAlign: "center",
     paddingVertical: 12,
   },
   linkCard: {
-    backgroundColor: "#ffffff",
+    backgroundColor: COLORS.surface,
     marginHorizontal: 16,
     marginBottom: 12,
     borderRadius: 14,
     padding: 16,
     borderLeftWidth: 4,
-    borderLeftColor: "#0ea5e9",
+    borderLeftColor: COLORS.link,
   },
   linkLabel: {
     fontSize: 14,
     fontWeight: "700",
-    color: "#0ea5e9",
+    color: COLORS.link,
     marginBottom: 4,
   },
   linkUrl: {
     fontSize: 13,
-    color: "#64748b",
+    color: COLORS.textSecondary,
   },
   tagsCard: {
-    backgroundColor: "#ffffff",
+    backgroundColor: COLORS.surface,
     marginHorizontal: 16,
     borderRadius: 14,
     padding: 16,
@@ -288,7 +289,7 @@ const styles = StyleSheet.create({
   tagsLabel: {
     fontSize: 13,
     fontWeight: "600",
-    color: "#475569",
+    color: COLORS.textTertiary,
     marginBottom: 8,
   },
   tagsRow: {
@@ -297,14 +298,14 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   tag: {
-    backgroundColor: "#f0ecff",
+    backgroundColor: COLORS.violetSoft,
     paddingHorizontal: 12,
     paddingVertical: 5,
     borderRadius: 8,
   },
   tagText: {
     fontSize: 13,
-    color: "#4d33c4",
+    color: COLORS.brandPrimary,
     fontWeight: "500",
   },
   bottomSpacer: {

@@ -4630,3 +4630,40 @@ Missing features (later phase):
 
 **Verification:**
 - `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
+
+### Session 168 (Finish remaining colors + accessibility sweep)
+
+**What we changed:**
+- Completed mobile color token rollout with shared constants in `apps/mobile/lib/colors.ts`:
+  - Added missing shared tokens (surface/input states, semantic success/info/link/warning tones, shadow, etc.).
+  - Replaced remaining hardcoded brand colors and screen-level hex literals across mobile screens/components.
+- Updated major mobile screens/forms/details to consume `COLORS`/`GRADIENTS`:
+  - `app/create-course.tsx`
+  - `app/course/[id]/index.tsx`
+  - `app/course/[id]/edit.tsx`
+  - `app/course/[id]/add-module.tsx`
+  - `app/module/[id]/index.tsx`
+  - `app/module/[id]/edit.tsx`
+  - `app/module/[id]/add-material.tsx`
+  - `app/material/[id].tsx`
+  - `app/material/[id]/edit.tsx`
+  - `app/login.tsx`
+  - `app/register.tsx`
+  - `app/(tabs)/profile.tsx`
+- Updated shared components/helpers for color consistency and accessibility:
+  - `components/auth/GoogleSignInButton.tsx` (shared color tokens + explicit `accessibilityLabel`)
+  - `components/branded-spinner.tsx`
+  - `components/confirm-modal.tsx`
+  - `components/empty-state.tsx`
+  - `lib/toast-context.tsx` (shared token colors + dismiss accessibility label)
+  - `lib/material-utils.ts` (material visual config now consumes shared color tokens)
+- Fixed mobile auth UI text glyph issues from encoding fallback by replacing with stable Unicode-safe values in auth screens.
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
+- `rg --line-number \"#4d33c4|#2e1d7a|#7c5ce7\" apps/mobile` -> only `lib/colors.ts` (expected source of truth)
+- `rg --line-number \"#[0-9A-Fa-f]{3,8}\" apps/mobile` -> only `lib/colors.ts` (all other mobile literals removed)
+
+**Backlog status update (Session 162 list):**
+- [x] Extract and apply shared `COLORS` constants.
+- [x] Accessibility labels full sweep across interactive controls in mobile flows/components.

@@ -1,4 +1,5 @@
 import { View, Text, StyleSheet } from "react-native";
+import { COLORS } from "../lib/colors";
 
 type Props = {
   icon: string;
@@ -30,7 +31,7 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: "#f0ecff",
+    backgroundColor: COLORS.violetSoft,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 16,
@@ -41,13 +42,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: "700",
-    color: "#334155",
+    color: COLORS.textStrong,
     marginBottom: 4,
     textAlign: "center",
   },
   subtitle: {
     fontSize: 14,
-    color: "#94a3b8",
+    color: COLORS.textMuted,
     textAlign: "center",
     lineHeight: 20,
   },

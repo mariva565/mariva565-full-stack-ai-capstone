@@ -12,6 +12,7 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { Stack, useRouter } from "expo-router";
 import { apiFetch, ApiError } from "../lib/api";
+import { COLORS, GRADIENTS } from "../lib/colors";
 import { validateRequired } from "../lib/validation";
 
 export default function CreateCourseScreen() {
@@ -83,7 +84,7 @@ export default function CreateCourseScreen() {
             <TextInput
               style={[styles.input, focusedField === "title" && styles.inputFocused]}
               placeholder="e.g. JavaScript Basics"
-              placeholderTextColor="#94a3b8"
+              placeholderTextColor={COLORS.textMuted}
               value={title}
               onChangeText={(value) => {
                 setTitle(value);
@@ -112,7 +113,7 @@ export default function CreateCourseScreen() {
                 focusedField === "desc" && styles.inputFocused,
               ]}
               placeholder="What's this course about?"
-              placeholderTextColor="#94a3b8"
+              placeholderTextColor={COLORS.textMuted}
               value={description}
               onChangeText={setDescription}
               onFocus={() => setFocusedField("desc")}
@@ -134,7 +135,7 @@ export default function CreateCourseScreen() {
             accessibilityLabel="Create course"
           >
             <LinearGradient
-              colors={["#4d33c4", "#7c5ce7"]}
+              colors={GRADIENTS.primaryAction}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
               style={styles.createBtnGradient}
@@ -162,7 +163,7 @@ export default function CreateCourseScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8f6ff",
+    backgroundColor: COLORS.canvas,
   },
   scrollContent: {
     padding: 16,
@@ -175,7 +176,7 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: "#f0ecff",
+    backgroundColor: COLORS.violetSoft,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 12,
@@ -183,36 +184,36 @@ const styles = StyleSheet.create({
   iconEmoji: {
     fontSize: 28,
     fontWeight: "700",
-    color: "#4d33c4",
+    color: COLORS.brandPrimary,
   },
   heading: {
     fontSize: 20,
     fontWeight: "800",
-    color: "#2e1d7a",
+    color: COLORS.brandDeep,
   },
   subheading: {
     fontSize: 14,
-    color: "#64748b",
+    color: COLORS.textSecondary,
     marginTop: 4,
   },
   errorBox: {
-    backgroundColor: "#fef2f2",
+    backgroundColor: COLORS.dangerSoftAlt,
     borderWidth: 1,
-    borderColor: "#fecaca",
+    borderColor: COLORS.dangerBorderSoft,
     borderRadius: 10,
     padding: 12,
     marginBottom: 16,
   },
   errorText: {
-    color: "#dc2626",
+    color: COLORS.danger,
     fontSize: 14,
     textAlign: "center",
   },
   card: {
-    backgroundColor: "#ffffff",
+    backgroundColor: COLORS.surface,
     borderRadius: 14,
     padding: 20,
-    shadowColor: "#2e1d7a",
+    shadowColor: COLORS.brandDeep,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.06,
     shadowRadius: 8,
@@ -222,7 +223,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   fieldErrorText: {
-    color: "#dc2626",
+    color: COLORS.danger,
     fontSize: 12,
     marginTop: 6,
     marginLeft: 4,
@@ -230,27 +231,27 @@ const styles = StyleSheet.create({
   inputLabel: {
     fontSize: 13,
     fontWeight: "600",
-    color: "#475569",
+    color: COLORS.textTertiary,
     marginBottom: 6,
     marginLeft: 2,
   },
   input: {
-    backgroundColor: "#f8fafc",
+    backgroundColor: COLORS.surfaceSoft,
     borderWidth: 1.5,
-    borderColor: "#e2e8f0",
+    borderColor: COLORS.borderMuted,
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 14,
     fontSize: 16,
-    color: "#0f172a",
+    color: COLORS.textPrimary,
   },
   textArea: {
     minHeight: 100,
     paddingTop: 14,
   },
   inputFocused: {
-    borderColor: "#4d33c4",
-    backgroundColor: "#faf9ff",
+    borderColor: COLORS.brandPrimary,
+    backgroundColor: COLORS.surfaceHighlight,
   },
   actions: {
     marginTop: 20,
@@ -268,13 +269,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   createBtnText: {
-    color: "#ffffff",
+    color: COLORS.textOnBrand,
     fontSize: 16,
     fontWeight: "700",
   },
   cancelBtn: {
     borderWidth: 2,
-    borderColor: "#e2e8f0",
+    borderColor: COLORS.borderMuted,
     borderRadius: 12,
     paddingVertical: 14,
     alignItems: "center",
@@ -282,6 +283,6 @@ const styles = StyleSheet.create({
   cancelBtnText: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#64748b",
+    color: COLORS.textSecondary,
   },
 });

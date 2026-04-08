@@ -1,3 +1,5 @@
+import { COLORS } from "./colors";
+
 export type MaterialType = "note" | "link" | "file" | "video";
 
 type MaterialTypeVisualConfig = {
@@ -10,10 +12,10 @@ type MaterialTypeVisualConfig = {
 export const DEFAULT_MATERIAL_TYPE: MaterialType = "note";
 
 export const MATERIAL_TYPE_CONFIG: Record<MaterialType, MaterialTypeVisualConfig> = {
-  note: { icon: "\u{1F4DD}", label: "Note", color: "#7c5ce7", bg: "#f0ecff" },
-  link: { icon: "\u{1F517}", label: "Link", color: "#0ea5e9", bg: "#e0f2fe" },
-  file: { icon: "\u{1F4C4}", label: "File", color: "#f59e0b", bg: "#fef3c7" },
-  video: { icon: "\u{1F3AC}", label: "Video", color: "#ef4444", bg: "#fef2f2" },
+  note: { icon: "\u{1F4DD}", label: "Note", color: COLORS.brandAccent, bg: COLORS.violetSoft },
+  link: { icon: "\u{1F517}", label: "Link", color: COLORS.link, bg: COLORS.linkSoft },
+  file: { icon: "\u{1F4C4}", label: "File", color: COLORS.warning, bg: COLORS.warningSoft },
+  video: { icon: "\u{1F3AC}", label: "Video", color: COLORS.dangerAccent, bg: COLORS.dangerSoftAlt },
 };
 
 export const MATERIAL_TYPE_OPTIONS = (Object.keys(MATERIAL_TYPE_CONFIG) as MaterialType[]).map(
@@ -60,4 +62,3 @@ export function splitTags(tags: string | null | undefined): string[] {
     .map((tag) => tag.trim())
     .filter(Boolean);
 }
-

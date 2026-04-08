@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     padding: 24,
     width: "100%",
     maxWidth: 360,
-    shadowColor: "#000",
+    shadowColor: COLORS.shadow,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.15,
     shadowRadius: 24,
@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
     minHeight: 46,
   },
   cancelBtn: {
-    backgroundColor: "#f1f5f9",
+    backgroundColor: COLORS.surfaceMuted,
     borderWidth: 1,
     borderColor: COLORS.borderMuted,
   },

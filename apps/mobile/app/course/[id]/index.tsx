@@ -9,6 +9,7 @@ import { ConfirmModal } from "../../../components/confirm-modal";
 import { EmptyState } from "../../../components/empty-state";
 import { ModuleListCard } from "../../../components/module-list-card";
 import { ApiError, apiFetch } from "../../../lib/api";
+import { COLORS, GRADIENTS } from "../../../lib/colors";
 import { useToast } from "../../../lib/toast-context";
 import type { Course, Module } from "../../../lib/studyhub-types";
 
@@ -135,12 +136,12 @@ export default function CourseDetailsScreen() {
       <ScrollView
         style={styles.container}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={() => fetchCourse(true)} tintColor="#4d33c4" />
+          <RefreshControl refreshing={refreshing} onRefresh={() => fetchCourse(true)} tintColor={COLORS.brandPrimary} />
         }
       >
         <Stack.Screen options={{ title: course.title }} />
 
-        <LinearGradient colors={["#2e1d7a", "#4d33c4", "#7c5ce7"]} style={styles.hero}>
+        <LinearGradient colors={GRADIENTS.heroStrong} style={styles.hero}>
           <Text style={styles.heroEyebrow}>Course overview</Text>
           <Text style={styles.heroTitle}>{course.title}</Text>
           {course.description ? <Text style={styles.heroDesc}>{course.description}</Text> : null}
@@ -217,17 +218,17 @@ export default function CourseDetailsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f8f6ff" },
+  container: { flex: 1, backgroundColor: COLORS.canvas },
   centered: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#f8f6ff",
+    backgroundColor: COLORS.canvas,
     paddingHorizontal: 32,
   },
-  errorText: { fontSize: 16, color: "#dc2626", marginBottom: 16, textAlign: "center" },
-  retryBtn: { backgroundColor: "#4d33c4", paddingHorizontal: 24, paddingVertical: 10, borderRadius: 8 },
-  retryBtnText: { color: "#ffffff", fontWeight: "600" },
+  errorText: { fontSize: 16, color: COLORS.danger, marginBottom: 16, textAlign: "center" },
+  retryBtn: { backgroundColor: COLORS.brandPrimary, paddingHorizontal: 24, paddingVertical: 10, borderRadius: 8 },
+  retryBtnText: { color: COLORS.textOnBrand, fontWeight: "600" },
   hero: { paddingTop: 24, paddingBottom: 28, paddingHorizontal: 20 },
   heroEyebrow: {
     fontSize: 12,
@@ -237,7 +238,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.8,
     marginBottom: 10,
   },
-  heroTitle: { fontSize: 24, fontWeight: "800", color: "#ffffff", marginBottom: 10 },
+  heroTitle: { fontSize: 24, fontWeight: "800", color: COLORS.textOnBrand, marginBottom: 10 },
   heroDesc: { fontSize: 15, color: "rgba(255,255,255,0.84)", lineHeight: 22, marginBottom: 12 },
   heroMetaRow: { gap: 4 },
   heroMeta: { fontSize: 12, color: "rgba(255,255,255,0.6)" },
@@ -253,8 +254,8 @@ const styles = StyleSheet.create({
   courseEditBtn: { backgroundColor: "rgba(255,255,255,0.14)", borderColor: "rgba(255,255,255,0.35)" },
   courseDeleteBtn: { backgroundColor: "rgba(190,24,93,0.18)", borderColor: "rgba(253,164,175,0.4)" },
   courseActionText: { fontSize: 13, fontWeight: "700" },
-  courseEditText: { color: "#ffffff" },
-  courseDeleteText: { color: "#ffe4e6" },
+  courseEditText: { color: COLORS.textOnBrand },
+  courseDeleteText: { color: COLORS.textOnDangerSoft },
   sectionHeader: {
     flexDirection: "row",
     alignItems: "center",
@@ -264,14 +265,14 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 12,
   },
-  sectionTitle: { fontSize: 18, fontWeight: "700", color: "#2e1d7a" },
-  sectionSubtitle: { fontSize: 13, color: "#64748b", lineHeight: 19, marginTop: 4, maxWidth: 250 },
+  sectionTitle: { fontSize: 18, fontWeight: "700", color: COLORS.brandDeep },
+  sectionSubtitle: { fontSize: 13, color: COLORS.textSecondary, lineHeight: 19, marginTop: 4, maxWidth: 250 },
   addModuleBtn: {
-    backgroundColor: "#ede9fe",
+    backgroundColor: COLORS.lavenderSoft,
     borderRadius: 10,
     paddingHorizontal: 14,
     paddingVertical: 10,
   },
-  addModuleBtnText: { fontSize: 13, fontWeight: "700", color: "#4d33c4" },
+  addModuleBtnText: { fontSize: 13, fontWeight: "700", color: COLORS.brandPrimary },
   bottomSpacer: { height: 32 },
 });

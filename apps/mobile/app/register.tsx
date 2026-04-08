@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+﻿import { useState, useRef, useEffect } from "react";
 import {
   View,
   Text,
@@ -133,7 +133,7 @@ export default function RegisterScreen() {
           >
             <View style={styles.logoContainer}>
               <View style={styles.logoCircle}>
-                <Text style={styles.logoEmoji}>📚</Text>
+                <Text style={styles.logoEmoji}>{"\u{1F4DA}"}</Text>
               </View>
             </View>
             <Text style={styles.title}>Create Account</Text>
@@ -284,7 +284,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.surface,
     borderRadius: 20,
     padding: 32,
-    shadowColor: "#000",
+    shadowColor: COLORS.shadow,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.15,
     shadowRadius: 24,
@@ -348,7 +348,7 @@ const styles = StyleSheet.create({
     marginLeft: 2,
   },
   input: {
-    backgroundColor: "#f8fafc",
+    backgroundColor: COLORS.surfaceSoft,
     borderWidth: 1.5,
     borderColor: COLORS.borderMuted,
     borderRadius: 12,
@@ -359,7 +359,7 @@ const styles = StyleSheet.create({
   },
   inputFocused: {
     borderColor: COLORS.brandPrimary,
-    backgroundColor: "#faf9ff",
+    backgroundColor: COLORS.surfaceHighlight,
     shadowColor: COLORS.brandPrimary,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.1,
@@ -396,3 +396,4 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
 });
+

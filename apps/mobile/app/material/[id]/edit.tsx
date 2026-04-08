@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -11,8 +11,10 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+
 import { BrandedSpinner } from "../../../components/branded-spinner";
 import { ApiError, apiFetch } from "../../../lib/api";
+import { COLORS, GRADIENTS } from "../../../lib/colors";
 import {
   DEFAULT_MATERIAL_TYPE,
   isUrlMaterialType,
@@ -54,8 +56,8 @@ export default function EditMaterialScreen() {
         setMaterialType(normalizeMaterialType(data.material.materialType));
         setFileUrl(data.material.fileUrl ?? "");
         setTags(data.material.tags ?? "");
-      } catch (error) {
-        const message = error instanceof ApiError ? error.message : "Failed to load material";
+      } catch (err) {
+        const message = err instanceof ApiError ? err.message : "Failed to load material";
         setError(message);
       } finally {
         setLoading(false);
@@ -85,8 +87,8 @@ export default function EditMaterialScreen() {
         },
       });
       router.back();
-    } catch (error) {
-      const message = error instanceof ApiError ? error.message : "Failed to save material";
+    } catch (err) {
+      const message = err instanceof ApiError ? err.message : "Failed to save material";
       setError(message);
     } finally {
       setSaving(false);
@@ -144,7 +146,7 @@ export default function EditMaterialScreen() {
               <Text
                 style={[
                   styles.typeChipIcon,
-                  { color: materialType === type.key ? type.color : "#94a3b8" },
+                  { color: materialType === type.key ? type.color : COLORS.textMuted },
                 ]}
               >
                 {type.icon}
@@ -167,7 +169,7 @@ export default function EditMaterialScreen() {
             <TextInput
               style={[styles.input, focusedField === "title" && styles.inputFocused]}
               placeholder="Material title"
-              placeholderTextColor="#94a3b8"
+              placeholderTextColor={COLORS.textMuted}
               value={title}
               onChangeText={setTitle}
               onFocus={() => setFocusedField("title")}
@@ -180,7 +182,7 @@ export default function EditMaterialScreen() {
             <TextInput
               style={[styles.input, styles.textArea, focusedField === "content" && styles.inputFocused]}
               placeholder="Write your notes here..."
-              placeholderTextColor="#94a3b8"
+              placeholderTextColor={COLORS.textMuted}
               value={content}
               onChangeText={setContent}
               onFocus={() => setFocusedField("content")}
@@ -197,7 +199,7 @@ export default function EditMaterialScreen() {
               <TextInput
                 style={[styles.input, focusedField === "url" && styles.inputFocused]}
                 placeholder="https://..."
-                placeholderTextColor="#94a3b8"
+                placeholderTextColor={COLORS.textMuted}
                 value={fileUrl}
                 onChangeText={setFileUrl}
                 onFocus={() => setFocusedField("url")}
@@ -213,7 +215,7 @@ export default function EditMaterialScreen() {
             <TextInput
               style={[styles.input, focusedField === "tags" && styles.inputFocused]}
               placeholder="e.g. javascript, basics, intro"
-              placeholderTextColor="#94a3b8"
+              placeholderTextColor={COLORS.textMuted}
               value={tags}
               onChangeText={setTags}
               onFocus={() => setFocusedField("tags")}
@@ -232,7 +234,7 @@ export default function EditMaterialScreen() {
             accessibilityRole="button"
             accessibilityLabel="Save material changes"
           >
-            <LinearGradient colors={["#4d33c4", "#7c5ce7"]} style={styles.saveBtnGradient}>
+            <LinearGradient colors={GRADIENTS.primaryAction} style={styles.saveBtnGradient}>
               <Text style={styles.saveBtnText}>{saving ? "Saving..." : "Save Changes"}</Text>
             </LinearGradient>
           </TouchableOpacity>
@@ -252,29 +254,29 @@ export default function EditMaterialScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f8f6ff" },
+  container: { flex: 1, backgroundColor: COLORS.canvas },
   scrollContent: { padding: 16 },
   iconContainer: { alignItems: "center", marginVertical: 16 },
   iconCircle: {
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: "#f0ecff",
+    backgroundColor: COLORS.violetSoft,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 10,
   },
-  iconText: { fontSize: 24, fontWeight: "800", color: "#4d33c4" },
-  heading: { fontSize: 20, fontWeight: "800", color: "#2e1d7a" },
+  iconText: { fontSize: 24, fontWeight: "800", color: COLORS.brandPrimary },
+  heading: { fontSize: 20, fontWeight: "800", color: COLORS.brandDeep },
   errorBox: {
-    backgroundColor: "#fef2f2",
+    backgroundColor: COLORS.dangerSoftAlt,
     borderWidth: 1,
-    borderColor: "#fecaca",
+    borderColor: COLORS.dangerBorderSoft,
     borderRadius: 10,
     padding: 12,
     marginBottom: 16,
   },
-  errorText: { color: "#dc2626", fontSize: 14, textAlign: "center" },
+  errorText: { color: COLORS.danger, fontSize: 14, textAlign: "center" },
   typeRow: { flexDirection: "row", gap: 8, marginBottom: 16 },
   typeChip: {
     flex: 1,
@@ -282,16 +284,16 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 10,
     borderWidth: 1.5,
-    borderColor: "#e2e8f0",
-    backgroundColor: "#ffffff",
+    borderColor: COLORS.borderMuted,
+    backgroundColor: COLORS.surface,
   },
   typeChipIcon: { fontSize: 16, fontWeight: "800", marginBottom: 2 },
-  typeChipLabel: { fontSize: 11, fontWeight: "500", color: "#64748b" },
+  typeChipLabel: { fontSize: 11, fontWeight: "500", color: COLORS.textSecondary },
   card: {
-    backgroundColor: "#ffffff",
+    backgroundColor: COLORS.surface,
     borderRadius: 14,
     padding: 20,
-    shadowColor: "#2e1d7a",
+    shadowColor: COLORS.brandDeep,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.06,
     shadowRadius: 8,
@@ -301,34 +303,33 @@ const styles = StyleSheet.create({
   inputLabel: {
     fontSize: 13,
     fontWeight: "600",
-    color: "#475569",
+    color: COLORS.textTertiary,
     marginBottom: 6,
     marginLeft: 2,
   },
   input: {
-    backgroundColor: "#f8fafc",
+    backgroundColor: COLORS.surfaceSoft,
     borderWidth: 1.5,
-    borderColor: "#e2e8f0",
+    borderColor: COLORS.borderMuted,
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 14,
     fontSize: 16,
-    color: "#0f172a",
+    color: COLORS.textPrimary,
   },
   textArea: { minHeight: 120, paddingTop: 14 },
-  inputFocused: { borderColor: "#4d33c4", backgroundColor: "#faf9ff" },
+  inputFocused: { borderColor: COLORS.brandPrimary, backgroundColor: COLORS.surfaceHighlight },
   actions: { marginTop: 20, gap: 12 },
   saveBtn: { borderRadius: 12, overflow: "hidden" },
   disabledBtn: { opacity: 0.6 },
   saveBtnGradient: { paddingVertical: 16, alignItems: "center" },
-  saveBtnText: { color: "#ffffff", fontSize: 16, fontWeight: "700" },
+  saveBtnText: { color: COLORS.textOnBrand, fontSize: 16, fontWeight: "700" },
   cancelBtn: {
     borderWidth: 2,
-    borderColor: "#e2e8f0",
+    borderColor: COLORS.borderMuted,
     borderRadius: 12,
     paddingVertical: 14,
     alignItems: "center",
   },
-  cancelBtnText: { fontSize: 16, fontWeight: "600", color: "#64748b" },
+  cancelBtnText: { fontSize: 16, fontWeight: "600", color: COLORS.textSecondary },
 });
-

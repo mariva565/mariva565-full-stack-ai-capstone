@@ -11,6 +11,7 @@ import { MaterialCard } from "../../../components/material-card";
 import { SearchBar } from "../../../components/search-bar";
 import { TypeFilterChips } from "../../../components/type-filter-chips";
 import { ApiError, apiFetch } from "../../../lib/api";
+import { COLORS, GRADIENTS } from "../../../lib/colors";
 import type { MaterialType } from "../../../lib/material-utils";
 import { useToast } from "../../../lib/toast-context";
 import type { Material, ModuleContext } from "../../../lib/studyhub-types";
@@ -171,12 +172,12 @@ export default function ModuleWorkspaceScreen() {
       <ScrollView
         style={styles.container}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={() => fetchModule(true)} tintColor="#4d33c4" />
+          <RefreshControl refreshing={refreshing} onRefresh={() => fetchModule(true)} tintColor={COLORS.brandPrimary} />
         }
       >
         <Stack.Screen options={{ title: context.module.title }} />
 
-        <LinearGradient colors={["#2e1d7a", "#4d33c4", "#7c5ce7"]} style={styles.hero}>
+        <LinearGradient colors={GRADIENTS.heroStrong} style={styles.hero}>
           <TouchableOpacity
             style={styles.coursePill}
             onPress={() => router.push({ pathname: "/course/[id]", params: { id: context.course.id } })}
@@ -278,17 +279,17 @@ export default function ModuleWorkspaceScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f8f6ff" },
+  container: { flex: 1, backgroundColor: COLORS.canvas },
   centered: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#f8f6ff",
+    backgroundColor: COLORS.canvas,
     paddingHorizontal: 32,
   },
-  errorText: { fontSize: 16, color: "#dc2626", marginBottom: 16, textAlign: "center" },
-  retryBtn: { backgroundColor: "#4d33c4", paddingHorizontal: 24, paddingVertical: 10, borderRadius: 8 },
-  retryBtnText: { color: "#ffffff", fontWeight: "600" },
+  errorText: { fontSize: 16, color: COLORS.danger, marginBottom: 16, textAlign: "center" },
+  retryBtn: { backgroundColor: COLORS.brandPrimary, paddingHorizontal: 24, paddingVertical: 10, borderRadius: 8 },
+  retryBtnText: { color: COLORS.textOnBrand, fontWeight: "600" },
   hero: { paddingTop: 24, paddingBottom: 28, paddingHorizontal: 20 },
   coursePill: {
     alignSelf: "flex-start",
@@ -300,8 +301,8 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     marginBottom: 14,
   },
-  coursePillText: { fontSize: 12, fontWeight: "700", color: "#ffffff" },
-  heroTitle: { fontSize: 24, fontWeight: "800", color: "#ffffff", marginBottom: 10 },
+  coursePillText: { fontSize: 12, fontWeight: "700", color: COLORS.textOnBrand },
+  heroTitle: { fontSize: 24, fontWeight: "800", color: COLORS.textOnBrand, marginBottom: 10 },
   heroDesc: { fontSize: 15, color: "rgba(255,255,255,0.84)", lineHeight: 22, marginBottom: 10 },
   heroMeta: { fontSize: 12, color: "rgba(255,255,255,0.6)" },
   heroActions: { flexDirection: "row", gap: 10, marginTop: 18 },
@@ -315,8 +316,8 @@ const styles = StyleSheet.create({
   },
   heroGhostBtn: { backgroundColor: "rgba(255,255,255,0.14)", borderColor: "rgba(255,255,255,0.35)" },
   heroDangerBtn: { backgroundColor: "rgba(190,24,93,0.18)", borderColor: "rgba(253,164,175,0.4)" },
-  heroGhostBtnText: { fontSize: 13, fontWeight: "700", color: "#ffffff" },
-  heroDangerBtnText: { fontSize: 13, fontWeight: "700", color: "#ffe4e6" },
+  heroGhostBtnText: { fontSize: 13, fontWeight: "700", color: COLORS.textOnBrand },
+  heroDangerBtnText: { fontSize: 13, fontWeight: "700", color: COLORS.textOnDangerSoft },
   sectionHeader: {
     flexDirection: "row",
     alignItems: "center",
@@ -326,15 +327,15 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 12,
   },
-  sectionTitle: { fontSize: 18, fontWeight: "700", color: "#2e1d7a" },
-  sectionSubtitle: { fontSize: 13, color: "#64748b", lineHeight: 19, marginTop: 4, maxWidth: 240 },
+  sectionTitle: { fontSize: 18, fontWeight: "700", color: COLORS.brandDeep },
+  sectionSubtitle: { fontSize: 13, color: COLORS.textSecondary, lineHeight: 19, marginTop: 4, maxWidth: 240 },
   addBtn: {
-    backgroundColor: "#ede9fe",
+    backgroundColor: COLORS.lavenderSoft,
     borderRadius: 10,
     paddingHorizontal: 14,
     paddingVertical: 10,
   },
-  addBtnText: { fontSize: 13, fontWeight: "700", color: "#4d33c4" },
+  addBtnText: { fontSize: 13, fontWeight: "700", color: COLORS.brandPrimary },
   materialsList: { paddingHorizontal: 16 },
   bottomSpacer: { height: 32 },
 });

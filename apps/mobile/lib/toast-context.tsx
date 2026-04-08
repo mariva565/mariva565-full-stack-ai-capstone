@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { COLORS } from "./colors";
 
 type ToastType = "success" | "error" | "info";
 
@@ -98,6 +99,8 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
             style={[styles.toast, typeStyles[toast.type]]}
             onPress={dismiss}
             activeOpacity={0.9}
+            accessibilityRole="button"
+            accessibilityLabel="Dismiss notification"
           >
             <Text style={styles.toastIcon}>{TYPE_ICONS[toast.type]}</Text>
             <Text style={styles.toastText} numberOfLines={2}>
@@ -132,7 +135,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
     paddingVertical: 14,
     borderRadius: 14,
-    shadowColor: "#000",
+    shadowColor: COLORS.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.15,
     shadowRadius: 12,
@@ -154,18 +157,18 @@ const styles = StyleSheet.create({
 
 const typeStyles = StyleSheet.create({
   success: {
-    backgroundColor: "#dcfce7",
+    backgroundColor: COLORS.successSoft,
     borderWidth: 1,
-    borderColor: "#86efac",
+    borderColor: COLORS.successBorder,
   },
   error: {
-    backgroundColor: "#fef2f2",
+    backgroundColor: COLORS.dangerSoftAlt,
     borderWidth: 1,
-    borderColor: "#fecaca",
+    borderColor: COLORS.dangerBorderSoft,
   },
   info: {
-    backgroundColor: "#eff6ff",
+    backgroundColor: COLORS.infoSoft,
     borderWidth: 1,
-    borderColor: "#bfdbfe",
+    borderColor: COLORS.infoBorder,
   },
 });

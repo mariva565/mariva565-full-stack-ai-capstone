@@ -280,7 +280,7 @@ const styles = StyleSheet.create({
   heroBadgeText: {
     fontSize: 12,
     fontWeight: "600",
-    color: "#ffffff",
+    color: COLORS.textOnBrand,
     textTransform: "capitalize",
   },
   card: {
@@ -318,7 +318,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingHorizontal: 14,
     paddingVertical: 10,
-    backgroundColor: "#faf9ff",
+    backgroundColor: COLORS.surfaceHighlight,
   },
   actions: {
     marginHorizontal: 16,

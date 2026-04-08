@@ -13,6 +13,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { BrandedSpinner } from "../../../components/branded-spinner";
 import { ApiError, apiFetch } from "../../../lib/api";
+import { COLORS, GRADIENTS } from "../../../lib/colors";
 
 type ModuleResponse = {
   module: {
@@ -111,7 +112,7 @@ export default function EditModuleScreen() {
             <TextInput
               style={[styles.input, focusedField === "title" && styles.inputFocused]}
               placeholder="Module title"
-              placeholderTextColor="#94a3b8"
+              placeholderTextColor={COLORS.textMuted}
               value={title}
               onChangeText={setTitle}
               onFocus={() => setFocusedField("title")}
@@ -124,7 +125,7 @@ export default function EditModuleScreen() {
             <TextInput
               style={[styles.input, styles.textArea, focusedField === "desc" && styles.inputFocused]}
               placeholder="What does this module cover?"
-              placeholderTextColor="#94a3b8"
+              placeholderTextColor={COLORS.textMuted}
               value={description}
               onChangeText={setDescription}
               onFocus={() => setFocusedField("desc")}
@@ -145,7 +146,7 @@ export default function EditModuleScreen() {
             accessibilityRole="button"
             accessibilityLabel="Save module changes"
           >
-            <LinearGradient colors={["#4d33c4", "#7c5ce7"]} style={styles.saveBtnGradient}>
+            <LinearGradient colors={GRADIENTS.primaryAction} style={styles.saveBtnGradient}>
               <Text style={styles.saveBtnText}>{saving ? "Saving..." : "Save Changes"}</Text>
             </LinearGradient>
           </TouchableOpacity>
@@ -165,35 +166,35 @@ export default function EditModuleScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f8f6ff" },
+  container: { flex: 1, backgroundColor: COLORS.canvas },
   scrollContent: { padding: 16 },
   iconContainer: { alignItems: "center", marginVertical: 20 },
   iconCircle: {
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: "#f0ecff",
+    backgroundColor: COLORS.violetSoft,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 12,
   },
-  iconText: { fontSize: 24, fontWeight: "800", color: "#4d33c4" },
-  heading: { fontSize: 20, fontWeight: "800", color: "#2e1d7a" },
-  subheading: { fontSize: 14, color: "#64748b", marginTop: 4 },
+  iconText: { fontSize: 24, fontWeight: "800", color: COLORS.brandPrimary },
+  heading: { fontSize: 20, fontWeight: "800", color: COLORS.brandDeep },
+  subheading: { fontSize: 14, color: COLORS.textSecondary, marginTop: 4 },
   errorBox: {
-    backgroundColor: "#fef2f2",
+    backgroundColor: COLORS.dangerSoftAlt,
     borderWidth: 1,
-    borderColor: "#fecaca",
+    borderColor: COLORS.dangerBorderSoft,
     borderRadius: 10,
     padding: 12,
     marginBottom: 16,
   },
-  errorText: { color: "#dc2626", fontSize: 14, textAlign: "center" },
+  errorText: { color: COLORS.danger, fontSize: 14, textAlign: "center" },
   card: {
-    backgroundColor: "#ffffff",
+    backgroundColor: COLORS.surface,
     borderRadius: 14,
     padding: 20,
-    shadowColor: "#2e1d7a",
+    shadowColor: COLORS.brandDeep,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.06,
     shadowRadius: 8,
@@ -203,33 +204,33 @@ const styles = StyleSheet.create({
   inputLabel: {
     fontSize: 13,
     fontWeight: "600",
-    color: "#475569",
+    color: COLORS.textTertiary,
     marginBottom: 6,
     marginLeft: 2,
   },
   input: {
-    backgroundColor: "#f8fafc",
+    backgroundColor: COLORS.surfaceSoft,
     borderWidth: 1.5,
-    borderColor: "#e2e8f0",
+    borderColor: COLORS.borderMuted,
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 14,
     fontSize: 16,
-    color: "#0f172a",
+    color: COLORS.textPrimary,
   },
   textArea: { minHeight: 100, paddingTop: 14 },
-  inputFocused: { borderColor: "#4d33c4", backgroundColor: "#faf9ff" },
+  inputFocused: { borderColor: COLORS.brandPrimary, backgroundColor: COLORS.surfaceHighlight },
   actions: { marginTop: 20, gap: 12 },
   saveBtn: { borderRadius: 12, overflow: "hidden" },
   disabledBtn: { opacity: 0.6 },
   saveBtnGradient: { paddingVertical: 16, alignItems: "center" },
-  saveBtnText: { color: "#ffffff", fontSize: 16, fontWeight: "700" },
+  saveBtnText: { color: COLORS.textOnBrand, fontSize: 16, fontWeight: "700" },
   cancelBtn: {
     borderWidth: 2,
-    borderColor: "#e2e8f0",
+    borderColor: COLORS.borderMuted,
     borderRadius: 12,
     paddingVertical: 14,
     alignItems: "center",
   },
-  cancelBtnText: { fontSize: 16, fontWeight: "600", color: "#64748b" },
+  cancelBtnText: { fontSize: 16, fontWeight: "600", color: COLORS.textSecondary },
 });

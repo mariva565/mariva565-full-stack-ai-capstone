@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { AntDesign } from "@expo/vector-icons";
+import { COLORS } from "../../lib/colors";
 
 interface GoogleSignInButtonProps {
   onPress: () => void;
@@ -53,6 +54,8 @@ export function GoogleSignInButton({
       disabled={disabled || loading}
       activeOpacity={0.8}
       style={[styles.button, (disabled || loading) && styles.disabled]}
+      accessibilityRole="button"
+      accessibilityLabel={loading ? "Connecting with Google" : "Continue with Google"}
     >
       <View style={styles.glassBackground}>
         {/* Animated Shine Effect */}
@@ -73,9 +76,9 @@ export function GoogleSignInButton({
         <View style={styles.content}>
           <View style={styles.iconCircle}>
             {loading ? (
-              <ActivityIndicator color="#4d33c4" size="small" />
+              <ActivityIndicator color={COLORS.brandPrimary} size="small" />
             ) : (
-              <AntDesign name="google" size={18} color="#4d33c4" />
+              <AntDesign name="google" size={18} color={COLORS.brandPrimary} />
             )}
           </View>
           <Text style={styles.text}>
@@ -99,7 +102,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255, 255, 255, 0.25)",
     ...Platform.select({
       ios: {
-        shadowColor: "#000",
+        shadowColor: COLORS.shadow,
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.1,
         shadowRadius: 10,
@@ -128,10 +131,10 @@ const styles = StyleSheet.create({
     width: 34,
     height: 34,
     borderRadius: 17,
-    backgroundColor: "#ffffff",
+    backgroundColor: COLORS.surface,
     justifyContent: "center",
     alignItems: "center",
-    shadowColor: "#4d33c4",
+    shadowColor: COLORS.brandPrimary,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -140,7 +143,7 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 16,
     fontWeight: "700",
-    color: "#2e1d7a",
+    color: COLORS.brandDeep,
     letterSpacing: -0.3,
   },
   shineContainer: {
