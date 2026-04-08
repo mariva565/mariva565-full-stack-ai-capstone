@@ -9,14 +9,17 @@ import {
   Platform,
   ScrollView,
 } from "react-native";
+import { useQueryClient } from "@tanstack/react-query";
 import { LinearGradient } from "expo-linear-gradient";
 import { Stack, useRouter } from "expo-router";
 import { apiFetch, ApiError } from "../lib/api";
 import { COLORS, GRADIENTS } from "../lib/colors";
+import { invalidateCoursesList } from "../lib/query-keys";
 import { validateRequired } from "../lib/validation";
 
 export default function CreateCourseScreen() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
@@ -42,6 +45,7 @@ export default function CreateCourseScreen() {
           description: description.trim() || null,
         },
       });
+      await invalidateCoursesList(queryClient);
       router.back();
     } catch (e) {
       const msg = e instanceof ApiError ? e.message : "Failed to create course";

@@ -9,11 +9,13 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useQueryClient } from "@tanstack/react-query";
 import { LinearGradient } from "expo-linear-gradient";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { ApiError, apiFetch } from "../../../lib/api";
 import { BrandedSpinner } from "../../../components/branded-spinner";
 import { COLORS, GRADIENTS } from "../../../lib/colors";
+import { invalidateCourseQueries } from "../../../lib/query-keys";
 
 type Course = {
   id: number;
@@ -23,7 +25,9 @@ type Course = {
 
 export default function EditCourseScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const routeId = String(id);
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(true);
@@ -34,7 +38,7 @@ export default function EditCourseScreen() {
   useEffect(() => {
     async function loadCourse() {
       try {
-        const data = await apiFetch<{ course: Course }>(`/api/courses/${id}`);
+        const data = await apiFetch<{ course: Course }>(`/api/courses/${routeId}`);
         setTitle(data.course.title);
         setDescription(data.course.description ?? "");
       } catch (error) {
@@ -46,7 +50,7 @@ export default function EditCourseScreen() {
     }
 
     loadCourse();
-  }, [id]);
+  }, [routeId]);
 
   async function handleSave() {
     if (!title.trim()) {
@@ -57,13 +61,14 @@ export default function EditCourseScreen() {
     setSaving(true);
     setError("");
     try {
-      await apiFetch(`/api/courses/${id}`, {
+      await apiFetch(`/api/courses/${routeId}`, {
         method: "PUT",
         body: {
           title: title.trim(),
           description: description.trim() || null,
         },
       });
+      await invalidateCourseQueries(queryClient, routeId);
       router.back();
     } catch (error) {
       const message = error instanceof ApiError ? error.message : "Failed to save course";

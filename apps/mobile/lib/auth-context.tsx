@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from "react";
 import { apiFetch, setToken, removeToken, getToken, clearApiCache } from "./api";
+import { queryClient } from "./query-client";
 
 type User = {
   id: number;
@@ -36,6 +37,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } catch {
         await clearApiCache();
         await removeToken();
+        queryClient.clear();
       } finally {
         setIsLoading(false);
       }
@@ -44,6 +46,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback(async (email: string, password: string) => {
     await clearApiCache();
+    queryClient.clear();
     const data = await apiFetch<{ token: string; user: User }>(
       "/api/auth/login",
       { method: "POST", body: { email, password }, auth: false }
@@ -54,6 +57,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const register = useCallback(async (email: string, name: string, password: string) => {
     await clearApiCache();
+    queryClient.clear();
     const data = await apiFetch<{ token: string; user: User }>(
       "/api/auth/register",
       { method: "POST", body: { email, name, password }, auth: false }
@@ -64,6 +68,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const loginWithGoogle = useCallback(async (token: string, type: "id_token" | "access_token") => {
     await clearApiCache();
+    queryClient.clear();
     const data = await apiFetch<{ token: string; user: User }>(
       "/api/auth/google",
       { method: "POST", body: { token, type }, auth: false }
@@ -76,6 +81,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await clearApiCache();
     await removeToken();
     setUser(null);
+    queryClient.clear();
   }, []);
 
   return (

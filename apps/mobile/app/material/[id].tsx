@@ -9,13 +9,15 @@ import {
   Linking,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { LinearGradient } from "expo-linear-gradient";
 import { Stack, useLocalSearchParams } from "expo-router";
-import { apiFetch } from "../../lib/api";
+import { apiFetch, getUserFriendlyError } from "../../lib/api";
 import { BrandedSpinner } from "../../components/branded-spinner";
 import { COLORS, GRADIENTS } from "../../lib/colors";
 import { useToast } from "../../lib/toast-context";
 import { getMaterialTypeConfig, splitTags } from "../../lib/material-utils";
+import { queryKeys } from "../../lib/query-keys";
 
 type Material = {
   id: number;
@@ -29,36 +31,29 @@ type Material = {
 
 export default function MaterialScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const routeId = String(id);
+  const queryClient = useQueryClient();
   const { showToast } = useToast();
-  const [material, setMaterial] = useState<Material | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const [error, setError] = useState("");
-
-  const fetchMaterial = useCallback(async (isRefresh = false) => {
-    if (isRefresh) {
-      setRefreshing(true);
-    } else {
-      setLoading(true);
-    }
-
-    try {
-      setError("");
-      const data = await apiFetch<{ material: Material }>(`/api/materials/${id}`);
-      setMaterial(data.material);
-    } catch {
-      setError("Failed to load material");
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  }, [id]);
+  const materialQuery = useQuery({
+    queryKey: queryKeys.materials.detail(routeId),
+    queryFn: async () => {
+      const data = await apiFetch<{ material: Material }>(`/api/materials/${routeId}`);
+      return data.material;
+    },
+  });
 
   useFocusEffect(
     useCallback(() => {
-      fetchMaterial();
-    }, [fetchMaterial])
+      void queryClient.invalidateQueries({ queryKey: queryKeys.materials.detail(routeId) });
+    }, [queryClient, routeId])
   );
+
+  const material = materialQuery.data ?? null;
+  const loading = materialQuery.isPending && !material;
+  const refreshing = materialQuery.isRefetching && !materialQuery.isPending;
+  const error = materialQuery.error
+    ? getUserFriendlyError(materialQuery.error, "Failed to load material")
+    : "";
 
   async function handleOpenUrl() {
     if (!material?.fileUrl) {
@@ -93,7 +88,9 @@ export default function MaterialScreen() {
         <Text style={styles.errorText}>{error || "Material not found"}</Text>
         <TouchableOpacity
           style={styles.retryBtn}
-          onPress={() => fetchMaterial()}
+          onPress={() => {
+            void materialQuery.refetch();
+          }}
           accessibilityRole="button"
           accessibilityLabel="Retry loading material"
         >
@@ -112,7 +109,9 @@ export default function MaterialScreen() {
       refreshControl={
         <RefreshControl
           refreshing={refreshing}
-          onRefresh={() => fetchMaterial(true)}
+          onRefresh={() => {
+            void materialQuery.refetch();
+          }}
           tintColor={COLORS.brandPrimary}
         />
       }

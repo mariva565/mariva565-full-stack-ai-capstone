@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
 import { RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { LinearGradient } from "expo-linear-gradient";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 
@@ -10,11 +11,12 @@ import { EmptyState } from "../../../components/empty-state";
 import { MaterialCard } from "../../../components/material-card";
 import { SearchBar } from "../../../components/search-bar";
 import { TypeFilterChips } from "../../../components/type-filter-chips";
-import { ApiError, apiFetch } from "../../../lib/api";
+import { apiFetch, getUserFriendlyError } from "../../../lib/api";
 import { COLORS, GRADIENTS } from "../../../lib/colors";
 import type { MaterialType } from "../../../lib/material-utils";
+import { invalidateCourseQueries, invalidateModuleQueries, queryKeys } from "../../../lib/query-keys";
 import { useToast } from "../../../lib/toast-context";
-import type { Material, ModuleContext } from "../../../lib/studyhub-types";
+import type { Material, Module, ModuleContext } from "../../../lib/studyhub-types";
 
 type ModuleResponse = {
   module: ModuleContext;
@@ -29,12 +31,8 @@ export default function ModuleWorkspaceScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const routeId = String(id);
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { showToast } = useToast();
-  const [context, setContext] = useState<ModuleResponse | null>(null);
-  const [materials, setMaterials] = useState<Material[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const [error, setError] = useState("");
 
   // Search and filter
   const [searchQuery, setSearchQuery] = useState("");
@@ -44,33 +42,125 @@ export default function ModuleWorkspaceScreen() {
   const [confirmVisible, setConfirmVisible] = useState(false);
   const [confirmTarget, setConfirmTarget] = useState<{ type: "module" } | { type: "material"; material: Material } | null>(null);
 
-  const fetchModule = useCallback(async (isRefresh = false) => {
-    if (isRefresh) {
-      setRefreshing(true);
-    } else {
-      setLoading(true);
-    }
+  const moduleQuery = useQuery({
+    queryKey: queryKeys.modules.detail(routeId),
+    queryFn: async () => {
+      return apiFetch<ModuleResponse>(`/api/modules/${routeId}`);
+    },
+  });
 
-    try {
-      setError("");
-      const [moduleData, materialsData] = await Promise.all([
-        apiFetch<ModuleResponse>(`/api/modules/${id}`),
-        apiFetch<{ materials: Material[] }>(`/api/modules/${id}/materials`),
+  const materialsQuery = useQuery({
+    queryKey: queryKeys.modules.materials(routeId),
+    queryFn: async () => {
+      const data = await apiFetch<{ materials: Material[] }>(`/api/modules/${routeId}/materials`);
+      return data.materials;
+    },
+  });
+
+  const deleteModuleMutation = useMutation({
+    mutationFn: async (payload: { moduleId: number; courseId: number }) => {
+      await apiFetch(`/api/modules/${payload.moduleId}`, { method: "DELETE" });
+      return payload;
+    },
+    onMutate: async ({ moduleId, courseId }) => {
+      await Promise.all([
+        queryClient.cancelQueries({ queryKey: queryKeys.modules.detail(moduleId) }),
+        queryClient.cancelQueries({ queryKey: queryKeys.modules.materials(moduleId) }),
+        queryClient.cancelQueries({ queryKey: queryKeys.courses.modules(courseId) }),
       ]);
-      setContext(moduleData);
-      setMaterials(materialsData.materials);
-    } catch {
-      setError("Failed to load module");
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  }, [id]);
+
+      const previousModuleContext = queryClient.getQueryData<ModuleResponse>(
+        queryKeys.modules.detail(moduleId)
+      );
+      const previousModuleMaterials = queryClient.getQueryData<Material[]>(
+        queryKeys.modules.materials(moduleId)
+      );
+      const previousCourseModules =
+        queryClient.getQueryData<Module[]>(queryKeys.courses.modules(courseId)) ?? [];
+
+      queryClient.setQueryData<Module[]>(
+        queryKeys.courses.modules(courseId),
+        previousCourseModules.filter((item) => item.id !== moduleId)
+      );
+
+      return { previousModuleContext, previousModuleMaterials, previousCourseModules };
+    },
+    onError: (error, { courseId }, context) => {
+      if (context?.previousModuleContext) {
+        queryClient.setQueryData(queryKeys.modules.detail(routeId), context.previousModuleContext);
+      }
+      if (context && context.previousModuleMaterials !== undefined) {
+        queryClient.setQueryData(queryKeys.modules.materials(routeId), context.previousModuleMaterials);
+      }
+      if (context && context.previousCourseModules !== undefined) {
+        queryClient.setQueryData(
+          queryKeys.courses.modules(courseId),
+          context.previousCourseModules
+        );
+      }
+      showToast(getUserFriendlyError(error, "Failed to delete module"), "error");
+    },
+    onSuccess: ({ moduleId }) => {
+      queryClient.removeQueries({ queryKey: queryKeys.modules.detail(moduleId) });
+      queryClient.removeQueries({ queryKey: queryKeys.modules.materials(moduleId) });
+      showToast("Module deleted");
+    },
+    onSettled: async (_data, _error, variables) => {
+      await invalidateCourseQueries(queryClient, variables.courseId);
+    },
+  });
+
+  const deleteMaterialMutation = useMutation({
+    mutationFn: async (material: Material) => {
+      await apiFetch(`/api/materials/${material.id}`, { method: "DELETE" });
+      return material;
+    },
+    onMutate: async (material) => {
+      await queryClient.cancelQueries({ queryKey: queryKeys.modules.materials(routeId) });
+      const previousMaterials =
+        queryClient.getQueryData<Material[]>(queryKeys.modules.materials(routeId)) ?? [];
+
+      queryClient.setQueryData<Material[]>(
+        queryKeys.modules.materials(routeId),
+        previousMaterials.filter((item) => item.id !== material.id)
+      );
+      queryClient.removeQueries({ queryKey: queryKeys.materials.detail(material.id) });
+
+      return { previousMaterials };
+    },
+    onError: (error, _material, context) => {
+      if (context && context.previousMaterials !== undefined) {
+        queryClient.setQueryData(queryKeys.modules.materials(routeId), context.previousMaterials);
+      }
+      showToast(getUserFriendlyError(error, "Failed to delete material"), "error");
+    },
+    onSuccess: () => {
+      showToast("Material deleted");
+    },
+    onSettled: async () => {
+      await invalidateModuleQueries(queryClient, routeId);
+    },
+  });
+
+  const context = moduleQuery.data ?? null;
+  const materials = materialsQuery.data ?? [];
+  const loading = moduleQuery.isPending && !context;
+  const refreshing =
+    (moduleQuery.isRefetching || materialsQuery.isRefetching) &&
+    !moduleQuery.isPending &&
+    !materialsQuery.isPending;
+  const error =
+    moduleQuery.error || materialsQuery.error
+      ? getUserFriendlyError(moduleQuery.error ?? materialsQuery.error, "Failed to load module")
+      : "";
 
   useFocusEffect(
     useCallback(() => {
-      fetchModule();
-    }, [fetchModule])
+      void Promise.all([
+        queryClient.invalidateQueries({ queryKey: queryKeys.modules.detail(routeId) }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.modules.materials(routeId) }),
+      ]);
+    }, [queryClient, routeId])
   );
 
   function openDeleteModule() {
@@ -85,27 +175,26 @@ export default function ModuleWorkspaceScreen() {
 
   async function handleConfirmDelete() {
     if (!confirmTarget) return;
+
     if (confirmTarget.type === "module" && context) {
       try {
-        await apiFetch(`/api/modules/${context.module.id}`, { method: "DELETE" });
-        showToast("Module deleted");
-        setConfirmVisible(false);
+        await deleteModuleMutation.mutateAsync({
+          moduleId: context.module.id,
+          courseId: context.course.id,
+        });
         router.replace({ pathname: "/course/[id]", params: { id: context.course.id } });
-      } catch (err) {
-        const message = err instanceof ApiError ? err.message : "Failed to delete module";
-        showToast(message, "error");
+      } catch {
+        // Error toast is handled in mutation callbacks.
+      } finally {
         setConfirmVisible(false);
       }
     } else if (confirmTarget.type === "material") {
       const { material } = confirmTarget;
       try {
-        await apiFetch(`/api/materials/${material.id}`, { method: "DELETE" });
-        setMaterials((current) => current.filter((item) => item.id !== material.id));
-        showToast("Material deleted");
-        setConfirmVisible(false);
-      } catch (err) {
-        const message = err instanceof ApiError ? err.message : "Failed to delete material";
-        showToast(message, "error");
+        await deleteMaterialMutation.mutateAsync(material);
+      } catch {
+        // Error toast is handled in mutation callbacks.
+      } finally {
         setConfirmVisible(false);
       }
     }
@@ -157,7 +246,9 @@ export default function ModuleWorkspaceScreen() {
         <Text style={styles.errorText}>{error || "Module not found"}</Text>
         <TouchableOpacity
           style={styles.retryBtn}
-          onPress={() => fetchModule()}
+          onPress={() => {
+            void Promise.all([moduleQuery.refetch(), materialsQuery.refetch()]);
+          }}
           accessibilityRole="button"
           accessibilityLabel="Retry loading module"
         >
@@ -172,7 +263,13 @@ export default function ModuleWorkspaceScreen() {
       <ScrollView
         style={styles.container}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={() => fetchModule(true)} tintColor={COLORS.brandPrimary} />
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={() => {
+              void Promise.all([moduleQuery.refetch(), materialsQuery.refetch()]);
+            }}
+            tintColor={COLORS.brandPrimary}
+          />
         }
       >
         <Stack.Screen options={{ title: context.module.title }} />

@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 import { RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { LinearGradient } from "expo-linear-gradient";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 
@@ -8,8 +9,9 @@ import { BrandedSpinner } from "../../../components/branded-spinner";
 import { ConfirmModal } from "../../../components/confirm-modal";
 import { EmptyState } from "../../../components/empty-state";
 import { ModuleListCard } from "../../../components/module-list-card";
-import { ApiError, apiFetch } from "../../../lib/api";
+import { apiFetch, getUserFriendlyError } from "../../../lib/api";
 import { COLORS, GRADIENTS } from "../../../lib/colors";
+import { invalidateCourseQueries, queryKeys } from "../../../lib/query-keys";
 import { useToast } from "../../../lib/toast-context";
 import type { Course, Module } from "../../../lib/studyhub-types";
 
@@ -17,43 +19,123 @@ export default function CourseDetailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const routeId = String(id);
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { showToast } = useToast();
-  const [course, setCourse] = useState<Course | null>(null);
-  const [modules, setModules] = useState<Module[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const [error, setError] = useState("");
-
   const [confirmVisible, setConfirmVisible] = useState(false);
   const [confirmTarget, setConfirmTarget] = useState<{ type: "course" } | { type: "module"; module: Module } | null>(null);
 
-  const fetchCourse = useCallback(async (isRefresh = false) => {
-    if (isRefresh) {
-      setRefreshing(true);
-    } else {
-      setLoading(true);
-    }
+  const courseQuery = useQuery({
+    queryKey: queryKeys.courses.detail(routeId),
+    queryFn: async () => {
+      const data = await apiFetch<{ course: Course }>(`/api/courses/${routeId}`);
+      return data.course;
+    },
+  });
 
-    try {
-      setError("");
-      const [courseData, modulesData] = await Promise.all([
-        apiFetch<{ course: Course }>(`/api/courses/${id}`),
-        apiFetch<{ modules: Module[] }>(`/api/courses/${id}/modules`),
+  const modulesQuery = useQuery({
+    queryKey: queryKeys.courses.modules(routeId),
+    queryFn: async () => {
+      const data = await apiFetch<{ modules: Module[] }>(`/api/courses/${routeId}/modules`);
+      return data.modules;
+    },
+  });
+
+  const deleteCourseMutation = useMutation({
+    mutationFn: async (courseId: number) => {
+      await apiFetch(`/api/courses/${courseId}`, { method: "DELETE" });
+      return courseId;
+    },
+    onMutate: async (courseId) => {
+      await Promise.all([
+        queryClient.cancelQueries({ queryKey: queryKeys.courses.lists() }),
+        queryClient.cancelQueries({ queryKey: queryKeys.courses.detail(courseId) }),
+        queryClient.cancelQueries({ queryKey: queryKeys.courses.modules(courseId) }),
       ]);
-      setCourse(courseData.course);
-      setModules(modulesData.modules);
-    } catch {
-      setError("Failed to load course");
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  }, [id]);
+
+      const previousCourses = queryClient.getQueryData<Course[]>(queryKeys.courses.lists()) ?? [];
+      const previousCourse = queryClient.getQueryData<Course>(queryKeys.courses.detail(courseId));
+      const previousModules = queryClient.getQueryData<Module[]>(
+        queryKeys.courses.modules(courseId)
+      );
+
+      queryClient.setQueryData<Course[]>(
+        queryKeys.courses.lists(),
+        previousCourses.filter((item) => item.id !== courseId)
+      );
+      queryClient.removeQueries({ queryKey: queryKeys.courses.detail(courseId) });
+      queryClient.removeQueries({ queryKey: queryKeys.courses.modules(courseId) });
+
+      return { previousCourses, previousCourse, previousModules };
+    },
+    onError: (error, courseId, context) => {
+      if (context) {
+        queryClient.setQueryData(queryKeys.courses.lists(), context.previousCourses);
+        if (context.previousCourse) {
+          queryClient.setQueryData(queryKeys.courses.detail(courseId), context.previousCourse);
+        }
+        if (context.previousModules !== undefined) {
+          queryClient.setQueryData(queryKeys.courses.modules(courseId), context.previousModules);
+        }
+      }
+      showToast(getUserFriendlyError(error, "Failed to delete course"), "error");
+    },
+    onSuccess: () => {
+      showToast("Course deleted");
+    },
+  });
+
+  const deleteModuleMutation = useMutation({
+    mutationFn: async (module: Module) => {
+      await apiFetch(`/api/modules/${module.id}`, { method: "DELETE" });
+      return module;
+    },
+    onMutate: async (module) => {
+      await queryClient.cancelQueries({ queryKey: queryKeys.courses.modules(routeId) });
+      const previousModules =
+        queryClient.getQueryData<Module[]>(queryKeys.courses.modules(routeId)) ?? [];
+
+      queryClient.setQueryData<Module[]>(
+        queryKeys.courses.modules(routeId),
+        previousModules.filter((item) => item.id !== module.id)
+      );
+
+      return { previousModules };
+    },
+    onError: (error, _module, context) => {
+      if (context && context.previousModules !== undefined) {
+        queryClient.setQueryData(queryKeys.courses.modules(routeId), context.previousModules);
+      }
+      showToast(getUserFriendlyError(error, "Failed to delete module"), "error");
+    },
+    onSuccess: (module) => {
+      queryClient.removeQueries({ queryKey: queryKeys.modules.detail(module.id) });
+      queryClient.removeQueries({ queryKey: queryKeys.modules.materials(module.id) });
+      showToast("Module deleted");
+    },
+    onSettled: async () => {
+      await invalidateCourseQueries(queryClient, routeId);
+    },
+  });
+
+  const course = courseQuery.data ?? null;
+  const modules = modulesQuery.data ?? [];
+  const loading = courseQuery.isPending && !course;
+  const refreshing =
+    (courseQuery.isRefetching || modulesQuery.isRefetching) &&
+    !courseQuery.isPending &&
+    !modulesQuery.isPending;
+  const error =
+    courseQuery.error || modulesQuery.error
+      ? getUserFriendlyError(courseQuery.error ?? modulesQuery.error, "Failed to load course")
+      : "";
 
   useFocusEffect(
     useCallback(() => {
-      fetchCourse();
-    }, [fetchCourse])
+      void Promise.all([
+        queryClient.invalidateQueries({ queryKey: queryKeys.courses.detail(routeId) }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.courses.modules(routeId) }),
+      ]);
+    }, [queryClient, routeId])
   );
 
   function openDeleteCourse() {
@@ -68,27 +150,24 @@ export default function CourseDetailsScreen() {
 
   async function handleConfirmDelete() {
     if (!confirmTarget) return;
+
     if (confirmTarget.type === "course" && course) {
       try {
-        await apiFetch(`/api/courses/${course.id}`, { method: "DELETE" });
-        showToast("Course deleted");
-        setConfirmVisible(false);
+        await deleteCourseMutation.mutateAsync(course.id);
+        await invalidateCourseQueries(queryClient, course.id);
         router.replace("/");
-      } catch (err) {
-        const message = err instanceof ApiError ? err.message : "Failed to delete course";
-        showToast(message, "error");
+      } catch {
+        // Error toast is handled in mutation callbacks.
+      } finally {
         setConfirmVisible(false);
       }
     } else if (confirmTarget.type === "module") {
       const { module } = confirmTarget;
       try {
-        await apiFetch(`/api/modules/${module.id}`, { method: "DELETE" });
-        setModules((current) => current.filter((item) => item.id !== module.id));
-        showToast("Module deleted");
-        setConfirmVisible(false);
-      } catch (err) {
-        const message = err instanceof ApiError ? err.message : "Failed to delete module";
-        showToast(message, "error");
+        await deleteModuleMutation.mutateAsync(module);
+      } catch {
+        // Error toast is handled in mutation callbacks.
+      } finally {
         setConfirmVisible(false);
       }
     }
@@ -121,7 +200,9 @@ export default function CourseDetailsScreen() {
         <Text style={styles.errorText}>{error || "Course not found"}</Text>
         <TouchableOpacity
           style={styles.retryBtn}
-          onPress={() => fetchCourse()}
+          onPress={() => {
+            void Promise.all([courseQuery.refetch(), modulesQuery.refetch()]);
+          }}
           accessibilityRole="button"
           accessibilityLabel="Retry loading course"
         >
@@ -136,7 +217,13 @@ export default function CourseDetailsScreen() {
       <ScrollView
         style={styles.container}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={() => fetchCourse(true)} tintColor={COLORS.brandPrimary} />
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={() => {
+              void Promise.all([courseQuery.refetch(), modulesQuery.refetch()]);
+            }}
+            tintColor={COLORS.brandPrimary}
+          />
         }
       >
         <Stack.Screen options={{ title: course.title }} />

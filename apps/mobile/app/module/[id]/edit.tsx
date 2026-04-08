@@ -9,15 +9,18 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useQueryClient } from "@tanstack/react-query";
 import { LinearGradient } from "expo-linear-gradient";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { BrandedSpinner } from "../../../components/branded-spinner";
 import { ApiError, apiFetch } from "../../../lib/api";
 import { COLORS, GRADIENTS } from "../../../lib/colors";
+import { invalidateCourseQueries, invalidateModuleQueries } from "../../../lib/query-keys";
 
 type ModuleResponse = {
   module: {
     id: number;
+    courseId?: number;
     title: string;
     description?: string | null;
   };
@@ -25,9 +28,12 @@ type ModuleResponse = {
 
 export default function EditModuleScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const routeId = String(id);
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [courseId, setCourseId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -36,9 +42,10 @@ export default function EditModuleScreen() {
   useEffect(() => {
     async function loadModule() {
       try {
-        const data = await apiFetch<ModuleResponse>(`/api/modules/${id}`);
+        const data = await apiFetch<ModuleResponse>(`/api/modules/${routeId}`);
         setTitle(data.module.title);
         setDescription(data.module.description ?? "");
+        setCourseId(data.module.courseId ?? null);
       } catch (error) {
         const message = error instanceof ApiError ? error.message : "Failed to load module";
         setError(message);
@@ -48,7 +55,7 @@ export default function EditModuleScreen() {
     }
 
     loadModule();
-  }, [id]);
+  }, [routeId]);
 
   async function handleSave() {
     if (!title.trim()) {
@@ -59,13 +66,17 @@ export default function EditModuleScreen() {
     setSaving(true);
     setError("");
     try {
-      await apiFetch(`/api/modules/${id}`, {
+      await apiFetch(`/api/modules/${routeId}`, {
         method: "PUT",
         body: {
           title: title.trim(),
           description: description.trim() || null,
         },
       });
+      await invalidateModuleQueries(queryClient, routeId);
+      if (courseId) {
+        await invalidateCourseQueries(queryClient, courseId);
+      }
       router.back();
     } catch (error) {
       const message = error instanceof ApiError ? error.message : "Failed to save module";

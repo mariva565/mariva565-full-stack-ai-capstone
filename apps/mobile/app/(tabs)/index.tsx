@@ -9,6 +9,7 @@ import {
   View,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { EmptyState } from "../../components/empty-state";
@@ -17,7 +18,8 @@ import { ConfirmModal } from "../../components/confirm-modal";
 import { useAuth } from "../../lib/auth-context";
 import { COLORS, GRADIENTS } from "../../lib/colors";
 import { useToast } from "../../lib/toast-context";
-import { ApiError, apiFetch } from "../../lib/api";
+import { apiFetch, getUserFriendlyError } from "../../lib/api";
+import { invalidateCoursesList, queryKeys } from "../../lib/query-keys";
 
 type Course = {
   id: number;
@@ -112,38 +114,60 @@ function CourseCard({ item, index, onOpen, onEdit, onDelete }: CourseCardProps) 
 export default function CoursesListScreen() {
   const { user } = useAuth();
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { showToast } = useToast();
-  const [courses, setCourses] = useState<Course[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const [error, setError] = useState("");
 
   const [confirmVisible, setConfirmVisible] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<Course | null>(null);
 
-  const fetchCourses = useCallback(async (isRefresh = false) => {
-    if (isRefresh) {
-      setRefreshing(true);
-    } else {
-      setLoading(true);
-    }
-
-    try {
-      setError("");
+  const coursesQuery = useQuery({
+    queryKey: queryKeys.courses.lists(),
+    queryFn: async () => {
       const data = await apiFetch<{ courses: Course[] }>("/api/courses");
-      setCourses(data.courses);
-    } catch {
-      setError("Failed to load courses");
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  }, []);
+      return data.courses;
+    },
+  });
+
+  const deleteCourseMutation = useMutation({
+    mutationFn: async (course: Course) => {
+      await apiFetch(`/api/courses/${course.id}`, { method: "DELETE" });
+      return course;
+    },
+    onMutate: async (course) => {
+      await queryClient.cancelQueries({ queryKey: queryKeys.courses.lists() });
+      const previousCourses = queryClient.getQueryData<Course[]>(queryKeys.courses.lists()) ?? [];
+      queryClient.setQueryData<Course[]>(
+        queryKeys.courses.lists(),
+        previousCourses.filter((item) => item.id !== course.id)
+      );
+
+      return { previousCourses };
+    },
+    onError: (error, _course, context) => {
+      if (context && context.previousCourses !== undefined) {
+        queryClient.setQueryData(queryKeys.courses.lists(), context.previousCourses);
+      }
+      showToast(getUserFriendlyError(error, "Failed to delete course"), "error");
+    },
+    onSuccess: async (course) => {
+      queryClient.removeQueries({ queryKey: queryKeys.courses.detail(course.id) });
+      queryClient.removeQueries({ queryKey: queryKeys.courses.modules(course.id) });
+      showToast("Course deleted");
+      await invalidateCoursesList(queryClient);
+    },
+  });
+
+  const courses = coursesQuery.data ?? [];
+  const loading = coursesQuery.isPending && courses.length === 0;
+  const refreshing = coursesQuery.isRefetching && !coursesQuery.isPending;
+  const error = coursesQuery.error
+    ? getUserFriendlyError(coursesQuery.error, "Failed to load courses")
+    : "";
 
   useFocusEffect(
     useCallback(() => {
-      fetchCourses();
-    }, [fetchCourses])
+      void queryClient.invalidateQueries({ queryKey: queryKeys.courses.lists() });
+    }, [queryClient])
   );
 
   function openDeleteCourse(course: Course) {
@@ -152,16 +176,15 @@ export default function CoursesListScreen() {
   }
 
   async function handleConfirmDelete() {
-    if (!deleteTarget) return;
+    if (!deleteTarget || deleteCourseMutation.isPending) return;
+
     try {
-      await apiFetch(`/api/courses/${deleteTarget.id}`, { method: "DELETE" });
-      setCourses((current) => current.filter((item) => item.id !== deleteTarget.id));
-      showToast("Course deleted");
+      await deleteCourseMutation.mutateAsync(deleteTarget);
+    } catch {
+      // Error toast is handled in mutation callbacks.
+    } finally {
       setConfirmVisible(false);
-    } catch (err) {
-      const message = err instanceof ApiError ? err.message : "Failed to delete course";
-      showToast(message, "error");
-      setConfirmVisible(false);
+      setDeleteTarget(null);
     }
   }
 
@@ -207,7 +230,9 @@ export default function CoursesListScreen() {
           <RNText style={styles.errorText}>{error}</RNText>
           <TouchableOpacity
             style={styles.retryBtn}
-            onPress={() => fetchCourses()}
+            onPress={() => {
+              void coursesQuery.refetch();
+            }}
             accessibilityRole="button"
             accessibilityLabel="Retry loading courses"
           >
@@ -224,7 +249,9 @@ export default function CoursesListScreen() {
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
-              onRefresh={() => fetchCourses(true)}
+              onRefresh={() => {
+                void coursesQuery.refetch();
+              }}
               tintColor={COLORS.brandPrimary}
             />
           }
@@ -259,7 +286,10 @@ export default function CoursesListScreen() {
         confirmLabel="Delete"
         destructive
         onConfirm={handleConfirmDelete}
-        onCancel={() => setConfirmVisible(false)}
+        onCancel={() => {
+          setConfirmVisible(false);
+          setDeleteTarget(null);
+        }}
       />
     </View>
   );

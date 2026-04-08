@@ -9,14 +9,18 @@ import {
   Platform,
   ScrollView,
 } from "react-native";
+import { useQueryClient } from "@tanstack/react-query";
 import { LinearGradient } from "expo-linear-gradient";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { apiFetch, ApiError } from "../../../lib/api";
 import { COLORS, GRADIENTS } from "../../../lib/colors";
+import { invalidateCourseQueries } from "../../../lib/query-keys";
 
 export default function AddModuleScreen() {
   const { id: courseId } = useLocalSearchParams<{ id: string }>();
+  const routeCourseId = String(courseId);
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
@@ -32,13 +36,14 @@ export default function AddModuleScreen() {
     setError("");
     setLoading(true);
     try {
-      await apiFetch(`/api/courses/${courseId}/modules`, {
+      await apiFetch(`/api/courses/${routeCourseId}/modules`, {
         method: "POST",
         body: {
           title: title.trim(),
           description: description.trim() || null,
         },
       });
+      await invalidateCourseQueries(queryClient, routeCourseId);
       router.back();
     } catch (e) {
       const msg = e instanceof ApiError ? e.message : "Failed to create module";

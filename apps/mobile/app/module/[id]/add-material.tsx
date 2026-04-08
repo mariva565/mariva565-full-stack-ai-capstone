@@ -9,10 +9,12 @@ import {
   Platform,
   ScrollView,
 } from "react-native";
+import { useQueryClient } from "@tanstack/react-query";
 import { LinearGradient } from "expo-linear-gradient";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { apiFetch, ApiError } from "../../../lib/api";
 import { COLORS, GRADIENTS } from "../../../lib/colors";
+import { invalidateModuleQueries } from "../../../lib/query-keys";
 import {
   DEFAULT_MATERIAL_TYPE,
   isUrlMaterialType,
@@ -22,7 +24,9 @@ import {
 
 export default function AddMaterialScreen() {
   const { id: moduleId } = useLocalSearchParams<{ id: string }>();
+  const routeModuleId = String(moduleId);
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [materialType, setMaterialType] = useState<MaterialType>(DEFAULT_MATERIAL_TYPE);
@@ -41,7 +45,7 @@ export default function AddMaterialScreen() {
     setError("");
     setLoading(true);
     try {
-      await apiFetch(`/api/modules/${moduleId}/materials`, {
+      await apiFetch(`/api/modules/${routeModuleId}/materials`, {
         method: "POST",
         body: {
           title: title.trim() || null,
@@ -51,6 +55,7 @@ export default function AddMaterialScreen() {
           tags: tags.trim() || null,
         },
       });
+      await invalidateModuleQueries(queryClient, routeModuleId);
       router.back();
     } catch (e) {
       const msg = e instanceof ApiError ? e.message : "Failed to create material";

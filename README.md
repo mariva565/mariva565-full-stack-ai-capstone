@@ -23,7 +23,7 @@
   <img src="https://img.shields.io/badge/Tables-10-8B5CF6?style=flat-square" alt="10 database tables" />
   <img src="https://img.shields.io/badge/API-37%20endpoints-06B6D4?style=flat-square" alt="37 API endpoints" />
   <img src="https://img.shields.io/badge/Web-14%20pages-6366F1?style=flat-square" alt="14 web pages" />
-  <img src="https://img.shields.io/badge/Mobile-3%20screens-8B5CF6?style=flat-square" alt="3 mobile screens" />
+  <img src="https://img.shields.io/badge/Mobile-React%20Query%20Cache-8B5CF6?style=flat-square" alt="mobile react query cache" />
 </p>
 
 <p align="center">
@@ -70,7 +70,7 @@ The app is a personal **Learning Management System (LMS)** — a structured elec
 | Phase 2 | Auth (JWT + Google OAuth + role guards) | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
 | Phase 3 | Courses / modules / materials CRUD + favorites | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
 | Phase 4 | Profile + milestones + calendar + progress tracking | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
-| Phase 5 | Mobile app (3 screens, tested on real device) | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
+| Phase 5 | Mobile app (CRUD flows + persisted React Query cache) | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
 | Phase 6 | Admin panel (user management, moderation, logs) | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
 | Phase 7 | AI study tools (Gemini chat, summarize, quiz) | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
 | Phase 8 | UI polish (landing, how-it-works, contact, animations) | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
@@ -140,7 +140,7 @@ graph TB
 | Backend API | Next.js API Routes — 37 RESTful endpoints |
 | Database | Neon PostgreSQL (serverless) + Drizzle ORM + SQL migrations |
 | Auth | Custom JWT (jose, HS256, httpOnly cookies) + Google OAuth |
-| Mobile | React Native + Expo SDK 54 |
+| Mobile | React Native + Expo SDK 54 + TanStack React Query + AsyncStorage persistence |
 | Monorepo | npm workspaces (`apps/web`, `apps/mobile`, `packages/shared`) |
 
 ---
@@ -433,15 +433,33 @@ erDiagram
 | 13 | `/admin` | Admin panel — users, materials, activity logs | Admin only |
 | 14 | `/forbidden` | 403 access denied page | Auto-redirect |
 
-### Mobile — 3 screens
+### Mobile — current flows
 
 | # | Screen | Description |
 |---|---|---|
 | 1 | Login | Email/password authentication against the same API |
-| 2 | Courses List | Browse all user courses |
-| 3 | Course Detail | View modules and materials within a course |
+| 2 | Register | Account creation from mobile |
+| 3 | Courses (tab) | Course list with create/edit/delete actions |
+| 4 | Profile (tab) | Profile details + edit name + logout |
+| 5 | Create Course | Add a new course |
+| 6 | Course Detail | Manage modules inside a selected course |
+| 7 | Edit Course | Update course title/description |
+| 8 | Add Module | Create module in a course |
+| 9 | Module Workspace | Manage materials with search/type filters |
+| 10 | Edit Module | Update module title/description |
+| 11 | Add Material | Create note/link/file/video material |
+| 12 | Material Detail | View material content, tags, and URL/file link |
+| 13 | Edit Material | Update material content/type/tags/url |
 
 The mobile app connects to the **same Next.js backend** — no separate API needed.
+
+### Mobile data layer (React Query + apiFetch cache)
+
+- `@tanstack/react-query` powers server-state fetching in key mobile screens.
+- `PersistQueryClientProvider` + AsyncStorage persistence keep query cache between app restarts.
+- Query keys and invalidation helpers are centralized in `apps/mobile/lib/query-keys.ts`.
+- Delete flows use optimistic updates; create/edit/delete flows invalidate related queries.
+- `apiFetch` remains the request layer (including existing AsyncStorage fallback cache + normalized API/network errors), now complemented by React Query state management.
 
 ---
 
@@ -557,8 +575,11 @@ The mobile app connects to the **same Next.js backend** — no separate API need
 
 1. **Connect** phone via USB (see [Quick Setup](#-quick-setup))
 2. **Login** — same credentials as web
-3. **Courses List** — browse courses
-4. **Course Detail** — tap a course, see modules and materials
+3. **Courses tab** — browse courses, pull-to-refresh, open CRUD actions
+4. **Course Detail** — manage modules, add/edit/delete
+5. **Module Workspace** — manage materials with search/type filters
+6. **Material Detail** — open links/files and verify tags/content
+7. **Profile tab** — edit user name and logout
 
 ---
 
@@ -669,6 +690,13 @@ npm install
 cp .env.example .env
 ```
 
+If `npm install --workspace ...` fails with the npm/arborist error `Cannot read properties of null (reading 'location')`, install mobile-only dependencies from `apps/mobile`:
+
+```bash
+cd apps/mobile
+npm install --workspaces=false <package-name>
+```
+
 ### Run Web
 
 ```bash
@@ -683,15 +711,16 @@ Open: `http://localhost:3000`
 npm run dev:web
 # Verify: http://localhost:3000/login should return 200
 
-# Terminal 2: start Metro
-npm --workspace @studyhub/mobile run start -- --localhost -c
+# Option A (recommended): helper script does ADB reverse + Metro
+npm run dev:mobile:usb
 
-# Terminal 3: reverse ports so the phone reaches localhost
-adb reverse tcp:8081 tcp:8081
-adb reverse tcp:3000 tcp:3000
-adb reverse tcp:19000 tcp:19000
-adb reverse tcp:19001 tcp:19001
-adb reverse tcp:19002 tcp:19002
+# Option B (manual): start Metro + run ADB reverse yourself
+# npm --workspace @studyhub/mobile run start -- --localhost -c
+# adb reverse tcp:8081 tcp:8081
+# adb reverse tcp:3000 tcp:3000
+# adb reverse tcp:19000 tcp:19000
+# adb reverse tcp:19001 tcp:19001
+# adb reverse tcp:19002 tcp:19002
 
 # Open in Expo Go on the phone:
 # exp://127.0.0.1:8081
@@ -720,7 +749,7 @@ npm run dev:mobile:usb
 | Backend | Supabase (BaaS) | Next.js API Routes (custom) |
 | Auth | Supabase Auth (GoTrue) | Custom JWT + Google OAuth |
 | Database | Supabase PostgreSQL (6 tables) | Neon PostgreSQL + Drizzle ORM (10 tables) |
-| Mobile | None | React Native + Expo (3 screens) |
+| Mobile | None | React Native + Expo + tabs/CRUD flows + persisted React Query cache |
 | File structure | Single app, monolithic files | Monorepo + modular components (<300 LOC each) |
 | Deployment | Netlify + Vercel (dual) | Planned: Vercel |
 | Security | RLS + CSP + MFA (partial) | JWT guards + middleware + role-based endpoints |

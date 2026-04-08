@@ -2,10 +2,16 @@ import { Stack, useRouter, useSegments, useRootNavigationState } from "expo-rout
 import { useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { AuthProvider, useAuth } from "../lib/auth-context";
 import { ToastProvider } from "../lib/toast-context";
 import { COLORS } from "../lib/colors";
 import { ActivityIndicator, View } from "react-native";
+import {
+  queryClient,
+  queryPersister,
+  REACT_QUERY_MAX_AGE_MS,
+} from "../lib/query-client";
 
 function AuthGate() {
   const { user, isLoading } = useAuth();
@@ -58,11 +64,19 @@ function AuthGate() {
 export default function RootLayout() {
   return (
     <SafeAreaProvider>
-      <AuthProvider>
-        <ToastProvider>
-          <AuthGate />
-        </ToastProvider>
-      </AuthProvider>
+      <PersistQueryClientProvider
+        client={queryClient}
+        persistOptions={{ persister: queryPersister, maxAge: REACT_QUERY_MAX_AGE_MS }}
+        onSuccess={() => {
+          void queryClient.resumePausedMutations();
+        }}
+      >
+        <AuthProvider>
+          <ToastProvider>
+            <AuthGate />
+          </ToastProvider>
+        </AuthProvider>
+      </PersistQueryClientProvider>
     </SafeAreaProvider>
   );
 }

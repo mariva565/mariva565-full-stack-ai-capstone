@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import {
   View,
   Text as RNText,
@@ -8,12 +8,14 @@ import {
   ScrollView,
   RefreshControl,
 } from "react-native";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { LinearGradient } from "expo-linear-gradient";
 import { useAuth } from "../../lib/auth-context";
 import { useToast } from "../../lib/toast-context";
-import { apiFetch, ApiError } from "../../lib/api";
+import { apiFetch, getUserFriendlyError } from "../../lib/api";
 import { BrandedSpinner } from "../../components/branded-spinner";
 import { COLORS, GRADIENTS } from "../../lib/colors";
+import { invalidateAuthMe, queryKeys } from "../../lib/query-keys";
 
 type ProfileUser = {
   id: number;
@@ -26,50 +28,74 @@ type ProfileUser = {
 
 export default function ProfileScreen() {
   const { logout } = useAuth();
+  const queryClient = useQueryClient();
   const { showToast } = useToast();
-  const [profile, setProfile] = useState<ProfileUser | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const [error, setError] = useState("");
-
   const [editing, setEditing] = useState(false);
   const [editName, setEditName] = useState("");
-  const [saving, setSaving] = useState(false);
 
-  const fetchProfile = useCallback(async () => {
-    try {
-      setError("");
+  const profileQuery = useQuery({
+    queryKey: queryKeys.auth.me(),
+    queryFn: async () => {
       const data = await apiFetch<{ user: ProfileUser }>("/api/auth/me");
-      setProfile(data.user);
-      setEditName(data.user.name);
-    } catch {
-      setError("Failed to load profile");
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  }, []);
+      return data.user;
+    },
+  });
+
+  const saveProfileMutation = useMutation({
+    mutationFn: async (nextName: string) => {
+      const data = await apiFetch<{ user: ProfileUser }>("/api/auth/me", {
+        method: "PUT",
+        body: { name: nextName },
+      });
+      return data.user;
+    },
+    onMutate: async (nextName) => {
+      await queryClient.cancelQueries({ queryKey: queryKeys.auth.me() });
+      const previousProfile = queryClient.getQueryData<ProfileUser>(queryKeys.auth.me());
+
+      if (previousProfile) {
+        queryClient.setQueryData<ProfileUser>(queryKeys.auth.me(), {
+          ...previousProfile,
+          name: nextName,
+        });
+      }
+
+      return { previousProfile };
+    },
+    onError: (error, _nextName, context) => {
+      if (context?.previousProfile) {
+        queryClient.setQueryData(queryKeys.auth.me(), context.previousProfile);
+      }
+      showToast(getUserFriendlyError(error, "Failed to save"), "error");
+    },
+    onSuccess: async (user) => {
+      queryClient.setQueryData(queryKeys.auth.me(), user);
+      await invalidateAuthMe(queryClient);
+      setEditing(false);
+      showToast("Profile updated!");
+    },
+  });
 
   useEffect(() => {
-    fetchProfile();
-  }, [fetchProfile]);
+    if (profileQuery.data && !editing) {
+      setEditName(profileQuery.data.name);
+    }
+  }, [profileQuery.data, editing]);
+
+  const profile = profileQuery.data ?? null;
+  const loading = profileQuery.isPending && !profile;
+  const refreshing = profileQuery.isRefetching && !profileQuery.isPending;
+  const error = profileQuery.error
+    ? getUserFriendlyError(profileQuery.error, "Failed to load profile")
+    : "";
 
   async function handleSave() {
     if (!editName.trim()) return;
-    setSaving(true);
+
     try {
-      const data = await apiFetch<{ user: ProfileUser }>("/api/auth/me", {
-        method: "PUT",
-        body: { name: editName.trim() },
-      });
-      setProfile(data.user);
-      setEditing(false);
-      showToast("Profile updated!");
-    } catch (e) {
-      const msg = e instanceof ApiError ? e.message : "Failed to save";
-      showToast(msg, "error");
-    } finally {
-      setSaving(false);
+      await saveProfileMutation.mutateAsync(editName.trim());
+    } catch {
+      // Error toast is handled in mutation callbacks.
     }
   }
 
@@ -83,7 +109,9 @@ export default function ProfileScreen() {
         <RNText style={styles.errorText}>{error || "Not found"}</RNText>
         <TouchableOpacity
           style={styles.retryBtn}
-          onPress={fetchProfile}
+          onPress={() => {
+            void profileQuery.refetch();
+          }}
           accessibilityRole="button"
           accessibilityLabel="Retry loading profile"
         >
@@ -107,8 +135,7 @@ export default function ProfileScreen() {
         <RefreshControl
           refreshing={refreshing}
           onRefresh={() => {
-            setRefreshing(true);
-            fetchProfile();
+            void profileQuery.refetch();
           }}
           tintColor={COLORS.brandPrimary}
         />
@@ -183,9 +210,9 @@ export default function ProfileScreen() {
               <RNText style={styles.cancelBtnText}>Cancel</RNText>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.saveBtn, saving && styles.saveBtnDisabled]}
+              style={[styles.saveBtn, saveProfileMutation.isPending && styles.saveBtnDisabled]}
               onPress={handleSave}
-              disabled={saving}
+              disabled={saveProfileMutation.isPending}
               accessibilityRole="button"
               accessibilityLabel="Save profile"
             >
@@ -196,7 +223,7 @@ export default function ProfileScreen() {
                 style={styles.saveBtnGradient}
               >
                 <RNText style={styles.saveBtnText}>
-                  {saving ? "Saving..." : "Save"}
+                  {saveProfileMutation.isPending ? "Saving..." : "Save"}
                 </RNText>
               </LinearGradient>
             </TouchableOpacity>

@@ -4667,3 +4667,46 @@ Missing features (later phase):
 **Backlog status update (Session 162 list):**
 - [x] Extract and apply shared `COLORS` constants.
 - [x] Accessibility labels full sweep across interactive controls in mobile flows/components.
+### Session 169 (Mobile React Query migration + persisted cache)
+
+**What we changed:**
+- Added React Query infrastructure for mobile:
+  - `apps/mobile/lib/query-client.ts` with shared `QueryClient` defaults and AsyncStorage persister.
+  - `apps/mobile/lib/query-keys.ts` with normalized query keys and invalidate helpers.
+  - Wired `PersistQueryClientProvider` in `apps/mobile/app/_layout.tsx`.
+- Hardened auth lifecycle for persisted query cache safety:
+  - `apps/mobile/lib/auth-context.tsx` now clears React Query cache on invalid token, login/register/google-login, and logout.
+- Migrated core mobile data screens from manual fetch to `useQuery/useMutation`:
+  - `apps/mobile/app/(tabs)/index.tsx`
+  - `apps/mobile/app/(tabs)/profile.tsx`
+  - `apps/mobile/app/course/[id]/index.tsx`
+  - `apps/mobile/app/module/[id]/index.tsx`
+  - `apps/mobile/app/material/[id].tsx`
+- Added optimistic updates and invalidation for delete/edit/create flows:
+  - Optimistic delete for courses/modules/materials in list/detail screens.
+  - Invalidation wired in create/edit forms:
+    - `app/create-course.tsx`
+    - `app/course/[id]/edit.tsx`
+    - `app/course/[id]/add-module.tsx`
+    - `app/module/[id]/edit.tsx`
+    - `app/module/[id]/add-material.tsx`
+    - `app/material/[id]/edit.tsx`
+- Kept `apiFetch` as the request layer so existing API cache + error behavior remains the same and is now complemented by React Query state/persistence.
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
+
+### Session 170 (Docs sync: mobile React Query + README refresh)
+
+**What we changed:**
+- Updated `README.md` to reflect current mobile implementation state after React Query migration:
+  - Mobile badge/phase/stack rows now mention persisted React Query cache.
+  - Replaced outdated "3 screens" section with current mobile route/screen flows.
+  - Added a dedicated "Mobile data layer" section (React Query + AsyncStorage persistence + query-key invalidation + optimistic updates).
+  - Updated "On Mobile" demo walkthrough with current CRUD/module/material/profile flow.
+  - Added install note for npm/arborist workspace bug and documented the `apps/mobile` install workaround.
+  - Updated USB run section to highlight `npm run dev:mobile:usb` helper script.
+- Added this session note to `docs/dev-log.md`.
+
+**Verification:**
+- Documentation-only update (no runtime code changes in this session).

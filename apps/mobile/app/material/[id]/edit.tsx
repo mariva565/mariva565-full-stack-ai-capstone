@@ -9,12 +9,14 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useQueryClient } from "@tanstack/react-query";
 import { LinearGradient } from "expo-linear-gradient";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 
 import { BrandedSpinner } from "../../../components/branded-spinner";
 import { ApiError, apiFetch } from "../../../lib/api";
 import { COLORS, GRADIENTS } from "../../../lib/colors";
+import { invalidateMaterialQueries, invalidateModuleQueries, queryKeys } from "../../../lib/query-keys";
 import {
   DEFAULT_MATERIAL_TYPE,
   isUrlMaterialType,
@@ -26,6 +28,7 @@ import {
 type MaterialResponse = {
   material: {
     id: number;
+    moduleId?: number;
     title: string;
     content: string | null;
     materialType: string;
@@ -36,12 +39,15 @@ type MaterialResponse = {
 
 export default function EditMaterialScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const routeId = String(id);
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [materialType, setMaterialType] = useState<MaterialType>(DEFAULT_MATERIAL_TYPE);
   const [fileUrl, setFileUrl] = useState("");
   const [tags, setTags] = useState("");
+  const [moduleId, setModuleId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -50,12 +56,13 @@ export default function EditMaterialScreen() {
   useEffect(() => {
     async function loadMaterial() {
       try {
-        const data = await apiFetch<MaterialResponse>(`/api/materials/${id}`);
+        const data = await apiFetch<MaterialResponse>(`/api/materials/${routeId}`);
         setTitle(data.material.title);
         setContent(data.material.content ?? "");
         setMaterialType(normalizeMaterialType(data.material.materialType));
         setFileUrl(data.material.fileUrl ?? "");
         setTags(data.material.tags ?? "");
+        setModuleId(data.material.moduleId ?? null);
       } catch (err) {
         const message = err instanceof ApiError ? err.message : "Failed to load material";
         setError(message);
@@ -65,7 +72,7 @@ export default function EditMaterialScreen() {
     }
 
     loadMaterial();
-  }, [id]);
+  }, [routeId]);
 
   async function handleSave() {
     if (!title.trim() && !content.trim()) {
@@ -76,7 +83,7 @@ export default function EditMaterialScreen() {
     setSaving(true);
     setError("");
     try {
-      await apiFetch(`/api/materials/${id}`, {
+      await apiFetch(`/api/materials/${routeId}`, {
         method: "PUT",
         body: {
           title: title.trim() || null,
@@ -86,6 +93,12 @@ export default function EditMaterialScreen() {
           tags: tags.trim() || null,
         },
       });
+      await invalidateMaterialQueries(queryClient, routeId);
+      if (moduleId) {
+        await invalidateModuleQueries(queryClient, moduleId);
+      } else {
+        await queryClient.invalidateQueries({ queryKey: queryKeys.modules.all });
+      }
       router.back();
     } catch (err) {
       const message = err instanceof ApiError ? err.message : "Failed to save material";
