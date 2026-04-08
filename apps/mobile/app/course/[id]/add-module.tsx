@@ -114,6 +114,8 @@ export default function AddModuleScreen() {
             onPress={handleCreate}
             disabled={loading}
             activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel="Add module"
           >
             <LinearGradient
               colors={["#4d33c4", "#7c5ce7"]}
@@ -127,7 +129,12 @@ export default function AddModuleScreen() {
             </LinearGradient>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.cancelBtn} onPress={() => router.back()}>
+          <TouchableOpacity
+            style={styles.cancelBtn}
+            onPress={() => router.back()}
+            accessibilityRole="button"
+            accessibilityLabel="Cancel adding module"
+          >
             <Text style={styles.cancelBtnText}>Cancel</Text>
           </TouchableOpacity>
         </View>

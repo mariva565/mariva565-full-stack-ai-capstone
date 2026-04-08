@@ -4441,3 +4441,192 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 - High priority: офлайн кеширане (React Query), по-добро error handling в api.ts, type safety (премахване на `any`)
 - Medium: form validation в реално време, accessibility labels, централизиране на дублиран MATERIAL_TYPES, color constants файл, logout в Profile вместо в header
 - Липсващи функции: progress tracking, favorites/bookmarks, глобално търсене, dark mode, course publish/draft toggle от мобилното
+
+### Session 162 (Mobile backlog tracking after icon pass)
+
+**Goal:**
+- Keep a clean list of all items that remain from the original mobile review so we can execute them in order.
+
+**Remaining backlog (source: original priority list):**
+
+High priority:
+- [ ] Offline caching across mobile data screens (target direction: React Query + AsyncStorage persistence).
+- [ ] Better API error handling end-to-end (distinguish invalid credentials vs network/server errors in UI flows).
+- [ ] Type safety hardening (remove remaining `any`, remove route casts, enforce typed Expo Router navigation).
+
+Medium priority:
+- [ ] Realtime inline form validation (login/register/create flows).
+- [ ] Centralize `MATERIAL_TYPES` usage everywhere (single source of truth).
+- [ ] Extract and apply shared `COLORS` constants (reduce hardcoded brand hex values).
+- [ ] Accessibility labels for key actions and controls (FAB, auth actions, edit/delete actions, navigation CTAs).
+- [ ] Move/standardize logout placement in Profile tab (instead of Courses header flow).
+
+Missing features (later phase):
+- [ ] Progress tracking (material read state + completion percentages).
+- [ ] Favorites/Bookmarks quick-access flow.
+- [ ] Global search (not only inside a single module).
+- [ ] Dark mode support in mobile app.
+- [ ] Course status toggle (publish/draft) from mobile.
+
+**Execution note:**
+- We will ship high-priority items first, then medium UX polish, then feature additions.
+
+### Session 163 (Mobile high-priority execution pass)
+
+**What we changed:**
+- Implemented API-level offline-friendly caching in `apps/mobile/lib/api.ts`:
+  - GET responses are cached in AsyncStorage with TTL.
+  - Network failures and 5xx responses can fall back to cached data.
+  - Non-GET authenticated mutations clear scoped cache.
+- Upgraded mobile API error model:
+  - `ApiError` now includes `kind` and normalized fallback messages (validation/auth/forbidden/not_found/conflict/rate_limited/server/network).
+  - Added safer network error handling (`NETWORK_ERROR`) and user-facing fallback messages.
+- Hardened auth cache lifecycle in `apps/mobile/lib/auth-context.tsx`:
+  - clear cached API data on login/register/google-login/logout.
+  - clear cache when token is invalid during bootstrap.
+- Completed type-safety cleanup for mobile navigation and catches:
+  - Removed all `as any` route casts from mobile app screens.
+  - Switched key dynamic routes to typed object navigation (`pathname + params`).
+  - Removed remaining `catch (...: any)` usage.
+- Medium UX improvements started:
+  - Moved `Logout` action from Courses header to Profile screen.
+  - Added baseline accessibility labels for key action buttons (FAB + profile logout).
+
+**Files updated:**
+- `apps/mobile/lib/api.ts`
+- `apps/mobile/lib/auth-context.tsx`
+- `apps/mobile/app/_layout.tsx`
+- `apps/mobile/app/(tabs)/index.tsx`
+- `apps/mobile/app/(tabs)/profile.tsx`
+- `apps/mobile/app/course/[id]/index.tsx`
+- `apps/mobile/app/module/[id]/index.tsx`
+- `apps/mobile/app/create-course.tsx`
+- `apps/mobile/app/module/[id]/edit.tsx`
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
+
+**Backlog status update (Session 162 list):**
+- [x] Better API error handling end-to-end.
+- [x] Type safety hardening (`any`/route casts removed in mobile app).
+- [ ] Offline caching with React Query + AsyncStorage persistence.
+  - Note: API-level AsyncStorage caching is now implemented; React Query migration remains optional next upgrade step.
+- [x] Move/standardize logout placement in Profile tab.
+- [ ] Realtime inline form validation (login/register/create flows).
+- [ ] Centralize `MATERIAL_TYPES` usage everywhere.
+- [ ] Extract and apply shared `COLORS` constants.
+- [ ] Accessibility labels full sweep across all interactive controls.
+
+### Session 164 (Realtime inline form validation)
+
+**What we changed:**
+- Added shared validation helpers in `apps/mobile/lib/validation.ts`:
+  - `validateRequired`
+  - `validateEmail`
+  - `validateMinLength`
+- Wired realtime inline validation in mobile auth/create forms:
+  - `apps/mobile/app/login.tsx`
+    - email + password field validation shown inline after touch/blur
+    - submit now marks fields touched and blocks request until valid
+    - API error banner clears while user edits
+  - `apps/mobile/app/register.tsx`
+    - name + email + password validation shown inline
+    - password length validation moved to realtime field feedback
+    - submit marks all fields touched and only proceeds when valid
+    - API error banner clears while user edits
+  - `apps/mobile/app/create-course.tsx`
+    - course title required validation shown inline in realtime
+    - submit marks title as touched and blocks invalid request
+    - API error banner clears while user edits
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
+
+**Backlog status update (Session 162 list):**
+- [x] Realtime inline form validation (login/register/create flows).
+
+### Session 165 (Centralized MATERIAL_TYPES)
+
+**What we changed:**
+- Consolidated material type definitions into one source of truth in `apps/mobile/lib/material-utils.ts`:
+  - `MaterialType` union (`note | link | file | video`)
+  - `MATERIAL_TYPE_CONFIG`
+  - `MATERIAL_TYPE_OPTIONS`
+  - `DEFAULT_MATERIAL_TYPE`
+  - `normalizeMaterialType`
+  - `isUrlMaterialType`
+- Removed duplicated local `MATERIAL_TYPES` arrays from:
+  - `apps/mobile/app/module/[id]/add-material.tsx`
+  - `apps/mobile/app/material/[id]/edit.tsx`
+- Updated screens/components to consume shared material type config/options:
+  - `apps/mobile/app/module/[id]/add-material.tsx`
+  - `apps/mobile/app/material/[id]/edit.tsx`
+  - `apps/mobile/components/type-filter-chips.tsx`
+  - `apps/mobile/app/module/[id]/index.tsx` (typed filter state with `MaterialType | null`)
+- Stabilized icon values in config using Unicode escapes (encoding-safe across environments).
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
+
+**Backlog status update (Session 162 list):**
+- [x] Centralize `MATERIAL_TYPES` usage everywhere (single source of truth).
+
+### Session 166 (Action button layout + colors/accessibility pass)
+
+**What we changed first (requested before next tasks):**
+- Moved `Edit/Delete` actions to stable bottom-right placement in container cards to avoid overlap with titles/content:
+  - `apps/mobile/components/entity-actions.tsx` (right-aligned action row)
+  - `apps/mobile/components/material-card.tsx` (dedicated footer + right-aligned actions)
+  - `apps/mobile/components/module-list-card.tsx` (footer actions anchored bottom-right)
+  - `apps/mobile/app/(tabs)/index.tsx` (course card action area separated with top border)
+
+**Then continued with colors + accessibility improvements:**
+- Added shared mobile color tokens:
+  - `apps/mobile/lib/colors.ts` (`COLORS`, `GRADIENTS`)
+- Wired shared color constants into core shell/shared components:
+  - `apps/mobile/app/_layout.tsx`
+  - `apps/mobile/app/(tabs)/_layout.tsx`
+  - `apps/mobile/app/(tabs)/index.tsx`
+  - `apps/mobile/app/(tabs)/profile.tsx`
+  - `apps/mobile/components/entity-actions.tsx`
+  - `apps/mobile/components/material-card.tsx`
+  - `apps/mobile/components/module-list-card.tsx`
+  - `apps/mobile/components/search-bar.tsx`
+  - `apps/mobile/components/type-filter-chips.tsx`
+  - `apps/mobile/components/confirm-modal.tsx`
+- Added/expanded accessibility labels on key interactive controls across major flows:
+  - Course cards (`open/edit/delete`), FAB, retry buttons
+  - Profile action buttons
+  - Course/module/material page primary actions
+  - Add/edit form primary + cancel buttons
+  - Material type selectors and filter chips
+  - Search clear button
+  - Confirm modal buttons
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
+
+**Backlog status update (Session 162 list):**
+- [ ] Extract and apply shared `COLORS` constants.
+  - Note: implemented in app shell + key shared components and major screens; wider replacement can continue file-by-file.
+- [ ] Accessibility labels full sweep across all interactive controls.
+  - Note: major navigation/actions/forms are covered; remaining edge controls can be finished in a final sweep.
+
+### Session 167 (Mobile tab icon regression fix)
+
+**Issue reported:**
+- Mobile bottom-tab icons for `Courses` and `Profile` rendered incorrectly (emoji/text fallback became visually broken on some devices).
+
+**What we changed:**
+- Replaced emoji-based tab icon rendering with stable vector icons (`AntDesign`) in:
+  - `apps/mobile/app/(tabs)/_layout.tsx`
+- Updated tab icon component to use:
+  - `book` icon for `Courses`
+  - `user` icon for `Profile`
+- Kept existing active/inactive visual states and color tokens from shared `COLORS`.
+
+**Why this fixes it:**
+- Emoji glyph rendering is device/font dependent; `@expo/vector-icons` provides consistent cross-device icon rendering.
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass

@@ -1,5 +1,6 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
+import { COLORS } from "../lib/colors";
 import type { Module } from "../lib/studyhub-types";
 import { EntityActions } from "./entity-actions";
 
@@ -14,7 +15,13 @@ type Props = {
 export function ModuleListCard({ index, module, onOpen, onEdit, onDelete }: Props) {
   return (
     <View style={styles.card}>
-      <TouchableOpacity style={styles.header} onPress={onOpen} activeOpacity={0.78}>
+      <TouchableOpacity
+        style={styles.header}
+        onPress={onOpen}
+        activeOpacity={0.78}
+        accessibilityRole="button"
+        accessibilityLabel={`Open module ${module.title}`}
+      >
         <View style={styles.numberCircle}>
           <Text style={styles.numberText}>{index + 1}</Text>
         </View>
@@ -31,7 +38,15 @@ export function ModuleListCard({ index, module, onOpen, onEdit, onDelete }: Prop
 
       <View style={styles.footer}>
         <Text style={styles.hint}>Workspace for this module's materials</Text>
-        <EntityActions compact onEdit={onEdit} onDelete={onDelete} />
+        <View style={styles.actionsWrap}>
+          <EntityActions
+            compact
+            onEdit={onEdit}
+            onDelete={onDelete}
+            editLabel={`Edit module ${module.title}`}
+            deleteLabel={`Delete module ${module.title}`}
+          />
+        </View>
       </View>
     </View>
   );
@@ -39,12 +54,12 @@ export function ModuleListCard({ index, module, onOpen, onEdit, onDelete }: Prop
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#ffffff",
+    backgroundColor: COLORS.surface,
     marginHorizontal: 16,
     marginBottom: 12,
     borderRadius: 14,
     overflow: "hidden",
-    shadowColor: "#2e1d7a",
+    shadowColor: COLORS.brandDeep,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.06,
     shadowRadius: 8,
@@ -62,21 +77,24 @@ const styles = StyleSheet.create({
     width: 34,
     height: 34,
     borderRadius: 17,
-    backgroundColor: "#f0ecff",
+    backgroundColor: COLORS.violetSoft,
     justifyContent: "center",
     alignItems: "center",
   },
-  numberText: { fontSize: 14, fontWeight: "800", color: "#4d33c4" },
+  numberText: { fontSize: 14, fontWeight: "800", color: COLORS.brandPrimary },
   copyWrap: { flex: 1 },
-  title: { fontSize: 16, fontWeight: "700", color: "#0f172a" },
-  meta: { fontSize: 13, color: "#64748b", lineHeight: 19, marginTop: 4 },
-  cta: { fontSize: 12, fontWeight: "700", color: "#4d33c4" },
+  title: { fontSize: 16, fontWeight: "700", color: COLORS.textPrimary },
+  meta: { fontSize: 13, color: COLORS.textSecondary, lineHeight: 19, marginTop: 4 },
+  cta: { fontSize: 12, fontWeight: "700", color: COLORS.brandPrimary },
   footer: {
     borderTopWidth: 1,
-    borderTopColor: "#f1edff",
+    borderTopColor: COLORS.borderSubtle,
     paddingHorizontal: 16,
     paddingTop: 12,
     paddingBottom: 14,
   },
-  hint: { fontSize: 12, color: "#7c6ea8", marginBottom: 10 },
+  hint: { fontSize: 12, color: COLORS.textSecondary, marginBottom: 10 },
+  actionsWrap: {
+    alignItems: "flex-end",
+  },
 });

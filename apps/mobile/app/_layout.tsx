@@ -1,8 +1,10 @@
 import { Stack, useRouter, useSegments, useRootNavigationState } from "expo-router";
 import { useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import { AuthProvider, useAuth } from "../lib/auth-context";
 import { ToastProvider } from "../lib/toast-context";
+import { COLORS } from "../lib/colors";
 import { ActivityIndicator, View } from "react-native";
 
 function AuthGate() {
@@ -21,28 +23,28 @@ function AuthGate() {
     if (!user && !onAuthScreen) {
       router.replace("/login");
     } else if (user && onAuthScreen) {
-      router.replace("/" as any);
+      router.replace("/");
     }
   }, [user, isLoading, segments, navigationState?.key]);
 
   if (isLoading) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#2e1d7a" }}>
-        <ActivityIndicator size="large" color="#ffffff" />
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: COLORS.brandDeep }}>
+        <ActivityIndicator size="large" color={COLORS.textOnBrand} />
       </View>
     );
   }
 
   return (
     <>
-      <StatusBar style="light" backgroundColor="#2e1d7a" />
+      <StatusBar style="light" backgroundColor={COLORS.brandDeep} />
       <Stack
         screenOptions={{
-          headerStyle: { backgroundColor: "#2e1d7a" },
-          headerTintColor: "#ffffff",
+          headerStyle: { backgroundColor: COLORS.brandDeep },
+          headerTintColor: COLORS.textOnBrand,
           headerTitleStyle: { fontWeight: "700" },
           headerShadowVisible: false,
-          contentStyle: { backgroundColor: "#f8f6ff" },
+          contentStyle: { backgroundColor: COLORS.canvas },
         }}
       >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -55,10 +57,12 @@ function AuthGate() {
 
 export default function RootLayout() {
   return (
-    <AuthProvider>
-      <ToastProvider>
-        <AuthGate />
-      </ToastProvider>
-    </AuthProvider>
+    <SafeAreaProvider>
+      <AuthProvider>
+        <ToastProvider>
+          <AuthGate />
+        </ToastProvider>
+      </AuthProvider>
+    </SafeAreaProvider>
   );
 }

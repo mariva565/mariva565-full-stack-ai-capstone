@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { COLORS } from "../lib/colors";
 
 type Props = {
   visible: boolean;
@@ -58,6 +59,8 @@ export function ConfirmModal({
               onPress={onCancel}
               disabled={loading}
               activeOpacity={0.8}
+              accessibilityRole="button"
+              accessibilityLabel={cancelLabel}
             >
               <Text style={styles.cancelText}>{cancelLabel}</Text>
             </TouchableOpacity>
@@ -71,9 +74,11 @@ export function ConfirmModal({
               onPress={handleConfirm}
               disabled={loading}
               activeOpacity={0.8}
+              accessibilityRole="button"
+              accessibilityLabel={confirmLabel}
             >
               {loading ? (
-                <ActivityIndicator size="small" color="#ffffff" />
+                <ActivityIndicator size="small" color={COLORS.textOnBrand} />
               ) : (
                 <Text style={styles.confirmText}>{confirmLabel}</Text>
               )}
@@ -94,7 +99,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 28,
   },
   card: {
-    backgroundColor: "#ffffff",
+    backgroundColor: COLORS.surface,
     borderRadius: 18,
     padding: 24,
     width: "100%",
@@ -108,12 +113,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: "800",
-    color: "#0f172a",
+    color: COLORS.textPrimary,
     marginBottom: 8,
   },
   message: {
     fontSize: 15,
-    color: "#475569",
+    color: COLORS.textSecondary,
     lineHeight: 22,
     marginBottom: 24,
   },
@@ -132,13 +137,13 @@ const styles = StyleSheet.create({
   cancelBtn: {
     backgroundColor: "#f1f5f9",
     borderWidth: 1,
-    borderColor: "#e2e8f0",
+    borderColor: COLORS.borderMuted,
   },
   confirmBtn: {
-    backgroundColor: "#4d33c4",
+    backgroundColor: COLORS.brandPrimary,
   },
   destructiveBtn: {
-    backgroundColor: "#dc2626",
+    backgroundColor: COLORS.danger,
   },
   btnDisabled: {
     opacity: 0.6,
@@ -146,11 +151,11 @@ const styles = StyleSheet.create({
   cancelText: {
     fontSize: 15,
     fontWeight: "700",
-    color: "#475569",
+    color: COLORS.textSecondary,
   },
   confirmText: {
     fontSize: 15,
     fontWeight: "700",
-    color: "#ffffff",
+    color: COLORS.textOnBrand,
   },
 });

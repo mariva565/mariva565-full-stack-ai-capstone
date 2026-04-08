@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -13,13 +13,13 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { BrandedSpinner } from "../../../components/branded-spinner";
 import { ApiError, apiFetch } from "../../../lib/api";
-
-const MATERIAL_TYPES = [
-  { key: "note", label: "Note", icon: "📝", color: "#7c5ce7", bg: "#f0ecff" },
-  { key: "link", label: "Link", icon: "🔗", color: "#0ea5e9", bg: "#e0f2fe" },
-  { key: "file", label: "File", icon: "📄", color: "#f59e0b", bg: "#fef3c7" },
-  { key: "video", label: "Video", icon: "🎬", color: "#ef4444", bg: "#fef2f2" },
-];
+import {
+  DEFAULT_MATERIAL_TYPE,
+  isUrlMaterialType,
+  MATERIAL_TYPE_OPTIONS,
+  normalizeMaterialType,
+  type MaterialType,
+} from "../../../lib/material-utils";
 
 type MaterialResponse = {
   material: {
@@ -37,7 +37,7 @@ export default function EditMaterialScreen() {
   const router = useRouter();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [materialType, setMaterialType] = useState("note");
+  const [materialType, setMaterialType] = useState<MaterialType>(DEFAULT_MATERIAL_TYPE);
   const [fileUrl, setFileUrl] = useState("");
   const [tags, setTags] = useState("");
   const [loading, setLoading] = useState(true);
@@ -51,7 +51,7 @@ export default function EditMaterialScreen() {
         const data = await apiFetch<MaterialResponse>(`/api/materials/${id}`);
         setTitle(data.material.title);
         setContent(data.material.content ?? "");
-        setMaterialType(data.material.materialType);
+        setMaterialType(normalizeMaterialType(data.material.materialType));
         setFileUrl(data.material.fileUrl ?? "");
         setTags(data.material.tags ?? "");
       } catch (error) {
@@ -102,7 +102,7 @@ export default function EditMaterialScreen() {
     );
   }
 
-  const showUrlField = materialType === "link" || materialType === "file" || materialType === "video";
+  const showUrlField = isUrlMaterialType(materialType);
 
   return (
     <KeyboardAvoidingView
@@ -126,7 +126,7 @@ export default function EditMaterialScreen() {
         ) : null}
 
         <View style={styles.typeRow}>
-          {MATERIAL_TYPES.map((type) => (
+          {MATERIAL_TYPE_OPTIONS.map((type) => (
             <TouchableOpacity
               key={type.key}
               style={[
@@ -138,6 +138,8 @@ export default function EditMaterialScreen() {
               ]}
               onPress={() => setMaterialType(type.key)}
               activeOpacity={0.75}
+              accessibilityRole="button"
+              accessibilityLabel={`Select material type ${type.label}`}
             >
               <Text
                 style={[
@@ -227,13 +229,20 @@ export default function EditMaterialScreen() {
             onPress={handleSave}
             disabled={saving}
             activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel="Save material changes"
           >
             <LinearGradient colors={["#4d33c4", "#7c5ce7"]} style={styles.saveBtnGradient}>
               <Text style={styles.saveBtnText}>{saving ? "Saving..." : "Save Changes"}</Text>
             </LinearGradient>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.cancelBtn} onPress={() => router.back()}>
+          <TouchableOpacity
+            style={styles.cancelBtn}
+            onPress={() => router.back()}
+            accessibilityRole="button"
+            accessibilityLabel="Cancel material editing"
+          >
             <Text style={styles.cancelBtnText}>Cancel</Text>
           </TouchableOpacity>
         </View>
@@ -322,3 +331,4 @@ const styles = StyleSheet.create({
   },
   cancelBtnText: { fontSize: 16, fontWeight: "600", color: "#64748b" },
 });
+

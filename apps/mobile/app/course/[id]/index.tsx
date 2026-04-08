@@ -14,6 +14,7 @@ import type { Course, Module } from "../../../lib/studyhub-types";
 
 export default function CourseDetailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const routeId = String(id);
   const router = useRouter();
   const { showToast } = useToast();
   const [course, setCourse] = useState<Course | null>(null);
@@ -71,7 +72,7 @@ export default function CourseDetailsScreen() {
         await apiFetch(`/api/courses/${course.id}`, { method: "DELETE" });
         showToast("Course deleted");
         setConfirmVisible(false);
-        router.replace("/" as any);
+        router.replace("/");
       } catch (err) {
         const message = err instanceof ApiError ? err.message : "Failed to delete course";
         showToast(message, "error");
@@ -117,7 +118,12 @@ export default function CourseDetailsScreen() {
       <View style={styles.centered}>
         <Stack.Screen options={{ title: "Error" }} />
         <Text style={styles.errorText}>{error || "Course not found"}</Text>
-        <TouchableOpacity style={styles.retryBtn} onPress={() => fetchCourse()}>
+        <TouchableOpacity
+          style={styles.retryBtn}
+          onPress={() => fetchCourse()}
+          accessibilityRole="button"
+          accessibilityLabel="Retry loading course"
+        >
           <Text style={styles.retryBtnText}>Retry</Text>
         </TouchableOpacity>
       </View>
@@ -145,8 +151,10 @@ export default function CourseDetailsScreen() {
           <View style={styles.courseActionsRow}>
             <TouchableOpacity
               style={[styles.courseActionBtn, styles.courseEditBtn]}
-              onPress={() => router.push(`/course/${id}/edit` as any)}
+              onPress={() => router.push({ pathname: "/course/[id]/edit", params: { id: routeId } })}
               activeOpacity={0.8}
+              accessibilityRole="button"
+              accessibilityLabel={`Edit course ${course.title}`}
             >
               <Text style={[styles.courseActionText, styles.courseEditText]}>Edit Course</Text>
             </TouchableOpacity>
@@ -154,6 +162,8 @@ export default function CourseDetailsScreen() {
               style={[styles.courseActionBtn, styles.courseDeleteBtn]}
               onPress={openDeleteCourse}
               activeOpacity={0.8}
+              accessibilityRole="button"
+              accessibilityLabel={`Delete course ${course.title}`}
             >
               <Text style={[styles.courseActionText, styles.courseDeleteText]}>Delete Course</Text>
             </TouchableOpacity>
@@ -165,7 +175,12 @@ export default function CourseDetailsScreen() {
             <Text style={styles.sectionTitle}>Modules</Text>
             <Text style={styles.sectionSubtitle}>Open a module to manage its materials in a dedicated workspace.</Text>
           </View>
-          <TouchableOpacity style={styles.addModuleBtn} onPress={() => router.push(`/course/${id}/add-module` as any)}>
+          <TouchableOpacity
+            style={styles.addModuleBtn}
+            onPress={() => router.push({ pathname: "/course/[id]/add-module", params: { id: routeId } })}
+            accessibilityRole="button"
+            accessibilityLabel="Add module"
+          >
             <Text style={styles.addModuleBtnText}>Add</Text>
           </TouchableOpacity>
         </View>
@@ -178,8 +193,8 @@ export default function CourseDetailsScreen() {
               key={module.id}
               index={index}
               module={module}
-              onOpen={() => router.push(`/module/${module.id}` as any)}
-              onEdit={() => router.push(`/module/${module.id}/edit` as any)}
+              onOpen={() => router.push({ pathname: "/module/[id]", params: { id: module.id } })}
+              onEdit={() => router.push({ pathname: "/module/[id]/edit", params: { id: module.id } })}
               onDelete={() => openDeleteModule(module)}
             />
           ))

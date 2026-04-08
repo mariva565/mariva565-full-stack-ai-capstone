@@ -14,6 +14,8 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Stack, useRouter } from "expo-router";
 import { useAuth } from "../lib/auth-context";
 import { ApiError } from "../lib/api";
+import { COLORS, GRADIENTS } from "../lib/colors";
+import { validateEmail, validateMinLength, validateRequired } from "../lib/validation";
 import * as WebBrowser from "expo-web-browser";
 import * as Google from "expo-auth-session/providers/google";
 import { GoogleSignInButton } from "../components/auth/GoogleSignInButton";
@@ -29,6 +31,15 @@ export default function RegisterScreen() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [focusedField, setFocusedField] = useState<string | null>(null);
+  const [touched, setTouched] = useState({
+    name: false,
+    email: false,
+    password: false,
+  });
+
+  const nameError = validateRequired(name, "Name");
+  const emailError = validateEmail(email);
+  const passwordError = validateMinLength(password, 6, "Password");
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(30)).current;
@@ -77,12 +88,8 @@ export default function RegisterScreen() {
   }, []);
 
   async function handleRegister() {
-    if (!name.trim() || !email.trim() || !password.trim()) {
-      setError("All fields are required");
-      return;
-    }
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters");
+    setTouched({ name: true, email: true, password: true });
+    if (nameError || emailError || passwordError) {
       return;
     }
 
@@ -103,7 +110,7 @@ export default function RegisterScreen() {
 
   return (
     <LinearGradient
-      colors={["#2e1d7a", "#4d33c4", "#7c5ce7"]}
+      colors={GRADIENTS.heroStrong}
       style={styles.gradient}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
@@ -143,14 +150,25 @@ export default function RegisterScreen() {
               <TextInput
                 style={[styles.input, focusedField === "name" && styles.inputFocused]}
                 placeholder="Your name"
-                placeholderTextColor="#94a3b8"
+                placeholderTextColor={COLORS.textMuted}
                 value={name}
-                onChangeText={setName}
+                onChangeText={(value) => {
+                  setName(value);
+                  if (error) {
+                    setError("");
+                  }
+                }}
                 onFocus={() => setFocusedField("name")}
-                onBlur={() => setFocusedField(null)}
+                onBlur={() => {
+                  setFocusedField(null);
+                  setTouched((current) => ({ ...current, name: true }));
+                }}
                 autoCapitalize="words"
                 textContentType="name"
               />
+              {touched.name && nameError ? (
+                <Text style={styles.fieldErrorText}>{nameError}</Text>
+              ) : null}
             </View>
 
             <View style={styles.inputGroup}>
@@ -158,15 +176,26 @@ export default function RegisterScreen() {
               <TextInput
                 style={[styles.input, focusedField === "email" && styles.inputFocused]}
                 placeholder="your@email.com"
-                placeholderTextColor="#94a3b8"
+                placeholderTextColor={COLORS.textMuted}
                 value={email}
-                onChangeText={setEmail}
+                onChangeText={(value) => {
+                  setEmail(value);
+                  if (error) {
+                    setError("");
+                  }
+                }}
                 onFocus={() => setFocusedField("email")}
-                onBlur={() => setFocusedField(null)}
+                onBlur={() => {
+                  setFocusedField(null);
+                  setTouched((current) => ({ ...current, email: true }));
+                }}
                 autoCapitalize="none"
                 keyboardType="email-address"
                 textContentType="emailAddress"
               />
+              {touched.email && emailError ? (
+                <Text style={styles.fieldErrorText}>{emailError}</Text>
+              ) : null}
             </View>
 
             <View style={styles.inputGroup}>
@@ -174,14 +203,25 @@ export default function RegisterScreen() {
               <TextInput
                 style={[styles.input, focusedField === "password" && styles.inputFocused]}
                 placeholder="Min. 6 characters"
-                placeholderTextColor="#94a3b8"
+                placeholderTextColor={COLORS.textMuted}
                 value={password}
-                onChangeText={setPassword}
+                onChangeText={(value) => {
+                  setPassword(value);
+                  if (error) {
+                    setError("");
+                  }
+                }}
                 onFocus={() => setFocusedField("password")}
-                onBlur={() => setFocusedField(null)}
+                onBlur={() => {
+                  setFocusedField(null);
+                  setTouched((current) => ({ ...current, password: true }));
+                }}
                 secureTextEntry
                 textContentType="newPassword"
               />
+              {touched.password && passwordError ? (
+                <Text style={styles.fieldErrorText}>{passwordError}</Text>
+              ) : null}
             </View>
 
             <TouchableOpacity
@@ -189,9 +229,11 @@ export default function RegisterScreen() {
               onPress={handleRegister}
               disabled={loading}
               activeOpacity={0.8}
+              accessibilityRole="button"
+              accessibilityLabel="Create account"
             >
               <LinearGradient
-                colors={["#4d33c4", "#7c5ce7"]}
+                colors={GRADIENTS.primaryAction}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
                 style={styles.buttonGradient}
@@ -211,6 +253,8 @@ export default function RegisterScreen() {
             <TouchableOpacity
               onPress={() => router.replace("/login")}
               style={styles.switchLink}
+              accessibilityRole="button"
+              accessibilityLabel="Go to sign in screen"
             >
               <Text style={styles.switchText}>
                 Already have an account? <Text style={styles.switchBold}>Sign In</Text>
@@ -237,7 +281,7 @@ const styles = StyleSheet.create({
     paddingVertical: 40,
   },
   card: {
-    backgroundColor: "#ffffff",
+    backgroundColor: COLORS.surface,
     borderRadius: 20,
     padding: 32,
     shadowColor: "#000",
@@ -254,7 +298,7 @@ const styles = StyleSheet.create({
     width: 72,
     height: 72,
     borderRadius: 36,
-    backgroundColor: "#f0ecff",
+    backgroundColor: COLORS.violetSoft,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -264,53 +308,59 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: "800",
-    color: "#2e1d7a",
+    color: COLORS.brandDeep,
     textAlign: "center",
   },
   subtitle: {
     fontSize: 15,
-    color: "#64748b",
+    color: COLORS.textSecondary,
     textAlign: "center",
     marginBottom: 28,
     marginTop: 4,
   },
   errorBox: {
-    backgroundColor: "#fef2f2",
+    backgroundColor: COLORS.dangerSoft,
     borderWidth: 1,
-    borderColor: "#fecaca",
+    borderColor: COLORS.dangerBorder,
     borderRadius: 10,
     padding: 12,
     marginBottom: 16,
   },
   errorText: {
-    color: "#dc2626",
+    color: COLORS.danger,
     fontSize: 14,
     textAlign: "center",
   },
   inputGroup: {
     marginBottom: 16,
   },
+  fieldErrorText: {
+    color: COLORS.danger,
+    fontSize: 12,
+    marginTop: 6,
+    marginLeft: 4,
+  },
   inputLabel: {
     fontSize: 13,
     fontWeight: "600",
-    color: "#475569",
+    color: COLORS.textSecondary,
     marginBottom: 6,
     marginLeft: 2,
   },
   input: {
     backgroundColor: "#f8fafc",
     borderWidth: 1.5,
-    borderColor: "#e2e8f0",
+    borderColor: COLORS.borderMuted,
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 14,
     fontSize: 16,
-    color: "#0f172a",
+    color: COLORS.textPrimary,
   },
   inputFocused: {
-    borderColor: "#4d33c4",
+    borderColor: COLORS.brandPrimary,
     backgroundColor: "#faf9ff",
-    shadowColor: "#4d33c4",
+    shadowColor: COLORS.brandPrimary,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -329,7 +379,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   buttonText: {
-    color: "#ffffff",
+    color: COLORS.textOnBrand,
     fontSize: 16,
     fontWeight: "700",
   },
@@ -339,10 +389,10 @@ const styles = StyleSheet.create({
   },
   switchText: {
     fontSize: 14,
-    color: "#64748b",
+    color: COLORS.textSecondary,
   },
   switchBold: {
-    color: "#4d33c4",
+    color: COLORS.brandPrimary,
     fontWeight: "700",
   },
 });

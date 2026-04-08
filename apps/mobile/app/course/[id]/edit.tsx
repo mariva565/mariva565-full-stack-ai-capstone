@@ -140,13 +140,20 @@ export default function EditCourseScreen() {
             onPress={handleSave}
             disabled={saving}
             activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel="Save course changes"
           >
             <LinearGradient colors={["#4d33c4", "#7c5ce7"]} style={styles.saveBtnGradient}>
               <Text style={styles.saveBtnText}>{saving ? "Saving..." : "Save Changes"}</Text>
             </LinearGradient>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.cancelBtn} onPress={() => router.back()}>
+          <TouchableOpacity
+            style={styles.cancelBtn}
+            onPress={() => router.back()}
+            accessibilityRole="button"
+            accessibilityLabel="Cancel course editing"
+          >
             <Text style={styles.cancelBtnText}>Cancel</Text>
           </TouchableOpacity>
         </View>

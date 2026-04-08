@@ -11,6 +11,7 @@ import { MaterialCard } from "../../../components/material-card";
 import { SearchBar } from "../../../components/search-bar";
 import { TypeFilterChips } from "../../../components/type-filter-chips";
 import { ApiError, apiFetch } from "../../../lib/api";
+import type { MaterialType } from "../../../lib/material-utils";
 import { useToast } from "../../../lib/toast-context";
 import type { Material, ModuleContext } from "../../../lib/studyhub-types";
 
@@ -25,6 +26,7 @@ type ModuleResponse = {
 
 export default function ModuleWorkspaceScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const routeId = String(id);
   const router = useRouter();
   const { showToast } = useToast();
   const [context, setContext] = useState<ModuleResponse | null>(null);
@@ -35,7 +37,7 @@ export default function ModuleWorkspaceScreen() {
 
   // Search and filter
   const [searchQuery, setSearchQuery] = useState("");
-  const [typeFilter, setTypeFilter] = useState<string | null>(null);
+  const [typeFilter, setTypeFilter] = useState<MaterialType | null>(null);
 
   // Confirm modal state
   const [confirmVisible, setConfirmVisible] = useState(false);
@@ -87,7 +89,7 @@ export default function ModuleWorkspaceScreen() {
         await apiFetch(`/api/modules/${context.module.id}`, { method: "DELETE" });
         showToast("Module deleted");
         setConfirmVisible(false);
-        router.replace(`/course/${context.course.id}` as any);
+        router.replace({ pathname: "/course/[id]", params: { id: context.course.id } });
       } catch (err) {
         const message = err instanceof ApiError ? err.message : "Failed to delete module";
         showToast(message, "error");
@@ -152,7 +154,12 @@ export default function ModuleWorkspaceScreen() {
       <View style={styles.centered}>
         <Stack.Screen options={{ title: "Error" }} />
         <Text style={styles.errorText}>{error || "Module not found"}</Text>
-        <TouchableOpacity style={styles.retryBtn} onPress={() => fetchModule()}>
+        <TouchableOpacity
+          style={styles.retryBtn}
+          onPress={() => fetchModule()}
+          accessibilityRole="button"
+          accessibilityLabel="Retry loading module"
+        >
           <Text style={styles.retryBtnText}>Retry</Text>
         </TouchableOpacity>
       </View>
@@ -172,8 +179,10 @@ export default function ModuleWorkspaceScreen() {
         <LinearGradient colors={["#2e1d7a", "#4d33c4", "#7c5ce7"]} style={styles.hero}>
           <TouchableOpacity
             style={styles.coursePill}
-            onPress={() => router.push(`/course/${context.course.id}` as any)}
+            onPress={() => router.push({ pathname: "/course/[id]", params: { id: context.course.id } })}
             activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel={`Open course ${context.course.title}`}
           >
             <Text style={styles.coursePillText}>{context.course.title}</Text>
           </TouchableOpacity>
@@ -185,12 +194,20 @@ export default function ModuleWorkspaceScreen() {
           <View style={styles.heroActions}>
             <TouchableOpacity
               style={[styles.heroBtn, styles.heroGhostBtn]}
-              onPress={() => router.push(`/module/${id}/edit` as any)}
+              onPress={() => router.push({ pathname: "/module/[id]/edit", params: { id: routeId } })}
               activeOpacity={0.8}
+              accessibilityRole="button"
+              accessibilityLabel={`Edit module ${context.module.title}`}
             >
               <Text style={styles.heroGhostBtnText}>Edit Module</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.heroBtn, styles.heroDangerBtn]} onPress={openDeleteModule} activeOpacity={0.8}>
+            <TouchableOpacity
+              style={[styles.heroBtn, styles.heroDangerBtn]}
+              onPress={openDeleteModule}
+              activeOpacity={0.8}
+              accessibilityRole="button"
+              accessibilityLabel={`Delete module ${context.module.title}`}
+            >
               <Text style={styles.heroDangerBtnText}>Delete Module</Text>
             </TouchableOpacity>
           </View>
@@ -201,7 +218,12 @@ export default function ModuleWorkspaceScreen() {
             <Text style={styles.sectionTitle}>Materials</Text>
             <Text style={styles.sectionSubtitle}>Open any item for detail view and editing.</Text>
           </View>
-          <TouchableOpacity style={styles.addBtn} onPress={() => router.push(`/module/${id}/add-material` as any)}>
+          <TouchableOpacity
+            style={styles.addBtn}
+            onPress={() => router.push({ pathname: "/module/[id]/add-material", params: { id: routeId } })}
+            accessibilityRole="button"
+            accessibilityLabel="Add material"
+          >
             <Text style={styles.addBtnText}>Add</Text>
           </TouchableOpacity>
         </View>
@@ -231,8 +253,8 @@ export default function ModuleWorkspaceScreen() {
               <MaterialCard
                 key={material.id}
                 material={material}
-                onOpen={() => router.push(`/material/${material.id}` as any)}
-                onEdit={() => router.push(`/material/${material.id}/edit` as any)}
+                onOpen={() => router.push({ pathname: "/material/[id]", params: { id: material.id } })}
+                onEdit={() => router.push({ pathname: "/material/[id]/edit", params: { id: material.id } })}
                 onDelete={() => openDeleteMaterial(material)}
               />
             ))}

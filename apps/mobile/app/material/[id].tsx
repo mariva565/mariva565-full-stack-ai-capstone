@@ -90,7 +90,12 @@ export default function MaterialScreen() {
       <View style={styles.centered}>
         <Stack.Screen options={{ title: "Error" }} />
         <Text style={styles.errorText}>{error || "Material not found"}</Text>
-        <TouchableOpacity style={styles.retryBtn} onPress={() => fetchMaterial()}>
+        <TouchableOpacity
+          style={styles.retryBtn}
+          onPress={() => fetchMaterial()}
+          accessibilityRole="button"
+          accessibilityLabel="Retry loading material"
+        >
           <Text style={styles.retryBtnText}>Retry</Text>
         </TouchableOpacity>
       </View>
@@ -146,6 +151,10 @@ export default function MaterialScreen() {
           style={styles.linkCard}
           onPress={handleOpenUrl}
           activeOpacity={0.7}
+          accessibilityRole="button"
+          accessibilityLabel={
+            material.materialType === "link" ? "Open material link" : "Open material file"
+          }
         >
           <Text style={styles.linkLabel}>
             {material.materialType === "link" ? "Open Link" : "Open File"}

@@ -4,7 +4,7 @@ import {
   FlatList,
   RefreshControl,
   StyleSheet,
-  Text,
+  Text as RNText,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -15,6 +15,7 @@ import { EmptyState } from "../../components/empty-state";
 import { BrandedSpinner } from "../../components/branded-spinner";
 import { ConfirmModal } from "../../components/confirm-modal";
 import { useAuth } from "../../lib/auth-context";
+import { COLORS, GRADIENTS } from "../../lib/colors";
 import { useToast } from "../../lib/toast-context";
 import { ApiError, apiFetch } from "../../lib/api";
 
@@ -62,18 +63,24 @@ function CourseCard({ item, index, onOpen, onEdit, onDelete }: CourseCardProps) 
     <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
       <View style={styles.courseCard}>
         <View style={styles.cardAccent} />
-        <TouchableOpacity style={styles.cardContent} onPress={onOpen} activeOpacity={0.75}>
-          <Text style={styles.courseTitle} numberOfLines={1}>
+        <TouchableOpacity
+          style={styles.cardContent}
+          onPress={onOpen}
+          activeOpacity={0.75}
+          accessibilityRole="button"
+          accessibilityLabel={`Open course ${item.title}`}
+        >
+          <RNText style={styles.courseTitle} numberOfLines={1}>
             {item.title}
-          </Text>
+          </RNText>
           {item.description ? (
-            <Text style={styles.courseDesc} numberOfLines={2}>
+            <RNText style={styles.courseDesc} numberOfLines={2}>
               {item.description}
-            </Text>
+            </RNText>
           ) : null}
-          <Text style={styles.courseDate}>
+          <RNText style={styles.courseDate}>
             {new Date(item.createdAt).toLocaleDateString()}
-          </Text>
+          </RNText>
         </TouchableOpacity>
         <View style={styles.inlineActions}>
           <TouchableOpacity
@@ -81,16 +88,20 @@ function CourseCard({ item, index, onOpen, onEdit, onDelete }: CourseCardProps) 
             onPress={onEdit}
             activeOpacity={0.8}
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            accessibilityRole="button"
+            accessibilityLabel={`Edit course ${item.title}`}
           >
-            <Text style={[styles.inlineActionText, styles.inlineEditText]}>Edit</Text>
+            <RNText style={[styles.inlineActionText, styles.inlineEditText]}>Edit</RNText>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.inlineActionBtn, styles.inlineDeleteBtn]}
             onPress={onDelete}
             activeOpacity={0.8}
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            accessibilityRole="button"
+            accessibilityLabel={`Delete course ${item.title}`}
           >
-            <Text style={[styles.inlineActionText, styles.inlineDeleteText]}>Delete</Text>
+            <RNText style={[styles.inlineActionText, styles.inlineDeleteText]}>Delete</RNText>
           </TouchableOpacity>
         </View>
       </View>
@@ -99,7 +110,7 @@ function CourseCard({ item, index, onOpen, onEdit, onDelete }: CourseCardProps) 
 }
 
 export default function CoursesListScreen() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const router = useRouter();
   const { showToast } = useToast();
   const [courses, setCourses] = useState<Course[]>([]);
@@ -157,37 +168,34 @@ export default function CoursesListScreen() {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={["#2e1d7a", "#4d33c4"]}
+        colors={GRADIENTS.hero}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.headerGradient}
       >
         <View style={styles.headerContent}>
           <View>
-            <Text style={styles.headerGreeting}>Welcome back,</Text>
-            <Text style={styles.headerName}>{user?.name ?? "Student"}</Text>
+            <RNText style={styles.headerGreeting}>Welcome back,</RNText>
+            <RNText style={styles.headerName}>{user?.name ?? "Student"}</RNText>
           </View>
-          <TouchableOpacity onPress={logout} style={styles.logoutBtn}>
-            <Text style={styles.logoutText}>Logout</Text>
-          </TouchableOpacity>
         </View>
 
         <View style={styles.statsRow}>
           <View style={styles.statItem}>
-            <Text style={styles.statNumber}>{courses.length}</Text>
-            <Text style={styles.statLabel}>{courses.length === 1 ? "Course" : "Courses"}</Text>
+            <RNText style={styles.statNumber}>{courses.length}</RNText>
+            <RNText style={styles.statLabel}>{courses.length === 1 ? "Course" : "Courses"}</RNText>
           </View>
           <View style={styles.statItem}>
-            <Text style={styles.statNumber}>
+            <RNText style={styles.statNumber}>
               {courses.filter((course) => course.status === "published").length}
-            </Text>
-            <Text style={styles.statLabel}>Published</Text>
+            </RNText>
+            <RNText style={styles.statLabel}>Published</RNText>
           </View>
           <View style={styles.statItem}>
-            <Text style={styles.statNumber}>
+            <RNText style={styles.statNumber}>
               {courses.filter((course) => course.status === "draft").length}
-            </Text>
-            <Text style={styles.statLabel}>Drafts</Text>
+            </RNText>
+            <RNText style={styles.statLabel}>Drafts</RNText>
           </View>
         </View>
       </LinearGradient>
@@ -196,9 +204,14 @@ export default function CoursesListScreen() {
         <BrandedSpinner message="Loading courses..." />
       ) : error ? (
         <View style={styles.centered}>
-          <Text style={styles.errorText}>{error}</Text>
-          <TouchableOpacity style={styles.retryBtn} onPress={() => fetchCourses()}>
-            <Text style={styles.retryText}>Retry</Text>
+          <RNText style={styles.errorText}>{error}</RNText>
+          <TouchableOpacity
+            style={styles.retryBtn}
+            onPress={() => fetchCourses()}
+            accessibilityRole="button"
+            accessibilityLabel="Retry loading courses"
+          >
+            <RNText style={styles.retryText}>Retry</RNText>
           </TouchableOpacity>
         </View>
       ) : courses.length === 0 ? (
@@ -212,15 +225,15 @@ export default function CoursesListScreen() {
             <RefreshControl
               refreshing={refreshing}
               onRefresh={() => fetchCourses(true)}
-              tintColor="#4d33c4"
+              tintColor={COLORS.brandPrimary}
             />
           }
           renderItem={({ item, index }) => (
             <CourseCard
               item={item}
               index={index}
-              onOpen={() => router.push(`/course/${item.id}`)}
-              onEdit={() => router.push(`/course/${item.id}/edit` as any)}
+              onOpen={() => router.push({ pathname: "/course/[id]", params: { id: item.id } })}
+              onEdit={() => router.push({ pathname: "/course/[id]/edit", params: { id: item.id } })}
               onDelete={() => openDeleteCourse(item)}
             />
           )}
@@ -229,11 +242,13 @@ export default function CoursesListScreen() {
 
       <TouchableOpacity
         style={styles.fab}
-        onPress={() => router.push("/create-course" as any)}
+        onPress={() => router.push("/create-course")}
         activeOpacity={0.8}
+        accessibilityRole="button"
+        accessibilityLabel="Create course"
       >
-        <LinearGradient colors={["#4d33c4", "#7c5ce7"]} style={styles.fabGradient}>
-          <Text style={styles.fabText}>+</Text>
+        <LinearGradient colors={GRADIENTS.primaryAction} style={styles.fabGradient}>
+          <RNText style={styles.fabText}>+</RNText>
         </LinearGradient>
       </TouchableOpacity>
 
@@ -251,22 +266,15 @@ export default function CoursesListScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f8f6ff" },
+  container: { flex: 1, backgroundColor: COLORS.canvas },
   headerGradient: { paddingTop: 56, paddingBottom: 20, paddingHorizontal: 20 },
   headerContent: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "flex-start",
     alignItems: "flex-start",
   },
   headerGreeting: { fontSize: 14, color: "rgba(255,255,255,0.7)", fontWeight: "500" },
-  headerName: { fontSize: 22, fontWeight: "800", color: "#ffffff", marginTop: 2 },
-  logoutBtn: {
-    backgroundColor: "rgba(255,255,255,0.12)",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 8,
-  },
-  logoutText: { color: "rgba(255,255,255,0.8)", fontWeight: "600", fontSize: 13 },
+  headerName: { fontSize: 22, fontWeight: "800", color: COLORS.textOnBrand, marginTop: 2 },
   statsRow: { flexDirection: "row", marginTop: 20, gap: 12 },
   statItem: {
     flex: 1,
@@ -275,7 +283,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     alignItems: "center",
   },
-  statNumber: { fontSize: 20, fontWeight: "800", color: "#ffffff" },
+  statNumber: { fontSize: 20, fontWeight: "800", color: COLORS.textOnBrand },
   statLabel: {
     fontSize: 11,
     color: "rgba(255,255,255,0.6)",
@@ -284,26 +292,29 @@ const styles = StyleSheet.create({
   },
   list: { padding: 16, paddingBottom: 96 },
   courseCard: {
-    backgroundColor: "#ffffff",
+    backgroundColor: COLORS.surface,
     borderRadius: 14,
     overflow: "hidden",
-    shadowColor: "#2e1d7a",
+    shadowColor: COLORS.brandDeep,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.06,
     shadowRadius: 8,
     elevation: 2,
     marginBottom: 12,
   },
-  cardAccent: { height: 4, backgroundColor: "#4d33c4" },
+  cardAccent: { height: 4, backgroundColor: COLORS.brandPrimary },
   cardContent: { paddingHorizontal: 16, paddingTop: 16, paddingBottom: 10 },
-  courseTitle: { fontSize: 17, fontWeight: "700", color: "#0f172a" },
+  courseTitle: { fontSize: 17, fontWeight: "700", color: COLORS.textPrimary },
   inlineActions: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-end",
     gap: 8,
     paddingHorizontal: 16,
+    paddingTop: 10,
     paddingBottom: 14,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.borderSubtle,
   },
   inlineActionBtn: {
     paddingHorizontal: 10,
@@ -312,45 +323,45 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   inlineEditBtn: {
-    backgroundColor: "#f5f3ff",
-    borderColor: "#c4b5fd",
+    backgroundColor: COLORS.violetSoft,
+    borderColor: COLORS.violetBorder,
   },
   inlineDeleteBtn: {
-    backgroundColor: "#fff1f2",
-    borderColor: "#fda4af",
+    backgroundColor: COLORS.dangerSoft,
+    borderColor: COLORS.dangerBorder,
   },
   inlineActionText: {
     fontSize: 12,
     fontWeight: "700",
   },
   inlineEditText: {
-    color: "#5b21b6",
+    color: COLORS.violetText,
   },
   inlineDeleteText: {
-    color: "#be123c",
+    color: COLORS.dangerText,
   },
-  courseDesc: { fontSize: 14, color: "#64748b", lineHeight: 20, marginTop: 8 },
-  courseDate: { fontSize: 12, color: "#94a3b8", marginTop: 10 },
+  courseDesc: { fontSize: 14, color: COLORS.textSecondary, lineHeight: 20, marginTop: 8 },
+  courseDate: { fontSize: 12, color: COLORS.textMuted, marginTop: 10 },
   centered: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 32,
   },
-  errorText: { fontSize: 16, color: "#dc2626", marginBottom: 16, textAlign: "center" },
+  errorText: { fontSize: 16, color: COLORS.danger, marginBottom: 16, textAlign: "center" },
   retryBtn: {
-    backgroundColor: "#4d33c4",
+    backgroundColor: COLORS.brandPrimary,
     paddingHorizontal: 24,
     paddingVertical: 10,
     borderRadius: 8,
   },
-  retryText: { color: "#ffffff", fontWeight: "600" },
+  retryText: { color: COLORS.textOnBrand, fontWeight: "600" },
   fab: {
     position: "absolute",
     bottom: 24,
     right: 20,
     borderRadius: 28,
-    shadowColor: "#4d33c4",
+    shadowColor: COLORS.brandPrimary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -363,5 +374,5 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  fabText: { fontSize: 28, fontWeight: "600", color: "#ffffff", marginTop: -2 },
+  fabText: { fontSize: 28, fontWeight: "600", color: COLORS.textOnBrand, marginTop: -2 },
 });

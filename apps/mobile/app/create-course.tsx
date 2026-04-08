@@ -12,6 +12,7 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { Stack, useRouter } from "expo-router";
 import { apiFetch, ApiError } from "../lib/api";
+import { validateRequired } from "../lib/validation";
 
 export default function CreateCourseScreen() {
   const router = useRouter();
@@ -20,10 +21,13 @@ export default function CreateCourseScreen() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [focusedField, setFocusedField] = useState<string | null>(null);
+  const [titleTouched, setTitleTouched] = useState(false);
+
+  const titleError = validateRequired(title, "Course title");
 
   async function handleCreate() {
-    if (!title.trim()) {
-      setError("Course title is required");
+    setTitleTouched(true);
+    if (titleError) {
       return;
     }
 
@@ -38,9 +42,8 @@ export default function CreateCourseScreen() {
         },
       });
       router.back();
-    } catch (e: any) {
-      const msg =
-        e instanceof ApiError ? e.message : "Failed to create course";
+    } catch (e) {
+      const msg = e instanceof ApiError ? e.message : "Failed to create course";
       setError(msg);
     } finally {
       setLoading(false);
@@ -82,11 +85,22 @@ export default function CreateCourseScreen() {
               placeholder="e.g. JavaScript Basics"
               placeholderTextColor="#94a3b8"
               value={title}
-              onChangeText={setTitle}
+              onChangeText={(value) => {
+                setTitle(value);
+                if (error) {
+                  setError("");
+                }
+              }}
               onFocus={() => setFocusedField("title")}
-              onBlur={() => setFocusedField(null)}
+              onBlur={() => {
+                setFocusedField(null);
+                setTitleTouched(true);
+              }}
               autoFocus
             />
+            {titleTouched && titleError ? (
+              <Text style={styles.fieldErrorText}>{titleError}</Text>
+            ) : null}
           </View>
 
           <View style={styles.inputGroup}>
@@ -116,6 +130,8 @@ export default function CreateCourseScreen() {
             onPress={handleCreate}
             disabled={loading}
             activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel="Create course"
           >
             <LinearGradient
               colors={["#4d33c4", "#7c5ce7"]}
@@ -132,6 +148,8 @@ export default function CreateCourseScreen() {
           <TouchableOpacity
             style={styles.cancelBtn}
             onPress={() => router.back()}
+            accessibilityRole="button"
+            accessibilityLabel="Cancel course creation"
           >
             <Text style={styles.cancelBtnText}>Cancel</Text>
           </TouchableOpacity>
@@ -202,6 +220,12 @@ const styles = StyleSheet.create({
   },
   inputGroup: {
     marginBottom: 16,
+  },
+  fieldErrorText: {
+    color: "#dc2626",
+    fontSize: 12,
+    marginTop: 6,
+    marginLeft: 4,
   },
   inputLabel: {
     fontSize: 13,

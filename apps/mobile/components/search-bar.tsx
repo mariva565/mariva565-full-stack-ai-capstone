@@ -1,4 +1,5 @@
 import { StyleSheet, TextInput, TouchableOpacity, Text, View } from "react-native";
+import { COLORS } from "../lib/colors";
 
 type Props = {
   value: string;
@@ -15,13 +16,18 @@ export function SearchBar({ value, onChangeText, placeholder = "Search..." }: Pr
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
-        placeholderTextColor="#94a3b8"
+        placeholderTextColor={COLORS.textMuted}
         autoCapitalize="none"
         autoCorrect={false}
         returnKeyType="search"
       />
       {value.length > 0 ? (
-        <TouchableOpacity onPress={() => onChangeText("")} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+        <TouchableOpacity
+          onPress={() => onChangeText("")}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          accessibilityRole="button"
+          accessibilityLabel="Clear search text"
+        >
           <Text style={styles.clearText}>Clear</Text>
         </TouchableOpacity>
       ) : null}
@@ -33,14 +39,14 @@ const styles = StyleSheet.create({
   wrapper: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#ffffff",
+    backgroundColor: COLORS.surface,
     borderRadius: 12,
     marginHorizontal: 16,
     marginTop: 16,
     paddingHorizontal: 14,
     paddingVertical: 4,
     borderWidth: 1,
-    borderColor: "#e8e4f5",
+    borderColor: COLORS.borderMuted,
     gap: 8,
   },
   icon: {
@@ -49,12 +55,12 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: 15,
-    color: "#0f172a",
+    color: COLORS.textPrimary,
     paddingVertical: 10,
   },
   clearText: {
     fontSize: 13,
     fontWeight: "600",
-    color: "#4d33c4",
+    color: COLORS.brandPrimary,
   },
 });

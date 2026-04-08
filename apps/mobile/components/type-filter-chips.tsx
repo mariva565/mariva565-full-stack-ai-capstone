@@ -1,12 +1,11 @@
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { MATERIAL_TYPE_CONFIG } from "../lib/material-utils";
+import { COLORS } from "../lib/colors";
+import { MATERIAL_TYPE_OPTIONS, type MaterialType } from "../lib/material-utils";
 
 type Props = {
-  selected: string | null;
-  onSelect: (type: string | null) => void;
+  selected: MaterialType | null;
+  onSelect: (type: MaterialType | null) => void;
 };
-
-const TYPES = Object.entries(MATERIAL_TYPE_CONFIG);
 
 export function TypeFilterChips({ selected, onSelect }: Props) {
   return (
@@ -20,20 +19,24 @@ export function TypeFilterChips({ selected, onSelect }: Props) {
         style={[styles.chip, !selected && styles.chipActive]}
         onPress={() => onSelect(null)}
         activeOpacity={0.8}
+        accessibilityRole="button"
+        accessibilityLabel="Show all material types"
       >
         <Text style={[styles.chipText, !selected && styles.chipTextActive]}>All</Text>
       </TouchableOpacity>
-      {TYPES.map(([key, config]) => {
-        const active = selected === key;
+      {MATERIAL_TYPE_OPTIONS.map((type) => {
+        const active = selected === type.key;
         return (
           <TouchableOpacity
-            key={key}
-            style={[styles.chip, active && { backgroundColor: config.bg, borderColor: config.color }]}
-            onPress={() => onSelect(active ? null : key)}
+            key={type.key}
+            style={[styles.chip, active && { backgroundColor: type.bg, borderColor: type.color }]}
+            onPress={() => onSelect(active ? null : type.key)}
             activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel={`Filter materials by ${type.label}`}
           >
-            <View style={[styles.dot, { backgroundColor: config.color }]} />
-            <Text style={[styles.chipText, active && { color: config.color }]}>{config.label}</Text>
+            <View style={[styles.dot, { backgroundColor: type.color }]} />
+            <Text style={[styles.chipText, active && { color: type.color }]}>{type.label}</Text>
           </TouchableOpacity>
         );
       })}
@@ -55,24 +58,24 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
-    backgroundColor: "#ffffff",
+    backgroundColor: COLORS.surface,
     borderWidth: 1,
-    borderColor: "#e2e8f0",
+    borderColor: COLORS.borderMuted,
     borderRadius: 20,
     paddingHorizontal: 14,
     paddingVertical: 8,
   },
   chipActive: {
-    backgroundColor: "#4d33c4",
-    borderColor: "#4d33c4",
+    backgroundColor: COLORS.brandPrimary,
+    borderColor: COLORS.brandPrimary,
   },
   chipText: {
     fontSize: 13,
     fontWeight: "600",
-    color: "#475569",
+    color: COLORS.textSecondary,
   },
   chipTextActive: {
-    color: "#ffffff",
+    color: COLORS.textOnBrand,
   },
   dot: {
     width: 8,

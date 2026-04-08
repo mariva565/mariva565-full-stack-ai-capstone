@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import {
   View,
-  Text,
+  Text as RNText,
   TextInput,
   TouchableOpacity,
   StyleSheet,
@@ -13,6 +13,7 @@ import { useAuth } from "../../lib/auth-context";
 import { useToast } from "../../lib/toast-context";
 import { apiFetch, ApiError } from "../../lib/api";
 import { BrandedSpinner } from "../../components/branded-spinner";
+import { COLORS, GRADIENTS } from "../../lib/colors";
 
 type ProfileUser = {
   id: number;
@@ -24,7 +25,7 @@ type ProfileUser = {
 };
 
 export default function ProfileScreen() {
-  const { user } = useAuth();
+  const { logout } = useAuth();
   const { showToast } = useToast();
   const [profile, setProfile] = useState<ProfileUser | null>(null);
   const [loading, setLoading] = useState(true);
@@ -79,9 +80,14 @@ export default function ProfileScreen() {
   if (error || !profile) {
     return (
       <View style={styles.centered}>
-        <Text style={styles.errorText}>{error || "Not found"}</Text>
-        <TouchableOpacity style={styles.retryBtn} onPress={fetchProfile}>
-          <Text style={styles.retryBtnText}>Retry</Text>
+        <RNText style={styles.errorText}>{error || "Not found"}</RNText>
+        <TouchableOpacity
+          style={styles.retryBtn}
+          onPress={fetchProfile}
+          accessibilityRole="button"
+          accessibilityLabel="Retry loading profile"
+        >
+          <RNText style={styles.retryBtnText}>Retry</RNText>
         </TouchableOpacity>
       </View>
     );
@@ -104,34 +110,34 @@ export default function ProfileScreen() {
             setRefreshing(true);
             fetchProfile();
           }}
-          tintColor="#4d33c4"
+          tintColor={COLORS.brandPrimary}
         />
       }
     >
       <LinearGradient
-        colors={["#2e1d7a", "#4d33c4"]}
+        colors={GRADIENTS.hero}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.hero}
       >
         <View style={styles.avatarCircle}>
-          <Text style={styles.avatarText}>{initials}</Text>
+          <RNText style={styles.avatarText}>{initials}</RNText>
         </View>
-        <Text style={styles.heroName}>{profile.name}</Text>
+        <RNText style={styles.heroName}>{profile.name}</RNText>
         <View style={styles.heroBadge}>
-          <Text style={styles.heroBadgeText}>{profile.role}</Text>
+          <RNText style={styles.heroBadgeText}>{profile.role}</RNText>
         </View>
       </LinearGradient>
 
       {/* Info card */}
       <View style={styles.card}>
         <View style={styles.field}>
-          <Text style={styles.fieldLabel}>Email</Text>
-          <Text style={styles.fieldValue}>{profile.email}</Text>
+          <RNText style={styles.fieldLabel}>Email</RNText>
+          <RNText style={styles.fieldValue}>{profile.email}</RNText>
         </View>
 
         <View style={styles.field}>
-          <Text style={styles.fieldLabel}>Name</Text>
+          <RNText style={styles.fieldLabel}>Name</RNText>
           {editing ? (
             <TextInput
               style={styles.editInput}
@@ -140,20 +146,29 @@ export default function ProfileScreen() {
               autoFocus
             />
           ) : (
-            <Text style={styles.fieldValue}>{profile.name}</Text>
+            <RNText style={styles.fieldValue}>{profile.name}</RNText>
           )}
         </View>
 
         <View style={styles.field}>
-          <Text style={styles.fieldLabel}>Member since</Text>
-          <Text style={styles.fieldValue}>
+          <RNText style={styles.fieldLabel}>Member since</RNText>
+          <RNText style={styles.fieldValue}>
             {new Date(profile.createdAt).toLocaleDateString()}
-          </Text>
+          </RNText>
         </View>
       </View>
 
       {/* Actions */}
       <View style={styles.actions}>
+        <TouchableOpacity
+          style={styles.logoutBtn}
+          onPress={logout}
+          accessibilityRole="button"
+          accessibilityLabel="Log out"
+        >
+          <RNText style={styles.logoutBtnText}>Log out</RNText>
+        </TouchableOpacity>
+
         {editing ? (
           <View style={styles.editActions}>
             <TouchableOpacity
@@ -162,23 +177,27 @@ export default function ProfileScreen() {
                 setEditing(false);
                 setEditName(profile.name);
               }}
+              accessibilityRole="button"
+              accessibilityLabel="Cancel profile editing"
             >
-              <Text style={styles.cancelBtnText}>Cancel</Text>
+              <RNText style={styles.cancelBtnText}>Cancel</RNText>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.saveBtn, saving && styles.saveBtnDisabled]}
               onPress={handleSave}
               disabled={saving}
+              accessibilityRole="button"
+              accessibilityLabel="Save profile"
             >
               <LinearGradient
-                colors={["#4d33c4", "#7c5ce7"]}
+                colors={GRADIENTS.primaryAction}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
                 style={styles.saveBtnGradient}
               >
-                <Text style={styles.saveBtnText}>
+                <RNText style={styles.saveBtnText}>
                   {saving ? "Saving..." : "Save"}
-                </Text>
+                </RNText>
               </LinearGradient>
             </TouchableOpacity>
           </View>
@@ -186,8 +205,10 @@ export default function ProfileScreen() {
           <TouchableOpacity
             style={styles.editBtn}
             onPress={() => setEditing(true)}
+            accessibilityRole="button"
+            accessibilityLabel="Edit profile"
           >
-            <Text style={styles.editBtnText}>Edit Profile</Text>
+            <RNText style={styles.editBtnText}>Edit Profile</RNText>
           </TouchableOpacity>
         )}
       </View>
@@ -200,29 +221,29 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8f6ff",
+    backgroundColor: COLORS.canvas,
   },
   centered: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#f8f6ff",
+    backgroundColor: COLORS.canvas,
     paddingHorizontal: 32,
   },
   errorText: {
     fontSize: 16,
-    color: "#dc2626",
+    color: COLORS.danger,
     marginBottom: 16,
     textAlign: "center",
   },
   retryBtn: {
-    backgroundColor: "#4d33c4",
+    backgroundColor: COLORS.brandPrimary,
     paddingHorizontal: 24,
     paddingVertical: 10,
     borderRadius: 8,
   },
   retryBtnText: {
-    color: "#ffffff",
+    color: COLORS.textOnBrand,
     fontWeight: "600",
   },
   hero: {
@@ -242,12 +263,12 @@ const styles = StyleSheet.create({
   avatarText: {
     fontSize: 28,
     fontWeight: "800",
-    color: "#ffffff",
+    color: COLORS.textOnBrand,
   },
   heroName: {
     fontSize: 22,
     fontWeight: "800",
-    color: "#ffffff",
+    color: COLORS.textOnBrand,
     marginBottom: 8,
   },
   heroBadge: {
@@ -263,11 +284,11 @@ const styles = StyleSheet.create({
     textTransform: "capitalize",
   },
   card: {
-    backgroundColor: "#ffffff",
+    backgroundColor: COLORS.surface,
     margin: 16,
     borderRadius: 14,
     padding: 20,
-    shadowColor: "#2e1d7a",
+    shadowColor: COLORS.brandDeep,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.06,
     shadowRadius: 8,
@@ -279,21 +300,21 @@ const styles = StyleSheet.create({
   fieldLabel: {
     fontSize: 12,
     fontWeight: "600",
-    color: "#94a3b8",
+    color: COLORS.textMuted,
     textTransform: "uppercase",
     letterSpacing: 0.5,
     marginBottom: 4,
   },
   fieldValue: {
     fontSize: 16,
-    color: "#0f172a",
+    color: COLORS.textPrimary,
     fontWeight: "500",
   },
   editInput: {
     fontSize: 16,
-    color: "#0f172a",
+    color: COLORS.textPrimary,
     borderWidth: 1.5,
-    borderColor: "#4d33c4",
+    borderColor: COLORS.brandPrimary,
     borderRadius: 10,
     paddingHorizontal: 14,
     paddingVertical: 10,
@@ -301,10 +322,24 @@ const styles = StyleSheet.create({
   },
   actions: {
     marginHorizontal: 16,
+    gap: 12,
+  },
+  logoutBtn: {
+    borderWidth: 1.5,
+    borderColor: COLORS.dangerBorder,
+    backgroundColor: COLORS.dangerSoft,
+    borderRadius: 12,
+    paddingVertical: 12,
+    alignItems: "center",
+  },
+  logoutBtnText: {
+    fontSize: 15,
+    fontWeight: "700",
+    color: COLORS.dangerText,
   },
   editBtn: {
     borderWidth: 2,
-    borderColor: "#4d33c4",
+    borderColor: COLORS.brandPrimary,
     borderRadius: 12,
     paddingVertical: 14,
     alignItems: "center",
@@ -312,7 +347,7 @@ const styles = StyleSheet.create({
   editBtnText: {
     fontSize: 16,
     fontWeight: "700",
-    color: "#4d33c4",
+    color: COLORS.brandPrimary,
   },
   editActions: {
     flexDirection: "row",
@@ -321,7 +356,7 @@ const styles = StyleSheet.create({
   cancelBtn: {
     flex: 1,
     borderWidth: 2,
-    borderColor: "#e2e8f0",
+    borderColor: COLORS.borderMuted,
     borderRadius: 12,
     paddingVertical: 14,
     alignItems: "center",
@@ -329,7 +364,7 @@ const styles = StyleSheet.create({
   cancelBtnText: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#64748b",
+    color: COLORS.textSecondary,
   },
   saveBtn: {
     flex: 1,
@@ -346,6 +381,6 @@ const styles = StyleSheet.create({
   saveBtnText: {
     fontSize: 16,
     fontWeight: "700",
-    color: "#ffffff",
+    color: COLORS.textOnBrand,
   },
 });

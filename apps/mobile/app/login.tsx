@@ -13,6 +13,8 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Stack, useRouter } from "expo-router";
 import { useAuth } from "../lib/auth-context";
 import { ApiError } from "../lib/api";
+import { COLORS, GRADIENTS } from "../lib/colors";
+import { validateEmail, validateRequired } from "../lib/validation";
 import * as WebBrowser from "expo-web-browser";
 import * as Google from "expo-auth-session/providers/google";
 import { GoogleSignInButton } from "../components/auth/GoogleSignInButton";
@@ -28,6 +30,13 @@ export default function LoginScreen() {
   const [error, setError] = useState("");
   const [emailFocused, setEmailFocused] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(false);
+  const [touched, setTouched] = useState({
+    email: false,
+    password: false,
+  });
+
+  const emailError = validateEmail(email);
+  const passwordError = validateRequired(password, "Password");
 
   // Google Auth Hook
   const redirectUri = "https://auth.expo.io/@mariva/studyhub-v2";
@@ -76,8 +85,8 @@ export default function LoginScreen() {
   }, []);
 
   async function handleLogin() {
-    if (!email.trim() || !password.trim()) {
-      setError("Please enter email and password");
+    setTouched({ email: true, password: true });
+    if (emailError || passwordError) {
       return;
     }
 
@@ -98,7 +107,7 @@ export default function LoginScreen() {
 
   return (
     <LinearGradient
-      colors={["#2e1d7a", "#4d33c4", "#7c5ce7"]}
+      colors={GRADIENTS.heroStrong}
       style={styles.gradient}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
@@ -135,15 +144,26 @@ export default function LoginScreen() {
             <TextInput
               style={[styles.input, emailFocused && styles.inputFocused]}
               placeholder="your@email.com"
-              placeholderTextColor="#94a3b8"
+              placeholderTextColor={COLORS.textMuted}
               value={email}
-              onChangeText={setEmail}
+              onChangeText={(value) => {
+                setEmail(value);
+                if (error) {
+                  setError("");
+                }
+              }}
               onFocus={() => setEmailFocused(true)}
-              onBlur={() => setEmailFocused(false)}
+              onBlur={() => {
+                setEmailFocused(false);
+                setTouched((current) => ({ ...current, email: true }));
+              }}
               autoCapitalize="none"
               keyboardType="email-address"
               textContentType="emailAddress"
             />
+            {touched.email && emailError ? (
+              <Text style={styles.fieldErrorText}>{emailError}</Text>
+            ) : null}
           </View>
 
           <View style={styles.inputGroup}>
@@ -151,14 +171,25 @@ export default function LoginScreen() {
             <TextInput
               style={[styles.input, passwordFocused && styles.inputFocused]}
               placeholder="••••••••"
-              placeholderTextColor="#94a3b8"
+              placeholderTextColor={COLORS.textMuted}
               value={password}
-              onChangeText={setPassword}
+              onChangeText={(value) => {
+                setPassword(value);
+                if (error) {
+                  setError("");
+                }
+              }}
               onFocus={() => setPasswordFocused(true)}
-              onBlur={() => setPasswordFocused(false)}
+              onBlur={() => {
+                setPasswordFocused(false);
+                setTouched((current) => ({ ...current, password: true }));
+              }}
               secureTextEntry
               textContentType="password"
             />
+            {touched.password && passwordError ? (
+              <Text style={styles.fieldErrorText}>{passwordError}</Text>
+            ) : null}
           </View>
 
           <TouchableOpacity
@@ -166,9 +197,11 @@ export default function LoginScreen() {
             onPress={handleLogin}
             disabled={loading}
             activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel="Sign in"
           >
             <LinearGradient
-              colors={["#4d33c4", "#7c5ce7"]}
+              colors={GRADIENTS.primaryAction}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
               style={styles.buttonGradient}
@@ -196,6 +229,8 @@ export default function LoginScreen() {
           <TouchableOpacity
             onPress={() => router.replace("/register")}
             style={styles.switchLink}
+            accessibilityRole="button"
+            accessibilityLabel="Go to register screen"
           >
             <Text style={styles.switchText}>
               Don't have an account? <Text style={styles.switchBold}>Sign Up</Text>
@@ -217,7 +252,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
   card: {
-    backgroundColor: "#ffffff",
+    backgroundColor: COLORS.surface,
     borderRadius: 20,
     padding: 32,
     shadowColor: "#000",
@@ -234,7 +269,7 @@ const styles = StyleSheet.create({
     width: 72,
     height: 72,
     borderRadius: 36,
-    backgroundColor: "#f0ecff",
+    backgroundColor: COLORS.violetSoft,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -244,53 +279,59 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: "800",
-    color: "#2e1d7a",
+    color: COLORS.brandDeep,
     textAlign: "center",
   },
   subtitle: {
     fontSize: 15,
-    color: "#64748b",
+    color: COLORS.textSecondary,
     textAlign: "center",
     marginBottom: 28,
     marginTop: 4,
   },
   errorBox: {
-    backgroundColor: "#fef2f2",
+    backgroundColor: COLORS.dangerSoft,
     borderWidth: 1,
-    borderColor: "#fecaca",
+    borderColor: COLORS.dangerBorder,
     borderRadius: 10,
     padding: 12,
     marginBottom: 16,
   },
   errorText: {
-    color: "#dc2626",
+    color: COLORS.danger,
     fontSize: 14,
     textAlign: "center",
   },
   inputGroup: {
     marginBottom: 16,
   },
+  fieldErrorText: {
+    color: COLORS.danger,
+    fontSize: 12,
+    marginTop: 6,
+    marginLeft: 4,
+  },
   inputLabel: {
     fontSize: 13,
     fontWeight: "600",
-    color: "#475569",
+    color: COLORS.textSecondary,
     marginBottom: 6,
     marginLeft: 2,
   },
   input: {
     backgroundColor: "#f8fafc",
     borderWidth: 1.5,
-    borderColor: "#e2e8f0",
+    borderColor: COLORS.borderMuted,
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 14,
     fontSize: 16,
-    color: "#0f172a",
+    color: COLORS.textPrimary,
   },
   inputFocused: {
-    borderColor: "#4d33c4",
+    borderColor: COLORS.brandPrimary,
     backgroundColor: "#faf9ff",
-    shadowColor: "#4d33c4",
+    shadowColor: COLORS.brandPrimary,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -309,7 +350,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   buttonText: {
-    color: "#ffffff",
+    color: COLORS.textOnBrand,
     fontSize: 16,
     fontWeight: "700",
   },
@@ -322,11 +363,11 @@ const styles = StyleSheet.create({
   dividerLine: {
     flex: 1,
     height: 1,
-    backgroundColor: "#e2e8f0",
+    backgroundColor: COLORS.borderMuted,
   },
   dividerText: {
     fontSize: 12,
-    color: "#94a3b8",
+    color: COLORS.textMuted,
     fontWeight: "600",
     textTransform: "uppercase",
     letterSpacing: 1,
@@ -334,7 +375,7 @@ const styles = StyleSheet.create({
   },
   hint: {
     fontSize: 13,
-    color: "#64748b",
+    color: COLORS.textSecondary,
     textAlign: "center",
     fontFamily: Platform.OS === "ios" ? "Menlo" : "monospace",
   },
@@ -344,10 +385,10 @@ const styles = StyleSheet.create({
   },
   switchText: {
     fontSize: 14,
-    color: "#64748b",
+    color: COLORS.textSecondary,
   },
   switchBold: {
-    color: "#4d33c4",
+    color: COLORS.brandPrimary,
     fontWeight: "700",
   },
 });

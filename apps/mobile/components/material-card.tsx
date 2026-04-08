@@ -1,5 +1,6 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
+import { COLORS } from "../lib/colors";
 import { getMaterialTypeConfig, splitTags } from "../lib/material-utils";
 import type { Material } from "../lib/studyhub-types";
 import { EntityActions } from "./entity-actions";
@@ -17,7 +18,13 @@ export function MaterialCard({ material, onOpen, onEdit, onDelete }: Props) {
 
   return (
     <View style={styles.card}>
-      <TouchableOpacity style={styles.main} onPress={onOpen} activeOpacity={0.78}>
+      <TouchableOpacity
+        style={styles.main}
+        onPress={onOpen}
+        activeOpacity={0.78}
+        accessibilityRole="button"
+        accessibilityLabel={`Open material ${material.title}`}
+      >
         <View style={styles.header}>
           <View style={[styles.iconCircle, { backgroundColor: config.bg }]}>
             <Text style={[styles.iconText, { color: config.color }]}>{config.icon}</Text>
@@ -47,7 +54,15 @@ export function MaterialCard({ material, onOpen, onEdit, onDelete }: Props) {
         ) : null}
       </TouchableOpacity>
 
-      <EntityActions compact onEdit={onEdit} onDelete={onDelete} />
+      <View style={styles.footer}>
+        <EntityActions
+          compact
+          onEdit={onEdit}
+          onDelete={onDelete}
+          editLabel={`Edit material ${material.title}`}
+          deleteLabel={`Delete material ${material.title}`}
+        />
+      </View>
     </View>
   );
 }
@@ -57,10 +72,10 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     paddingHorizontal: 14,
     borderRadius: 14,
-    backgroundColor: "#ffffff",
+    backgroundColor: COLORS.surface,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: "#f1edff",
+    borderColor: COLORS.borderSubtle,
   },
   main: { gap: 10 },
   header: { flexDirection: "row", alignItems: "flex-start", gap: 10 },
@@ -73,15 +88,22 @@ const styles = StyleSheet.create({
   },
   iconText: { fontSize: 13, fontWeight: "800" },
   copyWrap: { flex: 1 },
-  title: { fontSize: 15, fontWeight: "700", color: "#1e293b" },
-  content: { fontSize: 13, color: "#64748b", lineHeight: 19, marginTop: 6 },
-  meta: { fontSize: 13, color: "#94a3b8", marginTop: 6 },
+  title: { fontSize: 15, fontWeight: "700", color: COLORS.textPrimary },
+  content: { fontSize: 13, color: COLORS.textSecondary, lineHeight: 19, marginTop: 6 },
+  meta: { fontSize: 13, color: COLORS.textMuted, marginTop: 6 },
   tagsRow: { flexDirection: "row", flexWrap: "wrap", gap: 6, marginLeft: 42 },
+  footer: {
+    marginTop: 10,
+    paddingTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.borderSubtle,
+    alignItems: "flex-end",
+  },
   tag: {
-    backgroundColor: "#f0ecff",
+    backgroundColor: COLORS.violetSoft,
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 6,
   },
-  tagText: { fontSize: 11, color: "#4d33c4", fontWeight: "600" },
+  tagText: { fontSize: 11, color: COLORS.brandPrimary, fontWeight: "600" },
 });

@@ -38,7 +38,7 @@ export default function EditModuleScreen() {
         const data = await apiFetch<ModuleResponse>(`/api/modules/${id}`);
         setTitle(data.module.title);
         setDescription(data.module.description ?? "");
-      } catch (error: any) {
+      } catch (error) {
         const message = error instanceof ApiError ? error.message : "Failed to load module";
         setError(message);
       } finally {
@@ -142,13 +142,20 @@ export default function EditModuleScreen() {
             onPress={handleSave}
             disabled={saving}
             activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel="Save module changes"
           >
             <LinearGradient colors={["#4d33c4", "#7c5ce7"]} style={styles.saveBtnGradient}>
               <Text style={styles.saveBtnText}>{saving ? "Saving..." : "Save Changes"}</Text>
             </LinearGradient>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.cancelBtn} onPress={() => router.back()}>
+          <TouchableOpacity
+            style={styles.cancelBtn}
+            onPress={() => router.back()}
+            accessibilityRole="button"
+            accessibilityLabel="Cancel module editing"
+          >
             <Text style={styles.cancelBtnText}>Cancel</Text>
           </TouchableOpacity>
         </View>
