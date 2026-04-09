@@ -1,9 +1,19 @@
 import { useCallback, useMemo, useState } from "react";
-import { useQueryClient, type QueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient, type QueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 
 import { getUserFriendlyError } from "../../lib/api";
-import type { Material } from "../../lib/studyhub-types";
+import {
+  addFavorite,
+  appendOptimisticFavorite,
+  fetchFavorites,
+  isFavoriteMaterial,
+  removeFavorite,
+  removeOptimisticFavorite,
+  type FavoriteMaterialDetail,
+} from "../../lib/favorites";
+import { invalidateFavoritesList, queryKeys } from "../../lib/query-keys";
+import type { FavoriteItem, Material } from "../../lib/studyhub-types";
 import { useToast } from "../../lib/toast-context";
 import { getConfirmCopy, useModuleFilters } from "./module-workspace.helpers";
 import {
@@ -54,6 +64,137 @@ type NavigationActions = {
   openMaterial: (materialId: number) => void;
   editMaterial: (materialId: number) => void;
 };
+
+type FavoritesActions = {
+  isMaterialPinned: (materialId: number) => boolean;
+  isFavoriteBusy: (materialId: number) => boolean;
+  toggleMaterialFavorite: (material: Material) => void;
+};
+
+function toFavoriteDetail(
+  material: Material,
+  context: ModuleResponse | null
+): FavoriteMaterialDetail | null {
+  if (!context) {
+    return null;
+  }
+
+  return {
+    material: {
+      id: material.id,
+      title: material.title,
+      materialType: material.materialType,
+      tags: material.tags,
+    },
+    module: {
+      id: context.module.id,
+      title: context.module.title,
+    },
+    course: {
+      id: context.course.id,
+      title: context.course.title,
+    },
+  };
+}
+
+function useFavoritesActions(
+  context: ModuleResponse | null,
+  queryClient: QueryClient,
+  showToast: ReturnType<typeof useToast>["showToast"]
+): FavoritesActions {
+  const [busyMaterialId, setBusyMaterialId] = useState<number | null>(null);
+
+  const favoritesQuery = useQuery({
+    queryKey: queryKeys.favorites.lists(),
+    queryFn: fetchFavorites,
+  });
+
+  const toggleFavoriteMutation = useMutation<
+    { isPinned: boolean },
+    unknown,
+    { material: Material; isPinned: boolean },
+    { previousFavorites: FavoriteItem[] }
+  >({
+    mutationFn: async ({ material, isPinned }) => {
+      if (isPinned) {
+        await removeFavorite(material.id);
+        return { isPinned: false };
+      }
+
+      await addFavorite(material.id);
+      return { isPinned: true };
+    },
+    onMutate: async ({ material, isPinned }) => {
+      setBusyMaterialId(material.id);
+      await queryClient.cancelQueries({ queryKey: queryKeys.favorites.lists() });
+      const previousFavorites =
+        queryClient.getQueryData<FavoriteItem[]>(queryKeys.favorites.lists()) ?? [];
+
+      if (isPinned) {
+        queryClient.setQueryData<FavoriteItem[]>(
+          queryKeys.favorites.lists(),
+          removeOptimisticFavorite(previousFavorites, material.id)
+        );
+      } else {
+        const detail = toFavoriteDetail(material, context);
+        if (detail) {
+          queryClient.setQueryData<FavoriteItem[]>(
+            queryKeys.favorites.lists(),
+            appendOptimisticFavorite(previousFavorites, detail)
+          );
+        }
+      }
+
+      return { previousFavorites };
+    },
+    onError: (error, _variables, rollback) => {
+      queryClient.setQueryData(
+        queryKeys.favorites.lists(),
+        rollback?.previousFavorites ?? []
+      );
+      showToast(getUserFriendlyError(error, "Could not update favorites"), "error");
+    },
+    onSuccess: ({ isPinned }) => {
+      showToast(isPinned ? "Material pinned." : "Material unpinned.", "success", {
+        haptic: isPinned ? "default" : "destructive",
+      });
+    },
+    onSettled: async () => {
+      setBusyMaterialId(null);
+      await invalidateFavoritesList(queryClient);
+    },
+  });
+
+  const isMaterialPinned = useCallback(
+    (materialId: number) => isFavoriteMaterial(favoritesQuery.data, materialId),
+    [favoritesQuery.data]
+  );
+
+  const isFavoriteBusy = useCallback(
+    (materialId: number) => busyMaterialId === materialId,
+    [busyMaterialId]
+  );
+
+  const toggleMaterialFavorite = useCallback(
+    (material: Material) => {
+      if (busyMaterialId === material.id) {
+        return;
+      }
+
+      toggleFavoriteMutation.mutate({
+        material,
+        isPinned: isFavoriteMaterial(favoritesQuery.data, material.id),
+      });
+    },
+    [busyMaterialId, favoritesQuery.data, toggleFavoriteMutation]
+  );
+
+  return {
+    isMaterialPinned,
+    isFavoriteBusy,
+    toggleMaterialFavorite,
+  };
+}
 
 function useWorkspaceData(
   routeId: string,
@@ -189,6 +330,7 @@ export function useModuleWorkspace(routeId: string): ModuleWorkspaceViewModel {
     workspaceData.deleteMaterialMutation
   );
   const navigation = useNavigationActions(routeId, workspaceData.context, router);
+  const favorites = useFavoritesActions(workspaceData.context, queryClient, showToast);
 
   return {
     routeId,
@@ -214,6 +356,9 @@ export function useModuleWorkspace(routeId: string): ModuleWorkspaceViewModel {
     addMaterial: navigation.addMaterial,
     openMaterial: navigation.openMaterial,
     editMaterial: navigation.editMaterial,
+    isMaterialPinned: favorites.isMaterialPinned,
+    isFavoriteBusy: favorites.isFavoriteBusy,
+    toggleMaterialFavorite: favorites.toggleMaterialFavorite,
     openDeleteMaterial: deleteDialog.openDeleteMaterial,
     confirmDelete: deleteDialog.confirmDelete,
     cancelDelete: deleteDialog.cancelDelete,

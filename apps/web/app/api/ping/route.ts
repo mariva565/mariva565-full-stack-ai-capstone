@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { db } from "../../lib/db";
+import { db } from "../../../lib/db";
 import { sql } from "drizzle-orm";
 
 // Lightweight DB warmup probe — no auth required.

@@ -4506,6 +4506,113 @@ Missing features (later phase):
 **Verification:**
 - `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
 
+### Session 189 (Phase 3 smoke stabilization: web dev API runtime workaround)
+
+**Issue observed:**
+- Physical-device mobile app could reach the web server process, but auth requests still failed with the generic fallback:
+  - `"Connection failed. Is the server running?"`
+- Metro/LAN manifest was healthy (`hostUri: 192.168.1.9:8081`), so this was **not** the previous zombie Metro `127.0.0.1` issue.
+- Direct local verification showed the web dev server process on port `3000` was responding incorrectly on API routes:
+  - `GET /api/ping` -> `200` with body `{}`
+  - `POST /api/auth/login` -> `200` with body `{}`
+- Those routes should return structured JSON payloads, so the mobile client was receiving invalid auth/warmup responses.
+
+**What we changed:**
+- Updated `apps/web/package.json`:
+  - Changed the web dev script from `next dev --turbopack` to `next dev`.
+- Fixed `apps/web/app/api/ping/route.ts`:
+  - Corrected the `db` import path from `../../lib/db` to `../../../lib/db`.
+
+**Why:**
+- Current evidence points to a local dev-runtime problem rather than an API logic bug:
+  - web root page rendered normally
+  - mobile device reached port `3000`
+  - only API route payloads were malformed in the active dev server instance
+- Removing Turbopack from the dev script is a low-risk workaround to stabilize local API behavior for Phase 3 smoke testing.
+
+**Next step required:**
+- Restart the web server so the updated script takes effect:
+  - stop the current `dev:web`
+  - start `npm run dev:web` again
+- Then re-test login/register and the Phase 3 RETEST rows (`SMK-03`, `SMK-05`, `SMK-06`, `SMK-07`).
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/web typecheck` -> pass
+
+### Session 190 (Phase 3 smoke stabilization: Favorites pin/unpin entry point in module workspace)
+
+**Issue observed:**
+- Mobile users could not discover a practical way to pin materials from the module workspace list.
+- Favorites existed in app logic and in material details screen, but there was no direct `Pin/Unpin` action on material cards where users spend most of the CRUD flow.
+
+**What we changed:**
+- Added direct `Pin/Unpin` action to module workspace material cards:
+  - `apps/mobile/components/material-card.tsx`
+    - new optional props: `isPinned`, `favoriteBusy`, `onToggleFavorite`
+    - renders a dedicated favorite action button in the card footer
+- Wired favorites query + optimistic toggle mutation into module workspace view model:
+  - `apps/mobile/components/module-workspace/use-module-workspace.ts`
+    - added favorites query (`queryKeys.favorites.lists()`)
+    - added optimistic pin/unpin mutation with rollback and toast feedback
+    - exposed new view-model helpers:
+      - `isMaterialPinned(materialId)`
+      - `isFavoriteBusy(materialId)`
+      - `toggleMaterialFavorite(material)`
+- Connected screen rendering to the new view-model capabilities:
+  - `apps/mobile/components/module-workspace/module-workspace-screen.tsx`
+- Extended view-model type contract accordingly:
+  - `apps/mobile/components/module-workspace/module-workspace.types.ts`
+
+**Result:**
+- Users can now pin/unpin materials directly from module workspace cards without opening each material detail screen first.
+- This unblocks practical execution of `SMK-14` and `SMK-15` in the smoke matrix.
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
+
+### Session 191 (Phase 3 smoke stabilization: background/foreground auth hydration smoothing)
+
+**Issue observed:**
+- Returning from background frequently felt like a cold app boot (initial loader and delayed restore), instead of immediate resume.
+
+**What we changed:**
+- Updated `apps/mobile/lib/auth-context.tsx`:
+  - Added persisted user snapshot cache (`studyhub_user_snapshot_v1`) via AsyncStorage.
+  - Hydrates `user` state immediately from snapshot when a token exists.
+  - Persists snapshot on login/register/google-login and clears it on logout/auth reset.
+  - Increased startup `/api/auth/me` timeout to `20s` and forced no-cache for validation.
+  - Kept session/snapshot on transient network/server failures; only clears session on auth/forbidden errors.
+  - Preserved Neon pre-warm behavior.
+
+**Why:**
+- Startup auth validation previously hard-blocked UI on every remount and could feel like full relaunch.
+- Snapshot-first hydration improves perceived foreground resume stability in mobile smoke flows.
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
+
+### Session 192 (Phase 3 smoke execution synced: SMK-01..SMK-19 pass, SMK-20 blocked)
+
+**Run outcome reported:**
+- Physical-device smoke execution completed for all practical flows.
+- PASS: `SMK-01` through `SMK-19`.
+- BLOCKED: `SMK-20` because VoiceOver/TalkBack verification was not available in the current test environment.
+
+**What we synced in docs:**
+- Updated `docs/mobile-smoke-test-matrix.md`:
+  - Status line now reflects `SMK-01..SMK-19` pass state.
+  - Converted prior RETEST/PENDING rows to PASS where re-run was completed.
+  - Marked `SMK-20` as BLOCKED with explicit reason.
+  - Added Run 2 summary.
+- Updated `docs/mobile-execution-checklist.md`:
+  - Marked Phase 3 smoke quality gate task as complete for covered scenarios.
+  - Updated acceptance criteria for key flow pass.
+  - Updated next recommended task to telemetry integration + release checklist.
+
+**Next step:**
+- Proceed to telemetry integration (Sentry or equivalent), then release checklist.
+- Keep `SMK-20` tracked as BLOCKED until accessibility test environment is available.
+
 ### Session 188 (Phase 3 smoke stabilization: auth branding asset fix + broader DB warmup coverage)
 
 **Issue observed:**

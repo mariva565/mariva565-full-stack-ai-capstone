@@ -11,9 +11,20 @@ type Props = {
   onOpen: () => void;
   onEdit: () => void;
   onDelete: () => void;
+  isPinned?: boolean;
+  favoriteBusy?: boolean;
+  onToggleFavorite?: () => void;
 };
 
-export function MaterialCard({ material, onOpen, onEdit, onDelete }: Props) {
+export function MaterialCard({
+  material,
+  onOpen,
+  onEdit,
+  onDelete,
+  isPinned = false,
+  favoriteBusy = false,
+  onToggleFavorite,
+}: Props) {
   const config = getMaterialTypeConfig(material.materialType);
   const tags = splitTags(material.tags);
 
@@ -63,6 +74,24 @@ export function MaterialCard({ material, onOpen, onEdit, onDelete }: Props) {
       </TouchableOpacity>
 
       <View style={styles.footer}>
+        {onToggleFavorite ? (
+          <TouchableOpacity
+            style={[styles.favoriteBtn, isPinned ? styles.favoriteBtnDanger : styles.favoriteBtnNeutral]}
+            onPress={onToggleFavorite}
+            activeOpacity={0.8}
+            disabled={favoriteBusy}
+            accessibilityRole="button"
+            accessibilityLabel={
+              isPinned ? `Unpin material ${material.title}` : `Pin material ${material.title}`
+            }
+            accessibilityHint="Toggles quick access in Favorites tab"
+          >
+            <Text style={styles.favoriteBtnText} maxFontSizeMultiplier={1.2}>
+              {favoriteBusy ? "Updating..." : isPinned ? "Unpin" : "Pin"}
+            </Text>
+          </TouchableOpacity>
+        ) : null}
+
         <EntityActions
           compact
           onEdit={onEdit}
@@ -110,7 +139,30 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     borderTopWidth: 1,
     borderTopColor: COLORS.borderSubtle,
-    alignItems: "flex-end",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  favoriteBtn: {
+    minWidth: 74,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 8,
+    borderWidth: 1,
+  },
+  favoriteBtnNeutral: {
+    backgroundColor: COLORS.violetSoft,
+    borderColor: COLORS.violetBorder,
+  },
+  favoriteBtnDanger: {
+    backgroundColor: COLORS.dangerSoftAlt,
+    borderColor: COLORS.dangerBorderSoft,
+  },
+  favoriteBtnText: {
+    fontSize: 12,
+    fontWeight: "700",
+    color: COLORS.brandPrimary,
+    textAlign: "center",
   },
   tag: {
     backgroundColor: COLORS.violetSoft,

@@ -172,12 +172,12 @@ Owner: Mobile stream
 ## Phase 3 - Quality Gates and Optional Features
 
 ### Tasks
-- [ ] Quality gates: mobile e2e smoke (auth + core CRUD + offline/online recovery).
-  - Execution matrix prepared: `docs/mobile-smoke-test-matrix.md` (ready for physical-device run logging).
-  - Current run status (2026-04-09, in progress):
-    - PASS: `SMK-01`, `SMK-02`, `SMK-04`
-    - RETEST: `SMK-03`, `SMK-05`, `SMK-06`, `SMK-07` — root cause confirmed (Neon DB cold start, free tier); fix applied in Session 187 (mutation timeout 45s + warmupBackend() + `/api/ping` probe).
-    - Metro `Failed to start watch mode`: mitigated via narrowed `watchFolders` (Session 186); no longer blocking.
+- [x] Quality gates: mobile e2e smoke (auth + core CRUD + offline/online recovery).
+  - Execution matrix synced in `docs/mobile-smoke-test-matrix.md`.
+  - Current run status (2026-04-09, Session 192):
+    - PASS: `SMK-01` through `SMK-19`
+    - BLOCKED: `SMK-20` (VoiceOver/TalkBack verification not available in current device environment)
+    - Favorites flow pass includes direct pin/unpin entry point in module workspace cards (Session 190).
 - [ ] Quality gates: crash/error telemetry integration (Sentry or equivalent).
 - [ ] Release checklist for mobile handoff and smoke verification.
 - [ ] Product polish: Settings screen in Profile flow (not extra bottom tab), with initial scope theme mode (system/light/dark), haptics toggle, app version/about links, and account actions entry points.
@@ -185,12 +185,11 @@ Owner: Mobile stream
 - [ ] DEFERRED optional feature: Mobile AI tools entry points (summarize/quiz/chat or read-only outputs), after Phases 1-2 pass.
 
 ### Acceptance Criteria
-- [ ] Key mobile flows pass smoke suite without regressions.
+- [x] Key mobile flows pass smoke suite without regressions (`SMK-01` through `SMK-19`).
 - [ ] Settings screen exists in mobile profile flow with persisted basic app preferences.
 - [ ] README + dev-log are synced with the final mobile standard.
 
 ## Next Recommended Task
 
-- Re-run `SMK-03`, `SMK-05`, `SMK-06`, `SMK-07` on a physical device after the Session 187 Neon cold-start fix (mutation timeout 45s + warmupBackend + /api/ping probe).
-- If all four pass: proceed to telemetry integration (Sentry or equivalent) and release checklist.
-- If any still fail: capture exact timing — check whether Neon wake-up exceeds 45s (unlikely but possible) or whether there is a separate LAN/WiFi congestion issue.
+- Proceed to telemetry integration (Sentry or equivalent) and release checklist.
+- Keep `SMK-20` tracked as `BLOCKED` until VoiceOver/TalkBack test environment is available.

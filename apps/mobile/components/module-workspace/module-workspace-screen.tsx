@@ -209,6 +209,9 @@ function MaterialsSection({ viewModel, offline }: MaterialsSectionProps) {
               onOpen={() => viewModel.openMaterial(material.id)}
               onEdit={() => viewModel.editMaterial(material.id)}
               onDelete={() => viewModel.openDeleteMaterial(material)}
+              isPinned={viewModel.isMaterialPinned(material.id)}
+              favoriteBusy={viewModel.isFavoriteBusy(material.id)}
+              onToggleFavorite={() => viewModel.toggleMaterialFavorite(material)}
             />
           ))}
         </View>

@@ -181,6 +181,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 16,
+    paddingTop: 26,
   },
   iconContainer: {
     alignItems: "center",
