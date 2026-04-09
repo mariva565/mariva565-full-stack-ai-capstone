@@ -4506,6 +4506,28 @@ Missing features (later phase):
 **Verification:**
 - `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
 
+### Session 185 (Phase 3 kickoff: mobile smoke quality-gate package)
+
+**What we changed:**
+- Started Phase 3 quality gates with a dedicated physical-device smoke execution artifact:
+  - `docs/mobile-smoke-test-matrix.md`
+  - Includes preflight setup, test-data assumptions, 20 smoke scenarios, pass/fail logging columns, and exit criteria.
+- Coverage in the matrix:
+  - auth/session
+  - courses/modules/materials CRUD
+  - favorites parity and quick navigation
+  - offline/online recovery
+  - AppState background/foreground recovery
+  - dirty-form back/discard behavior
+  - accessibility sanity pass
+- Updated `docs/mobile-execution-checklist.md`:
+  - Added explicit reference that smoke execution matrix is prepared and ready for run logging.
+  - Updated next recommended task to execute the matrix on a physical device and then proceed to telemetry.
+
+**Status:**
+- Smoke matrix setup complete.
+- Physical-device smoke execution still pending (rows are `PENDING` until run).
+
 ### Session 184 (Dashboard branding final polish after visual review)
 
 **What we changed:**

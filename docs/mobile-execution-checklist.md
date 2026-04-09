@@ -173,6 +173,7 @@ Owner: Mobile stream
 
 ### Tasks
 - [ ] Quality gates: mobile e2e smoke (auth + core CRUD + offline/online recovery).
+  - Execution matrix prepared: `docs/mobile-smoke-test-matrix.md` (ready for physical-device run logging).
 - [ ] Quality gates: crash/error telemetry integration (Sentry or equivalent).
 - [ ] Release checklist for mobile handoff and smoke verification.
 - [ ] Product polish: Settings screen in Profile flow (not extra bottom tab), with initial scope theme mode (system/light/dark), haptics toggle, app version/about links, and account actions entry points.
@@ -186,4 +187,4 @@ Owner: Mobile stream
 
 ## Next Recommended Task
 
-- Start Phase 3 quality gates: mobile smoke verification for auth + core CRUD + offline/online recovery, then telemetry integration.
+- Execute `docs/mobile-smoke-test-matrix.md` on physical device, record PASS/FAIL per row, fix regressions, then proceed to telemetry integration.
