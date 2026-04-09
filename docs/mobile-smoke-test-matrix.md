@@ -1,8 +1,8 @@
 # Mobile Smoke Test Matrix (Phase 3)
 
-Last updated: 2026-04-09  
+Last updated: 2026-04-09 (Session 187)
 Owner: Mobile stream  
-Status: In progress (run started; physical-device execution active)
+Status: In progress — RETEST required for SMK-03, SMK-05, SMK-06, SMK-07 after Neon cold-start fix
 
 ## Goal
 
@@ -41,11 +41,11 @@ Mark each item with `PASS`, `FAIL`, or `BLOCKED` and add short notes.
 |---|---|---|---|---|---|
 | SMK-01 | Auth | Login with valid credentials | Lands on Courses tab, no crash, data loads | `PASS` | Login succeeds; intermittent first-attempt timeout observed once (retry succeeds). |
 | SMK-02 | Auth | Logout from Profile tab | Returns to Login screen, protected tabs blocked | `PASS` | Logout returned to login screen as expected. |
-| SMK-03 | Auth | Register new account | Account created, routed to authenticated area | `FAIL` | First submit timed out with failed registration message; second submit returned \"email already exists\" (likely first request succeeded server-side). |
+| SMK-03 | Auth | Register new account | Account created, routed to authenticated area | `RETEST` | Root cause identified (Neon cold start). Fix applied: mutation timeout 25s→45s + warmupBackend(). Needs re-run. |
 | SMK-04 | Session | App restart after login | Session persists, user stays authenticated | `PASS` | Session remained authenticated after full app restart. |
-| SMK-05 | Courses CRUD | Create course | New course appears in list without stale/duplicate state | `FAIL` | Course creation succeeded, but timeout errors appeared during flow. |
-| SMK-06 | Courses CRUD | Edit course | Updated course values persist and render correctly | `FAIL` | Course edit succeeded, but timeout errors appeared repeatedly. |
-| SMK-07 | Courses CRUD | Delete course | Course removed, confirm flow works, no orphan UI state | `FAIL` | Delete completed server-side (verified via admin), but mobile showed timeout/red error. |
+| SMK-05 | Courses CRUD | Create course | New course appears in list without stale/duplicate state | `RETEST` | Root cause identified (Neon cold start). Fix applied: mutation timeout 25s→45s + warmupBackend(). Needs re-run. |
+| SMK-06 | Courses CRUD | Edit course | Updated course values persist and render correctly | `RETEST` | Root cause identified (Neon cold start). Fix applied: mutation timeout 25s→45s + warmupBackend(). Needs re-run. |
+| SMK-07 | Courses CRUD | Delete course | Course removed, confirm flow works, no orphan UI state | `RETEST` | Root cause identified (Neon cold start). Fix applied: mutation timeout 25s→45s + warmupBackend(). Needs re-run. |
 | SMK-08 | Modules CRUD | Add module in course | Module appears in course details and module workspace | `PENDING` | |
 | SMK-09 | Modules CRUD | Edit module | Changes persist across course/module screens | `PENDING` | |
 | SMK-10 | Modules CRUD | Delete module | Module removed from course and workspace lists | `PENDING` | |
@@ -68,9 +68,19 @@ Mark each item with `PASS`, `FAIL`, or `BLOCKED` and add short notes.
 
 ## Run Log
 
-- Run date: 2026-04-09
-- Tester: Pending
-- Device: Pending
-- OS version: Pending
-- Expo Go version: Pending
-- Result summary: Run started. Preflight verified (`localhost:3000` and `localhost:8081` responding with HTTP 200). Intermittent first-attempt auth timeout observed once; retry succeeded.
+### Run 1 (2026-04-09)
+- Result: PASS: SMK-01, SMK-02, SMK-04. FAIL: SMK-03, SMK-05, SMK-06, SMK-07.
+- Root cause (Session 186): Unhandled promise rejections causing red Uncaught overlay. Fixed via try/catch hardening + mutate() instead of mutateAsync().
+- Remaining blocker after Session 186: Intermittent mutation timeouts (action succeeds server-side, client times out).
+
+### Root Cause Analysis (Session 187)
+- Backend uses `drizzle-orm/neon-http` (stateless HTTP driver). Every DB query is a fresh HTTP request to Neon serverless.
+- Neon free tier suspends DB after ~5 minutes of inactivity. Wake-up takes 5–30+ seconds.
+- 25s mutation timeout was not enough to survive a full cold-start round-trip.
+- Pattern: server completes the action, client already aborted → "timeout" on mobile, success server-side.
+
+### Fix applied (Session 187)
+- `apps/mobile/lib/api.ts`: mutation timeout 25s → 45s.
+- `apps/web/app/api/ping/route.ts`: new DB-touching warmup probe (no auth, `SELECT 1`).
+- `apps/mobile/lib/auth-context.tsx`: `warmupBackend()` fired after login + auto-login to pre-warm DB before first mutation.
+- Typecheck: pass.

@@ -49,7 +49,25 @@
       "Bash(npx expo:*)",
       "Bash(taskkill /PID 7652 /F)",
       "Bash(cmd.exe /c \"taskkill /PID 7652 /F\")",
-      "Bash(npx eas:*)"
+      "Bash(npx eas:*)",
+      "Bash(findstr \":8081 \\\\|:3000 \\\\|:19000\\\\|:19001\\\\|:19002\")",
+      "Bash(tasklist /FI \"PID eq 17544\")",
+      "Bash(powershell -Command \"Get-Process -Id 17544 | Select-Object Id,Name,CPU,WorkingSet,Path\")",
+      "Bash(powershell -Command \"\\(Get-NetTCPConnection -LocalPort 8081 -ErrorAction SilentlyContinue\\).OwningProcess\")",
+      "Bash(curl -s --max-time 5 \"http://localhost:8081/status\")",
+      "Bash(curl -s --max-time 15 \"http://localhost:8081/\")",
+      "Bash(curl -s --max-time 5 \"http://localhost:8081/_expo/loading\")",
+      "Bash(curl -s --max-time 60 \"http://localhost:8081/index.bundle?platform=android&dev=true&hot=false&lazy=true\")",
+      "Bash(curl -s --max-time 10 -H \"Expo-Platform: android\" \"http://localhost:8081/\")",
+      "Bash(ipconfig)",
+      "Bash(taskkill /F /PID 17544)",
+      "Bash(taskkill //F //PID 17544)",
+      "Bash(node_modules/.bin/expo install:*)",
+      "Bash(cmd /c \"cd /d \\\\\"c:\\\\Users\\\\mariy\\\\Projects\\\\20260327 Capstone\\\\apps\\\\mobile\\\\\" && npx expo install expo-application\")",
+      "Bash(cmd /c \"cd /d \\\\\"c:\\\\Users\\\\mariy\\\\Projects\\\\20260327 Capstone\\\\apps\\\\mobile\\\\\" && npx --yes expo install expo-application 2>&1\")",
+      "Bash(cmd /c \"npm install --workspace @studyhub/mobile expo-application@~6.1.1 2>&1\")",
+      "Bash(cmd /c \"cd /d \\\\\"c:\\\\Users\\\\mariy\\\\Projects\\\\20260327 Capstone\\\\\" && npm install --workspace @studyhub/mobile expo-application\")",
+      "Bash(echo \"exit: $?\")"
     ],
     "additionalDirectories": [
       "c:\\Users\\mariy\\Projects\\Visual-Studio-Capstone-Project-StudyHub-interface-v3\\public"

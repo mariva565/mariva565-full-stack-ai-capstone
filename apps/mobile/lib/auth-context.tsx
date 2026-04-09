@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from "react";
-import { apiFetch, setToken, removeToken, getToken, clearApiCache } from "./api";
+import { apiFetch, setToken, removeToken, getToken, clearApiCache, warmupBackend } from "./api";
 import { queryClient } from "./query-client";
 
 type User = {
@@ -28,12 +28,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     (async () => {
       const token = await getToken();
       if (!token) {
+        // Pre-warm Neon while the user is on the auth screen so the first
+        // login/register mutation is less likely to hit a cold start.
+        warmupBackend();
         setIsLoading(false);
         return;
       }
       try {
         const data = await apiFetch<{ user: User }>("/api/auth/me");
         setUser(data.user);
+        // Pre-warm Neon DB so mutations don't hit a cold start after session restore.
+        warmupBackend();
       } catch {
         await clearApiCache();
         await removeToken();
@@ -53,6 +58,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     );
     await setToken(data.token);
     setUser(data.user);
+    // Pre-warm Neon DB immediately after login so subsequent mutations are fast.
+    warmupBackend();
   }, []);
 
   const register = useCallback(async (email: string, name: string, password: string) => {
@@ -64,6 +71,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     );
     await setToken(data.token);
     setUser(data.user);
+    // Keep post-auth mutations fast for freshly registered users too.
+    warmupBackend();
   }, []);
 
   const loginWithGoogle = useCallback(async (token: string, type: "id_token" | "access_token") => {
@@ -75,6 +84,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     );
     await setToken(data.token);
     setUser(data.user);
+    warmupBackend();
   }, []);
 
   const logout = useCallback(async () => {

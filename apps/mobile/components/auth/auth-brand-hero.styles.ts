@@ -15,9 +15,9 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 10,
   },
-  logo: {
-    width: 54,
-    height: 54,
+  mascot: {
+    width: 96,
+    height: 96,
   },
   brandTitle: {
     fontSize: 42,

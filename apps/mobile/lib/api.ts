@@ -7,7 +7,8 @@ const TOKEN_KEY = "studyhub_token";
 const API_CACHE_PREFIX = "studyhub_api_cache_v1";
 const DEFAULT_CACHE_TTL_MS = 1000 * 60 * 10;
 const DEFAULT_GET_REQUEST_TIMEOUT_MS = 1000 * 6;
-const DEFAULT_MUTATION_REQUEST_TIMEOUT_MS = 1000 * 25;
+// 45s covers Neon serverless cold-start (free tier can take 20-30s+ to wake).
+const DEFAULT_MUTATION_REQUEST_TIMEOUT_MS = 1000 * 45;
 const CACHE_INDEX_LIMIT = 200;
 
 function getDevHostFromExpo(): string | null {
@@ -424,4 +425,16 @@ export async function clearApiCache(): Promise<void> {
   const token = await getToken();
   const scope = await getCacheScope(token);
   await clearCacheScope(scope);
+}
+
+// Fire-and-forget DB warmup. Hits /api/ping (no auth) to pre-warm the
+// Neon serverless connection so subsequent mutations don't hit a cold start.
+export function warmupBackend(): void {
+  void apiFetch<{ ok: boolean }>("/api/ping", {
+    auth: false,
+    // Give the warmup probe extra time — it has to survive a full cold start.
+    timeoutMs: 1000 * 60,
+  }).catch(() => {
+    // Best-effort; ignore errors so this never blocks the auth flow.
+  });
 }

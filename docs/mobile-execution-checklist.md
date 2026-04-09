@@ -174,6 +174,10 @@ Owner: Mobile stream
 ### Tasks
 - [ ] Quality gates: mobile e2e smoke (auth + core CRUD + offline/online recovery).
   - Execution matrix prepared: `docs/mobile-smoke-test-matrix.md` (ready for physical-device run logging).
+  - Current run status (2026-04-09, in progress):
+    - PASS: `SMK-01`, `SMK-02`, `SMK-04`
+    - RETEST: `SMK-03`, `SMK-05`, `SMK-06`, `SMK-07` — root cause confirmed (Neon DB cold start, free tier); fix applied in Session 187 (mutation timeout 45s + warmupBackend() + `/api/ping` probe).
+    - Metro `Failed to start watch mode`: mitigated via narrowed `watchFolders` (Session 186); no longer blocking.
 - [ ] Quality gates: crash/error telemetry integration (Sentry or equivalent).
 - [ ] Release checklist for mobile handoff and smoke verification.
 - [ ] Product polish: Settings screen in Profile flow (not extra bottom tab), with initial scope theme mode (system/light/dark), haptics toggle, app version/about links, and account actions entry points.
@@ -187,4 +191,6 @@ Owner: Mobile stream
 
 ## Next Recommended Task
 
-- Execute `docs/mobile-smoke-test-matrix.md` on physical device, record PASS/FAIL per row, fix regressions, then proceed to telemetry integration.
+- Re-run `SMK-03`, `SMK-05`, `SMK-06`, `SMK-07` on a physical device after the Session 187 Neon cold-start fix (mutation timeout 45s + warmupBackend + /api/ping probe).
+- If all four pass: proceed to telemetry integration (Sentry or equivalent) and release checklist.
+- If any still fail: capture exact timing — check whether Neon wake-up exceeds 45s (unlikely but possible) or whether there is a separate LAN/WiFi congestion issue.

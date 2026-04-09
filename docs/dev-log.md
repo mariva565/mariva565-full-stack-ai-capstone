@@ -4506,6 +4506,98 @@ Missing features (later phase):
 **Verification:**
 - `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
 
+### Session 188 (Phase 3 smoke stabilization: auth branding asset fix + broader DB warmup coverage)
+
+**Issue observed:**
+- Mobile auth screens started failing to bundle after the legacy `logo.png` asset was removed from `apps/mobile/assets/branding`.
+- Metro error:
+  - `Unable to resolve "../../assets/branding/logo.png" from "apps/mobile/components/auth/auth-brand-hero.tsx"`
+- At the same time, the auth header regressed visually because it rendered the wrong visual asset instead of the mascot.
+
+**What we changed:**
+- Updated `apps/mobile/components/auth/auth-brand-hero.tsx`:
+  - Replaced the broken `logo.png` import with the remaining `mascot.png` branding asset.
+  - Marked the mascot image as decorative (`accessible={false}`).
+- Updated `apps/mobile/components/auth/auth-brand-hero.styles.ts`:
+  - Renamed the image style from `logo` to `mascot`.
+  - Increased the auth hero image size so the mascot reads clearly again on login/register.
+- Broadened Phase 3 Neon pre-warm coverage in `apps/mobile/lib/auth-context.tsx`:
+  - Fire `warmupBackend()` on unauthenticated app start so the login/register screen can wake Neon in the background before the first auth mutation.
+  - Fire `warmupBackend()` after successful register and Google login as well (email login + auto-login were already covered in Session 187).
+
+**Why this matters for Phase 3:**
+- Restores Android bundle compilation so physical-device smoke testing can continue.
+- Removes a misleading auth-screen visual regression while keeping the branding aligned with the intended mascot-first mobile look.
+- Further reduces the chance that the first auth mutation hits a Neon free-tier cold start.
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
+- Android bundle probe via Metro LAN URL -> `200 OK`
+- `rg --line-number --hidden --glob '!node_modules/**' "logo\\.png" apps/mobile` -> no remaining mobile references
+
+### Session 187 (Phase 3 smoke stabilization: Neon cold-start root cause + fix)
+
+**Root cause identified:**
+- All four FAIL rows (`SMK-03`, `SMK-05`, `SMK-06`, `SMK-07`) share the same pattern: action completes server-side, but mobile shows timeout error.
+- Backend uses `drizzle-orm/neon-http` — a stateless HTTP driver. Every DB query is a separate HTTP request to Neon serverless.
+- Neon free tier suspends the database after ~5 minutes of inactivity. Wake-up takes 5–30+ seconds.
+- The previous 25s mutation timeout was not enough to survive a full cold-start round-trip from mobile → Next.js → Neon wake → DB query → response.
+
+**What we changed:**
+- `apps/mobile/lib/api.ts`:
+  - Increased `DEFAULT_MUTATION_REQUEST_TIMEOUT_MS` from `25s` to `45s` (covers Neon cold-start window on free tier).
+  - Added exported `warmupBackend()` — fire-and-forget GET to `/api/ping` (60s timeout, no auth) to proactively wake the DB.
+- `apps/web/app/api/ping/route.ts` (NEW):
+  - Lightweight DB-touching probe: `SELECT 1` via Drizzle, no auth, returns `{ ok: true, latency: N }`.
+  - Used exclusively for pre-warming; not an application endpoint.
+- `apps/mobile/lib/auth-context.tsx`:
+  - `warmupBackend()` called after successful explicit login (email/password).
+  - `warmupBackend()` called after successful auto-login (stored token → `/api/auth/me`).
+  - Both calls are fire-and-forget; never block the auth flow.
+
+**Smoke status after fix:**
+- PASS: `SMK-01`, `SMK-02`, `SMK-04`
+- RETEST (fix applied): `SMK-03`, `SMK-05`, `SMK-06`, `SMK-07`
+- PENDING: `SMK-08` through `SMK-20`
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/mobile typecheck` → pass
+
+---
+
+### Session 186 (Phase 3 smoke execution: timeout reliability + runtime crash hardening)
+
+**What we changed:**
+- Continued Phase 3 smoke execution on physical device and logged initial outcomes in `docs/mobile-smoke-test-matrix.md`:
+  - PASS: `SMK-01`, `SMK-02`, `SMK-04`
+  - FAIL: `SMK-03`, `SMK-05`, `SMK-06`, `SMK-07`
+  - Core observed issue: intermittent request timeouts despite server-side success in some CRUD/auth actions.
+- Hardened mobile networking timeout behavior in `apps/mobile/lib/api.ts`:
+  - Increased mutation timeout window from `12s` to `25s`.
+  - Kept GET timeout shorter (`6s`) to avoid long hangs on read flows.
+  - Improved timeout message for mutations to indicate action may have succeeded server-side.
+- Fixed unhandled promise paths that were causing red `Uncaught (in promise)` runtime overlays:
+  - `apps/mobile/components/courses-list/use-courses-list.ts`
+    - delete confirm flow now awaits mutation in `try/catch/finally` instead of unhandled `.finally(...)` chain.
+  - `apps/mobile/components/confirm-modal.tsx`
+    - defensive `catch` in confirm handler to prevent promise rejection bubbling to runtime overlay.
+  - `apps/mobile/app/(tabs)/favorites.tsx`
+    - switched unpin action call to `mutate(...)` (callback-managed errors) instead of bare `mutateAsync(...)`.
+  - `apps/mobile/components/courses-list/courses-list.types.ts`
+    - aligned `confirmDeleteCourse` signature with async behavior.
+- Addressed intermittent Metro startup watcher crash:
+  - `apps/mobile/metro.config.js`
+  - narrowed `watchFolders` to required workspace folders (instead of watching full monorepo root) to reduce Windows watcher overload (`Failed to start watch mode`).
+- Added VS Code run configurations for quicker local startup:
+  - `.vscode/launch.json`
+  - `Run: dev:web`, `Run: dev:mobile:lan`, and compound `Run: Web + Mobile (LAN)`.
+
+**Known open issue after fixes:**
+- Intermittent timeout behavior still observed during smoke reruns; requires another focused pass on network stability and retry strategy before Phase 3 smoke can be marked complete.
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
+
 ### Session 185 (Phase 3 kickoff: mobile smoke quality-gate package)
 
 **What we changed:**
