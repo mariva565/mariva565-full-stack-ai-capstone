@@ -50,6 +50,7 @@ Owner: Mobile stream
 - [x] UX hardening: skeleton loading states on key screens.
 - [x] UX hardening: explicit offline/empty/error states.
 - [x] UX hardening: haptics for success/destructive actions.
+- [ ] UX hardening: dashboard branding cleanup (remove decorative emoji markers and align `StudyHub` heading typography/color with auth/web branding).
 - [ ] UX hardening: hardware back behavior consistency in CRUD flows.
 - [ ] UX hardening: accessibility checks (Dynamic Type + VoiceOver/TalkBack).
 
@@ -100,6 +101,18 @@ Owner: Mobile stream
 - `apps/mobile/components/confirm-modal.tsx`
 - Kept API contracts, mutation behavior, and query/cache lifecycle behavior unchanged.
 
+### Completed UX slice (2026-04-09, auth branding harmony)
+- Added mobile auth branding hero with desktop-aligned visual identity:
+- `apps/mobile/components/auth/auth-brand-hero.tsx`
+- `apps/mobile/components/auth/auth-brand-hero.styles.ts`
+- Added local branding assets for mobile auth screens:
+- `apps/mobile/assets/branding/logo.png`
+- `apps/mobile/assets/branding/mascot.png`
+- Wired branded hero into auth entry screens:
+- `apps/mobile/components/login/login-screen.tsx`
+- `apps/mobile/components/register/register-screen.tsx`
+- Added one-sentence app explanation in login/register headers while keeping existing auth flow unchanged.
+
 ### Acceptance Criteria
 - [x] High-traffic files are under 300 lines and major functions stay under 60 lines.
 - [ ] Core CRUD/favorites flows are stable with improved perceived UX.
@@ -121,4 +134,4 @@ Owner: Mobile stream
 
 ## Next Recommended Task
 
-- Continue Phase 2 UX hardening with hardware back behavior consistency in CRUD flows.
+- Continue Phase 2 UX hardening with hardware back behavior consistency in CRUD flows, then complete dashboard branding cleanup (`StudyHub` title + emoji removal).

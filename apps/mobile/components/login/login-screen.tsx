@@ -3,6 +3,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Stack } from "expo-router";
 
 import { GoogleSignInButton } from "../auth/GoogleSignInButton";
+import { AuthBrandHero } from "../auth/auth-brand-hero";
 import { COLORS, GRADIENTS } from "../../lib/colors";
 import { styles } from "./login-screen.styles";
 import type { LoginScreenViewModel } from "./use-login-screen";
@@ -12,13 +13,10 @@ type LoginScreenProps = { viewModel: LoginScreenViewModel };
 function AuthHeader() {
   return (
     <>
-      <View style={styles.logoContainer}>
-        <View style={styles.logoCircle}>
-          <Text style={styles.logoEmoji}>{"\u{1F4DA}"}</Text>
-        </View>
-      </View>
-      <Text style={styles.title}>StudyHub</Text>
-      <Text style={styles.subtitle}>Sign in to continue</Text>
+      <AuthBrandHero
+        subtitle="Sign in to continue"
+        description="Your personal learning hub for courses, modules, and study materials in one place."
+      />
     </>
   );
 }
@@ -152,7 +150,7 @@ function LoginCard({ viewModel }: LoginScreenProps) {
 export function LoginScreen({ viewModel }: LoginScreenProps) {
   return (
     <LinearGradient
-      colors={GRADIENTS.heroStrong}
+      colors={GRADIENTS.authHero}
       style={styles.gradient}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}

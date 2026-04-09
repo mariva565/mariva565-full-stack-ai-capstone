@@ -3,6 +3,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Stack } from "expo-router";
 
 import { GoogleSignInButton } from "../auth/GoogleSignInButton";
+import { AuthBrandHero } from "../auth/auth-brand-hero";
 import { COLORS, GRADIENTS } from "../../lib/colors";
 import { styles } from "./register-screen.styles";
 import type { RegisterScreenViewModel } from "./use-register-screen";
@@ -12,13 +13,10 @@ type RegisterScreenProps = { viewModel: RegisterScreenViewModel };
 function RegisterHeader() {
   return (
     <>
-      <View style={styles.logoContainer}>
-        <View style={styles.logoCircle}>
-          <Text style={styles.logoEmoji}>{"\u{1F4DA}"}</Text>
-        </View>
-      </View>
-      <Text style={styles.title}>Create Account</Text>
-      <Text style={styles.subtitle}>Join StudyHub today</Text>
+      <AuthBrandHero
+        subtitle="Join StudyHub today"
+        description="Your personal learning hub for courses, modules, and study materials in one place."
+      />
     </>
   );
 }
@@ -167,7 +165,7 @@ function RegisterCard({ viewModel }: RegisterScreenProps) {
 export function RegisterScreen({ viewModel }: RegisterScreenProps) {
   return (
     <LinearGradient
-      colors={GRADIENTS.heroStrong}
+      colors={GRADIENTS.authHero}
       style={styles.gradient}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}

@@ -4506,6 +4506,24 @@ Missing features (later phase):
 **Verification:**
 - `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
 
+### Session 181 (Checkpoint: Phase 2 continuity + dashboard branding backlog)
+
+**What we changed:**
+- Added an explicit continuity checkpoint so current UI polish detours do not hide remaining Phase 2 priorities.
+- Updated `docs/mobile-execution-checklist.md` Phase 2 tasks with a tracked UI-hardening item:
+  - dashboard branding cleanup:
+    - remove decorative emoji markers
+    - align `StudyHub` heading typography/color with auth/web brand language
+- Updated "Next Recommended Task" in checklist to keep sequence clear:
+  - finish hardware back consistency first
+  - then execute dashboard branding cleanup
+
+**Why:**
+- Preserve momentum on core UX hardening while keeping requested branding fixes visible and scheduled.
+
+**Verification:**
+- Docs-only continuity update (no runtime code changes in this session).
+
 ### Session 181 (Phase 1 manual verification pass + Expo Router warning cleanup)
 
 **Manual device verification result (reported):**
@@ -5272,3 +5290,33 @@ Sprint 2 - Production standards
 
 **Verification:**
 - Docs-only update (no runtime code changes in this session).
+
+### Session 180 (Auth UI branding harmony: logo, mascot, signature title)
+
+**What we changed:**
+- Implemented lightweight branding polish on mobile auth entry screens (without changing auth behavior):
+  - Added reusable branded header component:
+    - `apps/mobile/components/auth/auth-brand-hero.tsx`
+    - `apps/mobile/components/auth/auth-brand-hero.styles.ts`
+  - Added local branding assets for mobile:
+    - `apps/mobile/assets/branding/logo.png`
+    - `apps/mobile/assets/branding/mascot.png`
+  - Wired branded header into:
+    - `apps/mobile/components/login/login-screen.tsx`
+    - `apps/mobile/components/register/register-screen.tsx`
+- Updated auth header content to align with desktop branding:
+  - Signature-style `StudyHub` title with accent color split (`Study`/`Hub`)
+  - Logo + mascot shown together in header
+  - One-sentence explanation of app purpose:
+    - "Your personal learning hub for courses, modules, and study materials in one place."
+- Removed obsolete emoji-logo style blocks from:
+  - `apps/mobile/components/login/login-screen.styles.ts`
+  - `apps/mobile/components/register/register-screen.styles.ts`
+
+**Kept intact:**
+- Login/register API contracts and flow
+- React Query/cache/lifecycle behavior
+- Existing validation, mutations, and navigation behavior
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass

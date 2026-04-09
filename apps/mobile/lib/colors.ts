@@ -48,5 +48,6 @@ export const COLORS = {
 export const GRADIENTS = {
   hero: [COLORS.brandDeep, COLORS.brandPrimary] as const,
   heroStrong: [COLORS.brandDeep, COLORS.brandPrimary, COLORS.brandAccent] as const,
+  authHero: [COLORS.brandDeep, "#3f29a7", COLORS.brandPrimary] as const,
   primaryAction: [COLORS.brandPrimary, COLORS.brandAccent] as const,
 } as const;

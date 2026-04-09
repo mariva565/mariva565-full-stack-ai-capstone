@@ -1,14 +1,52 @@
-import { StyleSheet } from "react-native";
+import { Platform, StyleSheet } from "react-native";
 
 import { COLORS } from "../../lib/colors";
 
+const signatureFont = Platform.select({
+  ios: "Times New Roman",
+  android: "serif",
+  default: undefined,
+});
+
 export const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.canvas },
-  headerGradient: { paddingTop: 56, paddingBottom: 20, paddingHorizontal: 20 },
+  headerGradient: { paddingTop: 48, paddingBottom: 20, paddingHorizontal: 20 },
   headerContent: {
-    flexDirection: "row",
+    gap: 14,
+    flexDirection: "column",
     justifyContent: "flex-start",
     alignItems: "flex-start",
+  },
+  brandRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  brandLogo: {
+    width: 34,
+    height: 34,
+  },
+  brandMascot: {
+    width: 36,
+    height: 36,
+  },
+  brandTitle: {
+    fontSize: 30,
+    lineHeight: 32,
+    color: COLORS.textOnBrand,
+    fontWeight: "800",
+    fontStyle: "italic",
+    letterSpacing: 0.3,
+    fontFamily: signatureFont,
+  },
+  brandTitleAccent: {
+    color: COLORS.brandAccent,
+  },
+  brandSubtitle: {
+    marginTop: 2,
+    fontSize: 12,
+    color: "rgba(255,255,255,0.72)",
+    fontWeight: "600",
   },
   headerGreeting: { fontSize: 14, color: "rgba(255,255,255,0.7)", fontWeight: "500" },
   headerName: { fontSize: 22, fontWeight: "800", color: COLORS.textOnBrand, marginTop: 2 },

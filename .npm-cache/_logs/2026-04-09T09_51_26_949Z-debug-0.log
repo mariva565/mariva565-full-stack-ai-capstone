@@ -1,0 +1,92 @@
+0 verbose cli C:\Program Files\nodejs\node.exe C:\Program Files\nodejs\node_modules\npm\bin\npm-cli.js
+1 info using npm@10.9.4
+2 info using node@v22.21.0
+3 silly config load:file:C:\Program Files\nodejs\node_modules\npm\npmrc
+4 silly config load:file:C:\Users\mariy\Projects\20260327 Capstone\.npmrc
+5 silly config load:file:C:\Users\mariy\.npmrc
+6 silly config load:file:C:\Users\mariy\AppData\Roaming\npm\etc\npmrc
+7 verbose title npm pack @expo-google-fonts/shantell-sans
+8 verbose argv "--cache" ".npm-cache" "pack" "@expo-google-fonts/shantell-sans"
+9 verbose logfile logs-max:10 dir:C:\Users\mariy\Projects\20260327 Capstone\.npm-cache\_logs\2026-04-09T09_51_26_949Z-
+10 verbose logfile C:\Users\mariy\Projects\20260327 Capstone\.npm-cache\_logs\2026-04-09T09_51_26_949Z-debug-0.log
+11 silly logfile done cleaning log files
+12 http fetch GET 200 https://registry.npmjs.org/@expo-google-fonts%2fshantell-sans 1661ms (cache revalidated)
+13 http cache https://registry.npmjs.org/@expo-google-fonts%2fshantell-sans 185ms (cache hit)
+14 http cache https://registry.npmjs.org/@expo-google-fonts/shantell-sans/-/shantell-sans-0.4.1.tgz 0ms (cache hit)
+15 notice
+16 notice package: @expo-google-fonts/shantell-sans@0.4.1
+17 notice Tarball Contents
+18 notice 160B 300Light_Italic/index.d.ts
+18 notice 214B 300Light_Italic/index.js
+18 notice 407.5kB 300Light_Italic/ShantellSans_300Light_Italic.ttf
+18 notice 141.4kB 300Light_Italic/ShantellSans_300Light_Italic.ttf.png
+18 notice 153B 300Light/index.d.ts
+18 notice 200B 300Light/index.js
+18 notice 397.4kB 300Light/ShantellSans_300Light.ttf
+18 notice 123.9kB 300Light/ShantellSans_300Light.ttf.png
+18 notice 162B 400Regular_Italic/index.d.ts
+18 notice 218B 400Regular_Italic/index.js
+18 notice 408.0kB 400Regular_Italic/ShantellSans_400Regular_Italic.ttf
+18 notice 150.4kB 400Regular_Italic/ShantellSans_400Regular_Italic.ttf.png
+18 notice 155B 400Regular/index.d.ts
+18 notice 204B 400Regular/index.js
+18 notice 397.7kB 400Regular/ShantellSans_400Regular.ttf
+18 notice 130.1kB 400Regular/ShantellSans_400Regular.ttf.png
+18 notice 161B 500Medium_Italic/index.d.ts
+18 notice 216B 500Medium_Italic/index.js
+18 notice 408.2kB 500Medium_Italic/ShantellSans_500Medium_Italic.ttf
+18 notice 148.7kB 500Medium_Italic/ShantellSans_500Medium_Italic.ttf.png
+18 notice 154B 500Medium/index.d.ts
+18 notice 202B 500Medium/index.js
+18 notice 397.8kB 500Medium/ShantellSans_500Medium.ttf
+18 notice 128.7kB 500Medium/ShantellSans_500Medium.ttf.png
+18 notice 163B 600SemiBold_Italic/index.d.ts
+18 notice 220B 600SemiBold_Italic/index.js
+18 notice 408.3kB 600SemiBold_Italic/ShantellSans_600SemiBold_Italic.ttf
+18 notice 153.0kB 600SemiBold_Italic/ShantellSans_600SemiBold_Italic.ttf.png
+18 notice 156B 600SemiBold/index.d.ts
+18 notice 206B 600SemiBold/index.js
+18 notice 397.9kB 600SemiBold/ShantellSans_600SemiBold.ttf
+18 notice 132.0kB 600SemiBold/ShantellSans_600SemiBold.ttf.png
+18 notice 159B 700Bold_Italic/index.d.ts
+18 notice 212B 700Bold_Italic/index.js
+18 notice 408.2kB 700Bold_Italic/ShantellSans_700Bold_Italic.ttf
+18 notice 142.0kB 700Bold_Italic/ShantellSans_700Bold_Italic.ttf.png
+18 notice 152B 700Bold/index.d.ts
+18 notice 198B 700Bold/index.js
+18 notice 397.8kB 700Bold/ShantellSans_700Bold.ttf
+18 notice 124.8kB 700Bold/ShantellSans_700Bold.ttf.png
+18 notice 164B 800ExtraBold_Italic/index.d.ts
+18 notice 222B 800ExtraBold_Italic/index.js
+18 notice 407.6kB 800ExtraBold_Italic/ShantellSans_800ExtraBold_Italic.ttf
+18 notice 154.5kB 800ExtraBold_Italic/ShantellSans_800ExtraBold_Italic.ttf.png
+18 notice 157B 800ExtraBold/index.d.ts
+18 notice 208B 800ExtraBold/index.js
+18 notice 397.2kB 800ExtraBold/ShantellSans_800ExtraBold.ttf
+18 notice 133.7kB 800ExtraBold/ShantellSans_800ExtraBold.ttf.png
+18 notice 1.1kB LICENSE
+18 notice 4.4kB LICENSE_FONT
+18 notice 9.4kB README.md
+18 notice 67.5kB font-family.png
+18 notice 771B index.d.ts
+18 notice 1.4kB index.js
+18 notice 2.7kB metadata.json
+18 notice 552B package.json
+18 notice 575B useFonts.d.ts
+18 notice 748B useFonts.js
+19 notice Tarball Details
+20 notice name: @expo-google-fonts/shantell-sans
+21 notice version: 0.4.1
+22 notice filename: expo-google-fonts-shantell-sans-0.4.1.tgz
+23 notice package size: 3.8 MB
+24 notice unpacked size: 6.6 MB
+25 notice shasum: 90b9743b6c00b87aa8ef81250bcf638acb9de731
+26 notice integrity: sha512-Xt8cLcp2SPHiT[...]LPyXKg7hoK7fw==
+27 notice total files: 58
+28 notice
+29 verbose cwd C:\Users\mariy\Projects\20260327 Capstone
+30 verbose os Windows_NT 10.0.26200
+31 verbose node v22.21.0
+32 verbose npm  v10.9.4
+33 verbose exit 0
+34 info ok

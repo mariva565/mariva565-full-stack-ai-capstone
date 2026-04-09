@@ -1,4 +1,4 @@
-import { FlatList, RefreshControl, Text, TouchableOpacity, View } from "react-native";
+import { FlatList, Image, RefreshControl, Text, TouchableOpacity, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
 import { ConfirmModal } from "../confirm-modal";
@@ -33,6 +33,27 @@ function CoursesHeader({
       style={styles.headerGradient}
     >
       <View style={styles.headerContent}>
+        <View style={styles.brandRow}>
+          <Image
+            source={require("../../assets/branding/logo.png")}
+            style={styles.brandLogo}
+            resizeMode="contain"
+            accessibilityIgnoresInvertColors
+          />
+          <Image
+            source={require("../../assets/branding/mascot.png")}
+            style={styles.brandMascot}
+            resizeMode="contain"
+            accessibilityIgnoresInvertColors
+          />
+          <View>
+            <Text style={styles.brandTitle}>
+              Study<Text style={styles.brandTitleAccent}>Hub</Text>
+            </Text>
+            <Text style={styles.brandSubtitle}>Learn smarter, every day.</Text>
+          </View>
+        </View>
+
         <View>
           <Text style={styles.headerGreeting}>Welcome back,</Text>
           <Text style={styles.headerName}>{userName}</Text>
