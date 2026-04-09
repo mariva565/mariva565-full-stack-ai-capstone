@@ -21,6 +21,6 @@ export type CoursesListViewModel = {
   editCourse: (courseId: number) => void;
   openCreateCourse: () => void;
   openDeleteCourse: (course: Course) => void;
-  confirmDeleteCourse: () => void;
+  confirmDeleteCourse: () => Promise<void>;
   cancelDeleteCourse: () => void;
 };

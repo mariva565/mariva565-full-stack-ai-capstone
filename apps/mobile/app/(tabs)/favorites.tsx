@@ -272,7 +272,7 @@ export default function FavoritesTabScreen() {
                 router.push({ pathname: "/course/[id]", params: { id: item.courseId } })
               }
               onUnpin={() => {
-                void removeFavoriteMutation.mutateAsync(item.materialId);
+                removeFavoriteMutation.mutate(item.materialId);
               }}
             />
           )}

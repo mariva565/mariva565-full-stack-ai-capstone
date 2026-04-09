@@ -2,7 +2,7 @@
 
 Last updated: 2026-04-09  
 Owner: Mobile stream  
-Status: In progress (execution pending on physical device)
+Status: In progress (run started; physical-device execution active)
 
 ## Goal
 
@@ -39,13 +39,13 @@ Mark each item with `PASS`, `FAIL`, or `BLOCKED` and add short notes.
 
 | ID | Area | Scenario | Expected result | Status | Notes |
 |---|---|---|---|---|---|
-| SMK-01 | Auth | Login with valid credentials | Lands on Courses tab, no crash, data loads | `PENDING` | |
-| SMK-02 | Auth | Logout from Profile tab | Returns to Login screen, protected tabs blocked | `PENDING` | |
-| SMK-03 | Auth | Register new account | Account created, routed to authenticated area | `PENDING` | |
-| SMK-04 | Session | App restart after login | Session persists, user stays authenticated | `PENDING` | |
-| SMK-05 | Courses CRUD | Create course | New course appears in list without stale/duplicate state | `PENDING` | |
-| SMK-06 | Courses CRUD | Edit course | Updated course values persist and render correctly | `PENDING` | |
-| SMK-07 | Courses CRUD | Delete course | Course removed, confirm flow works, no orphan UI state | `PENDING` | |
+| SMK-01 | Auth | Login with valid credentials | Lands on Courses tab, no crash, data loads | `PASS` | Login succeeds; intermittent first-attempt timeout observed once (retry succeeds). |
+| SMK-02 | Auth | Logout from Profile tab | Returns to Login screen, protected tabs blocked | `PASS` | Logout returned to login screen as expected. |
+| SMK-03 | Auth | Register new account | Account created, routed to authenticated area | `FAIL` | First submit timed out with failed registration message; second submit returned \"email already exists\" (likely first request succeeded server-side). |
+| SMK-04 | Session | App restart after login | Session persists, user stays authenticated | `PASS` | Session remained authenticated after full app restart. |
+| SMK-05 | Courses CRUD | Create course | New course appears in list without stale/duplicate state | `FAIL` | Course creation succeeded, but timeout errors appeared during flow. |
+| SMK-06 | Courses CRUD | Edit course | Updated course values persist and render correctly | `FAIL` | Course edit succeeded, but timeout errors appeared repeatedly. |
+| SMK-07 | Courses CRUD | Delete course | Course removed, confirm flow works, no orphan UI state | `FAIL` | Delete completed server-side (verified via admin), but mobile showed timeout/red error. |
 | SMK-08 | Modules CRUD | Add module in course | Module appears in course details and module workspace | `PENDING` | |
 | SMK-09 | Modules CRUD | Edit module | Changes persist across course/module screens | `PENDING` | |
 | SMK-10 | Modules CRUD | Delete module | Module removed from course and workspace lists | `PENDING` | |
@@ -68,9 +68,9 @@ Mark each item with `PASS`, `FAIL`, or `BLOCKED` and add short notes.
 
 ## Run Log
 
-- Run date:
-- Tester:
-- Device:
-- OS version:
-- Expo Go version:
-- Result summary:
+- Run date: 2026-04-09
+- Tester: Pending
+- Device: Pending
+- OS version: Pending
+- Expo Go version: Pending
+- Result summary: Run started. Preflight verified (`localhost:3000` and `localhost:8081` responding with HTTP 200). Intermittent first-attempt auth timeout observed once; retry succeeded.

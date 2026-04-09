@@ -40,6 +40,8 @@ export function ConfirmModal({
     setLoading(true);
     try {
       await onConfirm();
+    } catch {
+      // Concrete UX feedback should be handled by screen-level callbacks.
     } finally {
       setLoading(false);
     }

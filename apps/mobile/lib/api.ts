@@ -6,7 +6,8 @@ import { Platform } from "react-native";
 const TOKEN_KEY = "studyhub_token";
 const API_CACHE_PREFIX = "studyhub_api_cache_v1";
 const DEFAULT_CACHE_TTL_MS = 1000 * 60 * 10;
-const DEFAULT_REQUEST_TIMEOUT_MS = 1000 * 6;
+const DEFAULT_GET_REQUEST_TIMEOUT_MS = 1000 * 6;
+const DEFAULT_MUTATION_REQUEST_TIMEOUT_MS = 1000 * 25;
 const CACHE_INDEX_LIMIT = 200;
 
 function getDevHostFromExpo(): string | null {
@@ -81,9 +82,14 @@ export async function apiFetch<T>(
     body,
     auth = true,
     cache,
-    timeoutMs = DEFAULT_REQUEST_TIMEOUT_MS,
+    timeoutMs,
   } = opts;
   const normalizedMethod = method.toUpperCase();
+  const resolvedTimeoutMs =
+    timeoutMs ??
+    (normalizedMethod === "GET"
+      ? DEFAULT_GET_REQUEST_TIMEOUT_MS
+      : DEFAULT_MUTATION_REQUEST_TIMEOUT_MS);
   const shouldUseCache = normalizedMethod === "GET" && cache !== false;
   const forceRefresh = typeof cache === "object" ? cache.forceRefresh === true : false;
   const cacheTtl = typeof cache === "object" && typeof cache.ttlMs === "number"
@@ -120,13 +126,13 @@ export async function apiFetch<T>(
         headers,
         body: body ? JSON.stringify(body) : undefined,
       },
-      timeoutMs
+      resolvedTimeoutMs
     );
   } catch (error) {
     if (cached) {
       return cached.data as T;
     }
-    throw createNetworkError(error);
+    throw createNetworkError(error, normalizedMethod);
   }
 
   const text = await res.text();
@@ -307,9 +313,12 @@ async function fetchWithTimeout(
   }
 }
 
-function createNetworkError(error: unknown): ApiError {
+function createNetworkError(error: unknown, method: string): ApiError {
+  const isMutation = method !== "GET";
   const message = isAbortError(error)
-    ? "Request timed out. Please try again."
+    ? isMutation
+      ? "Request timed out. Action may still be completed. Refresh before retrying."
+      : "Request timed out. Please try again."
     : "Network connection problem. Check internet and try again.";
 
   return new ApiError(

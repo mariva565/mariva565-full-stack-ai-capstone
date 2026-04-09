@@ -29,7 +29,7 @@ type DeleteDialogState = {
   deleteTargetTitle: string;
   openDeleteCourse: (course: Course) => void;
   cancelDeleteCourse: () => void;
-  confirmDeleteCourse: () => void;
+  confirmDeleteCourse: () => Promise<void>;
 };
 
 type CourseNavigation = {
@@ -133,11 +133,18 @@ function useDeleteDialogState(deleteCourseMutation: DeleteCourseMutation): Delet
     setDeleteTarget(null);
   }, []);
 
-  const confirmDeleteCourse = useCallback(() => {
+  const confirmDeleteCourse = useCallback(async () => {
     if (!deleteTarget || deleteCourseMutation.isPending) {
       return;
     }
-    void deleteCourseMutation.mutateAsync(deleteTarget).finally(cancelDeleteCourse);
+
+    try {
+      await deleteCourseMutation.mutateAsync(deleteTarget);
+    } catch {
+      // Error toast is handled in mutation callbacks.
+    } finally {
+      cancelDeleteCourse();
+    }
   }, [cancelDeleteCourse, deleteCourseMutation, deleteTarget]);
 
   return {
