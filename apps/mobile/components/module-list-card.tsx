@@ -1,5 +1,6 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
+import { BRAND_FONT_FAMILY } from "../lib/brand-font";
 import { COLORS } from "../lib/colors";
 import type { Module } from "../lib/studyhub-types";
 import { EntityActions } from "./entity-actions";
@@ -83,7 +84,12 @@ const styles = StyleSheet.create({
   },
   numberText: { fontSize: 14, fontWeight: "800", color: COLORS.brandPrimary },
   copyWrap: { flex: 1 },
-  title: { fontSize: 16, fontWeight: "700", color: COLORS.textPrimary },
+  title: {
+    fontSize: 16,
+    lineHeight: 21,
+    color: COLORS.brandDeep,
+    fontFamily: BRAND_FONT_FAMILY,
+  },
   meta: { fontSize: 13, color: COLORS.textSecondary, lineHeight: 19, marginTop: 4 },
   cta: { fontSize: 12, fontWeight: "700", color: COLORS.brandPrimary },
   footer: {

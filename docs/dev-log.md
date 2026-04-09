@@ -4524,6 +4524,31 @@ Missing features (later phase):
 **Verification:**
 - Docs-only continuity update (no runtime code changes in this session).
 
+### Session 182 (Phase 2: hardware back consistency in CRUD forms)
+
+**What we changed:**
+- Implemented reusable unsaved-changes navigation guard:
+  - `apps/mobile/lib/use-confirm-discard.ts`
+  - Uses navigation `beforeRemove` to intercept back actions consistently (hardware back, header back, gesture back).
+  - Shows discard confirmation only when form state is dirty.
+  - Supports save flow via `allowNextLeave()` to avoid extra prompt after successful submit.
+- Applied guard in all mobile CRUD form screens:
+  - `apps/mobile/app/create-course.tsx`
+  - `apps/mobile/app/course/[id]/add-module.tsx`
+  - `apps/mobile/app/course/[id]/edit.tsx`
+  - `apps/mobile/app/module/[id]/add-material.tsx`
+  - `apps/mobile/app/module/[id]/edit.tsx`
+  - `apps/mobile/app/material/[id]/edit.tsx`
+- Dirty-state checks are field-aware per screen (text fields and material-type selector where applicable).
+
+**Kept intact (as requested):**
+- API contracts
+- Mutation behavior
+- React Query lifecycle/cache policy choices
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
+
 ### Session 181 (Phase 1 manual verification pass + Expo Router warning cleanup)
 
 **Manual device verification result (reported):**

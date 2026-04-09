@@ -1,5 +1,6 @@
 import { StyleSheet } from "react-native";
 
+import { BRAND_FONT_FAMILY } from "../../lib/brand-font";
 import { COLORS } from "../../lib/colors";
 
 export const styles = StyleSheet.create({
@@ -20,11 +21,12 @@ export const styles = StyleSheet.create({
   },
   brandTitle: {
     fontSize: 42,
-    lineHeight: 52,
+    lineHeight: 58,
     marginBottom: 8,
     color: "#6366F1",
+    fontFamily: BRAND_FONT_FAMILY,
     letterSpacing: -0.2,
-    paddingBottom: 2,
+    paddingBottom: 6,
   },
   brandTitleAccent: {
     color: "#8B5CF6",

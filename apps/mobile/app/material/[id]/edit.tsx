@@ -17,6 +17,7 @@ import { BrandedSpinner } from "../../../components/branded-spinner";
 import { ApiError, apiFetch } from "../../../lib/api";
 import { COLORS, GRADIENTS } from "../../../lib/colors";
 import { invalidateMaterialQueries, invalidateModuleQueries, queryKeys } from "../../../lib/query-keys";
+import { useConfirmDiscard } from "../../../lib/use-confirm-discard";
 import {
   DEFAULT_MATERIAL_TYPE,
   isUrlMaterialType,
@@ -47,11 +48,26 @@ export default function EditMaterialScreen() {
   const [materialType, setMaterialType] = useState<MaterialType>(DEFAULT_MATERIAL_TYPE);
   const [fileUrl, setFileUrl] = useState("");
   const [tags, setTags] = useState("");
+  const [initialForm, setInitialForm] = useState({
+    title: "",
+    content: "",
+    materialType: DEFAULT_MATERIAL_TYPE as MaterialType,
+    fileUrl: "",
+    tags: "",
+  });
   const [moduleId, setModuleId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [focusedField, setFocusedField] = useState<string | null>(null);
+  const isDirty =
+    !loading &&
+    (title.trim() !== initialForm.title.trim() ||
+      content.trim() !== initialForm.content.trim() ||
+      materialType !== initialForm.materialType ||
+      fileUrl.trim() !== initialForm.fileUrl.trim() ||
+      tags.trim() !== initialForm.tags.trim());
+  const { allowNextLeave } = useConfirmDiscard({ enabled: isDirty && !saving });
 
   useEffect(() => {
     async function loadMaterial() {
@@ -59,9 +75,19 @@ export default function EditMaterialScreen() {
         const data = await apiFetch<MaterialResponse>(`/api/materials/${routeId}`);
         setTitle(data.material.title);
         setContent(data.material.content ?? "");
-        setMaterialType(normalizeMaterialType(data.material.materialType));
-        setFileUrl(data.material.fileUrl ?? "");
-        setTags(data.material.tags ?? "");
+        const normalizedMaterialType = normalizeMaterialType(data.material.materialType);
+        const nextFileUrl = data.material.fileUrl ?? "";
+        const nextTags = data.material.tags ?? "";
+        setMaterialType(normalizedMaterialType);
+        setFileUrl(nextFileUrl);
+        setTags(nextTags);
+        setInitialForm({
+          title: data.material.title,
+          content: data.material.content ?? "",
+          materialType: normalizedMaterialType,
+          fileUrl: nextFileUrl,
+          tags: nextTags,
+        });
         setModuleId(data.material.moduleId ?? null);
       } catch (err) {
         const message = err instanceof ApiError ? err.message : "Failed to load material";
@@ -99,6 +125,7 @@ export default function EditMaterialScreen() {
       } else {
         await queryClient.invalidateQueries({ queryKey: queryKeys.modules.all });
       }
+      allowNextLeave();
       router.back();
     } catch (err) {
       const message = err instanceof ApiError ? err.message : "Failed to save material";

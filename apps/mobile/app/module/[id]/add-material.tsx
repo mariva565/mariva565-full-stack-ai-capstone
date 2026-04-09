@@ -15,6 +15,7 @@ import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { apiFetch, ApiError } from "../../../lib/api";
 import { COLORS, GRADIENTS } from "../../../lib/colors";
 import { invalidateModuleQueries } from "../../../lib/query-keys";
+import { useConfirmDiscard } from "../../../lib/use-confirm-discard";
 import {
   DEFAULT_MATERIAL_TYPE,
   isUrlMaterialType,
@@ -35,6 +36,13 @@ export default function AddMaterialScreen() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [focusedField, setFocusedField] = useState<string | null>(null);
+  const isDirty =
+    title.trim().length > 0 ||
+    content.trim().length > 0 ||
+    fileUrl.trim().length > 0 ||
+    tags.trim().length > 0 ||
+    materialType !== DEFAULT_MATERIAL_TYPE;
+  const { allowNextLeave } = useConfirmDiscard({ enabled: isDirty && !loading });
 
   async function handleCreate() {
     if (!title.trim() && !content.trim()) {
@@ -56,6 +64,7 @@ export default function AddMaterialScreen() {
         },
       });
       await invalidateModuleQueries(queryClient, routeModuleId);
+      allowNextLeave();
       router.back();
     } catch (e) {
       const msg = e instanceof ApiError ? e.message : "Failed to create material";

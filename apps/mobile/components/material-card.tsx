@@ -1,5 +1,6 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
+import { BRAND_FONT_FAMILY } from "../lib/brand-font";
 import { COLORS } from "../lib/colors";
 import { getMaterialTypeConfig, splitTags } from "../lib/material-utils";
 import type { Material } from "../lib/studyhub-types";
@@ -88,7 +89,12 @@ const styles = StyleSheet.create({
   },
   iconText: { fontSize: 13, fontWeight: "800" },
   copyWrap: { flex: 1 },
-  title: { fontSize: 15, fontWeight: "700", color: COLORS.textPrimary },
+  title: {
+    fontSize: 15,
+    lineHeight: 20,
+    color: COLORS.brandDeep,
+    fontFamily: BRAND_FONT_FAMILY,
+  },
   content: { fontSize: 13, color: COLORS.textSecondary, lineHeight: 19, marginTop: 6 },
   meta: { fontSize: 13, color: COLORS.textMuted, marginTop: 6 },
   tagsRow: { flexDirection: "row", flexWrap: "wrap", gap: 6, marginLeft: 42 },

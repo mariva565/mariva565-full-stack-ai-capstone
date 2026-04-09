@@ -15,6 +15,7 @@ import { Stack, useRouter } from "expo-router";
 import { apiFetch, ApiError } from "../lib/api";
 import { COLORS, GRADIENTS } from "../lib/colors";
 import { invalidateCoursesList } from "../lib/query-keys";
+import { useConfirmDiscard } from "../lib/use-confirm-discard";
 import { validateRequired } from "../lib/validation";
 
 export default function CreateCourseScreen() {
@@ -28,6 +29,8 @@ export default function CreateCourseScreen() {
   const [titleTouched, setTitleTouched] = useState(false);
 
   const titleError = validateRequired(title, "Course title");
+  const isDirty = title.trim().length > 0 || description.trim().length > 0;
+  const { allowNextLeave } = useConfirmDiscard({ enabled: isDirty && !loading });
 
   async function handleCreate() {
     setTitleTouched(true);
@@ -46,6 +49,7 @@ export default function CreateCourseScreen() {
         },
       });
       await invalidateCoursesList(queryClient);
+      allowNextLeave();
       router.back();
     } catch (e) {
       const msg = e instanceof ApiError ? e.message : "Failed to create course";

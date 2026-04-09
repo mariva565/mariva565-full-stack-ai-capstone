@@ -1,5 +1,6 @@
 import { StyleSheet } from "react-native";
 
+import { BRAND_FONT_FAMILY } from "../../lib/brand-font";
 import { COLORS } from "../../lib/colors";
 
 export const styles = StyleSheet.create({
@@ -36,7 +37,13 @@ export const styles = StyleSheet.create({
     marginBottom: 14,
   },
   coursePillText: { fontSize: 12, fontWeight: "700", color: COLORS.textOnBrand },
-  heroTitle: { fontSize: 24, fontWeight: "800", color: COLORS.textOnBrand, marginBottom: 10 },
+  heroTitle: {
+    fontSize: 24,
+    lineHeight: 30,
+    color: COLORS.textOnBrand,
+    marginBottom: 10,
+    fontFamily: BRAND_FONT_FAMILY,
+  },
   heroDesc: {
     fontSize: 15,
     color: "rgba(255,255,255,0.84)",
@@ -77,7 +84,12 @@ export const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 12,
   },
-  sectionTitle: { fontSize: 18, fontWeight: "700", color: COLORS.brandDeep },
+  sectionTitle: {
+    fontSize: 18,
+    lineHeight: 24,
+    color: COLORS.brandDeep,
+    fontFamily: BRAND_FONT_FAMILY,
+  },
   sectionSubtitle: {
     fontSize: 13,
     color: COLORS.textSecondary,

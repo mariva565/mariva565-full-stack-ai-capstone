@@ -16,14 +16,14 @@ type CoursesListScreenProps = { viewModel: CoursesListViewModel };
 
 function CoursesHeader({
   userName,
-  total,
-  published,
-  drafts,
+  coursesCount,
+  modulesCount,
+  materialsCount,
 }: {
   userName: string;
-  total: number;
-  published: number;
-  drafts: number;
+  coursesCount: number;
+  modulesCount: number;
+  materialsCount: number;
 }) {
   return (
     <LinearGradient
@@ -34,12 +34,6 @@ function CoursesHeader({
     >
       <View style={styles.headerContent}>
         <View style={styles.brandRow}>
-          <Image
-            source={require("../../assets/branding/logo.png")}
-            style={styles.brandLogo}
-            resizeMode="contain"
-            accessibilityIgnoresInvertColors
-          />
           <Image
             source={require("../../assets/branding/mascot.png")}
             style={styles.brandMascot}
@@ -62,16 +56,16 @@ function CoursesHeader({
 
       <View style={styles.statsRow}>
         <View style={styles.statItem}>
-          <Text style={styles.statNumber}>{total}</Text>
-          <Text style={styles.statLabel}>{total === 1 ? "Course" : "Courses"}</Text>
+          <Text style={styles.statNumber}>{coursesCount}</Text>
+          <Text style={styles.statLabel}>{coursesCount === 1 ? "Course" : "Courses"}</Text>
         </View>
         <View style={styles.statItem}>
-          <Text style={styles.statNumber}>{published}</Text>
-          <Text style={styles.statLabel}>Published</Text>
+          <Text style={styles.statNumber}>{modulesCount}</Text>
+          <Text style={styles.statLabel}>{modulesCount === 1 ? "Module" : "Modules"}</Text>
         </View>
         <View style={styles.statItem}>
-          <Text style={styles.statNumber}>{drafts}</Text>
-          <Text style={styles.statLabel}>Drafts</Text>
+          <Text style={styles.statNumber}>{materialsCount}</Text>
+          <Text style={styles.statLabel}>{materialsCount === 1 ? "Material" : "Materials"}</Text>
         </View>
       </View>
     </LinearGradient>
@@ -186,9 +180,9 @@ export function CoursesListScreen({ viewModel }: CoursesListScreenProps) {
     <View style={styles.container}>
       <CoursesHeader
         userName={viewModel.userName}
-        total={viewModel.stats.total}
-        published={viewModel.stats.published}
-        drafts={viewModel.stats.drafts}
+        coursesCount={viewModel.stats.courses}
+        modulesCount={viewModel.stats.modules}
+        materialsCount={viewModel.stats.materials}
       />
       <CoursesState viewModel={viewModel} offline={offline} />
 

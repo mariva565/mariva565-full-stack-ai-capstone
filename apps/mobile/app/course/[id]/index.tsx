@@ -10,6 +10,7 @@ import { ConfirmModal } from "../../../components/confirm-modal";
 import { EmptyState } from "../../../components/empty-state";
 import { ModuleListCard } from "../../../components/module-list-card";
 import { apiFetch, getUserFriendlyError } from "../../../lib/api";
+import { BRAND_FONT_FAMILY } from "../../../lib/brand-font";
 import { COLORS, GRADIENTS } from "../../../lib/colors";
 import { invalidateCourseQueries, queryKeys } from "../../../lib/query-keys";
 import { useToast } from "../../../lib/toast-context";
@@ -329,7 +330,13 @@ const styles = StyleSheet.create({
     letterSpacing: 0.8,
     marginBottom: 10,
   },
-  heroTitle: { fontSize: 24, fontWeight: "800", color: COLORS.textOnBrand, marginBottom: 10 },
+  heroTitle: {
+    fontSize: 24,
+    lineHeight: 30,
+    color: COLORS.textOnBrand,
+    marginBottom: 10,
+    fontFamily: BRAND_FONT_FAMILY,
+  },
   heroDesc: { fontSize: 15, color: "rgba(255,255,255,0.84)", lineHeight: 22, marginBottom: 12 },
   heroMetaRow: { gap: 4 },
   heroMeta: { fontSize: 12, color: "rgba(255,255,255,0.6)" },
@@ -356,7 +363,12 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 12,
   },
-  sectionTitle: { fontSize: 18, fontWeight: "700", color: COLORS.brandDeep },
+  sectionTitle: {
+    fontSize: 18,
+    lineHeight: 24,
+    color: COLORS.brandDeep,
+    fontFamily: BRAND_FONT_FAMILY,
+  },
   sectionSubtitle: { fontSize: 13, color: COLORS.textSecondary, lineHeight: 19, marginTop: 4, maxWidth: 250 },
   addModuleBtn: {
     backgroundColor: COLORS.lavenderSoft,

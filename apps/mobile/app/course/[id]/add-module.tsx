@@ -15,6 +15,7 @@ import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { apiFetch, ApiError } from "../../../lib/api";
 import { COLORS, GRADIENTS } from "../../../lib/colors";
 import { invalidateCourseQueries } from "../../../lib/query-keys";
+import { useConfirmDiscard } from "../../../lib/use-confirm-discard";
 
 export default function AddModuleScreen() {
   const { id: courseId } = useLocalSearchParams<{ id: string }>();
@@ -26,6 +27,8 @@ export default function AddModuleScreen() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [focusedField, setFocusedField] = useState<string | null>(null);
+  const isDirty = title.trim().length > 0 || description.trim().length > 0;
+  const { allowNextLeave } = useConfirmDiscard({ enabled: isDirty && !loading });
 
   async function handleCreate() {
     if (!title.trim()) {
@@ -44,6 +47,7 @@ export default function AddModuleScreen() {
         },
       });
       await invalidateCourseQueries(queryClient, routeCourseId);
+      allowNextLeave();
       router.back();
     } catch (e) {
       const msg = e instanceof ApiError ? e.message : "Failed to create module";

@@ -1,5 +1,6 @@
 import { StyleSheet } from "react-native";
 
+import { BRAND_FONT_FAMILY } from "../../lib/brand-font";
 import { COLORS } from "../../lib/colors";
 
 export const styles = StyleSheet.create({
@@ -48,9 +49,10 @@ export const styles = StyleSheet.create({
   },
   heroTitle: {
     fontSize: 22,
-    fontWeight: "800",
+    lineHeight: 29,
     color: COLORS.textOnBrand,
     marginBottom: 6,
+    fontFamily: BRAND_FONT_FAMILY,
   },
   heroDate: {
     fontSize: 12,

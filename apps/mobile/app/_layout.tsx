@@ -1,10 +1,12 @@
 import { Stack, useRouter, useSegments, useRootNavigationState } from "expo-router";
 import { useEffect } from "react";
+import { useFonts } from "expo-font";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { AuthProvider, useAuth } from "../lib/auth-context";
 import { ToastProvider } from "../lib/toast-context";
+import { BRAND_FONT_FAMILY, BRAND_FONT_SOURCE } from "../lib/brand-font";
 import { COLORS } from "../lib/colors";
 import { ActivityIndicator, View } from "react-native";
 import {
@@ -63,9 +65,21 @@ function AuthGate() {
 }
 
 export default function RootLayout() {
+  const [brandFontLoaded] = useFonts({
+    [BRAND_FONT_FAMILY]: BRAND_FONT_SOURCE,
+  });
+
   useEffect(() => {
     configureReactQueryLifecycle();
   }, []);
+
+  if (!brandFontLoaded) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: COLORS.brandDeep }}>
+        <ActivityIndicator size="large" color={COLORS.textOnBrand} />
+      </View>
+    );
+  }
 
   return (
     <SafeAreaProvider>

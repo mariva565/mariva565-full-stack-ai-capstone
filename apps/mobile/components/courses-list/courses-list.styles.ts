@@ -1,12 +1,7 @@
-import { Platform, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 
+import { BRAND_FONT_FAMILY } from "../../lib/brand-font";
 import { COLORS } from "../../lib/colors";
-
-const signatureFont = Platform.select({
-  ios: "Times New Roman",
-  android: "serif",
-  default: undefined,
-});
 
 export const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.canvas },
@@ -27,17 +22,17 @@ export const styles = StyleSheet.create({
     height: 34,
   },
   brandMascot: {
-    width: 36,
-    height: 36,
+    width: 52,
+    height: 52,
   },
   brandTitle: {
     fontSize: 30,
-    lineHeight: 32,
+    lineHeight: 40,
     color: COLORS.textOnBrand,
-    fontWeight: "800",
-    fontStyle: "italic",
+    fontFamily: BRAND_FONT_FAMILY,
     letterSpacing: 0.3,
-    fontFamily: signatureFont,
+    paddingBottom: 4,
+    marginBottom: 2,
   },
   brandTitleAccent: {
     color: COLORS.brandAccent,
@@ -79,7 +74,12 @@ export const styles = StyleSheet.create({
   },
   cardAccent: { height: 4, backgroundColor: COLORS.brandPrimary },
   cardContent: { paddingHorizontal: 16, paddingTop: 16, paddingBottom: 10 },
-  courseTitle: { fontSize: 17, fontWeight: "700", color: COLORS.textPrimary },
+  courseTitle: {
+    fontSize: 17,
+    lineHeight: 22,
+    color: COLORS.brandDeep,
+    fontFamily: BRAND_FONT_FAMILY,
+  },
   inlineActions: {
     flexDirection: "row",
     alignItems: "center",

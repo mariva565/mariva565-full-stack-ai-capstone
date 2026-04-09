@@ -16,6 +16,7 @@ import { ApiError, apiFetch } from "../../../lib/api";
 import { BrandedSpinner } from "../../../components/branded-spinner";
 import { COLORS, GRADIENTS } from "../../../lib/colors";
 import { invalidateCourseQueries } from "../../../lib/query-keys";
+import { useConfirmDiscard } from "../../../lib/use-confirm-discard";
 
 type Course = {
   id: number;
@@ -30,10 +31,16 @@ export default function EditCourseScreen() {
   const queryClient = useQueryClient();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [initialForm, setInitialForm] = useState({ title: "", description: "" });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [focusedField, setFocusedField] = useState<string | null>(null);
+  const isDirty =
+    !loading &&
+    (title.trim() !== initialForm.title.trim() ||
+      description.trim() !== initialForm.description.trim());
+  const { allowNextLeave } = useConfirmDiscard({ enabled: isDirty && !saving });
 
   useEffect(() => {
     async function loadCourse() {
@@ -41,6 +48,10 @@ export default function EditCourseScreen() {
         const data = await apiFetch<{ course: Course }>(`/api/courses/${routeId}`);
         setTitle(data.course.title);
         setDescription(data.course.description ?? "");
+        setInitialForm({
+          title: data.course.title,
+          description: data.course.description ?? "",
+        });
       } catch (error) {
         const message = error instanceof ApiError ? error.message : "Failed to load course";
         setError(message);
@@ -69,6 +80,7 @@ export default function EditCourseScreen() {
         },
       });
       await invalidateCourseQueries(queryClient, routeId);
+      allowNextLeave();
       router.back();
     } catch (error) {
       const message = error instanceof ApiError ? error.message : "Failed to save course";

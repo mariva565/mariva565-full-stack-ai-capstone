@@ -16,6 +16,7 @@ import { BrandedSpinner } from "../../../components/branded-spinner";
 import { ApiError, apiFetch } from "../../../lib/api";
 import { COLORS, GRADIENTS } from "../../../lib/colors";
 import { invalidateCourseQueries, invalidateModuleQueries } from "../../../lib/query-keys";
+import { useConfirmDiscard } from "../../../lib/use-confirm-discard";
 
 type ModuleResponse = {
   module: {
@@ -33,11 +34,17 @@ export default function EditModuleScreen() {
   const queryClient = useQueryClient();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [initialForm, setInitialForm] = useState({ title: "", description: "" });
   const [courseId, setCourseId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [focusedField, setFocusedField] = useState<string | null>(null);
+  const isDirty =
+    !loading &&
+    (title.trim() !== initialForm.title.trim() ||
+      description.trim() !== initialForm.description.trim());
+  const { allowNextLeave } = useConfirmDiscard({ enabled: isDirty && !saving });
 
   useEffect(() => {
     async function loadModule() {
@@ -45,6 +52,10 @@ export default function EditModuleScreen() {
         const data = await apiFetch<ModuleResponse>(`/api/modules/${routeId}`);
         setTitle(data.module.title);
         setDescription(data.module.description ?? "");
+        setInitialForm({
+          title: data.module.title,
+          description: data.module.description ?? "",
+        });
         setCourseId(data.module.courseId ?? null);
       } catch (error) {
         const message = error instanceof ApiError ? error.message : "Failed to load module";
@@ -77,6 +88,7 @@ export default function EditModuleScreen() {
       if (courseId) {
         await invalidateCourseQueries(queryClient, courseId);
       }
+      allowNextLeave();
       router.back();
     } catch (error) {
       const message = error instanceof ApiError ? error.message : "Failed to save module";

@@ -1,9 +1,9 @@
 import type { Course } from "../../lib/studyhub-types";
 
 export type CoursesStats = {
-  total: number;
-  published: number;
-  drafts: number;
+  courses: number;
+  modules: number;
+  materials: number;
 };
 
 export type CoursesListViewModel = {
