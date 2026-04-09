@@ -4578,6 +4578,127 @@ Missing features (later phase):
   - `Waiting on http://localhost:8081`
   - no `Body is unusable` crash in startup path
 
+### Session 183 (Phase 2 guardrail refactor completed: login + register split)
+
+**What we changed:**
+- Split `apps/mobile/app/login.tsx` into a thin route + feature modules:
+  - `apps/mobile/components/login/login-screen.tsx`
+  - `apps/mobile/components/login/use-login-screen.ts`
+  - `apps/mobile/components/login/login-screen.styles.ts`
+- Split `apps/mobile/app/register.tsx` into a thin route + feature modules:
+  - `apps/mobile/components/register/register-screen.tsx`
+  - `apps/mobile/components/register/use-register-screen.ts`
+  - `apps/mobile/components/register/register-screen.styles.ts`
+- Preserved existing auth behavior:
+  - email/password validation timing and touched-field flow
+  - API error handling contract and loading states
+  - Google sign-in flow (`expo-auth-session`) and existing redirect URI
+  - animated card entrance and auth route switching (`login` <-> `register`)
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
+
+**Phase 2 status update:**
+- Guardrail file-splitting targets are now complete:
+  - `apps/mobile/app/module/[id]/index.tsx`
+  - `apps/mobile/app/(tabs)/index.tsx`
+  - `apps/mobile/app/(tabs)/profile.tsx`
+  - `apps/mobile/app/login.tsx`
+  - `apps/mobile/app/register.tsx`
+- Next Phase 2 work: UX hardening (skeleton/loading/offline/accessibility/haptics).
+
+### Session 182 (Phase 2 guardrail refactor continued: profile tab split)
+
+**What we changed:**
+- Split `apps/mobile/app/(tabs)/profile.tsx` into a thin route file and extracted feature modules under:
+  - `apps/mobile/components/profile-tab/profile-tab-screen.tsx` (UI composition)
+  - `apps/mobile/components/profile-tab/use-profile-tab.ts` (query/mutation/editor-state orchestration)
+  - `apps/mobile/components/profile-tab/profile-tab.styles.ts` (styles)
+  - `apps/mobile/components/profile-tab/profile-tab.types.ts` (feature-local types)
+- Preserved behavior for:
+  - profile read via React Query (`/api/auth/me`, `cache: false`)
+  - optimistic profile name update on save with rollback on error
+  - refresh/retry behavior and profile editor flow (edit/cancel/save)
+  - logout action, role badge, and member-since display
+- Guardrail compliance after split:
+  - route file is now minimal
+  - extracted files are under 300 lines
+  - major functions remain under 60 lines
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
+
+**Phase 2 status update:**
+- Completed guardrail split targets:
+  - `apps/mobile/app/module/[id]/index.tsx`
+  - `apps/mobile/app/(tabs)/index.tsx`
+  - `apps/mobile/app/(tabs)/profile.tsx`
+- Remaining guardrail split targets:
+  - `apps/mobile/app/login.tsx`
+  - `apps/mobile/app/register.tsx`
+
+### Session 181 (Phase 2 guardrail refactor continued: courses tab split)
+
+**What we changed:**
+- Split `apps/mobile/app/(tabs)/index.tsx` into a thin route file and extracted feature modules under:
+  - `apps/mobile/components/courses-list/courses-list-screen.tsx` (UI composition)
+  - `apps/mobile/components/courses-list/use-courses-list.ts` (query/mutation/state orchestration)
+  - `apps/mobile/components/courses-list/course-card.tsx` (animated item card)
+  - `apps/mobile/components/courses-list/courses-list.styles.ts` (styles)
+  - `apps/mobile/components/courses-list/courses-list.types.ts` (feature-local types)
+- Preserved behavior for:
+  - query-managed courses list read with `cache: false`
+  - focus refetch invalidation for courses list
+  - optimistic course delete and rollback on error
+  - existing header stats, empty/error/loading states, and create-course FAB flow
+- Kept file/function guardrails:
+  - route file is now minimal
+  - extracted files stay under 300 lines
+  - major functions remain under 60 lines
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
+
+**Phase 2 status update:**
+- Completed guardrail split targets:
+  - `apps/mobile/app/module/[id]/index.tsx`
+  - `apps/mobile/app/(tabs)/index.tsx`
+- Remaining guardrail split targets:
+  - `apps/mobile/app/(tabs)/profile.tsx`
+  - `apps/mobile/app/login.tsx`
+  - `apps/mobile/app/register.tsx`
+
+### Session 180 (Phase 2 guardrail refactor started: module workspace split)
+
+**What we changed:**
+- Split `apps/mobile/app/module/[id]/index.tsx` into smaller route + feature modules while preserving behavior:
+  - `apps/mobile/app/module/[id]/index.tsx` is now a thin orchestrator route file.
+  - New feature files in `apps/mobile/components/module-workspace/`:
+    - `module-workspace-screen.tsx` (UI composition)
+    - `use-module-workspace.ts` (state orchestration)
+    - `module-workspace.queries.ts` (React Query read hooks + focus refetch)
+    - `module-workspace.mutations.ts` (delete flows with optimistic updates + invalidation)
+    - `module-workspace.helpers.ts` (search/filter + confirm copy helpers)
+    - `module-workspace.styles.ts` (styles)
+    - `module-workspace.types.ts` (feature-local types)
+- Kept Phase 1 stabilization behavior intact:
+  - query-managed GET reads still use `cache: false` in module workspace queries,
+  - focus-driven invalidation remains active,
+  - delete module/material optimistic behavior and invalidation logic preserved.
+- Removed route-co-located type file and moved feature types under `components/` to avoid Expo Router route-file warnings.
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
+
+**Phase 2 status update:**
+- Completed:
+  - `apps/mobile/app/module/[id]/index.tsx` guardrail split (`<300` file-size guardrail achieved across extracted files).
+- Remaining Phase 2 guardrail split targets:
+  - `apps/mobile/app/(tabs)/index.tsx`
+  - `apps/mobile/app/(tabs)/profile.tsx`
+  - `apps/mobile/app/login.tsx`
+  - `apps/mobile/app/register.tsx`
+
 ### Session 178 (Expo LAN start crash workaround: dependency validation skip)
 
 **Issue observed:**

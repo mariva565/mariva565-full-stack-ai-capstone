@@ -1,6 +1,6 @@
 # Mobile Execution Checklist (Quality-First)
 
-Last updated: 2026-04-08
+Last updated: 2026-04-09
 Owner: Mobile stream
 
 ## Scope Decisions (2026-04-08)
@@ -19,7 +19,7 @@ Owner: Mobile stream
 4) Quality gates and release readiness
 5) Optional expansion features (Profile QR, then AI tools)
 
-## Phase 1 - Stabilization First (active)
+## Phase 1 - Stabilization First (completed)
 
 ### Tasks
 - [x] React Native lifecycle integration: `focusManager` + `onlineManager` (`AppState` + `NetInfo`) implemented in code.
@@ -41,12 +41,12 @@ Owner: Mobile stream
 ## Phase 2 - Guardrails and UX Hardening
 
 ### Tasks
-- [ ] Split large mobile files into hooks/UI subcomponents per guardrails:
-- [ ] `apps/mobile/app/module/[id]/index.tsx`
-- [ ] `apps/mobile/app/(tabs)/index.tsx`
-- [ ] `apps/mobile/app/(tabs)/profile.tsx`
-- [ ] `apps/mobile/app/login.tsx`
-- [ ] `apps/mobile/app/register.tsx`
+- [x] Split large mobile files into hooks/UI subcomponents per guardrails:
+- [x] `apps/mobile/app/module/[id]/index.tsx`
+- [x] `apps/mobile/app/(tabs)/index.tsx`
+- [x] `apps/mobile/app/(tabs)/profile.tsx`
+- [x] `apps/mobile/app/login.tsx`
+- [x] `apps/mobile/app/register.tsx`
 - [ ] UX hardening: skeleton loading states on key screens.
 - [ ] UX hardening: explicit offline/empty/error states.
 - [ ] UX hardening: haptics for success/destructive actions.
@@ -54,7 +54,7 @@ Owner: Mobile stream
 - [ ] UX hardening: accessibility checks (Dynamic Type + VoiceOver/TalkBack).
 
 ### Acceptance Criteria
-- [ ] High-traffic files are under 300 lines and major functions stay under 60 lines.
+- [x] High-traffic files are under 300 lines and major functions stay under 60 lines.
 - [ ] Core CRUD/favorites flows are stable with improved perceived UX.
 
 ## Phase 3 - Quality Gates and Optional Features
@@ -72,4 +72,4 @@ Owner: Mobile stream
 
 ## Next Recommended Task
 
-- Start Phase 2 guardrail refactor with `apps/mobile/app/module/[id]/index.tsx` split into hooks/UI subcomponents.
+- Continue Phase 2 UX hardening with skeleton loading states on key screens.
