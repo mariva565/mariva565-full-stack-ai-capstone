@@ -84,7 +84,7 @@ export default function CourseDetailsScreen() {
       showToast(getUserFriendlyError(error, "Failed to delete course"), "error");
     },
     onSuccess: () => {
-      showToast("Course deleted");
+      showToast("Course deleted", "success", { haptic: "destructive" });
     },
   });
 
@@ -114,7 +114,7 @@ export default function CourseDetailsScreen() {
     onSuccess: (module) => {
       queryClient.removeQueries({ queryKey: queryKeys.modules.detail(module.id) });
       queryClient.removeQueries({ queryKey: queryKeys.modules.materials(module.id) });
-      showToast("Module deleted");
+      showToast("Module deleted", "success", { haptic: "destructive" });
     },
     onSettled: async () => {
       await invalidateCourseQueries(queryClient, routeId);

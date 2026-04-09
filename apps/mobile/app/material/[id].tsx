@@ -102,7 +102,9 @@ export default function MaterialScreen() {
       showToast(getUserFriendlyError(error, "Could not update favorites"), "error");
     },
     onSuccess: ({ isPinned }) => {
-      showToast(isPinned ? "Material pinned." : "Material unpinned.");
+      showToast(isPinned ? "Material pinned." : "Material unpinned.", "success", {
+        haptic: isPinned ? "default" : "destructive",
+      });
     },
     onSettled: async () => {
       await invalidateFavoritesList(queryClient);

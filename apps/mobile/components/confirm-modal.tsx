@@ -8,6 +8,7 @@ import {
   View,
 } from "react-native";
 import { COLORS } from "../lib/colors";
+import { triggerHaptic } from "../lib/haptics";
 
 type Props = {
   visible: boolean;
@@ -33,6 +34,9 @@ export function ConfirmModal({
   const [loading, setLoading] = useState(false);
 
   async function handleConfirm() {
+    if (destructive) {
+      void triggerHaptic("destructive");
+    }
     setLoading(true);
     try {
       await onConfirm();

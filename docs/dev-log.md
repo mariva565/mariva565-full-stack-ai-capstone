@@ -5214,3 +5214,61 @@ Sprint 2 - Production standards
 - Haptics for success/destructive actions
 - Hardware back behavior consistency in CRUD flows
 - Accessibility checks for Dynamic Type and VoiceOver/TalkBack
+
+### Session 178 (Phase 2 UX hardening: haptics for success/destructive actions)
+
+**What we changed:**
+- Added reusable haptics utility:
+  - `apps/mobile/lib/haptics.ts`
+  - Behavior:
+    - Uses `expo-haptics` when available in the runtime
+    - Falls back to built-in vibration patterns if `expo-haptics` is not installed
+- Extended toast system to support haptic intent:
+  - `apps/mobile/lib/toast-context.tsx`
+  - `showToast(...)` now supports optional `haptic` overrides:
+    - `default` (type-based success/error/info)
+    - `destructive`
+    - `none`
+- Wired destructive haptic feedback in destructive success paths:
+  - `apps/mobile/components/courses-list/use-courses-list.ts` (`Course deleted`)
+  - `apps/mobile/components/module-workspace/module-workspace.mutations.ts` (`Module deleted`, `Material deleted`)
+  - `apps/mobile/app/course/[id]/index.tsx` (`Course deleted`, `Module deleted`)
+  - `apps/mobile/app/(tabs)/favorites.tsx` (`Removed from favorites`)
+  - `apps/mobile/app/material/[id].tsx` (`Material unpinned` as destructive, `Material pinned` as normal success)
+- Added destructive confirmation tap feedback in:
+  - `apps/mobile/components/confirm-modal.tsx` (when `destructive` confirm is pressed)
+
+**Notes on dependency install:**
+- Attempted to install `expo-haptics` in mobile workspace, but install commands were unstable in this environment (timeouts and npm arborist/workspace error).
+- Implemented a robust fallback path so haptics still work now without blocking progress.
+
+**Kept intact (as requested):**
+- API contracts
+- Mutation behavior
+- React Query lifecycle integration
+- Query-managed reads with `cache: false`
+- Existing timeout/retry tuning and Expo startup script workaround
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
+
+**Remaining Phase 2 UX tasks:**
+- Hardware back behavior consistency in CRUD flows
+- Accessibility checks for Dynamic Type and VoiceOver/TalkBack
+
+### Session 179 (Roadmap update: mobile Settings screen planned)
+
+**What we changed:**
+- Added a planned mobile `Settings` feature to roadmap docs so it is tracked before post-Phase-2 implementation.
+- Updated `docs/mobile-execution-checklist.md`:
+  - Priority order now explicitly includes product polish with Settings before other optional expansion items.
+  - Added Phase 3 task for `Settings` in Profile flow (not a separate bottom tab).
+  - Defined lean initial scope:
+    - theme mode (`system` / `light` / `dark`)
+    - haptics toggle
+    - app version/about links
+    - account actions entry points
+  - Added acceptance criterion for persisted basic app preferences in Settings.
+
+**Verification:**
+- Docs-only update (no runtime code changes in this session).

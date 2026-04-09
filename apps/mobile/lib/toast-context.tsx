@@ -7,8 +7,13 @@ import {
   View,
 } from "react-native";
 import { COLORS } from "./colors";
+import { triggerHaptic, type HapticIntent } from "./haptics";
 
-type ToastType = "success" | "error" | "info";
+export type ToastType = "success" | "error" | "info";
+export type ToastHaptic = "default" | "destructive" | "none";
+export type ToastOptions = {
+  haptic?: ToastHaptic;
+};
 
 type ToastState = {
   message: string;
@@ -17,7 +22,7 @@ type ToastState = {
 };
 
 type ToastContextValue = {
-  showToast: (message: string, type?: ToastType) => void;
+  showToast: (message: string, type?: ToastType, options?: ToastOptions) => void;
 };
 
 const ToastContext = createContext<ToastContextValue>({
@@ -53,7 +58,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   }, [translateY, opacity]);
 
   const showToast = useCallback(
-    (message: string, type: ToastType = "success") => {
+    (message: string, type: ToastType = "success", options?: ToastOptions) => {
       if (timerRef.current) {
         clearTimeout(timerRef.current);
       }
@@ -79,6 +84,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       ]).start();
 
       timerRef.current = setTimeout(dismiss, TOAST_DURATION);
+      void triggerToastHaptic(type, options?.haptic ?? "default");
     },
     [translateY, opacity, dismiss]
   );
@@ -118,6 +124,34 @@ const TYPE_ICONS: Record<ToastType, string> = {
   error: "\u2717",
   info: "\u2139",
 };
+
+function resolveHapticIntent(type: ToastType, haptic: ToastHaptic): HapticIntent | null {
+  if (haptic === "none") {
+    return null;
+  }
+
+  if (haptic === "destructive") {
+    return "destructive";
+  }
+
+  if (type === "error") {
+    return "error";
+  }
+  if (type === "info") {
+    return "selection";
+  }
+
+  return "success";
+}
+
+async function triggerToastHaptic(type: ToastType, haptic: ToastHaptic): Promise<void> {
+  const intent = resolveHapticIntent(type, haptic);
+  if (!intent) {
+    return;
+  }
+
+  await triggerHaptic(intent);
+}
 
 const styles = StyleSheet.create({
   toastContainer: {

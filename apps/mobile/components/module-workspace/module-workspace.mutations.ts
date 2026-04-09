@@ -16,7 +16,11 @@ import type {
 } from "./module-workspace.types";
 
 type ToastType = "success" | "error" | "info";
-type ShowToast = (message: string, type?: ToastType) => void;
+type ShowToast = (
+  message: string,
+  type?: ToastType,
+  options?: { haptic?: "default" | "destructive" | "none" }
+) => void;
 
 type ConfirmDeleteOptions = {
   confirmTarget: DeleteTarget | null;
@@ -103,7 +107,7 @@ export function useDeleteModuleMutation(queryClient: QueryClient, showToast: Sho
     onSuccess: ({ moduleId }) => {
       queryClient.removeQueries({ queryKey: queryKeys.modules.detail(moduleId) });
       queryClient.removeQueries({ queryKey: queryKeys.modules.materials(moduleId) });
-      showToast("Module deleted");
+      showToast("Module deleted", "success", { haptic: "destructive" });
     },
     onSettled: async (_data, _error, payload) => {
       await invalidateCourseQueries(queryClient, payload.courseId);
@@ -144,7 +148,7 @@ export function useDeleteMaterialMutation(
       showToast(getUserFriendlyError(error, "Failed to delete material"), "error");
     },
     onSuccess: () => {
-      showToast("Material deleted");
+      showToast("Material deleted", "success", { haptic: "destructive" });
     },
     onSettled: async () => {
       await invalidateModuleQueries(queryClient, routeId);

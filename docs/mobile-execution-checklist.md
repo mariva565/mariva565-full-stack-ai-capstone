@@ -17,7 +17,7 @@ Owner: Mobile stream
 2) Code quality and maintainability guardrails
 3) Mobile UX standards hardening
 4) Quality gates and release readiness
-5) Optional expansion features (Profile QR, then AI tools)
+5) Product polish and optional expansion features (Settings, Profile QR, then AI tools)
 
 ## Phase 1 - Stabilization First (completed)
 
@@ -49,7 +49,7 @@ Owner: Mobile stream
 - [x] `apps/mobile/app/register.tsx`
 - [x] UX hardening: skeleton loading states on key screens.
 - [x] UX hardening: explicit offline/empty/error states.
-- [ ] UX hardening: haptics for success/destructive actions.
+- [x] UX hardening: haptics for success/destructive actions.
 - [ ] UX hardening: hardware back behavior consistency in CRUD flows.
 - [ ] UX hardening: accessibility checks (Dynamic Type + VoiceOver/TalkBack).
 
@@ -81,6 +81,25 @@ Owner: Mobile stream
 - `apps/mobile/components/profile-tab/profile-tab.styles.ts`
 - Preserved Phase 1 behavior (React Query lifecycle + query-managed `cache: false` reads + existing mutation contracts).
 
+### Completed UX slice (2026-04-09, haptics)
+- Added reusable haptics helper with graceful fallback:
+- `apps/mobile/lib/haptics.ts`
+  - Uses `expo-haptics` if available
+  - Falls back to built-in vibration patterns when `expo-haptics` is not installed
+- Extended toast API for haptic intent control:
+- `apps/mobile/lib/toast-context.tsx`
+  - `showToast(message, type?, options?)` with `options.haptic`
+  - defaults to success/error/info haptics by toast type
+- Wired destructive haptics for destructive success flows:
+- `apps/mobile/components/courses-list/use-courses-list.ts`
+- `apps/mobile/components/module-workspace/module-workspace.mutations.ts`
+- `apps/mobile/app/course/[id]/index.tsx`
+- `apps/mobile/app/(tabs)/favorites.tsx`
+- `apps/mobile/app/material/[id].tsx`
+- Added destructive confirmation haptic tap feedback in:
+- `apps/mobile/components/confirm-modal.tsx`
+- Kept API contracts, mutation behavior, and query/cache lifecycle behavior unchanged.
+
 ### Acceptance Criteria
 - [x] High-traffic files are under 300 lines and major functions stay under 60 lines.
 - [ ] Core CRUD/favorites flows are stable with improved perceived UX.
@@ -91,13 +110,15 @@ Owner: Mobile stream
 - [ ] Quality gates: mobile e2e smoke (auth + core CRUD + offline/online recovery).
 - [ ] Quality gates: crash/error telemetry integration (Sentry or equivalent).
 - [ ] Release checklist for mobile handoff and smoke verification.
+- [ ] Product polish: Settings screen in Profile flow (not extra bottom tab), with initial scope theme mode (system/light/dark), haptics toggle, app version/about links, and account actions entry points.
 - [ ] Optional feature: Profile QR handoff card in web profile (deep-link to mobile app) for future social direction.
 - [ ] DEFERRED optional feature: Mobile AI tools entry points (summarize/quiz/chat or read-only outputs), after Phases 1-2 pass.
 
 ### Acceptance Criteria
 - [ ] Key mobile flows pass smoke suite without regressions.
+- [ ] Settings screen exists in mobile profile flow with persisted basic app preferences.
 - [ ] README + dev-log are synced with the final mobile standard.
 
 ## Next Recommended Task
 
-- Continue Phase 2 UX hardening with haptics for success/destructive actions.
+- Continue Phase 2 UX hardening with hardware back behavior consistency in CRUD flows.

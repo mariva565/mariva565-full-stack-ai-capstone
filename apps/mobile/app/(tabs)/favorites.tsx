@@ -142,7 +142,7 @@ export default function FavoritesTabScreen() {
       showToast(getUserFriendlyError(error, "Could not update favorites"), "error");
     },
     onSuccess: () => {
-      showToast("Removed from favorites");
+      showToast("Removed from favorites", "success", { haptic: "destructive" });
     },
     onSettled: async () => {
       setBusyMaterialId(null);

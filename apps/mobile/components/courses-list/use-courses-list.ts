@@ -80,7 +80,7 @@ function useDeleteCourseMutation(queryClient: QueryClient, showToast: ReturnType
     onSuccess: async (course) => {
       queryClient.removeQueries({ queryKey: queryKeys.courses.detail(course.id) });
       queryClient.removeQueries({ queryKey: queryKeys.courses.modules(course.id) });
-      showToast("Course deleted");
+      showToast("Course deleted", "success", { haptic: "destructive" });
       await invalidateCoursesList(queryClient);
     },
   });
