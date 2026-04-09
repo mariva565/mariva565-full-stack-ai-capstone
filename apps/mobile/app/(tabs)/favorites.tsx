@@ -52,11 +52,12 @@ function FavoriteCard({
         activeOpacity={0.78}
         accessibilityRole="button"
         accessibilityLabel={`Open favorite material ${item.materialTitle}`}
+        accessibilityHint="Opens the material details screen"
       >
-        <RNText style={styles.cardTitle} numberOfLines={2}>
+        <RNText style={styles.cardTitle} numberOfLines={2} maxFontSizeMultiplier={1.3}>
           {item.materialTitle}
         </RNText>
-        <RNText style={styles.cardMeta} numberOfLines={1}>
+        <RNText style={styles.cardMeta} numberOfLines={1} maxFontSizeMultiplier={1.2}>
           {item.courseTitle} {"\u00B7"} {item.moduleTitle}
         </RNText>
       </TouchableOpacity>
@@ -65,7 +66,9 @@ function FavoriteCard({
         <View style={styles.tagsRow}>
           {tags.slice(0, 4).map((tag) => (
             <View key={tag} style={styles.tag}>
-              <RNText style={styles.tagText}>{tag}</RNText>
+              <RNText style={styles.tagText} maxFontSizeMultiplier={1.2}>
+                {tag}
+              </RNText>
             </View>
           ))}
         </View>
@@ -78,8 +81,11 @@ function FavoriteCard({
           activeOpacity={0.8}
           accessibilityRole="button"
           accessibilityLabel={`Open course ${item.courseTitle}`}
+          accessibilityHint="Navigates to the related course"
         >
-          <RNText style={styles.linkBtnText}>Course</RNText>
+          <RNText style={styles.linkBtnText} maxFontSizeMultiplier={1.2}>
+            Course
+          </RNText>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.linkBtn}
@@ -87,8 +93,11 @@ function FavoriteCard({
           activeOpacity={0.8}
           accessibilityRole="button"
           accessibilityLabel={`Open module ${item.moduleTitle}`}
+          accessibilityHint="Navigates to the related module workspace"
         >
-          <RNText style={styles.linkBtnText}>Module</RNText>
+          <RNText style={styles.linkBtnText} maxFontSizeMultiplier={1.2}>
+            Module
+          </RNText>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.unpinBtn, busy && styles.unpinBtnDisabled]}
@@ -97,8 +106,11 @@ function FavoriteCard({
           disabled={busy}
           accessibilityRole="button"
           accessibilityLabel={`Remove ${item.materialTitle} from favorites`}
+          accessibilityHint="Unpins this material from quick access"
         >
-          <RNText style={styles.unpinBtnText}>{busy ? "Removing..." : "Unpin"}</RNText>
+          <RNText style={styles.unpinBtnText} maxFontSizeMultiplier={1.2}>
+            {busy ? "Removing..." : "Unpin"}
+          </RNText>
         </TouchableOpacity>
       </View>
     </View>
@@ -196,9 +208,13 @@ export default function FavoritesTabScreen() {
   return (
     <View style={styles.container}>
       <LinearGradient colors={GRADIENTS.hero} style={styles.hero}>
-        <RNText style={styles.heroLabel}>Quick Access</RNText>
-        <RNText style={styles.heroTitle}>Favorites</RNText>
-        <RNText style={styles.heroMeta}>
+        <RNText style={styles.heroLabel} maxFontSizeMultiplier={1.2}>
+          Quick Access
+        </RNText>
+        <RNText style={styles.heroTitle} maxFontSizeMultiplier={1.3}>
+          Favorites
+        </RNText>
+        <RNText style={styles.heroMeta} maxFontSizeMultiplier={1.2}>
           {favorites.length} {favorites.length === 1 ? "material pinned" : "materials pinned"}
         </RNText>
       </LinearGradient>

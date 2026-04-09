@@ -20,6 +20,9 @@ export function SearchBar({ value, onChangeText, placeholder = "Search..." }: Pr
         autoCapitalize="none"
         autoCorrect={false}
         returnKeyType="search"
+        accessibilityLabel="Search materials"
+        accessibilityHint="Type text to filter the current materials list"
+        maxFontSizeMultiplier={1.4}
       />
       {value.length > 0 ? (
         <TouchableOpacity
@@ -27,8 +30,11 @@ export function SearchBar({ value, onChangeText, placeholder = "Search..." }: Pr
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           accessibilityRole="button"
           accessibilityLabel="Clear search text"
+          accessibilityHint="Clears the current search query"
         >
-          <Text style={styles.clearText}>Clear</Text>
+          <Text style={styles.clearText} maxFontSizeMultiplier={1.2}>
+            Clear
+          </Text>
         </TouchableOpacity>
       ) : null}
     </View>

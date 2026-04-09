@@ -86,15 +86,22 @@ function ModuleHero({ viewModel }: ModuleHeroProps) {
         activeOpacity={0.8}
         accessibilityRole="button"
         accessibilityLabel={`Open course ${context.course.title}`}
+        accessibilityHint="Navigates to the course details screen"
       >
-        <Text style={styles.coursePillText}>{context.course.title}</Text>
+        <Text style={styles.coursePillText} maxFontSizeMultiplier={1.2}>
+          {context.course.title}
+        </Text>
       </TouchableOpacity>
 
-      <Text style={styles.heroTitle}>{context.module.title}</Text>
-      <Text style={styles.heroDesc}>
+      <Text style={styles.heroTitle} maxFontSizeMultiplier={1.3}>
+        {context.module.title}
+      </Text>
+      <Text style={styles.heroDesc} maxFontSizeMultiplier={1.3}>
         {context.module.description?.trim() || "Module workspace for managing your study materials."}
       </Text>
-      <Text style={styles.heroMeta}>{materials.length} materials in this workspace</Text>
+      <Text style={styles.heroMeta} maxFontSizeMultiplier={1.2}>
+        {materials.length} materials in this workspace
+      </Text>
 
       <View style={styles.heroActions}>
         <TouchableOpacity
@@ -103,8 +110,11 @@ function ModuleHero({ viewModel }: ModuleHeroProps) {
           activeOpacity={0.8}
           accessibilityRole="button"
           accessibilityLabel={`Edit module ${context.module.title}`}
+          accessibilityHint="Opens the module edit form"
         >
-          <Text style={styles.heroGhostBtnText}>Edit Module</Text>
+          <Text style={styles.heroGhostBtnText} maxFontSizeMultiplier={1.2}>
+            Edit Module
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.heroBtn, styles.heroDangerBtn]}
@@ -112,8 +122,11 @@ function ModuleHero({ viewModel }: ModuleHeroProps) {
           activeOpacity={0.8}
           accessibilityRole="button"
           accessibilityLabel={`Delete module ${context.module.title}`}
+          accessibilityHint="Opens delete confirmation for this module"
         >
-          <Text style={styles.heroDangerBtnText}>Delete Module</Text>
+          <Text style={styles.heroDangerBtnText} maxFontSizeMultiplier={1.2}>
+            Delete Module
+          </Text>
         </TouchableOpacity>
       </View>
     </LinearGradient>
@@ -133,16 +146,23 @@ function MaterialsSection({ viewModel, offline }: MaterialsSectionProps) {
 
       <View style={styles.sectionHeader}>
         <View>
-          <Text style={styles.sectionTitle}>Materials</Text>
-          <Text style={styles.sectionSubtitle}>Open any item for detail view and editing.</Text>
+          <Text style={styles.sectionTitle} maxFontSizeMultiplier={1.2}>
+            Materials
+          </Text>
+          <Text style={styles.sectionSubtitle} maxFontSizeMultiplier={1.2}>
+            Open any item for detail view and editing.
+          </Text>
         </View>
         <TouchableOpacity
           style={styles.addBtn}
           onPress={viewModel.addMaterial}
           accessibilityRole="button"
           accessibilityLabel="Add material"
+          accessibilityHint="Opens the add material form"
         >
-          <Text style={styles.addBtnText}>Add</Text>
+          <Text style={styles.addBtnText} maxFontSizeMultiplier={1.2}>
+            Add
+          </Text>
         </TouchableOpacity>
       </View>
 

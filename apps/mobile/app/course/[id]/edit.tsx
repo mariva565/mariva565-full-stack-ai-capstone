@@ -116,7 +116,7 @@ export default function EditCourseScreen() {
         </View>
 
         {error ? (
-          <View style={styles.errorBox}>
+          <View style={styles.errorBox} accessible accessibilityRole="alert">
             <Text style={styles.errorText}>{error}</Text>
           </View>
         ) : null}
@@ -132,6 +132,8 @@ export default function EditCourseScreen() {
               onChangeText={setTitle}
               onFocus={() => setFocusedField("title")}
               onBlur={() => setFocusedField(null)}
+              accessibilityLabel="Course title"
+              accessibilityHint="Required field for the course name"
             />
           </View>
 
@@ -148,6 +150,8 @@ export default function EditCourseScreen() {
               multiline
               numberOfLines={4}
               textAlignVertical="top"
+              accessibilityLabel="Course description"
+              accessibilityHint="Optional description for this course"
             />
           </View>
         </View>
@@ -160,6 +164,7 @@ export default function EditCourseScreen() {
             activeOpacity={0.8}
             accessibilityRole="button"
             accessibilityLabel="Save course changes"
+            accessibilityHint="Updates this course and returns to the previous screen"
           >
             <LinearGradient colors={GRADIENTS.primaryAction} style={styles.saveBtnGradient}>
               <Text style={styles.saveBtnText}>{saving ? "Saving..." : "Save Changes"}</Text>
@@ -171,6 +176,7 @@ export default function EditCourseScreen() {
             onPress={() => router.back()}
             accessibilityRole="button"
             accessibilityLabel="Cancel course editing"
+            accessibilityHint="Discard unsaved changes and go back"
           >
             <Text style={styles.cancelBtnText}>Cancel</Text>
           </TouchableOpacity>

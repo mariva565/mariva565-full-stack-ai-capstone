@@ -95,7 +95,7 @@ export default function AddMaterialScreen() {
         </View>
 
         {error ? (
-          <View style={styles.errorBox}>
+          <View style={styles.errorBox} accessible accessibilityRole="alert">
             <Text style={styles.errorText}>{error}</Text>
           </View>
         ) : null}
@@ -113,6 +113,8 @@ export default function AddMaterialScreen() {
               activeOpacity={0.7}
               accessibilityRole="button"
               accessibilityLabel={`Select material type ${t.label}`}
+              accessibilityHint="Filters which optional fields are shown"
+              accessibilityState={{ selected: materialType === t.key }}
             >
               <Text
                 style={[
@@ -146,6 +148,8 @@ export default function AddMaterialScreen() {
               onFocus={() => setFocusedField("title")}
               onBlur={() => setFocusedField(null)}
               autoFocus
+              accessibilityLabel="Material title"
+              accessibilityHint="Optional title for this material"
             />
           </View>
 
@@ -166,6 +170,8 @@ export default function AddMaterialScreen() {
               multiline
               numberOfLines={6}
               textAlignVertical="top"
+              accessibilityLabel="Material content"
+              accessibilityHint="Write notes or summary for this material"
             />
           </View>
 
@@ -182,6 +188,8 @@ export default function AddMaterialScreen() {
                 onBlur={() => setFocusedField(null)}
                 autoCapitalize="none"
                 keyboardType="url"
+                accessibilityLabel="Material URL"
+                accessibilityHint="Optional link for link or video material types"
               />
             </View>
           )}
@@ -197,6 +205,8 @@ export default function AddMaterialScreen() {
               onFocus={() => setFocusedField("tags")}
               onBlur={() => setFocusedField(null)}
               autoCapitalize="none"
+              accessibilityLabel="Material tags"
+              accessibilityHint="Optional comma-separated tags"
             />
           </View>
         </View>
@@ -209,6 +219,7 @@ export default function AddMaterialScreen() {
             activeOpacity={0.8}
             accessibilityRole="button"
             accessibilityLabel="Add material"
+            accessibilityHint="Creates this material in the current module"
           >
             <LinearGradient
               colors={GRADIENTS.primaryAction}
@@ -227,6 +238,7 @@ export default function AddMaterialScreen() {
             onPress={() => router.back()}
             accessibilityRole="button"
             accessibilityLabel="Cancel adding material"
+            accessibilityHint="Discard changes and go back"
           >
             <Text style={styles.cancelBtnText}>Cancel</Text>
           </TouchableOpacity>

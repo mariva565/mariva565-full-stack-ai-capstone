@@ -77,7 +77,7 @@ export default function AddModuleScreen() {
         </View>
 
         {error ? (
-          <View style={styles.errorBox}>
+          <View style={styles.errorBox} accessible accessibilityRole="alert">
             <Text style={styles.errorText}>{error}</Text>
           </View>
         ) : null}
@@ -94,6 +94,8 @@ export default function AddModuleScreen() {
               onFocus={() => setFocusedField("title")}
               onBlur={() => setFocusedField(null)}
               autoFocus
+              accessibilityLabel="Module title"
+              accessibilityHint="Required field for the module name"
             />
           </View>
 
@@ -114,6 +116,8 @@ export default function AddModuleScreen() {
               multiline
               numberOfLines={3}
               textAlignVertical="top"
+              accessibilityLabel="Module description"
+              accessibilityHint="Optional description for this module"
             />
           </View>
         </View>
@@ -126,6 +130,7 @@ export default function AddModuleScreen() {
             activeOpacity={0.8}
             accessibilityRole="button"
             accessibilityLabel="Add module"
+            accessibilityHint="Creates the module in this course"
           >
             <LinearGradient
               colors={GRADIENTS.primaryAction}
@@ -144,6 +149,7 @@ export default function AddModuleScreen() {
             onPress={() => router.back()}
             accessibilityRole="button"
             accessibilityLabel="Cancel adding module"
+            accessibilityHint="Discard changes and go back"
           >
             <Text style={styles.cancelBtnText}>Cancel</Text>
           </TouchableOpacity>

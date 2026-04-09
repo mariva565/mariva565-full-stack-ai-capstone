@@ -4506,6 +4506,45 @@ Missing features (later phase):
 **Verification:**
 - `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
 
+### Session 183 (Phase 2: accessibility hardening + CRUD/favorites stability acceptance)
+
+**What we changed:**
+- Completed accessibility hardening pass for core mobile CRUD and favorites flows.
+- Added explicit VoiceOver/TalkBack labels + hints on form controls in CRUD screens:
+  - `apps/mobile/app/create-course.tsx`
+  - `apps/mobile/app/course/[id]/add-module.tsx`
+  - `apps/mobile/app/course/[id]/edit.tsx`
+  - `apps/mobile/app/module/[id]/add-material.tsx`
+  - `apps/mobile/app/module/[id]/edit.tsx`
+  - `apps/mobile/app/material/[id]/edit.tsx`
+- Added selected-state accessibility semantics for chips/type selectors:
+  - `apps/mobile/components/type-filter-chips.tsx`
+  - material-type selectors in add/edit material screens
+- Improved VoiceOver/TalkBack action discoverability with contextual hints and Dynamic Type resilience in shared CRUD/favorites UI:
+  - `apps/mobile/app/(tabs)/favorites.tsx`
+  - `apps/mobile/components/courses-list/course-card.tsx`
+  - `apps/mobile/components/module-list-card.tsx`
+  - `apps/mobile/components/material-card.tsx`
+  - `apps/mobile/components/module-workspace/module-workspace-screen.tsx`
+  - `apps/mobile/components/courses-list/courses-list-screen.tsx`
+  - `apps/mobile/components/search-bar.tsx`
+  - `apps/mobile/components/profile-tab/profile-tab-screen.tsx`
+  - `apps/mobile/app/material/[id].tsx`
+
+**Phase 1 stabilization guardrails kept intact:**
+- React Query lifecycle integration unchanged
+- Query-managed reads with `cache: false` unchanged
+- Timeout/retry tuning unchanged
+- API contracts and mutation behavior unchanged
+
+**Checklist sync:**
+- Marked Phase 2 accessibility task as completed in `docs/mobile-execution-checklist.md`.
+- Marked Phase 2 acceptance criterion "Core CRUD/favorites flows are stable with improved perceived UX" as completed.
+- Updated next recommended task to finish dashboard branding cleanup, then proceed to Phase 3 quality gates.
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
+
 ### Session 181 (Checkpoint: Phase 2 continuity + dashboard branding backlog)
 
 **What we changed:**

@@ -81,7 +81,7 @@ export default function CreateCourseScreen() {
         </View>
 
         {error ? (
-          <View style={styles.errorBox}>
+          <View style={styles.errorBox} accessible accessibilityRole="alert">
             <Text style={styles.errorText}>{error}</Text>
           </View>
         ) : null}
@@ -106,6 +106,8 @@ export default function CreateCourseScreen() {
                 setTitleTouched(true);
               }}
               autoFocus
+              accessibilityLabel="Course title"
+              accessibilityHint="Required field for the course name"
             />
             {titleTouched && titleError ? (
               <Text style={styles.fieldErrorText}>{titleError}</Text>
@@ -129,6 +131,8 @@ export default function CreateCourseScreen() {
               multiline
               numberOfLines={4}
               textAlignVertical="top"
+              accessibilityLabel="Course description"
+              accessibilityHint="Optional description for this course"
             />
           </View>
         </View>
@@ -141,6 +145,7 @@ export default function CreateCourseScreen() {
             activeOpacity={0.8}
             accessibilityRole="button"
             accessibilityLabel="Create course"
+            accessibilityHint="Saves this course and returns to your courses list"
           >
             <LinearGradient
               colors={GRADIENTS.primaryAction}
@@ -159,6 +164,7 @@ export default function CreateCourseScreen() {
             onPress={() => router.back()}
             accessibilityRole="button"
             accessibilityLabel="Cancel course creation"
+            accessibilityHint="Discard changes and go back"
           >
             <Text style={styles.cancelBtnText}>Cancel</Text>
           </TouchableOpacity>
@@ -261,17 +267,12 @@ const styles = StyleSheet.create({
     borderColor: COLORS.brandPrimary,
     backgroundColor: COLORS.surfaceHighlight,
   },
-  actions: {
-    marginTop: 20,
-    gap: 12,
-  },
+  actions: { marginTop: 20, gap: 12 },
   createBtn: {
     borderRadius: 12,
     overflow: "hidden",
   },
-  createBtnDisabled: {
-    opacity: 0.6,
-  },
+  createBtnDisabled: { opacity: 0.6 },
   createBtnGradient: {
     paddingVertical: 16,
     alignItems: "center",

@@ -44,28 +44,46 @@ function CoursesHeader({
             <Text style={styles.brandTitle}>
               Study<Text style={styles.brandTitleAccent}>Hub</Text>
             </Text>
-            <Text style={styles.brandSubtitle}>Learn smarter, every day.</Text>
+            <Text style={styles.brandSubtitle} maxFontSizeMultiplier={1.2}>
+              Learn smarter, every day.
+            </Text>
           </View>
         </View>
 
         <View>
-          <Text style={styles.headerGreeting}>Welcome back,</Text>
-          <Text style={styles.headerName}>{userName}</Text>
+          <Text style={styles.headerGreeting} maxFontSizeMultiplier={1.2}>
+            Welcome back,
+          </Text>
+          <Text style={styles.headerName} maxFontSizeMultiplier={1.3}>
+            {userName}
+          </Text>
         </View>
       </View>
 
       <View style={styles.statsRow}>
         <View style={styles.statItem}>
-          <Text style={styles.statNumber}>{coursesCount}</Text>
-          <Text style={styles.statLabel}>{coursesCount === 1 ? "Course" : "Courses"}</Text>
+          <Text style={styles.statNumber} maxFontSizeMultiplier={1.3}>
+            {coursesCount}
+          </Text>
+          <Text style={styles.statLabel} maxFontSizeMultiplier={1.2}>
+            {coursesCount === 1 ? "Course" : "Courses"}
+          </Text>
         </View>
         <View style={styles.statItem}>
-          <Text style={styles.statNumber}>{modulesCount}</Text>
-          <Text style={styles.statLabel}>{modulesCount === 1 ? "Module" : "Modules"}</Text>
+          <Text style={styles.statNumber} maxFontSizeMultiplier={1.3}>
+            {modulesCount}
+          </Text>
+          <Text style={styles.statLabel} maxFontSizeMultiplier={1.2}>
+            {modulesCount === 1 ? "Module" : "Modules"}
+          </Text>
         </View>
         <View style={styles.statItem}>
-          <Text style={styles.statNumber}>{materialsCount}</Text>
-          <Text style={styles.statLabel}>{materialsCount === 1 ? "Material" : "Materials"}</Text>
+          <Text style={styles.statNumber} maxFontSizeMultiplier={1.3}>
+            {materialsCount}
+          </Text>
+          <Text style={styles.statLabel} maxFontSizeMultiplier={1.2}>
+            {materialsCount === 1 ? "Material" : "Materials"}
+          </Text>
         </View>
       </View>
     </LinearGradient>
@@ -165,9 +183,12 @@ function CreateCourseFab({ onPress }: { onPress: () => void }) {
       activeOpacity={0.8}
       accessibilityRole="button"
       accessibilityLabel="Create course"
+      accessibilityHint="Opens the create course form"
     >
       <LinearGradient colors={GRADIENTS.primaryAction} style={styles.fabGradient}>
-        <Text style={styles.fabText}>+</Text>
+        <Text style={styles.fabText} maxFontSizeMultiplier={1.2}>
+          +
+        </Text>
       </LinearGradient>
     </TouchableOpacity>
   );

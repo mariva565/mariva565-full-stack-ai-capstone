@@ -79,6 +79,9 @@ function ProfileInfoCard({ viewModel }: ProfileTabScreenProps) {
             value={viewModel.editName}
             onChangeText={viewModel.setEditName}
             autoFocus
+            accessibilityLabel="Profile name"
+            accessibilityHint="Edit your display name"
+            maxFontSizeMultiplier={1.4}
           />
         ) : (
           <Text style={styles.fieldValue}>{viewModel.profile.name}</Text>
@@ -103,6 +106,7 @@ function ProfileActions({ viewModel }: ProfileTabScreenProps) {
         onPress={viewModel.logout}
         accessibilityRole="button"
         accessibilityLabel="Log out"
+        accessibilityHint="Signs you out of the current account"
       >
         <Text style={styles.logoutBtnText}>Log out</Text>
       </TouchableOpacity>
@@ -114,6 +118,7 @@ function ProfileActions({ viewModel }: ProfileTabScreenProps) {
             onPress={viewModel.cancelEditing}
             accessibilityRole="button"
             accessibilityLabel="Cancel profile editing"
+            accessibilityHint="Discard name changes"
           >
             <Text style={styles.cancelBtnText}>Cancel</Text>
           </TouchableOpacity>
@@ -123,6 +128,7 @@ function ProfileActions({ viewModel }: ProfileTabScreenProps) {
             disabled={viewModel.saving}
             accessibilityRole="button"
             accessibilityLabel="Save profile"
+            accessibilityHint="Saves your updated profile name"
           >
             <LinearGradient
               colors={GRADIENTS.primaryAction}
@@ -140,6 +146,7 @@ function ProfileActions({ viewModel }: ProfileTabScreenProps) {
           onPress={viewModel.startEditing}
           accessibilityRole="button"
           accessibilityLabel="Edit profile"
+          accessibilityHint="Enables profile name editing"
         >
           <Text style={styles.editBtnText}>Edit Profile</Text>
         </TouchableOpacity>

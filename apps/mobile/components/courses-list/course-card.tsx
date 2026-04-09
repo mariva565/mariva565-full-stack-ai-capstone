@@ -57,8 +57,11 @@ function CourseActions({
         hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         accessibilityRole="button"
         accessibilityLabel={`Edit course ${title}`}
+        accessibilityHint="Opens the course edit form"
       >
-        <Text style={[styles.inlineActionText, styles.inlineEditText]}>Edit</Text>
+        <Text style={[styles.inlineActionText, styles.inlineEditText]} maxFontSizeMultiplier={1.2}>
+          Edit
+        </Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={[styles.inlineActionBtn, styles.inlineDeleteBtn]}
@@ -67,8 +70,11 @@ function CourseActions({
         hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         accessibilityRole="button"
         accessibilityLabel={`Delete course ${title}`}
+        accessibilityHint="Opens delete confirmation for this course"
       >
-        <Text style={[styles.inlineActionText, styles.inlineDeleteText]}>Delete</Text>
+        <Text style={[styles.inlineActionText, styles.inlineDeleteText]} maxFontSizeMultiplier={1.2}>
+          Delete
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -87,16 +93,19 @@ export function CourseCard({ course, index, onOpen, onEdit, onDelete }: CourseCa
           activeOpacity={0.75}
           accessibilityRole="button"
           accessibilityLabel={`Open course ${course.title}`}
+          accessibilityHint="Opens course details and modules"
         >
-          <Text style={styles.courseTitle} numberOfLines={1}>
+          <Text style={styles.courseTitle} numberOfLines={1} maxFontSizeMultiplier={1.2}>
             {course.title}
           </Text>
           {course.description ? (
-            <Text style={styles.courseDesc} numberOfLines={2}>
+            <Text style={styles.courseDesc} numberOfLines={2} maxFontSizeMultiplier={1.3}>
               {course.description}
             </Text>
           ) : null}
-          <Text style={styles.courseDate}>{new Date(course.createdAt).toLocaleDateString()}</Text>
+          <Text style={styles.courseDate} maxFontSizeMultiplier={1.2}>
+            {new Date(course.createdAt).toLocaleDateString()}
+          </Text>
         </TouchableOpacity>
         <CourseActions title={course.title} onEdit={onEdit} onDelete={onDelete} />
       </View>

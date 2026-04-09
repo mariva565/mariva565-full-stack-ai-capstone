@@ -22,23 +22,30 @@ export function ModuleListCard({ index, module, onOpen, onEdit, onDelete }: Prop
         activeOpacity={0.78}
         accessibilityRole="button"
         accessibilityLabel={`Open module ${module.title}`}
+        accessibilityHint="Opens this module workspace"
       >
         <View style={styles.numberCircle}>
-          <Text style={styles.numberText}>{index + 1}</Text>
+          <Text style={styles.numberText} maxFontSizeMultiplier={1.2}>
+            {index + 1}
+          </Text>
         </View>
         <View style={styles.copyWrap}>
-          <Text style={styles.title} numberOfLines={1}>
+          <Text style={styles.title} numberOfLines={1} maxFontSizeMultiplier={1.2}>
             {module.title}
           </Text>
-          <Text style={styles.meta}>
+          <Text style={styles.meta} maxFontSizeMultiplier={1.3}>
             {module.description?.trim() || "Open the module workspace to manage materials."}
           </Text>
         </View>
-        <Text style={styles.cta}>Open</Text>
+        <Text style={styles.cta} maxFontSizeMultiplier={1.2}>
+          Open
+        </Text>
       </TouchableOpacity>
 
       <View style={styles.footer}>
-        <Text style={styles.hint}>Workspace for this module's materials</Text>
+        <Text style={styles.hint} maxFontSizeMultiplier={1.2}>
+          Workspace for this module's materials
+        </Text>
         <View style={styles.actionsWrap}>
           <EntityActions
             compact

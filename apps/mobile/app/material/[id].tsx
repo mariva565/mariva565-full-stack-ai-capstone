@@ -215,12 +215,12 @@ export default function MaterialScreen() {
         style={styles.hero}
       >
         <View style={[styles.typeBadge, { backgroundColor: cfg.bg }]}>
-          <Text style={[styles.typeBadgeText, { color: cfg.color }]}>
+          <Text style={[styles.typeBadgeText, { color: cfg.color }]} maxFontSizeMultiplier={1.2}>
             {cfg.label}
           </Text>
         </View>
-        <Text style={styles.heroTitle}>{material.title}</Text>
-        <Text style={styles.heroDate}>
+        <Text style={styles.heroTitle} maxFontSizeMultiplier={1.3}>{material.title}</Text>
+        <Text style={styles.heroDate} maxFontSizeMultiplier={1.2}>
           {new Date(material.createdAt).toLocaleDateString()}
         </Text>
         <TouchableOpacity
@@ -233,8 +233,9 @@ export default function MaterialScreen() {
           accessibilityLabel={
             isPinned ? "Unpin material from favorites" : "Pin material to favorites"
           }
+          accessibilityHint="Toggles quick access state in Favorites tab"
         >
-          <Text style={styles.pinBtnText}>
+          <Text style={styles.pinBtnText} maxFontSizeMultiplier={1.2}>
             {toggleFavoriteMutation.isPending
               ? "Updating..."
               : isPinned
@@ -266,11 +267,12 @@ export default function MaterialScreen() {
           accessibilityLabel={
             material.materialType === "link" ? "Open material link" : "Open material file"
           }
+          accessibilityHint="Opens the URL with your device browser or file handler"
         >
-          <Text style={styles.linkLabel}>
+          <Text style={styles.linkLabel} maxFontSizeMultiplier={1.2}>
             {material.materialType === "link" ? "Open Link" : "Open File"}
           </Text>
-          <Text style={styles.linkUrl} numberOfLines={2}>
+          <Text style={styles.linkUrl} numberOfLines={2} maxFontSizeMultiplier={1.2}>
             {material.fileUrl}
           </Text>
         </TouchableOpacity>
@@ -278,11 +280,11 @@ export default function MaterialScreen() {
 
       {tags.length > 0 ? (
         <View style={styles.tagsCard}>
-          <Text style={styles.tagsLabel}>Tags</Text>
+          <Text style={styles.tagsLabel} maxFontSizeMultiplier={1.2}>Tags</Text>
           <View style={styles.tagsRow}>
             {tags.map((tag) => (
               <View key={tag} style={styles.tag}>
-                <Text style={styles.tagText}>{tag}</Text>
+                <Text style={styles.tagText} maxFontSizeMultiplier={1.2}>{tag}</Text>
               </View>
             ))}
           </View>

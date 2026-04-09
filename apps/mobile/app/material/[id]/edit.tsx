@@ -162,7 +162,7 @@ export default function EditMaterialScreen() {
         </View>
 
         {error ? (
-          <View style={styles.errorBox}>
+          <View style={styles.errorBox} accessible accessibilityRole="alert">
             <Text style={styles.errorText}>{error}</Text>
           </View>
         ) : null}
@@ -182,6 +182,8 @@ export default function EditMaterialScreen() {
               activeOpacity={0.75}
               accessibilityRole="button"
               accessibilityLabel={`Select material type ${type.label}`}
+              accessibilityHint="Filters which optional fields are shown"
+              accessibilityState={{ selected: materialType === type.key }}
             >
               <Text
                 style={[
@@ -214,6 +216,8 @@ export default function EditMaterialScreen() {
               onChangeText={setTitle}
               onFocus={() => setFocusedField("title")}
               onBlur={() => setFocusedField(null)}
+              accessibilityLabel="Material title"
+              accessibilityHint="Optional title for this material"
             />
           </View>
 
@@ -230,6 +234,8 @@ export default function EditMaterialScreen() {
               multiline
               numberOfLines={6}
               textAlignVertical="top"
+              accessibilityLabel="Material content"
+              accessibilityHint="Write notes or summary for this material"
             />
           </View>
 
@@ -246,6 +252,8 @@ export default function EditMaterialScreen() {
                 onBlur={() => setFocusedField(null)}
                 autoCapitalize="none"
                 keyboardType="url"
+                accessibilityLabel="Material URL"
+                accessibilityHint="Optional link for link or video material types"
               />
             </View>
           ) : null}
@@ -261,6 +269,8 @@ export default function EditMaterialScreen() {
               onFocus={() => setFocusedField("tags")}
               onBlur={() => setFocusedField(null)}
               autoCapitalize="none"
+              accessibilityLabel="Material tags"
+              accessibilityHint="Optional comma-separated tags"
             />
           </View>
         </View>
@@ -273,6 +283,7 @@ export default function EditMaterialScreen() {
             activeOpacity={0.8}
             accessibilityRole="button"
             accessibilityLabel="Save material changes"
+            accessibilityHint="Updates this material and returns to the previous screen"
           >
             <LinearGradient colors={GRADIENTS.primaryAction} style={styles.saveBtnGradient}>
               <Text style={styles.saveBtnText}>{saving ? "Saving..." : "Save Changes"}</Text>
@@ -284,6 +295,7 @@ export default function EditMaterialScreen() {
             onPress={() => router.back()}
             accessibilityRole="button"
             accessibilityLabel="Cancel material editing"
+            accessibilityHint="Discard unsaved changes and go back"
           >
             <Text style={styles.cancelBtnText}>Cancel</Text>
           </TouchableOpacity>

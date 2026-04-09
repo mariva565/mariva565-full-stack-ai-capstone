@@ -25,21 +25,26 @@ export function MaterialCard({ material, onOpen, onEdit, onDelete }: Props) {
         activeOpacity={0.78}
         accessibilityRole="button"
         accessibilityLabel={`Open material ${material.title}`}
+        accessibilityHint="Opens full material details"
       >
         <View style={styles.header}>
           <View style={[styles.iconCircle, { backgroundColor: config.bg }]}>
-            <Text style={[styles.iconText, { color: config.color }]}>{config.icon}</Text>
+            <Text style={[styles.iconText, { color: config.color }]} maxFontSizeMultiplier={1.2}>
+              {config.icon}
+            </Text>
           </View>
           <View style={styles.copyWrap}>
-            <Text style={styles.title} numberOfLines={1}>
+            <Text style={styles.title} numberOfLines={1} maxFontSizeMultiplier={1.2}>
               {material.title}
             </Text>
             {material.content ? (
-              <Text style={styles.content} numberOfLines={3}>
+              <Text style={styles.content} numberOfLines={3} maxFontSizeMultiplier={1.3}>
                 {material.content}
               </Text>
             ) : (
-              <Text style={styles.meta}>{config.label} material</Text>
+              <Text style={styles.meta} maxFontSizeMultiplier={1.2}>
+                {config.label} material
+              </Text>
             )}
           </View>
         </View>
@@ -48,7 +53,9 @@ export function MaterialCard({ material, onOpen, onEdit, onDelete }: Props) {
           <View style={styles.tagsRow}>
             {tags.map((tag) => (
               <View key={tag} style={styles.tag}>
-                <Text style={styles.tagText}>{tag}</Text>
+                <Text style={styles.tagText} maxFontSizeMultiplier={1.2}>
+                  {tag}
+                </Text>
               </View>
             ))}
           </View>

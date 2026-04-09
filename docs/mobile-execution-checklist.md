@@ -52,7 +52,7 @@ Owner: Mobile stream
 - [x] UX hardening: haptics for success/destructive actions.
 - [ ] UX hardening: dashboard branding cleanup (remove decorative emoji markers and align `StudyHub` heading typography/color with auth/web branding).
 - [x] UX hardening: hardware back behavior consistency in CRUD flows.
-- [ ] UX hardening: accessibility checks (Dynamic Type + VoiceOver/TalkBack).
+- [x] UX hardening: accessibility checks (Dynamic Type + VoiceOver/TalkBack).
 
 ### Completed UX slice (2026-04-09)
 - Added reusable animated skeleton primitives in `apps/mobile/components/skeleton/skeleton-block.tsx`.
@@ -128,9 +128,37 @@ Owner: Mobile stream
 - `apps/mobile/app/material/[id]/edit.tsx`
 - Kept API contracts and mutation behavior unchanged (only navigation/back UX hardening).
 
+### Completed UX slice (2026-04-09, accessibility hardening)
+- Added explicit VoiceOver/TalkBack form labels and hints in CRUD flows:
+- `apps/mobile/app/create-course.tsx`
+- `apps/mobile/app/course/[id]/add-module.tsx`
+- `apps/mobile/app/course/[id]/edit.tsx`
+- `apps/mobile/app/module/[id]/add-material.tsx`
+- `apps/mobile/app/module/[id]/edit.tsx`
+- `apps/mobile/app/material/[id]/edit.tsx`
+- Added selected-state semantics for filter/type chips:
+- `apps/mobile/components/type-filter-chips.tsx`
+- `apps/mobile/app/module/[id]/add-material.tsx`
+- `apps/mobile/app/material/[id]/edit.tsx`
+- Improved screen-reader navigation hints and Dynamic Type resilience in core CRUD/favorites UI:
+- `apps/mobile/app/(tabs)/favorites.tsx`
+- `apps/mobile/components/courses-list/course-card.tsx`
+- `apps/mobile/components/module-list-card.tsx`
+- `apps/mobile/components/material-card.tsx`
+- `apps/mobile/components/module-workspace/module-workspace-screen.tsx`
+- `apps/mobile/components/courses-list/courses-list-screen.tsx`
+- `apps/mobile/components/search-bar.tsx`
+- `apps/mobile/components/profile-tab/profile-tab-screen.tsx`
+- `apps/mobile/app/material/[id].tsx`
+- Kept Phase 1 stabilization intact:
+  - React Query lifecycle behavior unchanged
+  - Query-managed `cache: false` reads unchanged
+  - Timeout/retry tuning unchanged
+  - Existing API contracts and mutation behavior unchanged
+
 ### Acceptance Criteria
 - [x] High-traffic files are under 300 lines and major functions stay under 60 lines.
-- [ ] Core CRUD/favorites flows are stable with improved perceived UX.
+- [x] Core CRUD/favorites flows are stable with improved perceived UX.
 
 ## Phase 3 - Quality Gates and Optional Features
 
@@ -149,4 +177,4 @@ Owner: Mobile stream
 
 ## Next Recommended Task
 
-- Continue Phase 2 UX hardening with accessibility checks (Dynamic Type + VoiceOver/TalkBack), then complete dashboard branding cleanup (`StudyHub` title + emoji removal).
+- Complete the remaining Phase 2 dashboard branding cleanup (`StudyHub` title + decorative emoji cleanup), then move to Phase 3 quality gates (mobile smoke + telemetry).

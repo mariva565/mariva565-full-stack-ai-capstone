@@ -124,7 +124,7 @@ export default function EditModuleScreen() {
         </View>
 
         {error ? (
-          <View style={styles.errorBox}>
+          <View style={styles.errorBox} accessible accessibilityRole="alert">
             <Text style={styles.errorText}>{error}</Text>
           </View>
         ) : null}
@@ -140,6 +140,8 @@ export default function EditModuleScreen() {
               onChangeText={setTitle}
               onFocus={() => setFocusedField("title")}
               onBlur={() => setFocusedField(null)}
+              accessibilityLabel="Module title"
+              accessibilityHint="Required field for the module name"
             />
           </View>
 
@@ -156,6 +158,8 @@ export default function EditModuleScreen() {
               multiline
               numberOfLines={4}
               textAlignVertical="top"
+              accessibilityLabel="Module description"
+              accessibilityHint="Optional description for this module"
             />
           </View>
         </View>
@@ -168,6 +172,7 @@ export default function EditModuleScreen() {
             activeOpacity={0.8}
             accessibilityRole="button"
             accessibilityLabel="Save module changes"
+            accessibilityHint="Updates this module and returns to the previous screen"
           >
             <LinearGradient colors={GRADIENTS.primaryAction} style={styles.saveBtnGradient}>
               <Text style={styles.saveBtnText}>{saving ? "Saving..." : "Save Changes"}</Text>
@@ -179,6 +184,7 @@ export default function EditModuleScreen() {
             onPress={() => router.back()}
             accessibilityRole="button"
             accessibilityLabel="Cancel module editing"
+            accessibilityHint="Discard unsaved changes and go back"
           >
             <Text style={styles.cancelBtnText}>Cancel</Text>
           </TouchableOpacity>

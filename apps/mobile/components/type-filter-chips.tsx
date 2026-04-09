@@ -21,8 +21,12 @@ export function TypeFilterChips({ selected, onSelect }: Props) {
         activeOpacity={0.8}
         accessibilityRole="button"
         accessibilityLabel="Show all material types"
+        accessibilityHint="Removes the current type filter"
+        accessibilityState={{ selected: !selected }}
       >
-        <Text style={[styles.chipText, !selected && styles.chipTextActive]}>All</Text>
+        <Text style={[styles.chipText, !selected && styles.chipTextActive]} maxFontSizeMultiplier={1.2}>
+          All
+        </Text>
       </TouchableOpacity>
       {MATERIAL_TYPE_OPTIONS.map((type) => {
         const active = selected === type.key;
@@ -34,9 +38,13 @@ export function TypeFilterChips({ selected, onSelect }: Props) {
             activeOpacity={0.8}
             accessibilityRole="button"
             accessibilityLabel={`Filter materials by ${type.label}`}
+            accessibilityHint={active ? "Clears this filter" : `Shows only ${type.label} materials`}
+            accessibilityState={{ selected: active }}
           >
             <View style={[styles.dot, { backgroundColor: type.color }]} />
-            <Text style={[styles.chipText, active && { color: type.color }]}>{type.label}</Text>
+            <Text style={[styles.chipText, active && { color: type.color }]} maxFontSizeMultiplier={1.2}>
+              {type.label}
+            </Text>
           </TouchableOpacity>
         );
       })}
