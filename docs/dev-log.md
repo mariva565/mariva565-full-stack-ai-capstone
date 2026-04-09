@@ -4506,6 +4506,19 @@ Missing features (later phase):
 **Verification:**
 - `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
 
+### Session 184 (Dashboard branding final polish after visual review)
+
+**What we changed:**
+- Finalized the mobile dashboard branding decision after UI review:
+  - Kept the mascot in the Courses dashboard header and no-courses card.
+  - Removed the desktop-style icon from dashboard branding areas.
+- Kept auth branding aligned for mobile sign-in/sign-up with clean logo-first presentation (without extra decorative marker before it).
+- Updated docs copy to match the final visual decision:
+  - `docs/mobile-execution-checklist.md` dashboard branding notes now reflect mascot-first dashboard branding.
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
+
 ### Session 183 (Phase 2: accessibility hardening + CRUD/favorites stability acceptance)
 
 **What we changed:**

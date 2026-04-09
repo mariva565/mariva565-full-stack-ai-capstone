@@ -159,8 +159,8 @@ Owner: Mobile stream
 ### Completed UX slice (2026-04-09, dashboard branding cleanup)
 - Completed mobile dashboard (Courses tab) branding harmony with auth/web brand language:
 - `apps/mobile/components/courses-list/courses-list-screen.tsx`
-  - Header now uses both brand logo and mascot for stronger StudyHub identity parity.
-  - Replaced emoji-based empty courses state with a branded no-courses card (logo + mascot + signature `StudyHub` heading).
+  - Header keeps the mascot with signature `StudyHub` typography (desktop-style icon removed from mobile dashboard).
+  - Replaced emoji-based empty courses state with a branded no-courses card (mascot + signature `StudyHub` heading).
 - `apps/mobile/components/courses-list/courses-list.styles.ts`
   - Added dedicated dashboard branding styles for header visuals and no-courses card.
 - Removed decorative emoji marker usage from dashboard empty-state rendering path while preserving existing CRUD behavior.
