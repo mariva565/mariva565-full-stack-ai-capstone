@@ -2,7 +2,6 @@ import { FlatList, Image, RefreshControl, Text, TouchableOpacity, View } from "r
 import { LinearGradient } from "expo-linear-gradient";
 
 import { ConfirmModal } from "../confirm-modal";
-import { EmptyState } from "../empty-state";
 import { NetworkBanner } from "../network-banner";
 import { RequestState } from "../request-state";
 import { COLORS, GRADIENTS } from "../../lib/colors";
@@ -13,6 +12,30 @@ import { styles } from "./courses-list.styles";
 import type { CoursesListViewModel } from "./courses-list.types";
 
 type CoursesListScreenProps = { viewModel: CoursesListViewModel };
+
+function NoCoursesState() {
+  return (
+    <View style={styles.noCoursesWrap}>
+      <View style={styles.noCoursesCard}>
+        <Image
+          source={require("../../assets/branding/mascot.png")}
+          style={styles.noCoursesMascot}
+          resizeMode="contain"
+          accessibilityIgnoresInvertColors
+        />
+        <Text style={styles.noCoursesTitle} maxFontSizeMultiplier={1.2}>
+          Study<Text style={styles.brandTitleAccent}>Hub</Text>
+        </Text>
+        <Text style={styles.noCoursesHeading} maxFontSizeMultiplier={1.2}>
+          No courses yet
+        </Text>
+        <Text style={styles.noCoursesSubtitle} maxFontSizeMultiplier={1.2}>
+          Tap + to create your first course.
+        </Text>
+      </View>
+    </View>
+  );
+}
 
 function CoursesHeader({
   userName,
@@ -136,13 +159,7 @@ function CoursesState({
       );
     }
 
-    return (
-      <EmptyState
-        icon="Courses"
-        title="No courses yet"
-        subtitle="Tap + to create your first course"
-      />
-    );
+    return <NoCoursesState />;
   }
 
   return (

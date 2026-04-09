@@ -13,11 +13,11 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 12,
+    marginBottom: 10,
   },
-  mascot: {
-    width: 68,
-    height: 68,
+  logo: {
+    width: 54,
+    height: 54,
   },
   brandTitle: {
     fontSize: 42,

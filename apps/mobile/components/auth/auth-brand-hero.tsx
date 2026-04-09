@@ -12,8 +12,8 @@ export function AuthBrandHero({ subtitle, description }: AuthBrandHeroProps) {
     <View style={styles.container}>
       <View style={styles.visualRow}>
         <Image
-          source={require("../../assets/branding/mascot.png")}
-          style={styles.mascot}
+          source={require("../../assets/branding/logo.png")}
+          style={styles.logo}
           resizeMode="contain"
           accessibilityIgnoresInvertColors
         />

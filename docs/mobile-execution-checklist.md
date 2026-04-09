@@ -50,7 +50,7 @@ Owner: Mobile stream
 - [x] UX hardening: skeleton loading states on key screens.
 - [x] UX hardening: explicit offline/empty/error states.
 - [x] UX hardening: haptics for success/destructive actions.
-- [ ] UX hardening: dashboard branding cleanup (remove decorative emoji markers and align `StudyHub` heading typography/color with auth/web branding).
+- [x] UX hardening: dashboard branding cleanup (remove decorative emoji markers and align `StudyHub` heading typography/color with auth/web branding).
 - [x] UX hardening: hardware back behavior consistency in CRUD flows.
 - [x] UX hardening: accessibility checks (Dynamic Type + VoiceOver/TalkBack).
 
@@ -156,6 +156,15 @@ Owner: Mobile stream
   - Timeout/retry tuning unchanged
   - Existing API contracts and mutation behavior unchanged
 
+### Completed UX slice (2026-04-09, dashboard branding cleanup)
+- Completed mobile dashboard (Courses tab) branding harmony with auth/web brand language:
+- `apps/mobile/components/courses-list/courses-list-screen.tsx`
+  - Header now uses both brand logo and mascot for stronger StudyHub identity parity.
+  - Replaced emoji-based empty courses state with a branded no-courses card (logo + mascot + signature `StudyHub` heading).
+- `apps/mobile/components/courses-list/courses-list.styles.ts`
+  - Added dedicated dashboard branding styles for header visuals and no-courses card.
+- Removed decorative emoji marker usage from dashboard empty-state rendering path while preserving existing CRUD behavior.
+
 ### Acceptance Criteria
 - [x] High-traffic files are under 300 lines and major functions stay under 60 lines.
 - [x] Core CRUD/favorites flows are stable with improved perceived UX.
@@ -177,4 +186,4 @@ Owner: Mobile stream
 
 ## Next Recommended Task
 
-- Complete the remaining Phase 2 dashboard branding cleanup (`StudyHub` title + decorative emoji cleanup), then move to Phase 3 quality gates (mobile smoke + telemetry).
+- Start Phase 3 quality gates: mobile smoke verification for auth + core CRUD + offline/online recovery, then telemetry integration.
