@@ -43,6 +43,11 @@ export const styles = StyleSheet.create({
     color: COLORS.textOnBrand,
     textTransform: "capitalize",
   },
+  offlineBannerWrap: {
+    marginHorizontal: 16,
+    marginTop: 14,
+    marginBottom: 4,
+  },
   card: {
     backgroundColor: COLORS.surface,
     margin: 16,

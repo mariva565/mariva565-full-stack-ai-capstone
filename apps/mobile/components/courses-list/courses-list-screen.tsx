@@ -3,7 +3,10 @@ import { LinearGradient } from "expo-linear-gradient";
 
 import { ConfirmModal } from "../confirm-modal";
 import { EmptyState } from "../empty-state";
+import { NetworkBanner } from "../network-banner";
+import { RequestState } from "../request-state";
 import { COLORS, GRADIENTS } from "../../lib/colors";
+import { useIsOffline } from "../../lib/network";
 import { CourseCard } from "./course-card";
 import { CoursesListSkeleton } from "./courses-list-skeleton";
 import { styles } from "./courses-list.styles";
@@ -54,30 +57,52 @@ function CoursesHeader({
   );
 }
 
-function ErrorState({ error, onRetry }: { error: string; onRetry: () => void }) {
-  return (
-    <View style={styles.centered}>
-      <Text style={styles.errorText}>{error}</Text>
-      <TouchableOpacity
-        style={styles.retryBtn}
-        onPress={onRetry}
-        accessibilityRole="button"
-        accessibilityLabel="Retry loading courses"
-      >
-        <Text style={styles.retryText}>Retry</Text>
-      </TouchableOpacity>
-    </View>
-  );
-}
-
-function CoursesState({ viewModel }: CoursesListScreenProps) {
+function CoursesState({
+  viewModel,
+  offline,
+}: CoursesListScreenProps & { offline: boolean }) {
   if (viewModel.loading) {
     return <CoursesListSkeleton />;
   }
   if (viewModel.error) {
-    return <ErrorState error={viewModel.error} onRetry={viewModel.retry} />;
+    if (offline) {
+      return (
+        <RequestState
+          icon="Offline"
+          title="You are offline"
+          subtitle="Reconnect to load your latest courses."
+          actionLabel="Retry"
+          onAction={viewModel.retry}
+          accessibilityLabel="Retry loading courses while offline"
+        />
+      );
+    }
+
+    return (
+      <RequestState
+        icon="Error"
+        title="Could not load courses"
+        subtitle={viewModel.error}
+        actionLabel="Retry"
+        onAction={viewModel.retry}
+        accessibilityLabel="Retry loading courses"
+      />
+    );
   }
   if (viewModel.courses.length === 0) {
+    if (offline) {
+      return (
+        <RequestState
+          icon="Offline"
+          title="No offline courses yet"
+          subtitle="Reconnect to sync your courses."
+          actionLabel="Retry"
+          onAction={viewModel.retry}
+          accessibilityLabel="Retry syncing courses"
+        />
+      );
+    }
+
     return (
       <EmptyState
         icon="Courses"
@@ -92,6 +117,11 @@ function CoursesState({ viewModel }: CoursesListScreenProps) {
       data={viewModel.courses}
       keyExtractor={(item) => String(item.id)}
       contentContainerStyle={styles.list}
+      ListHeaderComponent={
+        offline ? (
+          <NetworkBanner message="Showing last synced courses until connection is restored." />
+        ) : null
+      }
       refreshControl={
         <RefreshControl
           refreshing={viewModel.refreshing}
@@ -129,6 +159,8 @@ function CreateCourseFab({ onPress }: { onPress: () => void }) {
 }
 
 export function CoursesListScreen({ viewModel }: CoursesListScreenProps) {
+  const offline = useIsOffline();
+
   return (
     <View style={styles.container}>
       <CoursesHeader
@@ -137,9 +169,9 @@ export function CoursesListScreen({ viewModel }: CoursesListScreenProps) {
         published={viewModel.stats.published}
         drafts={viewModel.stats.drafts}
       />
-      <CoursesState viewModel={viewModel} />
+      <CoursesState viewModel={viewModel} offline={offline} />
 
-      <CreateCourseFab onPress={viewModel.openCreateCourse} />
+      {!viewModel.loading ? <CreateCourseFab onPress={viewModel.openCreateCourse} /> : null}
 
       <ConfirmModal
         visible={viewModel.confirmVisible}

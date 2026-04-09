@@ -77,6 +77,11 @@ export const styles = StyleSheet.create({
     fontWeight: "700",
     color: COLORS.textOnBrand,
   },
+  offlineBannerWrap: {
+    marginHorizontal: 16,
+    marginTop: 12,
+    marginBottom: 4,
+  },
   contentCard: {
     backgroundColor: COLORS.surface,
     margin: 16,

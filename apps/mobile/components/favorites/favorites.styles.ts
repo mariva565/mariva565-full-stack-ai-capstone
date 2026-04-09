@@ -27,6 +27,11 @@ export const styles = StyleSheet.create({
     fontSize: 13,
     color: "rgba(255,255,255,0.72)",
   },
+  offlineBannerWrap: {
+    marginHorizontal: 16,
+    marginTop: 12,
+    marginBottom: 4,
+  },
   centered: { flex: 1, justifyContent: "center", alignItems: "center", paddingHorizontal: 28 },
   errorText: { color: COLORS.danger, fontSize: 15, textAlign: "center", marginBottom: 16 },
   retryBtn: {

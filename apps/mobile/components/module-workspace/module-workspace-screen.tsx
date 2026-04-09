@@ -5,9 +5,12 @@ import { Stack } from "expo-router";
 import { ConfirmModal } from "../confirm-modal";
 import { EmptyState } from "../empty-state";
 import { MaterialCard } from "../material-card";
+import { NetworkBanner } from "../network-banner";
+import { RequestState } from "../request-state";
 import { SearchBar } from "../search-bar";
 import { TypeFilterChips } from "../type-filter-chips";
 import { COLORS, GRADIENTS } from "../../lib/colors";
+import { useIsOffline } from "../../lib/network";
 import { ModuleWorkspaceSkeleton } from "./module-workspace-skeleton";
 import type { ModuleWorkspaceViewModel } from "./module-workspace.types";
 import { styles } from "./module-workspace.styles";
@@ -22,6 +25,7 @@ type ModuleHeroProps = {
 
 type MaterialsSectionProps = {
   viewModel: ModuleWorkspaceViewModel;
+  offline: boolean;
 };
 
 function LoadingState() {
@@ -33,20 +37,38 @@ function LoadingState() {
   );
 }
 
-function ErrorState({ error, onRetry }: { error: string; onRetry: () => void }) {
+function ErrorState({
+  error,
+  onRetry,
+  offline,
+}: {
+  error: string;
+  onRetry: () => void;
+  offline: boolean;
+}) {
   return (
-    <View style={styles.centered}>
+    <>
       <Stack.Screen options={{ title: "Error" }} />
-      <Text style={styles.errorText}>{error || "Module not found"}</Text>
-      <TouchableOpacity
-        style={styles.retryBtn}
-        onPress={onRetry}
-        accessibilityRole="button"
-        accessibilityLabel="Retry loading module"
-      >
-        <Text style={styles.retryBtnText}>Retry</Text>
-      </TouchableOpacity>
-    </View>
+      {offline ? (
+        <RequestState
+          icon="Offline"
+          title="You are offline"
+          subtitle="Reconnect to load this module workspace."
+          actionLabel="Retry"
+          onAction={onRetry}
+          accessibilityLabel="Retry loading module while offline"
+        />
+      ) : (
+        <RequestState
+          icon="Error"
+          title="Could not load module"
+          subtitle={error || "Module not found"}
+          actionLabel="Retry"
+          onAction={onRetry}
+          accessibilityLabel="Retry loading module"
+        />
+      )}
+    </>
   );
 }
 
@@ -98,11 +120,17 @@ function ModuleHero({ viewModel }: ModuleHeroProps) {
   );
 }
 
-function MaterialsSection({ viewModel }: MaterialsSectionProps) {
+function MaterialsSection({ viewModel, offline }: MaterialsSectionProps) {
   const { materials, filteredMaterials } = viewModel;
 
   return (
     <>
+      {offline ? (
+        <View style={styles.offlineBannerWrap}>
+          <NetworkBanner message="Showing last synced materials until connection is restored." />
+        </View>
+      ) : null}
+
       <View style={styles.sectionHeader}>
         <View>
           <Text style={styles.sectionTitle}>Materials</Text>
@@ -130,11 +158,22 @@ function MaterialsSection({ viewModel }: MaterialsSectionProps) {
       ) : null}
 
       {materials.length === 0 ? (
-        <EmptyState
-          icon="Notes"
-          title="No materials yet"
-          subtitle="Add a note, link, file, or video to start this module."
-        />
+        offline ? (
+          <RequestState
+            icon="Offline"
+            title="No offline materials yet"
+            subtitle="Reconnect to sync module materials."
+            actionLabel="Retry"
+            onAction={viewModel.retry}
+            accessibilityLabel="Retry syncing module materials"
+          />
+        ) : (
+          <EmptyState
+            icon="Notes"
+            title="No materials yet"
+            subtitle="Add a note, link, file, or video to start this module."
+          />
+        )
       ) : filteredMaterials.length === 0 ? (
         <EmptyState
           icon="Search"
@@ -159,11 +198,13 @@ function MaterialsSection({ viewModel }: MaterialsSectionProps) {
 }
 
 export function ModuleWorkspaceScreen({ viewModel }: ModuleWorkspaceScreenProps) {
+  const offline = useIsOffline();
+
   if (viewModel.loading) {
     return <LoadingState />;
   }
   if (viewModel.error || !viewModel.context) {
-    return <ErrorState error={viewModel.error} onRetry={viewModel.retry} />;
+    return <ErrorState error={viewModel.error} onRetry={viewModel.retry} offline={offline} />;
   }
 
   return (
@@ -180,7 +221,7 @@ export function ModuleWorkspaceScreen({ viewModel }: ModuleWorkspaceScreenProps)
       >
         <Stack.Screen options={{ title: viewModel.context.module.title }} />
         <ModuleHero viewModel={viewModel} />
-        <MaterialsSection viewModel={viewModel} />
+        <MaterialsSection viewModel={viewModel} offline={offline} />
         <View style={styles.bottomSpacer} />
       </ScrollView>
 

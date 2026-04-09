@@ -48,7 +48,7 @@ Owner: Mobile stream
 - [x] `apps/mobile/app/login.tsx`
 - [x] `apps/mobile/app/register.tsx`
 - [x] UX hardening: skeleton loading states on key screens.
-- [ ] UX hardening: explicit offline/empty/error states.
+- [x] UX hardening: explicit offline/empty/error states.
 - [ ] UX hardening: haptics for success/destructive actions.
 - [ ] UX hardening: hardware back behavior consistency in CRUD flows.
 - [ ] UX hardening: accessibility checks (Dynamic Type + VoiceOver/TalkBack).
@@ -62,6 +62,24 @@ Owner: Mobile stream
 - `apps/mobile/app/(tabs)/favorites.tsx`
 - `apps/mobile/app/(tabs)/profile.tsx` (via `components/profile-tab/*`)
 - Preserved Phase 1 behavior: React Query lifecycle wiring, query-managed reads using `cache: false`, timeout/retry tuning, and Expo startup script workaround remained unchanged.
+
+### Completed UX slice (2026-04-09, later session)
+- Added reusable request-state primitives:
+- `apps/mobile/components/request-state.tsx`
+- `apps/mobile/components/network-banner.tsx`
+- `apps/mobile/lib/network.ts` (`useIsOffline` + offline state helper)
+- Wired explicit offline/error/empty handling across key screens:
+- `apps/mobile/components/courses-list/courses-list-screen.tsx`
+- `apps/mobile/components/module-workspace/module-workspace-screen.tsx`
+- `apps/mobile/app/material/[id].tsx`
+- `apps/mobile/app/(tabs)/favorites.tsx`
+- `apps/mobile/components/profile-tab/profile-tab-screen.tsx`
+- Added offline banner wrappers in related style files:
+- `apps/mobile/components/favorites/favorites.styles.ts`
+- `apps/mobile/components/material/material-screen.styles.ts`
+- `apps/mobile/components/module-workspace/module-workspace.styles.ts`
+- `apps/mobile/components/profile-tab/profile-tab.styles.ts`
+- Preserved Phase 1 behavior (React Query lifecycle + query-managed `cache: false` reads + existing mutation contracts).
 
 ### Acceptance Criteria
 - [x] High-traffic files are under 300 lines and major functions stay under 60 lines.
@@ -82,4 +100,4 @@ Owner: Mobile stream
 
 ## Next Recommended Task
 
-- Continue Phase 2 UX hardening with explicit offline/empty/error states across core CRUD + favorites screens.
+- Continue Phase 2 UX hardening with haptics for success/destructive actions.

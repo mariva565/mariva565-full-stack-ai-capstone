@@ -2,6 +2,9 @@ import { RefreshControl, ScrollView, Text, TextInput, TouchableOpacity, View } f
 import { LinearGradient } from "expo-linear-gradient";
 
 import { COLORS, GRADIENTS } from "../../lib/colors";
+import { useIsOffline } from "../../lib/network";
+import { NetworkBanner } from "../network-banner";
+import { RequestState } from "../request-state";
 import { ProfileTabSkeleton } from "./profile-tab-skeleton";
 import type { ProfileTabViewModel } from "./profile-tab.types";
 import { styles } from "./profile-tab.styles";
@@ -10,19 +13,26 @@ type ProfileTabScreenProps = {
   viewModel: ProfileTabViewModel;
 };
 
-function ErrorState({ error, onRetry }: { error: string; onRetry: () => void }) {
+function ErrorState({
+  error,
+  onRetry,
+  offline,
+}: {
+  error: string;
+  onRetry: () => void;
+  offline: boolean;
+}) {
   return (
-    <View style={styles.centered}>
-      <Text style={styles.errorText}>{error || "Not found"}</Text>
-      <TouchableOpacity
-        style={styles.retryBtn}
-        onPress={onRetry}
-        accessibilityRole="button"
-        accessibilityLabel="Retry loading profile"
-      >
-        <Text style={styles.retryBtnText}>Retry</Text>
-      </TouchableOpacity>
-    </View>
+    <RequestState
+      icon={offline ? "Offline" : "Error"}
+      title={offline ? "You are offline" : "Could not load profile"}
+      subtitle={offline ? "Reconnect to load your profile." : error || "Profile not found"}
+      actionLabel="Retry"
+      onAction={onRetry}
+      accessibilityLabel={
+        offline ? "Retry loading profile while offline" : "Retry loading profile"
+      }
+    />
   );
 }
 
@@ -139,11 +149,13 @@ function ProfileActions({ viewModel }: ProfileTabScreenProps) {
 }
 
 export function ProfileTabScreen({ viewModel }: ProfileTabScreenProps) {
+  const offline = useIsOffline();
+
   if (viewModel.loading) {
     return <ProfileTabSkeleton />;
   }
   if (viewModel.error || !viewModel.profile) {
-    return <ErrorState error={viewModel.error} onRetry={viewModel.retry} />;
+    return <ErrorState error={viewModel.error} onRetry={viewModel.retry} offline={offline} />;
   }
 
   return (
@@ -158,6 +170,11 @@ export function ProfileTabScreen({ viewModel }: ProfileTabScreenProps) {
       }
     >
       <ProfileHero viewModel={viewModel} />
+      {offline ? (
+        <View style={styles.offlineBannerWrap}>
+          <NetworkBanner message="Showing last synced profile data until connection is restored." />
+        </View>
+      ) : null}
       <ProfileInfoCard viewModel={viewModel} />
       <ProfileActions viewModel={viewModel} />
       <View style={styles.bottomSpacer} />

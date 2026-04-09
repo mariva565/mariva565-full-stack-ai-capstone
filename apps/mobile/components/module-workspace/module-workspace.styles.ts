@@ -63,6 +63,11 @@ export const styles = StyleSheet.create({
   },
   heroGhostBtnText: { fontSize: 13, fontWeight: "700", color: COLORS.textOnBrand },
   heroDangerBtnText: { fontSize: 13, fontWeight: "700", color: COLORS.textOnDangerSoft },
+  offlineBannerWrap: {
+    marginHorizontal: 16,
+    marginTop: 16,
+    marginBottom: -4,
+  },
   sectionHeader: {
     flexDirection: "row",
     alignItems: "center",

@@ -5170,3 +5170,47 @@ Sprint 2 - Production standards
 - Haptics for success/destructive actions
 - Hardware back behavior consistency in CRUD flows
 - Accessibility checks for Dynamic Type and VoiceOver/TalkBack
+
+### Session 177 (Phase 2 UX hardening: explicit offline/empty/error states)
+
+**What we changed:**
+- Added reusable request-state building blocks:
+  - `apps/mobile/components/request-state.tsx`
+  - `apps/mobile/components/network-banner.tsx`
+  - `apps/mobile/lib/network.ts` (`useIsOffline` + shared offline-state helper)
+- Wired explicit offline/error/empty state handling on key mobile screens:
+  - `apps/mobile/components/courses-list/courses-list-screen.tsx`
+    - offline-specific error and empty fallbacks
+    - offline banner when rendering cached/synced course list
+  - `apps/mobile/components/module-workspace/module-workspace-screen.tsx`
+    - offline-specific error and empty fallbacks
+    - offline banner above materials section
+  - `apps/mobile/app/material/[id].tsx`
+    - offline-aware error fallback
+    - offline banner when rendering synced material content
+  - `apps/mobile/app/(tabs)/favorites.tsx`
+    - offline-aware error and empty fallbacks
+    - offline banner when rendering synced favorites
+  - `apps/mobile/components/profile-tab/profile-tab-screen.tsx`
+    - offline-aware error fallback
+    - offline banner when rendering synced profile data
+- Added small style wrappers for offline banners in:
+  - `apps/mobile/components/favorites/favorites.styles.ts`
+  - `apps/mobile/components/material/material-screen.styles.ts`
+  - `apps/mobile/components/module-workspace/module-workspace.styles.ts`
+  - `apps/mobile/components/profile-tab/profile-tab.styles.ts`
+
+**Kept intact (as requested):**
+- React Query lifecycle behavior
+- Query-managed reads with `cache: false` policy
+- Existing API contracts
+- Existing mutation behavior
+- Existing timeout/retry tuning and Expo startup workaround scripts
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
+
+**Remaining Phase 2 UX tasks:**
+- Haptics for success/destructive actions
+- Hardware back behavior consistency in CRUD flows
+- Accessibility checks for Dynamic Type and VoiceOver/TalkBack

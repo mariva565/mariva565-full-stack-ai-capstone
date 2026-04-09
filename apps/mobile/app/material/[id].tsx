@@ -13,6 +13,8 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { apiFetch, getUserFriendlyError } from "../../lib/api";
 import { COLORS, GRADIENTS } from "../../lib/colors";
+import { NetworkBanner } from "../../components/network-banner";
+import { RequestState } from "../../components/request-state";
 import {
   addFavorite,
   appendOptimisticFavorite,
@@ -23,6 +25,7 @@ import {
 } from "../../lib/favorites";
 import { useToast } from "../../lib/toast-context";
 import { getMaterialTypeConfig, splitTags } from "../../lib/material-utils";
+import { useIsOffline } from "../../lib/network";
 import { invalidateFavoritesList, queryKeys } from "../../lib/query-keys";
 import type { FavoriteItem, Material } from "../../lib/studyhub-types";
 import { styles } from "../../components/material/material-screen.styles";
@@ -47,6 +50,7 @@ export default function MaterialScreen() {
   const routeId = String(id);
   const queryClient = useQueryClient();
   const { showToast } = useToast();
+  const offline = useIsOffline();
 
   const materialQuery = useQuery({
     queryKey: queryKeys.materials.detail(routeId),
@@ -166,20 +170,21 @@ export default function MaterialScreen() {
 
   if (error || !material) {
     return (
-      <View style={styles.centered}>
+      <>
         <Stack.Screen options={{ title: "Error" }} />
-        <Text style={styles.errorText}>{error || "Material not found"}</Text>
-        <TouchableOpacity
-          style={styles.retryBtn}
-          onPress={() => {
+        <RequestState
+          icon={offline ? "Offline" : "Error"}
+          title={offline ? "You are offline" : "Could not load material"}
+          subtitle={offline ? "Reconnect to load this material." : error || "Material not found"}
+          actionLabel="Retry"
+          onAction={() => {
             void materialQuery.refetch();
           }}
-          accessibilityRole="button"
-          accessibilityLabel="Retry loading material"
-        >
-          <Text style={styles.retryBtnText}>Retry</Text>
-        </TouchableOpacity>
-      </View>
+          accessibilityLabel={
+            offline ? "Retry loading material while offline" : "Retry loading material"
+          }
+        />
+      </>
     );
   }
 
@@ -236,6 +241,11 @@ export default function MaterialScreen() {
           </Text>
         </TouchableOpacity>
       </LinearGradient>
+      {offline ? (
+        <View style={styles.offlineBannerWrap}>
+          <NetworkBanner message="Showing last synced material data until connection is restored." />
+        </View>
+      ) : null}
 
       <View style={styles.contentCard}>
         {material.content ? (

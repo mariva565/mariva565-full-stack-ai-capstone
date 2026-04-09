@@ -13,10 +13,13 @@ import { useRouter } from "expo-router";
 
 import { EmptyState } from "../../components/empty-state";
 import { FavoritesSkeleton } from "../../components/favorites/favorites-skeleton";
+import { NetworkBanner } from "../../components/network-banner";
+import { RequestState } from "../../components/request-state";
 import { getUserFriendlyError } from "../../lib/api";
 import { COLORS, GRADIENTS } from "../../lib/colors";
 import { fetchFavorites, removeFavorite, removeOptimisticFavorite } from "../../lib/favorites";
 import { splitTags } from "../../lib/material-utils";
+import { useIsOffline } from "../../lib/network";
 import { queryKeys } from "../../lib/query-keys";
 import type { FavoriteItem } from "../../lib/studyhub-types";
 import { useToast } from "../../lib/toast-context";
@@ -54,7 +57,7 @@ function FavoriteCard({
           {item.materialTitle}
         </RNText>
         <RNText style={styles.cardMeta} numberOfLines={1}>
-          {item.courseTitle} · {item.moduleTitle}
+          {item.courseTitle} {"\u00B7"} {item.moduleTitle}
         </RNText>
       </TouchableOpacity>
 
@@ -106,6 +109,7 @@ export default function FavoritesTabScreen() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { showToast } = useToast();
+  const offline = useIsOffline();
   const [busyMaterialId, setBusyMaterialId] = useState<number | null>(null);
 
   const favoritesQuery = useQuery({
@@ -164,20 +168,28 @@ export default function FavoritesTabScreen() {
   }
 
   if (error) {
-    return (
-      <View style={styles.centered}>
-        <RNText style={styles.errorText}>{error}</RNText>
-        <TouchableOpacity
-          style={styles.retryBtn}
-          onPress={() => {
-            void favoritesQuery.refetch();
-          }}
-          accessibilityRole="button"
-          accessibilityLabel="Retry loading favorites"
-        >
-          <RNText style={styles.retryText}>Retry</RNText>
-        </TouchableOpacity>
-      </View>
+    return offline ? (
+      <RequestState
+        icon="Offline"
+        title="You are offline"
+        subtitle="Reconnect to load your latest favorites."
+        actionLabel="Retry"
+        onAction={() => {
+          void favoritesQuery.refetch();
+        }}
+        accessibilityLabel="Retry loading favorites while offline"
+      />
+    ) : (
+      <RequestState
+        icon="Error"
+        title="Could not load favorites"
+        subtitle={error}
+        actionLabel="Retry"
+        onAction={() => {
+          void favoritesQuery.refetch();
+        }}
+        accessibilityLabel="Retry loading favorites"
+      />
     );
   }
 
@@ -191,12 +203,31 @@ export default function FavoritesTabScreen() {
         </RNText>
       </LinearGradient>
 
+      {offline ? (
+        <View style={styles.offlineBannerWrap}>
+          <NetworkBanner message="Showing last synced favorites until connection is restored." />
+        </View>
+      ) : null}
+
       {favorites.length === 0 ? (
-        <EmptyState
-          icon="❤"
-          title="No favorites yet"
-          subtitle="Pin materials from the material screen for quick access."
-        />
+        offline ? (
+          <RequestState
+            icon="Offline"
+            title="No offline favorites yet"
+            subtitle="Reconnect and pin materials to keep quick access items here."
+            actionLabel="Retry"
+            onAction={() => {
+              void favoritesQuery.refetch();
+            }}
+            accessibilityLabel="Retry syncing favorites"
+          />
+        ) : (
+          <EmptyState
+            icon="Heart"
+            title="No favorites yet"
+            subtitle="Pin materials from the material screen for quick access."
+          />
+        )
       ) : (
         <FlatList
           data={favorites}
