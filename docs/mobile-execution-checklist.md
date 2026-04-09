@@ -22,15 +22,21 @@ Owner: Mobile stream
 ## Phase 1 - Stabilization First (active)
 
 ### Tasks
-- [ ] React Native lifecycle integration: `focusManager` + `onlineManager` (`AppState` + `NetInfo`).
-- [ ] Final cache policy between React Query cache and `apiFetch` cache (avoid double stale behavior).
-- [ ] Document cache policy in `README.md` and enforce consistently on query-managed paths.
-- [ ] Keep Favorites parity working (pin/unpin + list + quick navigation) while hardening lifecycle/cache behavior.
+- [x] React Native lifecycle integration: `focusManager` + `onlineManager` (`AppState` + `NetInfo`) implemented in code.
+- [x] Lifecycle integration manual verification on physical device (foreground/background + offline/online transitions).
+- [x] Final cache policy between React Query cache and `apiFetch` cache (avoid double stale behavior).
+- [x] Document cache policy in `README.md` and enforce consistently on query-managed paths.
+- [x] Keep Favorites parity working (pin/unpin + list + quick navigation) while hardening lifecycle/cache behavior.
 
 ### Acceptance Criteria
-- [ ] Foreground/background + offline/online transitions produce expected refetch behavior.
-- [ ] No duplicated stale behavior between React Query persistence and API cache.
-- [ ] `npm.cmd run --workspace @studyhub/mobile typecheck` passes after each slice.
+- [x] Foreground/background + offline/online transitions produce expected refetch behavior.
+- [x] No duplicated stale behavior between React Query persistence and API cache.
+- [x] `npm.cmd run --workspace @studyhub/mobile typecheck` passes after each slice.
+
+### Physical-device verification still required (Phase 1)
+- [x] AppState scenario: background app for 30-60s, return foreground, confirm React Query refetches key screens (Courses, Course Details, Module Workspace, Material, Favorites, Profile).
+- [x] NetInfo scenario: disable network while screen is open, re-enable network, confirm reconnect-driven refetch and no stale lock from API cache.
+- [x] Combined scenario: go offline -> background app -> foreground still offline -> go online, confirm recovery behavior remains consistent.
 
 ## Phase 2 - Guardrails and UX Hardening
 
@@ -66,4 +72,4 @@ Owner: Mobile stream
 
 ## Next Recommended Task
 
-- Start with Phase 1 / lifecycle integration (`focusManager` + `onlineManager`) and cache policy hardening.
+- Start Phase 2 guardrail refactor with `apps/mobile/app/module/[id]/index.tsx` split into hooks/UI subcomponents.

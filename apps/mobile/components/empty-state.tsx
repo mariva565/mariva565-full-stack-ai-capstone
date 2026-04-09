@@ -7,11 +7,28 @@ type Props = {
   subtitle?: string;
 };
 
+const EMPTY_STATE_ICONS: Record<string, string> = {
+  Courses: "\u{1F4DA}",
+  Modules: "\u{1F9E9}",
+  Notes: "\u{1F4DD}",
+  Search: "\u{1F50D}",
+  Favorites: "\u2764\uFE0F",
+  Heart: "\u2764\uFE0F",
+  // Legacy mojibake fallback from older UTF-8/CP1251 mismatches.
+  "вќ¤": "\u2764\uFE0F",
+};
+
+function resolveEmptyStateIcon(icon: string): string {
+  return EMPTY_STATE_ICONS[icon] ?? icon;
+}
+
 export function EmptyState({ icon, title, subtitle }: Props) {
+  const resolvedIcon = resolveEmptyStateIcon(icon);
+
   return (
     <View style={styles.container}>
       <View style={styles.iconCircle}>
-        <Text style={styles.icon}>{icon}</Text>
+        <Text style={styles.icon}>{resolvedIcon}</Text>
       </View>
       <Text style={styles.title}>{title}</Text>
       {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}

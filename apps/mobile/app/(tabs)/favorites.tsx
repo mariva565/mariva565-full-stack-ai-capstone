@@ -20,7 +20,7 @@ import { splitTags } from "../../lib/material-utils";
 import { queryKeys } from "../../lib/query-keys";
 import type { FavoriteItem } from "../../lib/studyhub-types";
 import { useToast } from "../../lib/toast-context";
-import { styles } from "./favorites.styles";
+import { styles } from "../../components/favorites/favorites.styles";
 
 type FavoriteCardProps = {
   item: FavoriteItem;

@@ -459,7 +459,9 @@ The mobile app connects to the **same Next.js backend** — no separate API need
 - `PersistQueryClientProvider` + AsyncStorage persistence keep query cache between app restarts.
 - Query keys and invalidation helpers are centralized in `apps/mobile/lib/query-keys.ts`.
 - Delete flows use optimistic updates; create/edit/delete flows invalidate related queries.
-- `apiFetch` remains the request layer (including existing AsyncStorage fallback cache + normalized API/network errors), now complemented by React Query state management.
+- Cache policy: React Query-managed GET reads call `apiFetch(..., { cache: false })` so React Query persistence is the single source of truth for those screens.
+- `apiFetch` cache remains enabled for non-query paths (including auth bootstrap) to preserve offline-friendly fallback behavior.
+- `apiFetch` remains the request layer (normalized API/network errors + scoped AsyncStorage cache where enabled), complemented by React Query state management.
 
 ---
 

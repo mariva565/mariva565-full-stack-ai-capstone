@@ -2,11 +2,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as SecureStore from "expo-secure-store";
 import Constants from "expo-constants";
 import { Platform } from "react-native";
-import * as Crypto from "expo-crypto";
 
 const TOKEN_KEY = "studyhub_token";
 const API_CACHE_PREFIX = "studyhub_api_cache_v1";
 const DEFAULT_CACHE_TTL_MS = 1000 * 60 * 10;
+const DEFAULT_REQUEST_TIMEOUT_MS = 1000 * 6;
 const CACHE_INDEX_LIMIT = 200;
 
 function getDevHostFromExpo(): string | null {
@@ -69,13 +69,20 @@ type FetchOptions = {
   body?: unknown;
   auth?: boolean;
   cache?: boolean | { ttlMs?: number; forceRefresh?: boolean };
+  timeoutMs?: number;
 };
 
 export async function apiFetch<T>(
   path: string,
   opts: FetchOptions = {}
 ): Promise<T> {
-  const { method = "GET", body, auth = true, cache } = opts;
+  const {
+    method = "GET",
+    body,
+    auth = true,
+    cache,
+    timeoutMs = DEFAULT_REQUEST_TIMEOUT_MS,
+  } = opts;
   const normalizedMethod = method.toUpperCase();
   const shouldUseCache = normalizedMethod === "GET" && cache !== false;
   const forceRefresh = typeof cache === "object" ? cache.forceRefresh === true : false;
@@ -106,11 +113,15 @@ export async function apiFetch<T>(
 
   let res: Response;
   try {
-    res = await fetch(`${API_BASE}${path}`, {
-      method: normalizedMethod,
-      headers,
-      body: body ? JSON.stringify(body) : undefined,
-    });
+    res = await fetchWithTimeout(
+      `${API_BASE}${path}`,
+      {
+        method: normalizedMethod,
+        headers,
+        body: body ? JSON.stringify(body) : undefined,
+      },
+      timeoutMs
+    );
   } catch (error) {
     if (cached) {
       return cached.data as T;
@@ -271,10 +282,39 @@ function createApiErrorFromResponse(status: number, payload: unknown): ApiError 
   return new ApiError(code, message, status, getErrorKind(status, code));
 }
 
-function createNetworkError(_error: unknown): ApiError {
+function isAbortError(error: unknown): boolean {
+  return error instanceof Error && error.name === "AbortError";
+}
+
+async function fetchWithTimeout(
+  input: string,
+  init: RequestInit,
+  timeoutMs: number
+): Promise<Response> {
+  if (timeoutMs <= 0) {
+    return fetch(input, init);
+  }
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => {
+    controller.abort();
+  }, timeoutMs);
+
+  try {
+    return await fetch(input, { ...init, signal: controller.signal });
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
+function createNetworkError(error: unknown): ApiError {
+  const message = isAbortError(error)
+    ? "Request timed out. Please try again."
+    : "Network connection problem. Check internet and try again.";
+
   return new ApiError(
     "NETWORK_ERROR",
-    "Network connection problem. Check internet and try again.",
+    message,
     0,
     "network"
   );

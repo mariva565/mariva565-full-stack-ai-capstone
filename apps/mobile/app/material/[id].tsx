@@ -26,7 +26,7 @@ import { useToast } from "../../lib/toast-context";
 import { getMaterialTypeConfig, splitTags } from "../../lib/material-utils";
 import { invalidateFavoritesList, queryKeys } from "../../lib/query-keys";
 import type { FavoriteItem, Material } from "../../lib/studyhub-types";
-import { styles } from "./material-screen.styles";
+import { styles } from "../../components/material/material-screen.styles";
 
 type MaterialDetailResponse = {
   material: Material & {
@@ -51,7 +51,9 @@ export default function MaterialScreen() {
   const materialQuery = useQuery({
     queryKey: queryKeys.materials.detail(routeId),
     queryFn: async () => {
-      return apiFetch<MaterialDetailResponse>(`/api/materials/${routeId}`);
+      return apiFetch<MaterialDetailResponse>(`/api/materials/${routeId}`, {
+        cache: false,
+      });
     },
   });
 

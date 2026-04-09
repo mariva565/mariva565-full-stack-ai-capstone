@@ -4,15 +4,15 @@
   "private": true,
   "main": "expo-router/entry",
   "scripts": {
-    "start": "expo start",
-    "dev:mobile:tunnel": "expo start --tunnel -c",
-    "dev:mobile:lan": "expo start --host lan -c",
+    "start": "set EXPO_NO_DEPENDENCY_VALIDATION=1&& expo start",
+    "dev:mobile:tunnel": "set EXPO_NO_DEPENDENCY_VALIDATION=1&& expo start --tunnel -c",
+    "dev:mobile:lan": "set EXPO_NO_DEPENDENCY_VALIDATION=1&& expo start --host lan -c",
     "usb:reverse": "node ./scripts/usb-reverse.js",
-    "dev:mobile:usb": "npm run usb:reverse && expo start --localhost -c",
-    "android:usb": "npm run usb:reverse && expo start --localhost --android -c",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
-    "web": "expo start --web",
+    "dev:mobile:usb": "npm run usb:reverse && set EXPO_NO_DEPENDENCY_VALIDATION=1&& expo start --localhost -c",
+    "android:usb": "npm run usb:reverse && set EXPO_NO_DEPENDENCY_VALIDATION=1&& expo start --localhost --android -c",
+    "android": "set EXPO_NO_DEPENDENCY_VALIDATION=1&& expo start --android",
+    "ios": "set EXPO_NO_DEPENDENCY_VALIDATION=1&& expo start --ios",
+    "web": "set EXPO_NO_DEPENDENCY_VALIDATION=1&& expo start --web",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

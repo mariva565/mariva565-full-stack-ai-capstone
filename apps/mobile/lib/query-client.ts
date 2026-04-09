@@ -11,7 +11,8 @@ export const REACT_QUERY_PERSIST_KEY = "studyhub_react_query_cache_v1";
 export const REACT_QUERY_MAX_AGE_MS = 24 * ONE_HOUR_MS;
 
 function shouldRetryQuery(failureCount: number, error: unknown): boolean {
-  if (failureCount >= 2) {
+  // Keep retries short on mobile to avoid long spinner states after network transitions.
+  if (failureCount >= 1) {
     return false;
   }
 

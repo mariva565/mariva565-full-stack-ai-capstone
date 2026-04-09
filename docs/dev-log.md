@@ -4506,6 +4506,158 @@ Missing features (later phase):
 **Verification:**
 - `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
 
+### Session 181 (Phase 1 manual verification pass + Expo Router warning cleanup)
+
+**Manual device verification result (reported):**
+- AppState scenario: pass
+- NetInfo scenario: pass
+- Combined offline/background/reconnect scenario: pass
+- Note: reconnect flow initially showed longer spinner duration; stabilized with timeout/retry tuning from Session 180.
+
+**Additional issue observed:**
+- Expo Router warnings in terminal:
+  - `Route "./(tabs)/favorites.styles.ts" is missing the required default export`
+  - `Route "./material/material-screen.styles.ts" is missing the required default export`
+
+**What we changed:**
+- Moved style-only files out of `app/` so Expo Router no longer treats them as route modules:
+  - `apps/mobile/app/(tabs)/favorites.styles.ts` -> `apps/mobile/components/favorites/favorites.styles.ts`
+  - `apps/mobile/app/material/material-screen.styles.ts` -> `apps/mobile/components/material/material-screen.styles.ts`
+- Updated imports:
+  - `apps/mobile/app/(tabs)/favorites.tsx`
+  - `apps/mobile/app/material/[id].tsx`
+- Synced `docs/mobile-execution-checklist.md`:
+  - Phase 1 manual verification + acceptance criteria marked complete.
+  - Next recommended task moved to Phase 2 guardrail refactor.
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
+
+### Session 180 (Reconnect spinner stabilization)
+
+**Issue observed during manual device test:**
+- After offline -> online recovery, navigation remained usable but loading spinners could stay visible too long on data screens.
+
+**What we changed:**
+- Added request timeout support in `apps/mobile/lib/api.ts`:
+  - default API request timeout (`6s`) via `fetchWithTimeout(...)` + `AbortController`
+  - timeout now returns a network error message (`Request timed out. Please try again.`)
+- Reduced query retry aggressiveness in `apps/mobile/lib/query-client.ts`:
+  - retry policy now allows only one retry cycle for retryable query errors.
+
+**Why:**
+- Prevent long-hanging requests after network transitions from keeping screens in prolonged spinner states.
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
+
+**Next validation required on device:**
+- Re-run NetInfo reconnect scenario and confirm spinner duration is now acceptable.
+
+### Session 179 (Mobile start scripts hardened for Expo dependency-validation crash)
+
+**Issue observed:**
+- Repeated `Body is unusable: Body has already been read` crash when running mobile start commands without env workaround.
+- Crash originates in Expo CLI dependency validation flow (`getNativeModuleVersionsAsync`).
+
+**What we changed:**
+- Updated mobile npm scripts in `apps/mobile/package.json` to always set:
+  - `EXPO_NO_DEPENDENCY_VALIDATION=1`
+- Hardened scripts:
+  - `start`
+  - `dev:mobile:tunnel`
+  - `dev:mobile:lan`
+  - `dev:mobile:usb`
+  - `android:usb`
+  - `android`
+  - `ios`
+  - `web`
+
+**Verification:**
+- `npm.cmd --workspace @studyhub/mobile run dev:mobile:lan` now reaches:
+  - `Waiting on http://localhost:8081`
+  - no `Body is unusable` crash in startup path
+
+### Session 178 (Expo LAN start crash workaround: dependency validation skip)
+
+**Issue observed:**
+- `npm --workspace @studyhub/mobile run dev:mobile:lan` failed at startup with:
+  - `TypeError: Body is unusable: Body has already been read`
+  - stack trace in Expo CLI dependency validation path (`getNativeModuleVersionsAsync` -> `validateDependenciesVersionsAsync`)
+
+**What we verified:**
+- Environment currently uses `Node v22.21.0`.
+- Running mobile start with dependency validation disabled starts Metro successfully:
+  - `set EXPO_NO_DEPENDENCY_VALIDATION=1&& npm.cmd --workspace @studyhub/mobile run dev:mobile:lan`
+  - output reaches `Waiting on http://localhost:8081`
+
+**Current guidance for this branch/session:**
+- Use `EXPO_NO_DEPENDENCY_VALIDATION=1` for mobile start commands when this crash appears.
+- Continue physical-device Phase 1 lifecycle checks after Metro is up.
+
+### Session 177 (Phase 1 cache-policy rollout completed for query-managed reads)
+
+**What we changed:**
+- Completed the remaining React Query GET cache-policy rollout in mobile screens:
+  - `apps/mobile/app/module/[id]/index.tsx`
+    - module detail query (`/api/modules/[id]`) now uses `cache: false`
+    - module materials query (`/api/modules/[id]/materials`) now uses `cache: false`
+  - `apps/mobile/app/material/[id].tsx`
+    - material detail query (`/api/materials/[id]`) now uses `cache: false`
+- Re-audited all `useQuery` reads in mobile routes and confirmed query-managed GET paths now consistently bypass `apiFetch` cache.
+- Kept `apiFetch` cache behavior for non-query/auth bootstrap paths (for example `AuthProvider` bootstrap `GET /api/auth/me`) per Phase 1 policy.
+- Updated `README.md` mobile data-layer section with explicit cache policy:
+  - React Query-managed reads use `cache: false`.
+  - `apiFetch` cache remains enabled for non-query/auth bootstrap usage.
+- Updated `docs/mobile-execution-checklist.md`:
+  - marked cache-policy tasks as complete
+  - kept physical-device lifecycle verification as pending
+  - added explicit AppState + NetInfo verification matrix items
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
+
+**Still pending (physical-device verification):**
+- AppState foreground/background refetch behavior on core screens.
+- NetInfo offline/online reconnect refetch behavior.
+- Combined offline + background + reconnect recovery flow.
+
+### Session 176 (Mobile stability hardening kickoff + handoff)
+
+**What we did in this slice (context-safe handoff prep):**
+- Audited the current branch and confirmed these stabilization pieces are already present in code:
+  - lifecycle wiring file exists: `apps/mobile/lib/react-query-lifecycle.ts`
+  - root startup wiring exists: `apps/mobile/app/_layout.tsx` calls `configureReactQueryLifecycle()`
+  - partial cache-policy rollout already exists (`cache: false`) in:
+    - `apps/mobile/app/(tabs)/profile.tsx`
+    - `apps/mobile/app/(tabs)/index.tsx`
+    - `apps/mobile/app/course/[id]/index.tsx`
+- Revalidated type safety before handoff:
+  - `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass.
+- Updated continuity docs:
+  - `docs/mobile-execution-checklist.md` (Phase 1 task wording + next task)
+  - this handoff block in `docs/dev-log.md`
+
+**Current status:**
+- No additional runtime code changes were finalized in this handoff-only slice.
+- This slice is intentionally paused for context management and clean continuation.
+
+**Remaining work for next chat (same phase):**
+- Finish cache-policy rollout for remaining React Query/GET read paths:
+  - `apps/mobile/app/module/[id]/index.tsx`
+  - `apps/mobile/app/material/[id].tsx`
+  - `apps/mobile/app/course/[id]/edit.tsx`
+  - `apps/mobile/app/module/[id]/edit.tsx`
+  - `apps/mobile/app/material/[id]/edit.tsx`
+- Add brief README note for mobile cache policy (`React Query` as primary source for query-managed reads).
+- Run manual device validation scenarios:
+  - app background -> foreground refresh behavior
+  - offline -> online reconnect behavior
+  - core CRUD + favorites after reconnect
+
+**Next chat handoff prompt (copy/paste):**
+`Read docs/dev-log.md and docs/mobile-execution-checklist.md. Continue Phase 1 stabilization. Complete cache-policy rollout by setting cache:false on remaining query-managed GET reads in mobile screens, keep apiFetch cache for non-query/auth bootstrap paths, then run npm.cmd run --workspace @studyhub/mobile typecheck and document what was completed + what still needs physical-device verification (AppState + NetInfo scenarios).`
+
 ### Session 175 (Mobile roadmap reprioritized: quality-first + QR scope decision)
 
 **Context from planning discussion:**

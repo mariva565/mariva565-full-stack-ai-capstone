@@ -45,14 +45,18 @@ export default function ModuleWorkspaceScreen() {
   const moduleQuery = useQuery({
     queryKey: queryKeys.modules.detail(routeId),
     queryFn: async () => {
-      return apiFetch<ModuleResponse>(`/api/modules/${routeId}`);
+      return apiFetch<ModuleResponse>(`/api/modules/${routeId}`, {
+        cache: false,
+      });
     },
   });
 
   const materialsQuery = useQuery({
     queryKey: queryKeys.modules.materials(routeId),
     queryFn: async () => {
-      const data = await apiFetch<{ materials: Material[] }>(`/api/modules/${routeId}/materials`);
+      const data = await apiFetch<{ materials: Material[] }>(`/api/modules/${routeId}/materials`, {
+        cache: false,
+      });
       return data.materials;
     },
   });
