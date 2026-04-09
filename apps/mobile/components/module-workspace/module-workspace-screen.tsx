@@ -2,13 +2,13 @@ import { RefreshControl, ScrollView, Text, TouchableOpacity, View } from "react-
 import { LinearGradient } from "expo-linear-gradient";
 import { Stack } from "expo-router";
 
-import { BrandedSpinner } from "../branded-spinner";
 import { ConfirmModal } from "../confirm-modal";
 import { EmptyState } from "../empty-state";
 import { MaterialCard } from "../material-card";
 import { SearchBar } from "../search-bar";
 import { TypeFilterChips } from "../type-filter-chips";
 import { COLORS, GRADIENTS } from "../../lib/colors";
+import { ModuleWorkspaceSkeleton } from "./module-workspace-skeleton";
 import type { ModuleWorkspaceViewModel } from "./module-workspace.types";
 import { styles } from "./module-workspace.styles";
 
@@ -28,7 +28,7 @@ function LoadingState() {
   return (
     <>
       <Stack.Screen options={{ title: "Loading..." }} />
-      <BrandedSpinner message="Loading module..." />
+      <ModuleWorkspaceSkeleton />
     </>
   );
 }

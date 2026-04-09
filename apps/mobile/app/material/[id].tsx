@@ -12,7 +12,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { LinearGradient } from "expo-linear-gradient";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { apiFetch, getUserFriendlyError } from "../../lib/api";
-import { BrandedSpinner } from "../../components/branded-spinner";
 import { COLORS, GRADIENTS } from "../../lib/colors";
 import {
   addFavorite,
@@ -27,6 +26,7 @@ import { getMaterialTypeConfig, splitTags } from "../../lib/material-utils";
 import { invalidateFavoritesList, queryKeys } from "../../lib/query-keys";
 import type { FavoriteItem, Material } from "../../lib/studyhub-types";
 import { styles } from "../../components/material/material-screen.styles";
+import { MaterialScreenSkeleton } from "../../components/material/material-screen-skeleton";
 
 type MaterialDetailResponse = {
   material: Material & {
@@ -159,7 +159,7 @@ export default function MaterialScreen() {
     return (
       <>
         <Stack.Screen options={{ title: "Loading..." }} />
-        <BrandedSpinner message="Loading material..." />
+        <MaterialScreenSkeleton />
       </>
     );
   }

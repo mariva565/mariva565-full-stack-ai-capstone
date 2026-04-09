@@ -47,11 +47,21 @@ Owner: Mobile stream
 - [x] `apps/mobile/app/(tabs)/profile.tsx`
 - [x] `apps/mobile/app/login.tsx`
 - [x] `apps/mobile/app/register.tsx`
-- [ ] UX hardening: skeleton loading states on key screens.
+- [x] UX hardening: skeleton loading states on key screens.
 - [ ] UX hardening: explicit offline/empty/error states.
 - [ ] UX hardening: haptics for success/destructive actions.
 - [ ] UX hardening: hardware back behavior consistency in CRUD flows.
 - [ ] UX hardening: accessibility checks (Dynamic Type + VoiceOver/TalkBack).
+
+### Completed UX slice (2026-04-09)
+- Added reusable animated skeleton primitives in `apps/mobile/components/skeleton/skeleton-block.tsx`.
+- Wired skeleton loading states into key mobile screens:
+- `apps/mobile/app/(tabs)/index.tsx` (via `components/courses-list/*`)
+- `apps/mobile/app/module/[id]/index.tsx` (via `components/module-workspace/*`)
+- `apps/mobile/app/material/[id].tsx`
+- `apps/mobile/app/(tabs)/favorites.tsx`
+- `apps/mobile/app/(tabs)/profile.tsx` (via `components/profile-tab/*`)
+- Preserved Phase 1 behavior: React Query lifecycle wiring, query-managed reads using `cache: false`, timeout/retry tuning, and Expo startup script workaround remained unchanged.
 
 ### Acceptance Criteria
 - [x] High-traffic files are under 300 lines and major functions stay under 60 lines.
@@ -72,4 +82,4 @@ Owner: Mobile stream
 
 ## Next Recommended Task
 
-- Continue Phase 2 UX hardening with skeleton loading states on key screens.
+- Continue Phase 2 UX hardening with explicit offline/empty/error states across core CRUD + favorites screens.

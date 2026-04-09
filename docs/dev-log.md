@@ -5136,3 +5136,37 @@ Sprint 2 - Production standards
 
 **Verification:**
 - `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
+
+### Session 176 (Phase 2 UX hardening: reusable skeleton loading states)
+
+**What we changed:**
+- Added reusable animated skeleton primitives:
+  - `apps/mobile/components/skeleton/skeleton-block.tsx`
+    - `useSkeletonPulse()` shared pulse animation hook
+    - `SkeletonBlock` reusable placeholder block used by all loading layouts
+- Added screen-specific skeleton layouts wired to the target key flows:
+  - Courses: `apps/mobile/components/courses-list/courses-list-skeleton.tsx`
+  - Module workspace: `apps/mobile/components/module-workspace/module-workspace-skeleton.tsx`
+  - Material detail: `apps/mobile/components/material/material-screen-skeleton.tsx`
+  - Favorites tab: `apps/mobile/components/favorites/favorites-skeleton.tsx`
+  - Profile tab: `apps/mobile/components/profile-tab/profile-tab-skeleton.tsx`
+- Replaced spinner-only initial loading states with skeleton states in:
+  - `apps/mobile/components/courses-list/courses-list-screen.tsx`
+  - `apps/mobile/components/module-workspace/module-workspace-screen.tsx`
+  - `apps/mobile/app/material/[id].tsx`
+  - `apps/mobile/app/(tabs)/favorites.tsx`
+  - `apps/mobile/components/profile-tab/profile-tab-screen.tsx`
+- Kept Phase 1 stabilization behavior intact:
+  - No API contract changes
+  - No mutation behavior changes
+  - React Query lifecycle/cache policy and query-managed `cache: false` reads unchanged
+  - Existing timeout/retry tuning and Expo start script workaround unchanged
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
+
+**Remaining Phase 2 UX tasks:**
+- Explicit offline/empty/error state pass across core mobile CRUD + favorites screens
+- Haptics for success/destructive actions
+- Hardware back behavior consistency in CRUD flows
+- Accessibility checks for Dynamic Type and VoiceOver/TalkBack

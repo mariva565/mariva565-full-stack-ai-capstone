@@ -1,11 +1,11 @@
 import { FlatList, RefreshControl, Text, TouchableOpacity, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
-import { BrandedSpinner } from "../branded-spinner";
 import { ConfirmModal } from "../confirm-modal";
 import { EmptyState } from "../empty-state";
 import { COLORS, GRADIENTS } from "../../lib/colors";
 import { CourseCard } from "./course-card";
+import { CoursesListSkeleton } from "./courses-list-skeleton";
 import { styles } from "./courses-list.styles";
 import type { CoursesListViewModel } from "./courses-list.types";
 
@@ -72,7 +72,7 @@ function ErrorState({ error, onRetry }: { error: string; onRetry: () => void }) 
 
 function CoursesState({ viewModel }: CoursesListScreenProps) {
   if (viewModel.loading) {
-    return <BrandedSpinner message="Loading courses..." />;
+    return <CoursesListSkeleton />;
   }
   if (viewModel.error) {
     return <ErrorState error={viewModel.error} onRetry={viewModel.retry} />;

@@ -11,8 +11,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 
-import { BrandedSpinner } from "../../components/branded-spinner";
 import { EmptyState } from "../../components/empty-state";
+import { FavoritesSkeleton } from "../../components/favorites/favorites-skeleton";
 import { getUserFriendlyError } from "../../lib/api";
 import { COLORS, GRADIENTS } from "../../lib/colors";
 import { fetchFavorites, removeFavorite, removeOptimisticFavorite } from "../../lib/favorites";
@@ -160,7 +160,7 @@ export default function FavoritesTabScreen() {
   );
 
   if (loading) {
-    return <BrandedSpinner message="Loading favorites..." />;
+    return <FavoritesSkeleton />;
   }
 
   if (error) {

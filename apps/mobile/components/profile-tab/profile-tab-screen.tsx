@@ -1,8 +1,8 @@
 import { RefreshControl, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
-import { BrandedSpinner } from "../branded-spinner";
 import { COLORS, GRADIENTS } from "../../lib/colors";
+import { ProfileTabSkeleton } from "./profile-tab-skeleton";
 import type { ProfileTabViewModel } from "./profile-tab.types";
 import { styles } from "./profile-tab.styles";
 
@@ -140,7 +140,7 @@ function ProfileActions({ viewModel }: ProfileTabScreenProps) {
 
 export function ProfileTabScreen({ viewModel }: ProfileTabScreenProps) {
   if (viewModel.loading) {
-    return <BrandedSpinner message="Loading profile..." />;
+    return <ProfileTabSkeleton />;
   }
   if (viewModel.error || !viewModel.profile) {
     return <ErrorState error={viewModel.error} onRetry={viewModel.retry} />;
