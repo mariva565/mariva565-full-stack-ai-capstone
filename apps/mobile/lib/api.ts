@@ -2,6 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as SecureStore from "expo-secure-store";
 import Constants from "expo-constants";
 import { Platform } from "react-native";
+import { captureTelemetryException } from "./telemetry";
 
 const TOKEN_KEY = "studyhub_token";
 const API_CACHE_PREFIX = "studyhub_api_cache_v1";
@@ -143,7 +144,19 @@ export async function apiFetch<T>(
     if (cached && res.status >= 500) {
       return cached.data as T;
     }
-    throw createApiErrorFromResponse(res.status, data);
+    const apiError = createApiErrorFromResponse(res.status, data);
+    if (apiError.kind === "server" || apiError.kind === "unknown") {
+      captureTelemetryException(apiError, {
+        area: "api_response",
+        details: {
+          code: apiError.code,
+          method: normalizedMethod,
+          path,
+          status: res.status,
+        },
+      });
+    }
+    throw apiError;
   }
 
   if (shouldUseCache && cacheKey) {

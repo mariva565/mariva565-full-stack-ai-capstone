@@ -10,6 +10,7 @@ import {
   warmupBackend,
 } from "./api";
 import { queryClient } from "./query-client";
+import { captureTelemetryException, setTelemetryUser } from "./telemetry";
 
 type User = {
   id: number;
@@ -80,6 +81,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // background doesn't feel like a cold app boot.
       if (token && cachedUser && !cancelled) {
         setUser(cachedUser);
+        setTelemetryUser(cachedUser);
         setIsLoading(false);
       }
 
@@ -87,6 +89,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // Pre-warm Neon while the user is on the auth screen so the first
         // login/register mutation is less likely to hit a cold start.
         warmupBackend();
+        setTelemetryUser(null);
         if (!cancelled) {
           setIsLoading(false);
         }
@@ -101,6 +104,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           return;
         }
         setUser(data.user);
+        setTelemetryUser(data.user);
         await setUserSnapshot(data.user);
         // Pre-warm Neon DB so mutations don't hit a cold start after session restore.
         warmupBackend();
@@ -110,6 +114,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           await removeToken();
           await clearUserSnapshot();
           queryClient.clear();
+          setTelemetryUser(null);
           if (!cancelled) {
             setUser(null);
           }
@@ -117,6 +122,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
 
         // Keep existing session/snapshot on transient network/server issues.
+        if (!(error instanceof ApiError) || error.kind === "server" || error.kind === "unknown") {
+          captureTelemetryException(error, {
+            area: "auth_bootstrap",
+          });
+        }
         warmupBackend();
       } finally {
         if (!cancelled) {
@@ -139,6 +149,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     );
     await setToken(data.token);
     setUser(data.user);
+    setTelemetryUser(data.user);
     await setUserSnapshot(data.user);
     // Pre-warm Neon DB immediately after login so subsequent mutations are fast.
     warmupBackend();
@@ -159,6 +170,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       name: data.user.name ?? name.trim(),
     };
     setUser(hydratedUser);
+    setTelemetryUser(hydratedUser);
     await setUserSnapshot(hydratedUser);
     // Keep post-auth mutations fast for freshly registered users too.
     warmupBackend();
@@ -173,6 +185,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     );
     await setToken(data.token);
     setUser(data.user);
+    setTelemetryUser(data.user);
     await setUserSnapshot(data.user);
     warmupBackend();
   }, []);
@@ -181,6 +194,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await clearApiCache();
     await removeToken();
     await clearUserSnapshot();
+    setTelemetryUser(null);
     setUser(null);
     queryClient.clear();
   }, []);

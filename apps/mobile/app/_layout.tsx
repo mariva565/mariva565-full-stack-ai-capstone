@@ -4,6 +4,7 @@ import { useFonts } from "expo-font";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
+import * as Sentry from "@sentry/react-native";
 import { AuthProvider, useAuth } from "../lib/auth-context";
 import { ToastProvider } from "../lib/toast-context";
 import { BRAND_FONT_FAMILY, BRAND_FONT_SOURCE } from "../lib/brand-font";
@@ -15,6 +16,9 @@ import {
   REACT_QUERY_MAX_AGE_MS,
 } from "../lib/query-client";
 import { configureReactQueryLifecycle } from "../lib/react-query-lifecycle";
+import { initializeTelemetry } from "../lib/telemetry";
+
+initializeTelemetry();
 
 function AuthGate() {
   const { user, isLoading } = useAuth();
@@ -64,7 +68,7 @@ function AuthGate() {
   );
 }
 
-export default function RootLayout() {
+function RootLayout() {
   const [brandFontLoaded] = useFonts({
     [BRAND_FONT_FAMILY]: BRAND_FONT_SOURCE,
   });
@@ -99,3 +103,5 @@ export default function RootLayout() {
     </SafeAreaProvider>
   );
 }
+
+export default Sentry.wrap(RootLayout);

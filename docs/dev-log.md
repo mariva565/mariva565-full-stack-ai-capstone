@@ -5618,3 +5618,38 @@ Sprint 2 - Production standards
 
 **Verification:**
 - `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
+
+### Session 193 (Phase 3 quality gate: Sentry telemetry integration)
+
+**What we changed:**
+- Implemented mobile telemetry foundation with Sentry:
+  - Added centralized telemetry module:
+    - `apps/mobile/lib/telemetry.ts`
+    - Handles `Sentry.init`, DSN/sample-rate env parsing, breadcrumb auth-header scrubbing, user scope updates, and scoped exception capture helpers.
+- Wired telemetry into mobile app bootstrap:
+  - `apps/mobile/app/_layout.tsx`
+    - Initializes telemetry early at module load.
+    - Wraps root layout with `Sentry.wrap(...)` for runtime error capture.
+- Synced auth lifecycle with telemetry user context:
+  - `apps/mobile/lib/auth-context.tsx`
+    - Sets/clears Sentry user on session hydrate, login, register, Google login, and logout.
+    - Captures unexpected bootstrap auth failures (server/unknown) to telemetry.
+- Added server-failure telemetry capture in API layer:
+  - `apps/mobile/lib/api.ts`
+    - Captures `server`/`unknown` API failures with safe metadata (`method`, `path`, `status`, `code`) before rethrowing.
+- Added Sentry build/runtime configuration:
+  - `apps/mobile/app.json`
+    - Added `@sentry/react-native/expo` plugin.
+  - `apps/mobile/metro.config.js`
+    - Switched to `getSentryExpoConfig(...)` while preserving monorepo watch/resolver tuning.
+  - Added telemetry env placeholders:
+    - `apps/mobile/.env.example`
+    - `.env.example`
+
+**Docs synced:**
+- Updated `docs/mobile-execution-checklist.md`:
+  - Marked telemetry quality gate as complete.
+  - Added implementation notes and changed next recommended task to release checklist + handoff verification.
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass

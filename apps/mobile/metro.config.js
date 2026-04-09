@@ -1,4 +1,4 @@
-const { getDefaultConfig } = require('expo/metro-config');
+const { getSentryExpoConfig } = require('@sentry/react-native/metro');
 const fs = require('fs');
 const path = require('path');
 
@@ -8,7 +8,7 @@ const projectRoot = __dirname;
 const workspaceRoot = path.resolve(projectRoot, '../..');
 const sharedPackageRoot = path.resolve(workspaceRoot, 'packages/shared');
 
-const config = getDefaultConfig(projectRoot);
+const config = getSentryExpoConfig(projectRoot);
 
 // 1. Watch only required workspace folders to avoid Windows watcher overload/timeouts.
 config.watchFolders = fs.existsSync(sharedPackageRoot)

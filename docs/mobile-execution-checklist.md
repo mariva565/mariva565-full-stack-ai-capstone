@@ -178,7 +178,17 @@ Owner: Mobile stream
     - PASS: `SMK-01` through `SMK-19`
     - BLOCKED: `SMK-20` (VoiceOver/TalkBack verification not available in current device environment)
     - Favorites flow pass includes direct pin/unpin entry point in module workspace cards (Session 190).
-- [ ] Quality gates: crash/error telemetry integration (Sentry or equivalent).
+- [x] Quality gates: crash/error telemetry integration (Sentry).
+  - Added mobile telemetry bootstrap and scope helpers in `apps/mobile/lib/telemetry.ts`.
+  - Root layout now initializes telemetry early and is wrapped with `Sentry.wrap(...)` in `apps/mobile/app/_layout.tsx`.
+  - Auth lifecycle now syncs Sentry user context on hydrate/login/register/google-login/logout in `apps/mobile/lib/auth-context.tsx`.
+  - API layer now reports server/unknown failures with route/method/status metadata in `apps/mobile/lib/api.ts`.
+  - Added Sentry Expo build plugin + Metro serializer setup:
+    - `apps/mobile/app.json`
+    - `apps/mobile/metro.config.js`
+  - Added env placeholders for DSN/sample rate/app env:
+    - `apps/mobile/.env.example`
+    - `.env.example`
 - [ ] Release checklist for mobile handoff and smoke verification.
 - [ ] Product polish: Settings screen in Profile flow (not extra bottom tab), with initial scope theme mode (system/light/dark), haptics toggle, app version/about links, and account actions entry points.
 - [ ] Optional feature: Profile QR handoff card in web profile (deep-link to mobile app) for future social direction.
@@ -191,5 +201,5 @@ Owner: Mobile stream
 
 ## Next Recommended Task
 
-- Proceed to telemetry integration (Sentry or equivalent) and release checklist.
+- Proceed to the mobile release checklist and final handoff verification pass.
 - Keep `SMK-20` tracked as `BLOCKED` until VoiceOver/TalkBack test environment is available.
