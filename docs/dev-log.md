@@ -5820,7 +5820,7 @@ Sprint 2 - Production standards
   - Added explicit `exclude` for `node_modules`, `.expo`, `dist`, `build`, `babel.config.js`, `metro.config.js`.
 
 **Architecture note:**
-- `theme-reload.ts` is kept as a stub (unused, safe to delete later).
+- `theme-reload.ts` was kept as a stub in Session 198 and removed in Session 199 cleanup.
 - Static `StyleSheet.create()` files (courses, materials, profile, etc.) still capture boot-time colors. They are correct on first render and do not hot-swap — acceptable for this scope. Full migration of all style files can follow incrementally using `makeXxxStyles(colors)` factory pattern introduced here.
 - `system` mode reactivity is already covered by `useColorScheme()` in `AppPreferencesProvider` — no additional work needed.
 
@@ -5833,3 +5833,16 @@ Sprint 2 - Production standards
 
 **Verification:**
 - `npm.cmd run --workspace @studyhub/mobile typecheck` — run locally in IDE terminal (background runner unavailable this session due to stuck cmd.exe environment).
+
+### Session 199 (Theme reload helper cleanup)
+
+**Goal:**
+- Remove dead code left after Session 198 live theme switch rollout.
+
+**What we changed:**
+- Deleted unused file:
+  - `apps/mobile/lib/theme-reload.ts`
+- Confirmed there are no active code references to `reloadAppForThemeChange` in `apps/mobile`.
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass.

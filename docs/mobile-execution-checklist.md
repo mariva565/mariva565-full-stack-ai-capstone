@@ -276,3 +276,10 @@ Owner: Mobile stream
   - [x] SMK-20 remains PASS.
 - Verification:
   - Run locally: `npm.cmd run --workspace @studyhub/mobile typecheck` (background runner unavailable this session).
+
+### Completed Product Polish Slice (2026-04-10, Session 199)
+- Cleanup after live theme switch rollout:
+  - Removed unused helper file `apps/mobile/lib/theme-reload.ts`.
+  - Confirmed there are no active imports/references to `reloadAppForThemeChange` in `apps/mobile`.
+- Verification:
+  - `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass.
