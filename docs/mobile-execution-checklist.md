@@ -189,6 +189,7 @@ Owner: Mobile stream
   - Added env placeholders for DSN/sample rate/app env:
     - `apps/mobile/.env.example`
     - `.env.example`
+  - Validation pass complete (2026-04-10): manual test event `SENTRY_TEST_EVENT` received in Sentry Issues (development env), then temporary trigger button removed.
 - [ ] Release checklist for mobile handoff and smoke verification.
 - [ ] Product polish: Settings screen in Profile flow (not extra bottom tab), with initial scope theme mode (system/light/dark), haptics toggle, app version/about links, and account actions entry points.
 - [ ] Optional feature: Profile QR handoff card in web profile (deep-link to mobile app) for future social direction.

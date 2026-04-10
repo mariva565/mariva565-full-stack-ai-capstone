@@ -5653,3 +5653,27 @@ Sprint 2 - Production standards
 
 **Verification:**
 - `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
+
+### Session 194 (Sentry telemetry validation pass + temporary trigger cleanup)
+
+**What we validated:**
+- Confirmed end-to-end telemetry delivery in Sentry by triggering a manual test event.
+- Sentry Issues captured the expected event: `SENTRY_TEST_EVENT` (development environment).
+
+**Temporary test wiring (added then removed in same session):**
+- Added a dev-only `Sentry test` action in Profile tab to trigger a safe test exception.
+- After validation, removed the temporary trigger so mobile UI returned to clean production-ready state.
+- Files touched during add/remove cycle:
+  - `apps/mobile/components/profile-tab/profile-tab-screen.tsx`
+  - `apps/mobile/components/profile-tab/profile-tab.styles.ts`
+
+**Additional stabilization:**
+- Resolved Metro module-resolution issue after dependency changes by extending resolver paths for nested React Native internals:
+  - `apps/mobile/metro.config.js`
+  - Added `apps/mobile/node_modules/react-native/node_modules` in `resolver.nodeModulesPaths`.
+
+**Docs synced:**
+- Updated `docs/mobile-execution-checklist.md` telemetry item with explicit validation note and cleanup confirmation.
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
