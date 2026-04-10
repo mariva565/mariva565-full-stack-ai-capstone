@@ -22,5 +22,6 @@ export type ProfileTabViewModel = {
   startEditing: () => void;
   cancelEditing: () => void;
   saveProfile: () => void;
+  openSettings: () => void;
   logout: () => void;
 };

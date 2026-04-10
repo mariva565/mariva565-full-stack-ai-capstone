@@ -6,6 +6,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import * as Sentry from "@sentry/react-native";
 import { AuthProvider, useAuth } from "../lib/auth-context";
+import { AppPreferencesProvider } from "../lib/app-preferences";
 import { ToastProvider } from "../lib/toast-context";
 import { BRAND_FONT_FAMILY, BRAND_FONT_SOURCE } from "../lib/brand-font";
 import { COLORS } from "../lib/colors";
@@ -63,6 +64,7 @@ function AuthGate() {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="login" options={{ headerShown: false }} />
         <Stack.Screen name="register" options={{ title: "Register" }} />
+        <Stack.Screen name="settings" options={{ title: "Settings" }} />
       </Stack>
     </>
   );
@@ -94,11 +96,13 @@ function RootLayout() {
           void queryClient.resumePausedMutations();
         }}
       >
-        <AuthProvider>
-          <ToastProvider>
-            <AuthGate />
-          </ToastProvider>
-        </AuthProvider>
+        <AppPreferencesProvider>
+          <AuthProvider>
+            <ToastProvider>
+              <AuthGate />
+            </ToastProvider>
+          </AuthProvider>
+        </AppPreferencesProvider>
       </PersistQueryClientProvider>
     </SafeAreaProvider>
   );

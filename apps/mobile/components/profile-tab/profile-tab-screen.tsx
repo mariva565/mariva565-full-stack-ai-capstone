@@ -102,6 +102,16 @@ function ProfileActions({ viewModel }: ProfileTabScreenProps) {
   return (
     <View style={styles.actions}>
       <TouchableOpacity
+        style={styles.settingsBtn}
+        onPress={viewModel.openSettings}
+        accessibilityRole="button"
+        accessibilityLabel="Open settings"
+        accessibilityHint="Opens mobile settings"
+      >
+        <Text style={styles.settingsBtnText}>Settings</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
         style={styles.logoutBtn}
         onPress={viewModel.logout}
         accessibilityRole="button"

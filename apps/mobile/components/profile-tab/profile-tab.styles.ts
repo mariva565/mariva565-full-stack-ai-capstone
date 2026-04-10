@@ -80,6 +80,15 @@ export const styles = StyleSheet.create({
     backgroundColor: COLORS.surfaceHighlight,
   },
   actions: { marginHorizontal: 16, gap: 12 },
+  settingsBtn: {
+    borderWidth: 1.5,
+    borderColor: COLORS.violetBorder,
+    backgroundColor: COLORS.violetSoft,
+    borderRadius: 12,
+    paddingVertical: 12,
+    alignItems: "center",
+  },
+  settingsBtnText: { fontSize: 15, fontWeight: "700", color: COLORS.violetText },
   logoutBtn: {
     borderWidth: 1.5,
     borderColor: COLORS.dangerBorder,

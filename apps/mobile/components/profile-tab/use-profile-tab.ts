@@ -6,6 +6,7 @@ import {
   type QueryClient,
   type UseMutationResult,
 } from "@tanstack/react-query";
+import { useRouter } from "expo-router";
 
 import { useAuth } from "../../lib/auth-context";
 import { apiFetch, getUserFriendlyError } from "../../lib/api";
@@ -117,6 +118,7 @@ function useProfileEditor(
 }
 
 export function useProfileTab(): ProfileTabViewModel {
+  const router = useRouter();
   const { logout } = useAuth();
   const queryClient = useQueryClient();
   const { showToast } = useToast();
@@ -136,6 +138,10 @@ export function useProfileTab(): ProfileTabViewModel {
     void profileQuery.refetch();
   }, [profileQuery]);
 
+  const openSettings = useCallback(() => {
+    router.push("/settings");
+  }, [router]);
+
   return {
     profile,
     initials,
@@ -151,6 +157,7 @@ export function useProfileTab(): ProfileTabViewModel {
     startEditing: editor.startEditing,
     cancelEditing: editor.cancelEditing,
     saveProfile: editor.saveProfile,
+    openSettings,
     logout,
   };
 }

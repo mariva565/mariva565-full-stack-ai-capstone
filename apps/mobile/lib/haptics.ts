@@ -2,6 +2,8 @@ import { Platform, Vibration } from "react-native";
 
 export type HapticIntent = "success" | "error" | "destructive" | "selection";
 
+let hapticsEnabledPreference = true;
+
 type ExpoHapticsModule = {
   notificationAsync: (type: unknown) => Promise<void>;
   impactAsync: (style: unknown) => Promise<void>;
@@ -64,8 +66,12 @@ async function runExpoHaptic(module: ExpoHapticsModule, intent: HapticIntent) {
   await module.notificationAsync(module.NotificationFeedbackType.Success);
 }
 
+export function setHapticsEnabledPreference(enabled: boolean) {
+  hapticsEnabledPreference = enabled;
+}
+
 export async function triggerHaptic(intent: HapticIntent) {
-  if (Platform.OS === "web") {
+  if (Platform.OS === "web" || !hapticsEnabledPreference) {
     return;
   }
 

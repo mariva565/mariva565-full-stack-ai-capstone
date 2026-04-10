@@ -193,16 +193,41 @@ Owner: Mobile stream
 - [x] Release checklist for mobile handoff and smoke verification.
   - Added `docs/mobile-release-checklist.md` with explicit go/no-go gates, known blocker handling, and signoff status.
   - Checklist references live smoke/telemetry outcomes and confirms handoff-readiness with documented `SMK-20` blocker.
-- [ ] Product polish: Settings screen in Profile flow (not extra bottom tab), with initial scope theme mode (system/light/dark), haptics toggle, app version/about links, and account actions entry points.
+- [x] Product polish: Settings screen in Profile flow (not extra bottom tab), with initial scope theme mode (system/light/dark), haptics toggle, app version/about links, and account actions entry points.
 - [ ] Optional feature: Profile QR handoff card in web profile (deep-link to mobile app) for future social direction.
 - [ ] DEFERRED optional feature: Mobile AI tools entry points (summarize/quiz/chat or read-only outputs), after Phases 1-2 pass.
 
 ### Acceptance Criteria
 - [x] Key mobile flows pass smoke suite without regressions (`SMK-01` through `SMK-19`).
-- [ ] Settings screen exists in mobile profile flow with persisted basic app preferences.
+- [x] Settings screen exists in mobile profile flow with persisted basic app preferences.
 - [ ] README + dev-log are synced with the final mobile standard.
 
 ## Next Recommended Task
 
-- Proceed with Settings screen implementation in Profile flow (theme mode + haptics toggle + about/version).
+- Proceed with optional feature sequencing:
+  - Web Profile QR handoff card (deep-link direction for mobile onboarding).
+  - Keep mobile AI tools/chat entry points deferred until explicitly prioritized.
 - Keep `SMK-20` tracked as `BLOCKED` until VoiceOver/TalkBack test environment is available.
+
+### Completed Product Polish Slice (2026-04-10, Session 196)
+- Added a dedicated Settings screen in Profile flow (stack route, no extra bottom tab):
+  - `apps/mobile/app/settings.tsx`
+  - `apps/mobile/components/settings/*`
+  - Profile entry point button in `apps/mobile/components/profile-tab/profile-tab-screen.tsx`.
+- Added persisted app preferences layer:
+  - `apps/mobile/lib/app-preferences.tsx`
+  - Stores and hydrates `themeMode` (`system`/`light`/`dark`) and `hapticsEnabled` from AsyncStorage.
+- Wired global haptics toggle into existing haptics utility:
+  - `apps/mobile/lib/haptics.ts` now respects `setHapticsEnabledPreference(...)`.
+  - Existing toast/mutation haptic flows stay unchanged; they are now preference-aware.
+- Added Settings initial-scope content:
+  - Theme mode segmented control.
+  - Haptics toggle.
+  - App version label + about links.
+  - Account action entry points (Profile edit mode jump + logout).
+- Kept Phase 1/2/3 stabilization guarantees intact:
+  - React Query lifecycle/cache behavior unchanged.
+  - Existing API contracts unchanged.
+  - Existing auth flow unchanged.
+- Verification:
+  - `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass.

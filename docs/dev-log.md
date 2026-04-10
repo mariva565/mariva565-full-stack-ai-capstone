@@ -5708,3 +5708,42 @@ Sprint 2 - Production standards
 **Verification:**
 - Documentation-only session (no runtime code changes).
 - Mobile telemetry and type safety were already validated in Session 194.
+
+### Session 196 (Mobile Settings screen in Profile flow + persisted app preferences)
+
+**What we changed:**
+- Implemented a dedicated mobile `Settings` screen in Profile flow (without adding a new bottom tab):
+  - New route: `apps/mobile/app/settings.tsx`
+  - New screen module: `apps/mobile/components/settings/*`
+  - Added Profile entry-point button: `apps/mobile/components/profile-tab/profile-tab-screen.tsx`
+- Added persisted app preferences layer for initial Settings scope:
+  - `apps/mobile/lib/app-preferences.tsx`
+  - Persists and hydrates:
+    - `themeMode`: `system` / `light` / `dark`
+    - `hapticsEnabled`: `true` / `false`
+- Wired haptics preference into existing haptics utility:
+  - `apps/mobile/lib/haptics.ts`
+  - Added preference gate via `setHapticsEnabledPreference(...)` so existing toast/mutation haptics respect user Settings.
+- Added Settings initial-scope sections:
+  - Theme mode selector (segmented control)
+  - Haptics toggle
+  - App version + about links
+  - Account action entry points:
+    - jump to Profile edit mode
+    - logout
+- Added Profile edit-mode jump handling from Settings entry point:
+  - `apps/mobile/app/(tabs)/profile.tsx` now handles `?edit=1` route param and opens profile editor state.
+- Registered Settings screen in root stack:
+  - `apps/mobile/app/_layout.tsx`
+
+**Kept intact (per guardrails):**
+- React Query lifecycle/cache behavior remains unchanged.
+- Existing API contracts remain unchanged.
+- Existing auth flow remains unchanged.
+- No temporary debug buttons were introduced.
+
+**Quality-gate note:**
+- `SMK-20` accessibility sanity remains `BLOCKED` (no VoiceOver/TalkBack environment available in this session).
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass.
