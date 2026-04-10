@@ -466,13 +466,13 @@ The mobile app connects to the **same Next.js backend** — no separate API need
 ### Mobile quality gates and release readiness
 
 - Smoke suite status:
-  - `SMK-01` through `SMK-19`: PASS
-  - `SMK-20` accessibility sanity: BLOCKED (no VoiceOver/TalkBack environment in the last run)
+  - `SMK-01` through `SMK-20`: PASS
+  - Accessibility sanity (`SMK-20`) verified in a dedicated VoiceOver/TalkBack pass
 - Telemetry status:
   - Sentry integrated in mobile bootstrap + auth lifecycle + API error capture.
   - Manual validation complete: `SENTRY_TEST_EVENT` received in Sentry Issues.
 - Release handoff status:
-  - Mobile release checklist is complete with documented blocker ownership.
+  - Mobile release checklist is complete and in GO state (no active blocker).
   - Reference docs:
     - `docs/mobile-execution-checklist.md`
     - `docs/mobile-smoke-test-matrix.md`

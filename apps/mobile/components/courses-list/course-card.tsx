@@ -3,7 +3,7 @@ import { Animated, Text, TouchableOpacity, View } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 
 import type { Course } from "../../lib/studyhub-types";
-import { styles } from "./courses-list.styles";
+import type { CoursesListStyles } from "./courses-list.styles";
 
 type CourseCardProps = {
   course: Course;
@@ -11,6 +11,7 @@ type CourseCardProps = {
   onOpen: () => void;
   onEdit: () => void;
   onDelete: () => void;
+  styles: CoursesListStyles;
 };
 
 function useCardEntranceAnimation(index: number) {
@@ -43,10 +44,12 @@ function CourseActions({
   title,
   onEdit,
   onDelete,
+  styles,
 }: {
   title: string;
   onEdit: () => void;
   onDelete: () => void;
+  styles: CoursesListStyles;
 }) {
   return (
     <View style={styles.inlineActions}>
@@ -80,7 +83,7 @@ function CourseActions({
   );
 }
 
-export function CourseCard({ course, index, onOpen, onEdit, onDelete }: CourseCardProps) {
+export function CourseCard({ course, index, onOpen, onEdit, onDelete, styles }: CourseCardProps) {
   const { fadeAnim, slideAnim } = useCardEntranceAnimation(index);
 
   return (
@@ -107,7 +110,7 @@ export function CourseCard({ course, index, onOpen, onEdit, onDelete }: CourseCa
             {new Date(course.createdAt).toLocaleDateString()}
           </Text>
         </TouchableOpacity>
-        <CourseActions title={course.title} onEdit={onEdit} onDelete={onDelete} />
+        <CourseActions title={course.title} onEdit={onEdit} onDelete={onDelete} styles={styles} />
       </View>
     </Animated.View>
   );

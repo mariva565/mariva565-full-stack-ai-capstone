@@ -1,4 +1,4 @@
-import { COLORS } from "./colors";
+import { COLORS, type AppColors } from "./colors";
 
 export type MaterialType = "note" | "link" | "file" | "video";
 
@@ -47,9 +47,24 @@ export function isUrlMaterialType(value: string): boolean {
   return URL_MATERIAL_TYPES.has(value);
 }
 
-export function getMaterialTypeConfig(materialType: string): MaterialTypeVisualConfig {
+export function getMaterialTypeConfig(
+  materialType: string,
+  colors: AppColors = COLORS
+): MaterialTypeVisualConfig {
   const type = normalizeMaterialType(materialType);
-  return MATERIAL_TYPE_CONFIG[type];
+
+  switch (type) {
+    case "note":
+      return { icon: "\u{1F4DD}", label: "Note", color: colors.brandAccent, bg: colors.violetSoft };
+    case "link":
+      return { icon: "\u{1F517}", label: "Link", color: colors.link, bg: colors.linkSoft };
+    case "file":
+      return { icon: "\u{1F4C4}", label: "File", color: colors.warning, bg: colors.warningSoft };
+    case "video":
+      return { icon: "\u{1F3AC}", label: "Video", color: colors.dangerAccent, bg: colors.dangerSoftAlt };
+    default:
+      return MATERIAL_TYPE_CONFIG.note;
+  }
 }
 
 export function splitTags(tags: string | null | undefined): string[] {

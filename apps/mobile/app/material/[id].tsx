@@ -12,7 +12,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { LinearGradient } from "expo-linear-gradient";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { apiFetch, getUserFriendlyError } from "../../lib/api";
-import { COLORS, GRADIENTS } from "../../lib/colors";
+import { useTheme, useThemedStyles } from "../../lib/app-preferences";
 import { NetworkBanner } from "../../components/network-banner";
 import { RequestState } from "../../components/request-state";
 import {
@@ -28,7 +28,7 @@ import { getMaterialTypeConfig, splitTags } from "../../lib/material-utils";
 import { useIsOffline } from "../../lib/network";
 import { invalidateFavoritesList, queryKeys } from "../../lib/query-keys";
 import type { FavoriteItem, Material } from "../../lib/studyhub-types";
-import { styles } from "../../components/material/material-screen.styles";
+import { makeMaterialScreenStyles } from "../../components/material/material-screen.styles";
 import { MaterialScreenSkeleton } from "../../components/material/material-screen-skeleton";
 
 type MaterialDetailResponse = {
@@ -51,6 +51,9 @@ export default function MaterialScreen() {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
   const offline = useIsOffline();
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeMaterialScreenStyles);
+  const heroGradient = [colors.brandDeep, colors.brandPrimary] as const;
 
   const materialQuery = useQuery({
     queryKey: queryKeys.materials.detail(routeId),
@@ -190,7 +193,7 @@ export default function MaterialScreen() {
     );
   }
 
-  const cfg = getMaterialTypeConfig(material.materialType);
+  const cfg = getMaterialTypeConfig(material.materialType, colors);
   const tags = splitTags(material.tags);
 
   return (
@@ -202,14 +205,14 @@ export default function MaterialScreen() {
           onRefresh={() => {
             void materialQuery.refetch();
           }}
-          tintColor={COLORS.brandPrimary}
+          tintColor={colors.brandPrimary}
         />
       }
     >
       <Stack.Screen options={{ title: material.title }} />
 
       <LinearGradient
-        colors={GRADIENTS.hero}
+        colors={heroGradient}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.hero}

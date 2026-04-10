@@ -4,16 +4,16 @@ import { LinearGradient } from "expo-linear-gradient";
 import { ConfirmModal } from "../confirm-modal";
 import { NetworkBanner } from "../network-banner";
 import { RequestState } from "../request-state";
-import { COLORS, GRADIENTS } from "../../lib/colors";
+import { useTheme, useThemedStyles } from "../../lib/app-preferences";
 import { useIsOffline } from "../../lib/network";
 import { CourseCard } from "./course-card";
 import { CoursesListSkeleton } from "./courses-list-skeleton";
-import { styles } from "./courses-list.styles";
+import { makeCoursesListStyles, type CoursesListStyles } from "./courses-list.styles";
 import type { CoursesListViewModel } from "./courses-list.types";
 
 type CoursesListScreenProps = { viewModel: CoursesListViewModel };
 
-function NoCoursesState() {
+function NoCoursesState({ styles }: { styles: CoursesListStyles }) {
   return (
     <View style={styles.noCoursesWrap}>
       <View style={styles.noCoursesCard}>
@@ -42,15 +42,19 @@ function CoursesHeader({
   coursesCount,
   modulesCount,
   materialsCount,
+  styles,
+  heroGradient,
 }: {
   userName: string;
   coursesCount: number;
   modulesCount: number;
   materialsCount: number;
+  styles: CoursesListStyles;
+  heroGradient: readonly [string, string];
 }) {
   return (
     <LinearGradient
-      colors={GRADIENTS.hero}
+      colors={heroGradient}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
       style={styles.headerGradient}
@@ -116,7 +120,13 @@ function CoursesHeader({
 function CoursesState({
   viewModel,
   offline,
-}: CoursesListScreenProps & { offline: boolean }) {
+  styles,
+  primaryTint,
+}: CoursesListScreenProps & {
+  offline: boolean;
+  styles: CoursesListStyles;
+  primaryTint: string;
+}) {
   if (viewModel.loading) {
     return <CoursesListSkeleton />;
   }
@@ -159,7 +169,7 @@ function CoursesState({
       );
     }
 
-    return <NoCoursesState />;
+    return <NoCoursesState styles={styles} />;
   }
 
   return (
@@ -176,7 +186,7 @@ function CoursesState({
         <RefreshControl
           refreshing={viewModel.refreshing}
           onRefresh={viewModel.refresh}
-          tintColor={COLORS.brandPrimary}
+          tintColor={primaryTint}
         />
       }
       renderItem={({ item, index }) => (
@@ -186,13 +196,22 @@ function CoursesState({
           onOpen={() => viewModel.openCourse(item.id)}
           onEdit={() => viewModel.editCourse(item.id)}
           onDelete={() => viewModel.openDeleteCourse(item)}
+          styles={styles}
         />
       )}
     />
   );
 }
 
-function CreateCourseFab({ onPress }: { onPress: () => void }) {
+function CreateCourseFab({
+  onPress,
+  styles,
+  primaryActionGradient,
+}: {
+  onPress: () => void;
+  styles: CoursesListStyles;
+  primaryActionGradient: readonly [string, string];
+}) {
   return (
     <TouchableOpacity
       style={styles.fab}
@@ -202,7 +221,7 @@ function CreateCourseFab({ onPress }: { onPress: () => void }) {
       accessibilityLabel="Create course"
       accessibilityHint="Opens the create course form"
     >
-      <LinearGradient colors={GRADIENTS.primaryAction} style={styles.fabGradient}>
+      <LinearGradient colors={primaryActionGradient} style={styles.fabGradient}>
         <Text style={styles.fabText} maxFontSizeMultiplier={1.2}>
           +
         </Text>
@@ -213,6 +232,10 @@ function CreateCourseFab({ onPress }: { onPress: () => void }) {
 
 export function CoursesListScreen({ viewModel }: CoursesListScreenProps) {
   const offline = useIsOffline();
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeCoursesListStyles);
+  const heroGradient = [colors.brandDeep, colors.brandPrimary] as const;
+  const primaryActionGradient = [colors.brandPrimary, colors.brandAccent] as const;
 
   return (
     <View style={styles.container}>
@@ -221,10 +244,23 @@ export function CoursesListScreen({ viewModel }: CoursesListScreenProps) {
         coursesCount={viewModel.stats.courses}
         modulesCount={viewModel.stats.modules}
         materialsCount={viewModel.stats.materials}
+        styles={styles}
+        heroGradient={heroGradient}
       />
-      <CoursesState viewModel={viewModel} offline={offline} />
+      <CoursesState
+        viewModel={viewModel}
+        offline={offline}
+        styles={styles}
+        primaryTint={colors.brandPrimary}
+      />
 
-      {!viewModel.loading ? <CreateCourseFab onPress={viewModel.openCreateCourse} /> : null}
+      {!viewModel.loading ? (
+        <CreateCourseFab
+          onPress={viewModel.openCreateCourse}
+          styles={styles}
+          primaryActionGradient={primaryActionGradient}
+        />
+      ) : null}
 
       <ConfirmModal
         visible={viewModel.confirmVisible}

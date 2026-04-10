@@ -5846,3 +5846,52 @@ Sprint 2 - Production standards
 
 **Verification:**
 - `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass.
+
+### Session 200 (Docs sync + live theme migration for Courses/Material/Profile)
+
+**Goal:**
+- Finalize mobile docs sync and migrate the next 3 screen areas to live theme updates.
+
+**What we changed:**
+
+- Final docs sync:
+  - `docs/mobile-execution-checklist.md`
+    - Marked `README + dev-log are synced with the final mobile standard` as complete.
+  - `README.md`
+    - Updated mobile quality-gate status to `SMK-01` through `SMK-20` PASS.
+    - Updated mobile release handoff status to GO (no active blocker).
+
+- Courses screen area migrated to themed style factory pattern:
+  - `apps/mobile/components/courses-list/courses-list.styles.ts`
+    - Converted static styles to `makeCoursesListStyles(colors)`.
+  - `apps/mobile/components/courses-list/courses-list-screen.tsx`
+    - Added `useTheme()` + `useThemedStyles(makeCoursesListStyles)`.
+    - RefreshControl tint and gradient colors now come from live theme colors.
+  - `apps/mobile/components/courses-list/course-card.tsx`
+    - Receives themed styles from parent screen instead of importing static styles.
+  - `apps/mobile/components/courses-list/courses-list-skeleton.tsx`
+    - Converted to theme-aware style factory.
+
+- Material screen area migrated to themed style factory pattern:
+  - `apps/mobile/components/material/material-screen.styles.ts`
+    - Converted static styles to `makeMaterialScreenStyles(colors)`.
+  - `apps/mobile/app/material/[id].tsx`
+    - Added `useTheme()` + `useThemedStyles(makeMaterialScreenStyles)`.
+    - RefreshControl tint and hero gradient now use live theme colors.
+    - Material-type visual config now resolves against live colors.
+  - `apps/mobile/components/material/material-screen-skeleton.tsx`
+    - Converted to theme-aware style factory.
+  - `apps/mobile/lib/material-utils.ts`
+    - `getMaterialTypeConfig(materialType, colors?)` now accepts optional colors for live theme usage.
+
+- Profile screen area migrated to themed style factory pattern:
+  - `apps/mobile/components/profile-tab/profile-tab.styles.ts`
+    - Converted static styles to `makeProfileTabStyles(colors)`.
+  - `apps/mobile/components/profile-tab/profile-tab-screen.tsx`
+    - Added `useTheme()` + `useThemedStyles(makeProfileTabStyles)`.
+    - RefreshControl tint and hero/save gradients now use live theme colors.
+  - `apps/mobile/components/profile-tab/profile-tab-skeleton.tsx`
+    - Converted to theme-aware style factory.
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass.

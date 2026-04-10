@@ -200,7 +200,7 @@ Owner: Mobile stream
 ### Acceptance Criteria
 - [x] Key mobile flows pass smoke suite without regressions (`SMK-01` through `SMK-19`).
 - [x] Settings screen exists in mobile profile flow with persisted basic app preferences.
-- [ ] README + dev-log are synced with the final mobile standard.
+- [x] README + dev-log are synced with the final mobile standard.
 
 ## Next Recommended Task
 
@@ -281,5 +281,29 @@ Owner: Mobile stream
 - Cleanup after live theme switch rollout:
   - Removed unused helper file `apps/mobile/lib/theme-reload.ts`.
   - Confirmed there are no active imports/references to `reloadAppForThemeChange` in `apps/mobile`.
+- Verification:
+  - `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass.
+
+### Completed Product Polish Slice (2026-04-10, Session 200)
+- Final docs sync for mobile handoff:
+  - Marked `README + dev-log are synced with the final mobile standard` as complete.
+  - Updated README mobile quality-gate summary:
+    - `SMK-01` through `SMK-20`: PASS
+    - release handoff status set to GO (no active blocker).
+- Live theme migration expanded to 3 target mobile screens:
+  - Courses:
+    - `apps/mobile/components/courses-list/courses-list.styles.ts` -> `makeCoursesListStyles(colors)`
+    - `apps/mobile/components/courses-list/courses-list-screen.tsx` -> `useTheme()` + `useThemedStyles(...)`
+    - `apps/mobile/components/courses-list/course-card.tsx` now consumes themed styles from parent
+    - `apps/mobile/components/courses-list/courses-list-skeleton.tsx` now theme-aware
+  - Material:
+    - `apps/mobile/components/material/material-screen.styles.ts` -> `makeMaterialScreenStyles(colors)`
+    - `apps/mobile/app/material/[id].tsx` now uses live colors for gradients/tint + themed styles
+    - `apps/mobile/components/material/material-screen-skeleton.tsx` now theme-aware
+    - `apps/mobile/lib/material-utils.ts` now accepts optional `colors` for live material-type visual config
+  - Profile:
+    - `apps/mobile/components/profile-tab/profile-tab.styles.ts` -> `makeProfileTabStyles(colors)`
+    - `apps/mobile/components/profile-tab/profile-tab-screen.tsx` now uses live colors for gradients/tint + themed styles
+    - `apps/mobile/components/profile-tab/profile-tab-skeleton.tsx` now theme-aware
 - Verification:
   - `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass.

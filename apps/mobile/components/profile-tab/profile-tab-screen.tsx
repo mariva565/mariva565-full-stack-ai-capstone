@@ -1,16 +1,22 @@
 import { RefreshControl, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
-import { COLORS, GRADIENTS } from "../../lib/colors";
+import { useTheme, useThemedStyles } from "../../lib/app-preferences";
 import { useIsOffline } from "../../lib/network";
 import { NetworkBanner } from "../network-banner";
 import { RequestState } from "../request-state";
 import { ProfileTabSkeleton } from "./profile-tab-skeleton";
 import type { ProfileTabViewModel } from "./profile-tab.types";
-import { styles } from "./profile-tab.styles";
+import { makeProfileTabStyles } from "./profile-tab.styles";
 
 type ProfileTabScreenProps = {
   viewModel: ProfileTabViewModel;
+};
+
+type ProfileTabRenderProps = {
+  styles: ReturnType<typeof makeProfileTabStyles>;
+  heroGradient: readonly [string, string];
+  primaryActionGradient: readonly [string, string];
 };
 
 function ErrorState({
@@ -36,14 +42,18 @@ function ErrorState({
   );
 }
 
-function ProfileHero({ viewModel }: ProfileTabScreenProps) {
+function ProfileHero({
+  viewModel,
+  styles,
+  heroGradient,
+}: ProfileTabScreenProps & Pick<ProfileTabRenderProps, "styles" | "heroGradient">) {
   if (!viewModel.profile) {
     return null;
   }
 
   return (
     <LinearGradient
-      colors={GRADIENTS.hero}
+      colors={heroGradient}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
       style={styles.hero}
@@ -59,7 +69,7 @@ function ProfileHero({ viewModel }: ProfileTabScreenProps) {
   );
 }
 
-function ProfileInfoCard({ viewModel }: ProfileTabScreenProps) {
+function ProfileInfoCard({ viewModel, styles }: ProfileTabScreenProps & Pick<ProfileTabRenderProps, "styles">) {
   if (!viewModel.profile) {
     return null;
   }
@@ -98,7 +108,11 @@ function ProfileInfoCard({ viewModel }: ProfileTabScreenProps) {
   );
 }
 
-function ProfileActions({ viewModel }: ProfileTabScreenProps) {
+function ProfileActions({
+  viewModel,
+  styles,
+  primaryActionGradient,
+}: ProfileTabScreenProps & Pick<ProfileTabRenderProps, "styles" | "primaryActionGradient">) {
   return (
     <View style={styles.actions}>
       <TouchableOpacity
@@ -141,7 +155,7 @@ function ProfileActions({ viewModel }: ProfileTabScreenProps) {
             accessibilityHint="Saves your updated profile name"
           >
             <LinearGradient
-              colors={GRADIENTS.primaryAction}
+              colors={primaryActionGradient}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
               style={styles.saveBtnGradient}
@@ -167,6 +181,10 @@ function ProfileActions({ viewModel }: ProfileTabScreenProps) {
 
 export function ProfileTabScreen({ viewModel }: ProfileTabScreenProps) {
   const offline = useIsOffline();
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeProfileTabStyles);
+  const heroGradient = [colors.brandDeep, colors.brandPrimary] as const;
+  const primaryActionGradient = [colors.brandPrimary, colors.brandAccent] as const;
 
   if (viewModel.loading) {
     return <ProfileTabSkeleton />;
@@ -182,18 +200,22 @@ export function ProfileTabScreen({ viewModel }: ProfileTabScreenProps) {
         <RefreshControl
           refreshing={viewModel.refreshing}
           onRefresh={viewModel.refresh}
-          tintColor={COLORS.brandPrimary}
+          tintColor={colors.brandPrimary}
         />
       }
     >
-      <ProfileHero viewModel={viewModel} />
+      <ProfileHero viewModel={viewModel} styles={styles} heroGradient={heroGradient} />
       {offline ? (
         <View style={styles.offlineBannerWrap}>
           <NetworkBanner message="Showing last synced profile data until connection is restored." />
         </View>
       ) : null}
-      <ProfileInfoCard viewModel={viewModel} />
-      <ProfileActions viewModel={viewModel} />
+      <ProfileInfoCard viewModel={viewModel} styles={styles} />
+      <ProfileActions
+        viewModel={viewModel}
+        styles={styles}
+        primaryActionGradient={primaryActionGradient}
+      />
       <View style={styles.bottomSpacer} />
     </ScrollView>
   );
