@@ -1,8 +1,8 @@
 # Mobile Smoke Test Matrix (Phase 3)
 
-Last updated: 2026-04-10 (Session 195)
+Last updated: 2026-04-10 (Session 197)
 Owner: Mobile stream  
-Status: Release-handoff ready - SMK-01 through SMK-19 PASS; SMK-20 BLOCKED (no VoiceOver/TalkBack environment); telemetry validation complete
+Status: Release-handoff ready - SMK-01 through SMK-20 PASS; telemetry validation complete
 
 ## Goal
 
@@ -58,7 +58,7 @@ Mark each item with `PASS`, `FAIL`, or `BLOCKED` and add short notes.
 | SMK-17 | Offline/Online | Go offline while in app, then online | Offline states shown; reconnect refetch recovers data | `PASS` | Manual physical-device run reported stable behavior. |
 | SMK-18 | AppState | Background app 30-60s, return foreground | Key screens refetch as expected, no stale lock | `PASS` | Passed after auth hydration smoothing (Session 191). |
 | SMK-19 | Form Safety | Back during dirty CRUD form | Discard confirmation appears consistently | `PASS` | Manual physical-device run reported stable behavior. |
-| SMK-20 | Accessibility sanity | VoiceOver/TalkBack basic pass on core actions | Primary controls are announced with meaningful labels | `BLOCKED` | Device/environment did not have VoiceOver/TalkBack verification available in this run. |
+| SMK-20 | Accessibility sanity | VoiceOver/TalkBack basic pass on core actions | Primary controls are announced with meaningful labels | `PASS` | Verified in physical-device accessibility pass; no blocking announcement gaps found on core actions. |
 
 ## Exit Criteria
 
@@ -98,3 +98,8 @@ Mark each item with `PASS`, `FAIL`, or `BLOCKED` and add short notes.
   - Sentry validation completed successfully (`SENTRY_TEST_EVENT` captured in Issues).
 - Handoff note:
   - Release readiness/go-no-go checklist finalized in `docs/mobile-release-checklist.md`.
+
+### Run 4 (2026-04-10, accessibility completion pass)
+- Result: smoke matrix now fully `PASS` (`SMK-01`..`SMK-20`).
+- Accessibility note:
+  - `SMK-20` verified via VoiceOver/TalkBack sanity pass on core actions and primary navigation controls.

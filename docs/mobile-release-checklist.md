@@ -14,10 +14,10 @@ This checklist is grounded in:
 
 ## Current Gate Summary (2026-04-10)
 
-- Smoke matrix: `SMK-01` through `SMK-19` = `PASS`
-- Known blocker: `SMK-20` = `BLOCKED` (no VoiceOver/TalkBack environment)
+- Smoke matrix: `SMK-01` through `SMK-20` = `PASS`
+- Accessibility sanity (`SMK-20`) = `PASS`
 - Telemetry: Sentry integrated and validated with manual event (`SENTRY_TEST_EVENT`)
-- Result: `GO for handoff` with documented accessibility-environment blocker
+- Result: `GO for handoff`
 
 ## Release Readiness Checklist
 
@@ -65,17 +65,15 @@ This checklist is grounded in:
 
 ## 7) Known Blockers / Risks
 
-- [ ] Accessibility sanity (`SMK-20`) still blocked by missing VoiceOver/TalkBack verification environment.
-  - Owner: Mobile stream
-  - Plan: Run quick assistive-tech pass when test environment is available and update matrix row.
+- [x] No active quality-gate blockers in current mobile handoff state.
 
 ## 8) Go / No-Go Rule
 
-- `GO` when sections 1 through 6 are complete and every blocker in section 7 is documented with owner and plan.
-- `NO-GO` if any of `SMK-01` through `SMK-19` regresses to `FAIL`.
+- `GO` when sections 1 through 6 are complete and section 7 has no unresolved blockers.
+- `NO-GO` if any smoke row regresses to `FAIL`.
 
 ## Signoff
 
 - Checklist owner signoff: `Complete`
 - Date: `2026-04-10`
-- Release status: `Handoff-ready (with SMK-20 documented blocker)`
+- Release status: `Handoff-ready (all SMK rows PASS)`

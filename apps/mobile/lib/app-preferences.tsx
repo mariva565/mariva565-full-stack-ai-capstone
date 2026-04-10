@@ -5,14 +5,22 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
-import { useColorScheme } from "react-native";
+import { StyleSheet, useColorScheme } from "react-native";
 
 import { setHapticsEnabledPreference } from "./haptics";
+import {
+  getColorsForThemeMode,
+  getStoredThemeModeSync,
+  resolveThemeMode,
+  setStoredThemeModeSync,
+  type AppColors,
+  type ThemeMode,
+} from "./colors";
 
-export type ThemeMode = "system" | "light" | "dark";
 export type ResolvedTheme = "light" | "dark";
 
 type StoredPreferences = {
@@ -20,18 +28,24 @@ type StoredPreferences = {
   hapticsEnabled: boolean;
 };
 
+type ThemeContextValue = {
+  colors: AppColors;
+  resolvedTheme: ResolvedTheme;
+};
+
 type AppPreferencesContextValue = {
   ready: boolean;
   themeMode: ThemeMode;
   resolvedTheme: ResolvedTheme;
   hapticsEnabled: boolean;
+  colors: AppColors;
   setThemeMode: (value: ThemeMode) => void;
   setHapticsEnabled: (value: boolean) => void;
 };
 
 const STORAGE_KEY = "studyhub_app_preferences_v1";
 const DEFAULT_PREFERENCES: StoredPreferences = {
-  themeMode: "system",
+  themeMode: getStoredThemeModeSync(),
   hapticsEnabled: true,
 };
 
@@ -39,6 +53,7 @@ const AppPreferencesContext = createContext<AppPreferencesContextValue>({
   ready: false,
   ...DEFAULT_PREFERENCES,
   resolvedTheme: "light",
+  colors: getColorsForThemeMode("light"),
   setThemeMode: () => {},
   setHapticsEnabled: () => {},
 });
@@ -87,6 +102,7 @@ function useStoredPreferences() {
       if (cancelled) {
         return;
       }
+      setStoredThemeModeSync(stored.themeMode);
       setPreferences(stored);
       setReady(true);
     })();
@@ -112,11 +128,12 @@ function useStoredPreferences() {
 }
 
 export function AppPreferencesProvider({ children }: { children: ReactNode }) {
-  const systemTheme = useColorScheme();
+  const systemTheme = useColorScheme() === "dark" ? "dark" : "light";
   const { ready, preferences, updatePreferences } = useStoredPreferences();
 
   const setThemeMode = useCallback(
     (value: ThemeMode) => {
+      setStoredThemeModeSync(value);
       updatePreferences({ themeMode: value });
     },
     [updatePreferences]
@@ -130,10 +147,11 @@ export function AppPreferencesProvider({ children }: { children: ReactNode }) {
   );
 
   const resolvedTheme = useMemo<ResolvedTheme>(() => {
-    if (preferences.themeMode === "system") {
-      return systemTheme === "dark" ? "dark" : "light";
-    }
-    return preferences.themeMode;
+    return resolveThemeMode(preferences.themeMode, systemTheme);
+  }, [preferences.themeMode, systemTheme]);
+
+  const colors = useMemo<AppColors>(() => {
+    return getColorsForThemeMode(preferences.themeMode, systemTheme);
   }, [preferences.themeMode, systemTheme]);
 
   const value = useMemo<AppPreferencesContextValue>(
@@ -142,10 +160,11 @@ export function AppPreferencesProvider({ children }: { children: ReactNode }) {
       themeMode: preferences.themeMode,
       resolvedTheme,
       hapticsEnabled: preferences.hapticsEnabled,
+      colors,
       setThemeMode,
       setHapticsEnabled,
     }),
-    [ready, preferences.themeMode, preferences.hapticsEnabled, resolvedTheme, setThemeMode, setHapticsEnabled]
+    [ready, preferences.themeMode, preferences.hapticsEnabled, resolvedTheme, colors, setThemeMode, setHapticsEnabled]
   );
 
   return <AppPreferencesContext.Provider value={value}>{children}</AppPreferencesContext.Provider>;
@@ -153,4 +172,23 @@ export function AppPreferencesProvider({ children }: { children: ReactNode }) {
 
 export function useAppPreferences(): AppPreferencesContextValue {
   return useContext(AppPreferencesContext);
+}
+
+/** Returns live theme colors and resolved theme name. Re-renders when theme changes. */
+export function useTheme(): ThemeContextValue {
+  const { colors, resolvedTheme } = useContext(AppPreferencesContext);
+  return { colors, resolvedTheme };
+}
+
+/**
+ * Creates styles using the current theme colors, re-memoized when the theme changes.
+ * Factory must be a stable reference (module-level function) to get effective memoization.
+ */
+export function useThemedStyles<T extends StyleSheet.NamedStyles<T>>(
+  factory: (colors: AppColors) => T
+): T {
+  const { colors } = useContext(AppPreferencesContext);
+  const factoryRef = useRef(factory);
+  factoryRef.current = factory;
+  return useMemo(() => StyleSheet.create(factoryRef.current(colors)), [colors]);
 }

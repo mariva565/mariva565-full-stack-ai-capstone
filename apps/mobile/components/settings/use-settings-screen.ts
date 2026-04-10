@@ -5,7 +5,8 @@ import * as Application from "expo-application";
 import { useRouter } from "expo-router";
 
 import { useAuth } from "../../lib/auth-context";
-import { useAppPreferences, type ThemeMode } from "../../lib/app-preferences";
+import { useAppPreferences } from "../../lib/app-preferences";
+import { type ThemeMode } from "../../lib/colors";
 import { useToast } from "../../lib/toast-context";
 import type { AboutLink, SettingsViewModel, ThemeOption } from "./settings.types";
 
@@ -82,10 +83,13 @@ function usePreferenceActions(
 ) {
   const setThemeMode = useCallback(
     (value: ThemeMode) => {
+      if (value === preferences.themeMode) {
+        return;
+      }
+      // Live theme update — no reload needed; React context propagates the change immediately.
       preferences.setThemeMode(value);
-      showToast(`Theme set to ${value}`);
     },
-    [preferences, showToast]
+    [preferences]
   );
 
   const setHapticsEnabled = useCallback(

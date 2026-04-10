@@ -6,7 +6,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import * as Sentry from "@sentry/react-native";
 import { AuthProvider, useAuth } from "../lib/auth-context";
-import { AppPreferencesProvider } from "../lib/app-preferences";
+import { AppPreferencesProvider, useTheme } from "../lib/app-preferences";
 import { ToastProvider } from "../lib/toast-context";
 import { BRAND_FONT_FAMILY, BRAND_FONT_SOURCE } from "../lib/brand-font";
 import { COLORS } from "../lib/colors";
@@ -26,6 +26,8 @@ function AuthGate() {
   const segments = useSegments();
   const router = useRouter();
   const navigationState = useRootNavigationState();
+  // Live theme: re-renders when mode changes so header and status bar update immediately.
+  const { colors } = useTheme();
 
   useEffect(() => {
     if (isLoading) return;
@@ -43,22 +45,22 @@ function AuthGate() {
 
   if (isLoading) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: COLORS.brandDeep }}>
-        <ActivityIndicator size="large" color={COLORS.textOnBrand} />
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: colors.brandDeep }}>
+        <ActivityIndicator size="large" color={colors.textOnBrand} />
       </View>
     );
   }
 
   return (
     <>
-      <StatusBar style="light" backgroundColor={COLORS.brandDeep} />
+      <StatusBar style="light" backgroundColor={colors.brandDeep} />
       <Stack
         screenOptions={{
-          headerStyle: { backgroundColor: COLORS.brandDeep },
-          headerTintColor: COLORS.textOnBrand,
+          headerStyle: { backgroundColor: colors.brandDeep },
+          headerTintColor: colors.textOnBrand,
           headerTitleStyle: { fontWeight: "700" },
           headerShadowVisible: false,
-          contentStyle: { backgroundColor: COLORS.canvas },
+          contentStyle: { backgroundColor: colors.canvas },
         }}
       >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />

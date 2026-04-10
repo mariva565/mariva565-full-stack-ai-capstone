@@ -9,6 +9,7 @@ import {
   clearApiCache,
   warmupBackend,
 } from "./api";
+import { queryKeys } from "./query-keys";
 import { queryClient } from "./query-client";
 import { captureTelemetryException, setTelemetryUser } from "./telemetry";
 
@@ -77,12 +78,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     (async () => {
       const [token, cachedUser] = await Promise.all([getToken(), getUserSnapshot()]);
 
-      // Hydrate instantly from persisted user snapshot so returning from
-      // background doesn't feel like a cold app boot.
+      // Keep snapshot in memory as a fallback, but wait for server auth/me
+      // before unlocking the protected UI to avoid stale role flicker.
       if (token && cachedUser && !cancelled) {
         setUser(cachedUser);
         setTelemetryUser(cachedUser);
-        setIsLoading(false);
       }
 
       if (!token) {
@@ -104,6 +104,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           return;
         }
         setUser(data.user);
+        queryClient.setQueryData(queryKeys.auth.me(), data.user);
         setTelemetryUser(data.user);
         await setUserSnapshot(data.user);
         // Pre-warm Neon DB so mutations don't hit a cold start after session restore.
@@ -149,6 +150,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     );
     await setToken(data.token);
     setUser(data.user);
+    queryClient.setQueryData(queryKeys.auth.me(), data.user);
     setTelemetryUser(data.user);
     await setUserSnapshot(data.user);
     // Pre-warm Neon DB immediately after login so subsequent mutations are fast.
@@ -170,6 +172,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       name: data.user.name ?? name.trim(),
     };
     setUser(hydratedUser);
+    queryClient.setQueryData(queryKeys.auth.me(), hydratedUser);
     setTelemetryUser(hydratedUser);
     await setUserSnapshot(hydratedUser);
     // Keep post-auth mutations fast for freshly registered users too.
@@ -185,6 +188,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     );
     await setToken(data.token);
     setUser(data.user);
+    queryClient.setQueryData(queryKeys.auth.me(), data.user);
     setTelemetryUser(data.user);
     await setUserSnapshot(data.user);
     warmupBackend();

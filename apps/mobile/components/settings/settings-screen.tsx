@@ -7,15 +7,17 @@ import {
   View,
 } from "react-native";
 
-import { COLORS } from "../../lib/colors";
+import { useTheme, useThemedStyles } from "../../lib/app-preferences";
 import type { SettingsViewModel } from "./settings.types";
-import { styles } from "./settings-screen.styles";
+import { makeSettingsStyles } from "./settings-screen.styles";
 
 type SettingsScreenProps = {
   viewModel: SettingsViewModel;
 };
 
 function ThemeModeSection({ viewModel }: SettingsScreenProps) {
+  const styles = useThemedStyles(makeSettingsStyles);
+
   return (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>Appearance</Text>
@@ -49,6 +51,9 @@ function ThemeModeSection({ viewModel }: SettingsScreenProps) {
 }
 
 function HapticsSection({ viewModel }: SettingsScreenProps) {
+  const styles = useThemedStyles(makeSettingsStyles);
+  const { colors } = useTheme();
+
   return (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>Interaction</Text>
@@ -61,8 +66,8 @@ function HapticsSection({ viewModel }: SettingsScreenProps) {
           <Switch
             value={viewModel.hapticsEnabled}
             onValueChange={viewModel.setHapticsEnabled}
-            trackColor={{ false: COLORS.borderMuted, true: COLORS.brandAccent }}
-            thumbColor={viewModel.hapticsEnabled ? COLORS.brandPrimary : "#f4f3f4"}
+            trackColor={{ false: colors.borderMuted, true: colors.brandAccent }}
+            thumbColor={viewModel.hapticsEnabled ? colors.brandPrimary : "#f4f3f4"}
             accessibilityLabel="Toggle haptic feedback"
             accessibilityHint="Enable or disable vibration feedback"
           />
@@ -73,6 +78,8 @@ function HapticsSection({ viewModel }: SettingsScreenProps) {
 }
 
 function AboutSection({ viewModel }: SettingsScreenProps) {
+  const styles = useThemedStyles(makeSettingsStyles);
+
   return (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>About</Text>
@@ -100,6 +107,8 @@ function AboutSection({ viewModel }: SettingsScreenProps) {
 }
 
 function AccountSection({ viewModel }: SettingsScreenProps) {
+  const styles = useThemedStyles(makeSettingsStyles);
+
   return (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>Account</Text>
@@ -129,10 +138,13 @@ function AccountSection({ viewModel }: SettingsScreenProps) {
 }
 
 export function SettingsScreen({ viewModel }: SettingsScreenProps) {
+  const styles = useThemedStyles(makeSettingsStyles);
+  const { colors } = useTheme();
+
   if (!viewModel.ready) {
     return (
       <View style={styles.loadingWrap}>
-        <ActivityIndicator size="small" color={COLORS.brandPrimary} />
+        <ActivityIndicator size="small" color={colors.brandPrimary} />
         <Text style={styles.loadingText}>Loading settings...</Text>
       </View>
     );

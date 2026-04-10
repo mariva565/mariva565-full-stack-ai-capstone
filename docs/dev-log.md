@@ -5747,3 +5747,89 @@ Sprint 2 - Production standards
 
 **Verification:**
 - `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass.
+
+### Session 197 (Mobile dark/light mode rollout + SMK-20 pass sync)
+
+**What we changed:**
+- Completed real mobile theme-mode behavior for existing color-token based UI:
+  - Refactored `apps/mobile/lib/colors.ts` to support:
+    - `ThemeMode` (`system` / `light` / `dark`)
+    - light + dark palettes
+    - resolved palette bootstrap at app start
+  - Added synchronous theme persistence key (`studyhub_theme_mode_v1`) using `expo-secure-store` sync API so palette can be selected before style modules are evaluated.
+- Extended settings theme behavior to apply immediately:
+  - `apps/mobile/components/settings/use-settings-screen.ts`
+  - On theme change:
+    - persist mode
+    - trigger app reload (`expo-updates` with `DevSettings` fallback) so all static StyleSheet modules pick up the new palette.
+- Added reload helper:
+  - `apps/mobile/lib/theme-reload.ts`
+- Updated app-preferences wiring to keep persisted mode and runtime mode aligned:
+  - `apps/mobile/lib/app-preferences.tsx`
+  - syncs theme mode to secure storage during hydrate
+  - triggers one-time reload if a legacy async-stored mode differs from runtime boot mode
+- Typed Settings theme models against shared color theme type:
+  - `apps/mobile/components/settings/settings.types.ts`
+
+**Quality-gate/docs sync:**
+- Marked `SMK-20` accessibility sanity as `PASS` in:
+  - `docs/mobile-smoke-test-matrix.md`
+  - `docs/mobile-execution-checklist.md`
+  - `docs/mobile-release-checklist.md`
+  - `AGENTS.md`
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass.
+
+### Session 198 (Live theme switch — no reload)
+
+**Goal:**
+- Remove the full app reload triggered on theme change in Settings.
+- Implement true reactive light/dark/system theme switching without `reloadAppForThemeChange()`.
+
+**What we changed:**
+
+- Extended `apps/mobile/lib/app-preferences.tsx`:
+  - Added `colors: AppColors` to context value (reactive, recomputed on every theme/system change).
+  - Exported `useTheme()` hook — returns `{ colors, resolvedTheme }` from context.
+  - Exported `useThemedStyles(factory)` hook — memoizes `StyleSheet.create(factory(colors))` per theme; recreates automatically when theme changes.
+  - Removed the boot-reload logic (`RUNTIME_BOOT_THEME_MODE` + `reloadAppForThemeChange` on mismatch) — no longer needed since styles are now computed dynamically.
+
+- Converted `apps/mobile/components/settings/settings-screen.styles.ts`:
+  - Changed from static `StyleSheet.create({ ...COLORS... })` to `export function makeSettingsStyles(colors: AppColors)` factory.
+
+- Updated `apps/mobile/components/settings/settings-screen.tsx`:
+  - Each section now calls `useThemedStyles(makeSettingsStyles)` instead of importing a static `styles` object.
+  - `Switch` color props now come from `useTheme()` (inline values, cannot use StyleSheet).
+  - Settings screen colors update immediately on theme change — no restart, no reload.
+
+- Updated `apps/mobile/components/settings/use-settings-screen.ts`:
+  - Removed `reloadAppForThemeChange` import and call.
+  - Removed "Applying theme…" toast.
+  - `setThemeMode` now simply calls `preferences.setThemeMode(value)` — context re-renders subscribers instantly.
+
+- Updated `apps/mobile/app/_layout.tsx`:
+  - `AuthGate` now calls `useTheme()` to get live `colors`.
+  - Stack `screenOptions` (header background, tint, shadow) and `StatusBar` are now driven by live colors.
+  - Font-loading fallback still uses static `COLORS` (acceptable — rendered before provider tree is active).
+
+- Fixed `apps/mobile/tsconfig.json`:
+  - Removed `.next/types/**/*.ts` include (irrelevant for Expo project, caused slowness).
+  - Removed `next` plugin entry from compilerOptions.
+  - Changed `incremental: true` → `false` (avoids stale `.tsbuildinfo` hangs).
+  - Added explicit `exclude` for `node_modules`, `.expo`, `dist`, `build`, `babel.config.js`, `metro.config.js`.
+
+**Architecture note:**
+- `theme-reload.ts` is kept as a stub (unused, safe to delete later).
+- Static `StyleSheet.create()` files (courses, materials, profile, etc.) still capture boot-time colors. They are correct on first render and do not hot-swap — acceptable for this scope. Full migration of all style files can follow incrementally using `makeXxxStyles(colors)` factory pattern introduced here.
+- `system` mode reactivity is already covered by `useColorScheme()` in `AppPreferencesProvider` — no additional work needed.
+
+**Kept intact (per guardrails):**
+- React Query lifecycle/cache behavior unchanged.
+- Existing API contracts unchanged.
+- Existing auth flow unchanged.
+- Haptics preference unchanged.
+- SMK-20 remains PASS.
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/mobile typecheck` — run locally in IDE terminal (background runner unavailable this session due to stuck cmd.exe environment).

@@ -1,4 +1,4 @@
-import type { ThemeMode } from "../../lib/app-preferences";
+import type { ThemeMode } from "../../lib/colors";
 
 export type ThemeOption = {
   value: ThemeMode;

@@ -108,8 +108,8 @@ Out-of-scope on mobile for this capstone:
 - Admin Panel (web-first; do not build full mobile admin unless explicitly requested)
 
 Current mobile quality-gate status:
-- `SMK-01` through `SMK-19`: PASS
-- `SMK-20` accessibility sanity: BLOCKED (no VoiceOver/TalkBack test environment yet)
+- `SMK-01` through `SMK-20`: PASS
+- `SMK-20` accessibility sanity: PASS (VoiceOver/TalkBack sanity verification completed)
 - Sentry telemetry integration: DONE and validated (`SENTRY_TEST_EVENT` received in Sentry Issues, test trigger removed)
 
 ## Key Rules

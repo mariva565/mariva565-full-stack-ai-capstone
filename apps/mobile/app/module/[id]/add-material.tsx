@@ -168,7 +168,7 @@ export default function AddMaterialScreen() {
               onFocus={() => setFocusedField("content")}
               onBlur={() => setFocusedField(null)}
               multiline
-              numberOfLines={6}
+              numberOfLines={10}
               textAlignVertical="top"
               accessibilityLabel="Material content"
               accessibilityHint="Write notes or summary for this material"
@@ -303,7 +303,7 @@ const styles = StyleSheet.create({
     borderRadius: 12, paddingHorizontal: 16, paddingVertical: 14,
     fontSize: 16, color: COLORS.textPrimary,
   },
-  textArea: { minHeight: 120, paddingTop: 14 },
+  textArea: { minHeight: 220, paddingTop: 14 },
   inputFocused: { borderColor: COLORS.brandPrimary, backgroundColor: COLORS.surfaceHighlight },
   actions: { marginTop: 20, gap: 12 },
   createBtn: { borderRadius: 12, overflow: "hidden" },
