@@ -3,10 +3,12 @@
 import { motion } from "framer-motion";
 
 import type { ProfileUser } from "../../lib/profile";
+import { buildMobileProfileDeepLink } from "../../lib/profile";
 import { ProfileAdminCard } from "./profile-admin-card";
 import { ProfileDetailsCard } from "./profile-details-card";
 import { ProfileHeroCard } from "./profile-hero-card";
 import { ProfilePageHeader } from "./profile-page-header";
+import { ProfileQrCard } from "./profile-qr-card";
 import { ProfileSecurityCard } from "./profile-security-card";
 import { useProfilePageState } from "./use-profile-page-state";
 import { Toast } from "../ui/toast";
@@ -42,6 +44,7 @@ export function ProfilePageClient({ initialUser }: ProfilePageClientProps) {
     handleRemoveAvatar,
     closeToast,
   } = useProfilePageState({ initialUser });
+  const mobileDeepLink = buildMobileProfileDeepLink(user.id);
 
   return (
     <>
@@ -105,6 +108,8 @@ export function ProfilePageClient({ initialUser }: ProfilePageClientProps) {
                 onConfirmPasswordChange={setConfirmPassword}
                 onSubmit={handlePasswordSubmit}
               />
+
+              <ProfileQrCard deepLink={mobileDeepLink} userId={user.id} />
 
               {user.role === "admin" ? <ProfileAdminCard /> : null}
             </motion.div>

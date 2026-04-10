@@ -194,8 +194,12 @@ Owner: Mobile stream
   - Added `docs/mobile-release-checklist.md` with explicit go/no-go gates, known blocker handling, and signoff status.
   - Checklist references live smoke/telemetry outcomes and confirms handoff-readiness with all smoke rows passing.
 - [x] Product polish: Settings screen in Profile flow (not extra bottom tab), with initial scope theme mode (system/light/dark), haptics toggle, app version/about links, and account actions entry points.
-- [ ] Optional feature: Profile QR handoff card in web profile (deep-link to mobile app) for future social direction.
+- [x] Optional feature: Profile QR handoff card in web profile (deep-link to mobile app) for future social direction.
 - [ ] DEFERRED optional feature: Mobile AI tools entry points (summarize/quiz/chat or read-only outputs), after Phases 1-2 pass.
+- [ ] Planned feature cluster: Storage-backed material uploads (PDF/DOC/images) with shared backend APIs.
+- [ ] Planned feature cluster: Mobile avatar upload flow (camera/gallery + upload endpoint).
+- [ ] Planned feature cluster: Note/PDF transformations (`note -> PDF export`, `PDF -> note text extraction`).
+- [ ] Planned feature cluster: Sharing and social messaging entry points (depends on social phases S0-S3).
 
 ### Acceptance Criteria
 - [x] Key mobile flows pass smoke suite without regressions (`SMK-01` through `SMK-19`).
@@ -204,9 +208,13 @@ Owner: Mobile stream
 
 ## Next Recommended Task
 
-- Proceed with optional feature sequencing:
-  - Web Profile QR handoff card (deep-link direction for mobile onboarding).
-  - Keep mobile AI tools/chat entry points deferred until explicitly prioritized.
+- Proceed with post-MVP mobile sequencing (updated):
+  - 1. Storage foundation for materials/files (shared API contract, validation, R2 object lifecycle).
+  - 2. Mobile uploads: PDF/DOC/image material upload + avatar upload from device.
+  - 3. Transform tools: `note -> PDF` export and `PDF -> note` extraction flow.
+  - 4. Sharing + social messaging entry points after backend social phases are available.
+- Social dependency reference:
+  - `docs/social-features-plan.md` (S0 roles/membership, S1 community, S2 mentor Q&A, S3 messaging).
 - Keep accessibility sanity in smoke cadence as a regression-check row (`SMK-20`).
 
 ### Completed Product Polish Slice (2026-04-10, Session 196)
@@ -321,3 +329,22 @@ Owner: Mobile stream
   - Favorites now updates live on theme switch, matching Settings/Courses/Material/Profile behavior.
 - Verification:
   - `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass.
+
+### Completed Product Polish Slice (2026-04-10, Session 203)
+- Added web profile QR handoff card (minimal scope):
+  - `apps/web/components/profile/profile-qr-card.tsx`
+  - wired in `apps/web/components/profile/profile-page-client.tsx`
+  - deep link builder + QR image URL helper in `apps/web/lib/profile.ts`
+- Deep link contract:
+  - `studyhubv2://profile/{userId}` using mobile app scheme from `apps/mobile/app.json`.
+- Added mobile route handling for scanned profile links:
+  - new redirect route `apps/mobile/app/profile/[userId].tsx`
+  - root stack registration in `apps/mobile/app/_layout.tsx`
+  - handoff param handling in `apps/mobile/app/(tabs)/profile.tsx` with info toast + param cleanup.
+- Kept intact:
+  - existing auth/profile API contracts
+  - React Query lifecycle/cache behavior
+  - existing profile edit/settings flows
+- Verification:
+  - `npm run typecheck:web` -> pass
+  - `npm run typecheck:mobile` -> pass

@@ -16,6 +16,7 @@ export const AVATAR_ALLOWED_MIME_TYPES = [
   "image/gif",
 ] as const;
 export const AVATAR_FILE_ACCEPT = AVATAR_ALLOWED_MIME_TYPES.join(",");
+const MOBILE_PROFILE_SCHEME = "studyhubv2://profile";
 
 type PasswordFields = {
   currentPassword: string;
@@ -103,4 +104,13 @@ export function validatePasswordChange(fields: PasswordFields): string | null {
   }
 
   return null;
+}
+
+export function buildMobileProfileDeepLink(userId: number): string {
+  return `${MOBILE_PROFILE_SCHEME}/${userId}`;
+}
+
+export function buildMobileProfileQrImageUrl(deepLink: string): string {
+  const encodedData = encodeURIComponent(deepLink);
+  return `https://api.qrserver.com/v1/create-qr-code/?size=280x280&format=png&data=${encodedData}`;
 }

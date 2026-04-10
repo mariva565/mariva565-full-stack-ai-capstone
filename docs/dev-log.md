@@ -5918,3 +5918,69 @@ Sprint 2 - Production standards
 
 **Verification:**
 - `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass.
+
+### Session 202 (Mobile plan refresh for post-MVP roadmap)
+
+**Goal:**
+- Update mobile planning docs so upcoming work is explicitly tracked after the completed stability/polish phases.
+
+**What we changed:**
+- Updated `docs/mobile-execution-checklist.md`:
+  - Extended optional/planned backlog with:
+    - storage-backed material uploads (PDF/DOC/images),
+    - mobile avatar upload flow,
+    - note/PDF transformation flows (`note -> PDF`, `PDF -> note`),
+    - sharing/social messaging entry points.
+  - Refreshed `Next Recommended Task` sequence with a clear post-MVP order:
+    1. QR deep-link handoff card in web profile
+    2. storage/API foundation for files
+    3. mobile upload UX
+    4. transformation tools
+    5. sharing/social integration
+  - Linked mobile backlog dependencies to `docs/social-features-plan.md` (S0-S3).
+
+**Verification:**
+- Docs-only update (no code/runtime changes).
+
+### Session 203 (QR deep-link profile handoff: web -> mobile)
+
+**Goal:**
+- Deliver the minimal QR handoff scope from roadmap:
+  1. Web profile QR card
+  2. Deep link with `studyhubv2` scheme and user id
+  3. Mobile route handling for scanned profile link
+  4. Docs sync
+  5. Typecheck for web + mobile
+
+**What we changed:**
+- Web profile QR card:
+  - Added new card component:
+    - `apps/web/components/profile/profile-qr-card.tsx`
+  - Wired card into profile page client:
+    - `apps/web/components/profile/profile-page-client.tsx`
+  - Added deep-link + QR helpers:
+    - `apps/web/lib/profile.ts`
+      - `buildMobileProfileDeepLink(userId)` -> `studyhubv2://profile/{userId}`
+      - `buildMobileProfileQrImageUrl(deepLink)`
+  - Added small profile icon extensions used by QR card:
+    - `apps/web/components/profile/profile-icons.tsx`
+
+- Mobile deep-link handling:
+  - Added dedicated profile deep-link route:
+    - `apps/mobile/app/profile/[userId].tsx`
+    - accepts `userId` from URL and redirects to profile tab with handoff param.
+  - Registered route in root stack:
+    - `apps/mobile/app/_layout.tsx`
+  - Extended profile tab route to process handoff params:
+    - `apps/mobile/app/(tabs)/profile.tsx`
+    - handles `handoffUserId`, shows info toast, and clears query params after processing.
+
+- Docs sync:
+  - Updated `docs/mobile-execution-checklist.md`:
+    - marked profile QR optional feature as complete
+    - moved next recommended task order forward after QR completion
+    - added Session 203 completion slice
+
+**Verification:**
+- `npm run typecheck:web` -> pass
+- `npm run typecheck:mobile` -> pass

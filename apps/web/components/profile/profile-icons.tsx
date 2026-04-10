@@ -89,3 +89,42 @@ export function SparklesIcon({ className, ...props }: ProfileIconProps) {
     </svg>
   );
 }
+
+export function QrCodeIcon({ className, ...props }: ProfileIconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      className={iconClassName(className)}
+      {...props}
+    >
+      <path d="M4 4h6v6H4z" />
+      <path d="M14 4h6v6h-6z" />
+      <path d="M4 14h6v6H4z" />
+      <path d="M14 14h2v2h-2z" />
+      <path d="M18 14h2v2h-2z" />
+      <path d="M16 16h2v2h-2z" />
+      <path d="M14 18h2v2h-2z" />
+      <path d="M18 18h2v2h-2z" />
+    </svg>
+  );
+}
+
+export function MobileIcon({ className, ...props }: ProfileIconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      className={iconClassName(className)}
+      {...props}
+    >
+      <rect x="7" y="2.8" width="10" height="18.4" rx="2.2" />
+      <path d="M10.5 6h3" />
+      <circle cx="12" cy="17.7" r="0.8" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
