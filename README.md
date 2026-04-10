@@ -70,7 +70,7 @@ The app is a personal **Learning Management System (LMS)** — a structured elec
 | Phase 2 | Auth (JWT + Google OAuth + role guards) | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
 | Phase 3 | Courses / modules / materials CRUD + favorites | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
 | Phase 4 | Profile + milestones + calendar + progress tracking | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
-| Phase 5 | Mobile app (CRUD flows + persisted React Query cache) | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
+| Phase 5 | Mobile app (CRUD flows + persisted React Query cache + Sentry telemetry validation + release checklist) | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
 | Phase 6 | Admin panel (user management, moderation, logs) | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
 | Phase 7 | AI study tools (Gemini chat, summarize, quiz) | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
 | Phase 8 | UI polish (landing, how-it-works, contact, animations) | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
@@ -92,7 +92,7 @@ graph TB
     subgraph CLIENT["Client Layer"]
         direction LR
         WEB["<b>Next.js Web App</b><br/>React 19 + TypeScript<br/>Tailwind CSS + Three.js<br/>14 pages"]
-        MOBILE["<b>Expo Mobile App</b><br/>React Native<br/>Android / iOS<br/>3 screens"]
+        MOBILE["<b>Expo Mobile App</b><br/>React Native<br/>Android / iOS<br/>13+ screens"]
     end
 
     subgraph SERVER["Server Layer — Next.js API Routes"]
@@ -463,6 +463,21 @@ The mobile app connects to the **same Next.js backend** — no separate API need
 - `apiFetch` cache remains enabled for non-query paths (including auth bootstrap) to preserve offline-friendly fallback behavior.
 - `apiFetch` remains the request layer (normalized API/network errors + scoped AsyncStorage cache where enabled), complemented by React Query state management.
 
+### Mobile quality gates and release readiness
+
+- Smoke suite status:
+  - `SMK-01` through `SMK-19`: PASS
+  - `SMK-20` accessibility sanity: BLOCKED (no VoiceOver/TalkBack environment in the last run)
+- Telemetry status:
+  - Sentry integrated in mobile bootstrap + auth lifecycle + API error capture.
+  - Manual validation complete: `SENTRY_TEST_EVENT` received in Sentry Issues.
+- Release handoff status:
+  - Mobile release checklist is complete with documented blocker ownership.
+  - Reference docs:
+    - `docs/mobile-execution-checklist.md`
+    - `docs/mobile-smoke-test-matrix.md`
+    - `docs/mobile-release-checklist.md`
+
 ---
 
 ## API Endpoints (37)
@@ -667,6 +682,9 @@ studyhub-v2/
 │   ├── assignment.md                 # Course assignment requirements
 │   ├── implementation-plan.md        # Development roadmap
 │   ├── dev-log.md                    # Session-by-session dev log
+│   ├── mobile-execution-checklist.md # Mobile phase tasks + quality gates
+│   ├── mobile-smoke-test-matrix.md   # Mobile smoke scenarios/results
+│   ├── mobile-release-checklist.md   # Mobile release/handoff go-no-go checklist
 │   ├── mobile-phone-testing-handoff.md  # Expo setup + troubleshooting
 │   └── legacy-notes/                 # Reference notes from v1
 │
@@ -697,6 +715,17 @@ cp .env.example .env
 - The web AI routes (`/api/ai/chat`, `/api/ai/tools`) read `GEMINI_API_KEY` from `apps/web/.env` in local development.
 - The root `.env` may still be empty for `GEMINI_API_KEY` without breaking local web AI, as long as `apps/web/.env` is configured.
 - For production, set `GEMINI_API_KEY` in your deployment environment variables (Vercel/Netlify).
+
+### Mobile telemetry env note (Sentry)
+
+- Mobile runtime telemetry reads these values from `apps/mobile/.env`:
+  - `EXPO_PUBLIC_SENTRY_DSN`
+  - `EXPO_PUBLIC_SENTRY_TRACES_SAMPLE_RATE`
+  - `EXPO_PUBLIC_APP_ENV`
+- Build-time source-map upload uses root `.env`:
+  - `SENTRY_ORG`
+  - `SENTRY_PROJECT`
+  - `SENTRY_AUTH_TOKEN` (secret; never commit)
 
 If `npm install --workspace ...` fails with the npm/arborist error `Cannot read properties of null (reading 'location')`, install mobile-only dependencies from `apps/mobile`:
 
@@ -739,6 +768,8 @@ npm run dev:mobile:usb
 > **If it doesn't start:** check `netstat -ano | findstr :3000` — if port 3000 is taken by a stale process, kill it and restart `dev:web`.
 >
 > **Full troubleshooting guide:** [docs/mobile-phone-testing-handoff.md](docs/mobile-phone-testing-handoff.md)
+>
+> **Quality/release status docs:** [docs/mobile-execution-checklist.md](docs/mobile-execution-checklist.md), [docs/mobile-smoke-test-matrix.md](docs/mobile-smoke-test-matrix.md), [docs/mobile-release-checklist.md](docs/mobile-release-checklist.md)
 
 Alternative mobile connection modes:
 ```bash

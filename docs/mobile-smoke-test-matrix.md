@@ -1,8 +1,8 @@
 # Mobile Smoke Test Matrix (Phase 3)
 
-Last updated: 2026-04-09 (Session 192)
+Last updated: 2026-04-10 (Session 195)
 Owner: Mobile stream  
-Status: In progress - SMK-01 through SMK-19 PASS; SMK-20 BLOCKED (no VoiceOver/TalkBack environment)
+Status: Release-handoff ready - SMK-01 through SMK-19 PASS; SMK-20 BLOCKED (no VoiceOver/TalkBack environment); telemetry validation complete
 
 ## Goal
 
@@ -91,3 +91,10 @@ Mark each item with `PASS`, `FAIL`, or `BLOCKED` and add short notes.
 - Notes:
   - Retest rows from Session 187 (`SMK-03`, `SMK-05`, `SMK-06`, `SMK-07`) now pass after timeout + warmup stabilization.
   - Favorites flows (`SMK-14`, `SMK-15`) pass after adding direct pin/unpin action in module workspace cards.
+
+### Run 3 (2026-04-10, release handoff confirmation)
+- Result: smoke status remains unchanged from Run 2 (`SMK-01`..`SMK-19` PASS, `SMK-20` BLOCKED).
+- Telemetry note:
+  - Sentry validation completed successfully (`SENTRY_TEST_EVENT` captured in Issues).
+- Handoff note:
+  - Release readiness/go-no-go checklist finalized in `docs/mobile-release-checklist.md`.

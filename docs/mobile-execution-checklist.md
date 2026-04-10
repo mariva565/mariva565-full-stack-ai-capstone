@@ -1,6 +1,6 @@
 # Mobile Execution Checklist (Quality-First)
 
-Last updated: 2026-04-09
+Last updated: 2026-04-10
 Owner: Mobile stream
 
 ## Scope Decisions (2026-04-08)
@@ -190,7 +190,9 @@ Owner: Mobile stream
     - `apps/mobile/.env.example`
     - `.env.example`
   - Validation pass complete (2026-04-10): manual test event `SENTRY_TEST_EVENT` received in Sentry Issues (development env), then temporary trigger button removed.
-- [ ] Release checklist for mobile handoff and smoke verification.
+- [x] Release checklist for mobile handoff and smoke verification.
+  - Added `docs/mobile-release-checklist.md` with explicit go/no-go gates, known blocker handling, and signoff status.
+  - Checklist references live smoke/telemetry outcomes and confirms handoff-readiness with documented `SMK-20` blocker.
 - [ ] Product polish: Settings screen in Profile flow (not extra bottom tab), with initial scope theme mode (system/light/dark), haptics toggle, app version/about links, and account actions entry points.
 - [ ] Optional feature: Profile QR handoff card in web profile (deep-link to mobile app) for future social direction.
 - [ ] DEFERRED optional feature: Mobile AI tools entry points (summarize/quiz/chat or read-only outputs), after Phases 1-2 pass.
@@ -202,5 +204,5 @@ Owner: Mobile stream
 
 ## Next Recommended Task
 
-- Proceed to the mobile release checklist and final handoff verification pass.
+- Proceed with Settings screen implementation in Profile flow (theme mode + haptics toggle + about/version).
 - Keep `SMK-20` tracked as `BLOCKED` until VoiceOver/TalkBack test environment is available.

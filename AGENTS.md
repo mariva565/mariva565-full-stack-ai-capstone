@@ -58,7 +58,7 @@ capstone/
 └── README.md
 ```
 
-## Database Tables (9 tables, Drizzle ORM)
+## Database Tables (10 tables, Drizzle ORM)
 
 - **users** — id, email, name, password_hash, role (user/admin), avatar_url, blocked, created_at
 - **courses** — id, title, description, created_by (FK→users), is_public, status, created_at
@@ -93,7 +93,7 @@ Every schema change MUST use Drizzle migrations. Migration SQL scripts must be c
 
 Additional: `/forbidden` (error page for unauthorized access)
 
-## Mobile Scope (Current, 2026-04-08)
+## Mobile Scope (Current, 2026-04-10)
 
 In-scope mobile product flows:
 1. Auth (`/login`, `/register`)
@@ -106,6 +106,11 @@ Out-of-scope on mobile for this capstone:
 - Progress/Milestones pages (web working pages for development tracking)
 - Calendar page (web working page for development tracking)
 - Admin Panel (web-first; do not build full mobile admin unless explicitly requested)
+
+Current mobile quality-gate status:
+- `SMK-01` through `SMK-19`: PASS
+- `SMK-20` accessibility sanity: BLOCKED (no VoiceOver/TalkBack test environment yet)
+- Sentry telemetry integration: DONE and validated (`SENTRY_TEST_EVENT` received in Sentry Issues, test trigger removed)
 
 ## Key Rules
 
@@ -150,7 +155,11 @@ Out-of-scope on mobile for this capstone:
 ### Handoff
 - Update `docs/dev-log.md` at end of each session
 - Update `docs/implementation-plan.md` status when a phase completes
-- New chat prompt: "Read `docs/dev-log.md`, `docs/implementation-plan.md`, and `docs/performance-guardrails.md` and continue from current phase."
+- Keep mobile execution docs synced when working on mobile quality/release:
+  - `docs/mobile-execution-checklist.md`
+  - `docs/mobile-smoke-test-matrix.md`
+  - `docs/mobile-release-checklist.md`
+- New chat prompt: "Read `docs/dev-log.md`, `docs/implementation-plan.md`, `docs/performance-guardrails.md`, `docs/mobile-execution-checklist.md`, and `docs/mobile-smoke-test-matrix.md`, then continue from the current phase."
 
 ## Legacy Reference
 

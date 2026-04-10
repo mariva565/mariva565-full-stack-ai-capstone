@@ -5677,3 +5677,34 @@ Sprint 2 - Production standards
 
 **Verification:**
 - `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
+
+### Session 195 (Docs alignment: AGENTS + README + mobile release handoff sync)
+
+**What we changed:**
+- Updated `AGENTS.md` to reflect current project state:
+  - Corrected DB table count from 9 -> 10.
+  - Updated mobile scope date to `2026-04-10`.
+  - Added current mobile quality-gate snapshot (`SMK-01`..`SMK-19` PASS, `SMK-20` BLOCKED, Sentry validated).
+  - Extended handoff instructions to include mobile quality docs (`mobile-execution-checklist`, `mobile-smoke-test-matrix`, `mobile-release-checklist`).
+- Updated `README.md` for latest mobile progress and handoff docs:
+  - Phase 5 roadmap row now includes telemetry validation + release checklist completion.
+  - Architecture overview mobile node updated from `3 screens` to `13+ screens`.
+  - Added "Mobile quality gates and release readiness" section with current status.
+  - Added Sentry mobile telemetry env guidance in Quick Setup.
+  - Updated docs tree and troubleshooting references to include:
+    - `docs/mobile-execution-checklist.md`
+    - `docs/mobile-smoke-test-matrix.md`
+    - `docs/mobile-release-checklist.md`
+- Synced mobile release/verification docs:
+  - Added `docs/mobile-release-checklist.md` (go/no-go handoff checklist).
+  - Updated `docs/mobile-execution-checklist.md` to mark release checklist task complete.
+  - Updated `docs/mobile-smoke-test-matrix.md` with release-handoff confirmation status and telemetry note.
+- Workspace cleanup:
+  - Removed accidental tracked empty files from repo root:
+    - `0`
+    - `studyhub-v2@0.1.0`
+    - `java.lang.Thread`
+
+**Verification:**
+- Documentation-only session (no runtime code changes).
+- Mobile telemetry and type safety were already validated in Session 194.
