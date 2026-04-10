@@ -307,3 +307,17 @@ Owner: Mobile stream
     - `apps/mobile/components/profile-tab/profile-tab-skeleton.tsx` now theme-aware
 - Verification:
   - `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass.
+
+### Completed Product Polish Slice (2026-04-10, Session 201)
+- Fixed remaining live-theme gap in Favorites tab:
+  - `apps/mobile/components/favorites/favorites.styles.ts`
+    - Converted static styles to `makeFavoritesStyles(colors)`.
+  - `apps/mobile/app/(tabs)/favorites.tsx`
+    - Added `useTheme()` + `useThemedStyles(makeFavoritesStyles)`.
+    - Hero gradient + RefreshControl tint now react immediately to theme changes.
+  - `apps/mobile/components/favorites/favorites-skeleton.tsx`
+    - Converted to theme-aware style factory.
+- Result:
+  - Favorites now updates live on theme switch, matching Settings/Courses/Material/Profile behavior.
+- Verification:
+  - `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass.

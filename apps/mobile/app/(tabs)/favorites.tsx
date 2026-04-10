@@ -11,19 +11,22 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 
+import { useTheme, useThemedStyles } from "../../lib/app-preferences";
 import { EmptyState } from "../../components/empty-state";
 import { FavoritesSkeleton } from "../../components/favorites/favorites-skeleton";
 import { NetworkBanner } from "../../components/network-banner";
 import { RequestState } from "../../components/request-state";
 import { getUserFriendlyError } from "../../lib/api";
-import { COLORS, GRADIENTS } from "../../lib/colors";
 import { fetchFavorites, removeFavorite, removeOptimisticFavorite } from "../../lib/favorites";
 import { splitTags } from "../../lib/material-utils";
 import { useIsOffline } from "../../lib/network";
 import { queryKeys } from "../../lib/query-keys";
 import type { FavoriteItem } from "../../lib/studyhub-types";
 import { useToast } from "../../lib/toast-context";
-import { styles } from "../../components/favorites/favorites.styles";
+import {
+  makeFavoritesStyles,
+  type FavoritesStyles,
+} from "../../components/favorites/favorites.styles";
 
 type FavoriteCardProps = {
   item: FavoriteItem;
@@ -32,6 +35,7 @@ type FavoriteCardProps = {
   onOpenModule: () => void;
   onOpenCourse: () => void;
   onUnpin: () => void;
+  styles: FavoritesStyles;
 };
 
 function FavoriteCard({
@@ -41,6 +45,7 @@ function FavoriteCard({
   onOpenModule,
   onOpenCourse,
   onUnpin,
+  styles,
 }: FavoriteCardProps) {
   const tags = splitTags(item.tags);
 
@@ -122,6 +127,9 @@ export default function FavoritesTabScreen() {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
   const offline = useIsOffline();
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeFavoritesStyles);
+  const heroGradient = [colors.brandDeep, colors.brandPrimary] as const;
   const [busyMaterialId, setBusyMaterialId] = useState<number | null>(null);
 
   const favoritesQuery = useQuery({
@@ -207,7 +215,7 @@ export default function FavoritesTabScreen() {
 
   return (
     <View style={styles.container}>
-      <LinearGradient colors={GRADIENTS.hero} style={styles.hero}>
+      <LinearGradient colors={heroGradient} style={styles.hero}>
         <RNText style={styles.heroLabel} maxFontSizeMultiplier={1.2}>
           Quick Access
         </RNText>
@@ -255,7 +263,7 @@ export default function FavoritesTabScreen() {
               onRefresh={() => {
                 void favoritesQuery.refetch();
               }}
-              tintColor={COLORS.brandPrimary}
+              tintColor={colors.brandPrimary}
             />
           }
           renderItem={({ item }) => (
@@ -274,6 +282,7 @@ export default function FavoritesTabScreen() {
               onUnpin={() => {
                 removeFavoriteMutation.mutate(item.materialId);
               }}
+              styles={styles}
             />
           )}
         />

@@ -5895,3 +5895,26 @@ Sprint 2 - Production standards
 
 **Verification:**
 - `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass.
+
+### Session 201 (Favorites live theme hot-swap fix)
+
+**Goal:**
+- Fix remaining screen where light/dark mode did not update immediately after theme change.
+
+**What we changed:**
+- Migrated favorites styles to themed factory pattern:
+  - `apps/mobile/components/favorites/favorites.styles.ts`
+  - Converted static `styles` export to `makeFavoritesStyles(colors)`.
+- Updated favorites tab screen to use live theme hooks:
+  - `apps/mobile/app/(tabs)/favorites.tsx`
+  - Added `useTheme()` + `useThemedStyles(makeFavoritesStyles)`.
+  - Hero gradient and RefreshControl tint now use live theme colors.
+  - Passed themed styles object into `FavoriteCard` instead of static module styles.
+- Migrated favorites skeleton to themed factory pattern:
+  - `apps/mobile/components/favorites/favorites-skeleton.tsx`
+
+**Result:**
+- Theme switch now applies immediately on Favorites as well (no restart/reload required).
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass.
