@@ -5984,3 +5984,26 @@ Sprint 2 - Production standards
 **Verification:**
 - `npm run typecheck:web` -> pass
 - `npm run typecheck:mobile` -> pass
+
+### Session 204 (QR card upgrade: production + Expo Go dev links)
+
+**Goal:**
+- Make the web profile QR card practical for both local Expo Go testing and post-build production behavior.
+
+**What we changed:**
+- Extended profile deep-link helpers in `apps/web/lib/profile.ts`:
+  - kept production link builder: `studyhubv2://profile/{userId}`
+  - added dev link builder with env-configurable base:
+    - `buildMobileProfileDevDeepLink(userId, NEXT_PUBLIC_MOBILE_DEV_DEEP_LINK_BASE)`
+- Upgraded web profile QR card UI in `apps/web/components/profile/profile-qr-card.tsx`:
+  - now renders separate sections for:
+    - Production app link
+    - Expo Go dev link (when configured)
+  - each section includes its own QR, copy button, and open-link action
+  - added inline setup hint when dev link env var is missing
+- Wired updated props in `apps/web/components/profile/profile-page-client.tsx`.
+- Added env placeholder and examples in `.env.example`:
+  - `NEXT_PUBLIC_MOBILE_DEV_DEEP_LINK_BASE`
+
+**Verification:**
+- `npm.cmd run typecheck:web` -> pass
