@@ -6110,3 +6110,31 @@ Sprint 2 - Production standards
 - Existing React Query query keys/invalidation paths retained.
 - Existing toast and haptic intent behavior retained.
 - Existing navigation outcomes retained (same route targets and delete/cancel flows).
+
+### Session 207 (Mobile hotfix: route scanner warnings + read timeout stability)
+
+**Goal:**
+- Resolve Expo Router route warnings introduced by hook files inside `app/`.
+- Stabilize read-path loading regressions (Courses/Profile intermittently not loading) caused by aggressive GET timeout on cold-start scenarios.
+
+**What we changed:**
+- Fixed Expo Router warnings:
+  - moved hook files out of route space (`app/`) into component layer:
+    - `apps/mobile/components/material-form/use-edit-material-screen.ts`
+    - `apps/mobile/components/material-form/use-add-material-screen.ts`
+  - updated imports in:
+    - `apps/mobile/app/material/[id]/edit.tsx`
+    - `apps/mobile/app/module/[id]/add-material.tsx`
+- Stabilized API read timeout for mobile:
+  - `apps/mobile/lib/api.constants.ts`
+  - `DEFAULT_GET_REQUEST_TIMEOUT_MS`: `6000 -> 20000`
+  - rationale: better resilience for Neon wake-up + mobile LAN/device hop latency while keeping mutation timeout policy unchanged.
+
+**Verification:**
+- `npm.cmd run typecheck:mobile` -> pass
+
+**Behavior notes:**
+- No API contract changes.
+- No React Query query key/invalidation changes.
+- No auth flow changes.
+- Fix is scoped to router file placement + request timeout budget.

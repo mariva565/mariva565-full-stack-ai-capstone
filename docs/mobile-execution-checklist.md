@@ -377,3 +377,21 @@ Owner: Mobile stream
   - Navigation outcomes unchanged.
 - Verification:
   - `npm.cmd run typecheck:mobile` -> pass
+
+### Completed Stability Hotfix (2026-04-11, Session 207)
+- Resolved Expo Router warnings caused by non-route hooks under `app/`:
+  - moved hooks from route folders to:
+    - `apps/mobile/components/material-form/use-edit-material-screen.ts`
+    - `apps/mobile/components/material-form/use-add-material-screen.ts`
+  - rewired route imports in:
+    - `apps/mobile/app/material/[id]/edit.tsx`
+    - `apps/mobile/app/module/[id]/add-material.tsx`
+- Increased mobile GET timeout baseline for cold-start resilience:
+  - `apps/mobile/lib/api.constants.ts`
+  - `DEFAULT_GET_REQUEST_TIMEOUT_MS`: `6000 -> 20000`
+- Kept intact:
+  - API contracts
+  - React Query lifecycle/invalidation behavior
+  - auth flow and mutation behavior
+- Verification:
+  - `npm.cmd run typecheck:mobile` -> pass

@@ -1,7 +1,7 @@
 <img src="https://capsule-render.vercel.app/api?type=waving&color=0:6366F1,50:8B5CF6,100:06B6D4&height=200&section=header&text=Study%20Hub%20v2&fontSize=60&fontColor=ffffff&animation=fadeIn&fontAlignY=38&desc=Your%20Personal%20Learning%20Platform&descAlignY=60&descAlign=50" width="100%"/>
 
 <div align="center">
-  <img src="docs/assets/readme/mascot.gif" width="200" style="border-radius: 12px;" alt="Study Hub mascot animation" />
+  <img src="docs/assets/readme/mascot-rounded.svg" width="200" alt="Study Hub mascot animation" />
 </div>
 
 <p align="center">
@@ -789,9 +789,11 @@ npm run dev:mobile:usb
 | Auth | Supabase Auth (GoTrue) | Custom JWT + Google OAuth |
 | Database | Supabase PostgreSQL (6 tables) | Neon PostgreSQL + Drizzle ORM (10 tables) |
 | Mobile | None | React Native + Expo + tabs/CRUD flows + persisted React Query cache |
-| File structure | Single app, monolithic files | Monorepo + modular components (<300 LOC each) |
+| File structure | Single app, monolithic files | Monorepo + modular components (<300 LOC each)† |
 | Deployment | Netlify + Vercel (dual) | Planned: Vercel |
 | Security | RLS + CSP + MFA (partial) | JWT guards + middleware + role-based endpoints |
+
+> **†** Two files intentionally exceed 300 lines. `chat-widget.tsx` (494 lines) contains a `<style jsx global>` block with all FAB animation keyframes — extracting it into a sub-component creates a render-timing risk where the floating button loses its styles at certain lifecycle moments; the correct fix (moving to `globals.css`) was evaluated and deferred as low-priority. `material-form-screen.tsx` (395 lines) co-locates 8 tightly related sub-components for a single form screen — all individual functions are under 60 lines and splitting across files would increase navigation cost without improving readability. All other source files remain under 300 lines. No inline styles exist outside of cases where a dynamic runtime value (scroll progress, cursor position, Framer Motion spring) cannot be expressed as a static Tailwind class.
 
 ---
 

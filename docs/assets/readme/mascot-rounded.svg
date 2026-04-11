@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" role="img" aria-label="Study Hub mascot animation">
+  <defs>
+    <clipPath id="rounded-corners">
+      <rect x="0" y="0" width="1000" height="1000" rx="60" ry="60" />
+    </clipPath>
+  </defs>
+  <image
+    href="mascot.gif"
+    x="0"
+    y="0"
+    width="1000"
+    height="1000"
+    preserveAspectRatio="xMidYMid slice"
+    clip-path="url(#rounded-corners)"
+  />
+</svg>
