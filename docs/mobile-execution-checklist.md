@@ -1,6 +1,6 @@
 # Mobile Execution Checklist (Quality-First)
 
-Last updated: 2026-04-10
+Last updated: 2026-04-11
 Owner: Mobile stream
 
 ## Scope Decisions (2026-04-08)
@@ -348,3 +348,32 @@ Owner: Mobile stream
 - Verification:
   - `npm run typecheck:web` -> pass
   - `npm run typecheck:mobile` -> pass
+
+### Completed Code Quality Slice (2026-04-11, Session 206)
+- Executed priority de-monolith pass on mobile targets without changing API contracts or runtime behavior:
+  - `apps/mobile/lib/api.ts`
+  - `apps/mobile/app/material/[id]/edit.tsx`
+  - `apps/mobile/app/course/[id]/index.tsx`
+  - `apps/mobile/components/module-workspace/use-module-workspace.ts`
+  - `apps/mobile/app/module/[id]/add-material.tsx`
+- Split orchestration and helper responsibilities into dedicated modules:
+  - API helpers: `api.constants.ts`, `api.cache.ts`, `api.errors.ts`, `api.utils.ts`.
+  - Shared material form: `components/material-form/*`.
+  - Route hooks: `use-add-material-screen.ts`, `use-edit-material-screen.ts`.
+  - Course details decomposition: `components/course-details/*`.
+  - Module workspace decomposition: `module-workspace.data.ts`, `module-workspace.actions.ts`, `module-workspace.favorites.ts`.
+- Target line counts now pass de-monolith gate (<300 each):
+  - `api.ts`: `453 -> 281`
+  - `material/[id]/edit.tsx`: `387 -> 57`
+  - `course/[id]/index.tsx`: `381 -> 8`
+  - `use-module-workspace.ts`: `366 -> 61`
+  - `module/[id]/add-material.tsx`: `319 -> 47`
+- Function-size guardrail pass:
+  - extracted screen logic/render parts so explicit function declarations in touched/new modules are <= 60 lines.
+- Stability guardrails kept intact:
+  - React Query lifecycle/cache behavior unchanged.
+  - Auth flow unchanged.
+  - Toast/haptics behavior unchanged.
+  - Navigation outcomes unchanged.
+- Verification:
+  - `npm.cmd run typecheck:mobile` -> pass

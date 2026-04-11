@@ -4,6 +4,13 @@
 
 ---
 
+## Предстоящо (финален етап)
+
+- [ ] **How It Works — реални скрийншотове** — `/how-it-works` страницата има placeholder изображения в секцията със стъпките. Когато всички web + mobile екрани са готови, да се направят реални скрийншотове и да се заменят. Засяга и README assets (web-preview, mobile-preview) — може в една сесия.
+- [ ] **`.hero-gradient-text`** CSS клас е готов в `globals.css` — запазен за заглавия в Social Features екраните.
+
+---
+
 ## 2026-03-27
 
 ### Сесия 1 (вечер)
@@ -6025,3 +6032,60 @@ Sprint 2 - Production standards
 
 **Verification:**
 - `npm.cmd run typecheck:web` -> pass
+
+### Session 206 (Mobile de-monolith pass: target file split, no behavior change)
+
+**Goal:**
+- Execute priority mobile de-monolith pass without feature additions or API contract/behavior changes.
+- Keep React Query lifecycle/cache, auth flow, toast/haptics, and navigation behavior intact.
+- Bring target files below 300 lines.
+
+**What we changed:**
+- Split `apps/mobile/lib/api.ts` into focused helper modules while preserving exports/behavior:
+  - `apps/mobile/lib/api.constants.ts`
+  - `apps/mobile/lib/api.cache.ts`
+  - `apps/mobile/lib/api.errors.ts`
+  - `apps/mobile/lib/api.utils.ts`
+  - `apps/mobile/lib/api.ts` now acts as orchestration layer for request flow.
+- De-monolith pass for material create/edit routes with shared form extraction:
+  - Added reusable form UI:
+    - `apps/mobile/components/material-form/material-form-screen.tsx`
+    - `apps/mobile/components/material-form/material-form.styles.ts`
+    - `apps/mobile/components/material-form/material-form.types.ts`
+  - Added route-specific logic hooks:
+    - `apps/mobile/app/module/[id]/use-add-material-screen.ts`
+    - `apps/mobile/app/material/[id]/use-edit-material-screen.ts`
+  - Simplified route files to thin orchestrators:
+    - `apps/mobile/app/module/[id]/add-material.tsx`
+    - `apps/mobile/app/material/[id]/edit.tsx`
+- De-monolith pass for course details route:
+  - Added dedicated screen/hook/styles:
+    - `apps/mobile/components/course-details/course-details-screen.tsx`
+    - `apps/mobile/components/course-details/use-course-details-screen.ts`
+    - `apps/mobile/components/course-details/course-details.styles.ts`
+  - Reduced route entry to wrapper:
+    - `apps/mobile/app/course/[id]/index.tsx`
+- De-monolith pass for module workspace hook:
+  - Extracted workspace responsibilities into focused modules:
+    - `apps/mobile/components/module-workspace/module-workspace.data.ts`
+    - `apps/mobile/components/module-workspace/module-workspace.actions.ts`
+    - `apps/mobile/components/module-workspace/module-workspace.favorites.ts`
+  - Kept `apps/mobile/components/module-workspace/use-module-workspace.ts` as compact composition hook.
+
+**Target file line-count results:**
+- `apps/mobile/lib/api.ts`: 453 -> 281
+- `apps/mobile/app/material/[id]/edit.tsx`: 387 -> 57
+- `apps/mobile/app/course/[id]/index.tsx`: 381 -> 8
+- `apps/mobile/components/module-workspace/use-module-workspace.ts`: 366 -> 61
+- `apps/mobile/app/module/[id]/add-material.tsx`: 319 -> 47
+- Function-size follow-up: extracted helper hooks/components so explicit function declarations in touched/new modules remain <= 60 lines.
+
+**Verification:**
+- `npm.cmd run typecheck:mobile` -> pass
+
+**Behavior notes:**
+- No API contract changes.
+- No auth flow changes.
+- Existing React Query query keys/invalidation paths retained.
+- Existing toast and haptic intent behavior retained.
+- Existing navigation outcomes retained (same route targets and delete/cancel flows).
