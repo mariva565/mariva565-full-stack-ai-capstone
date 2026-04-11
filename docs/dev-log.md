@@ -11,6 +11,27 @@
 
 ---
 
+## 2026-04-11
+
+### Сесия — Web UI polish (анимации)
+
+**Какво направихме:**
+- Проучихме page transitions с Framer Motion — опитахме, махнахме (App Router не поддържа exit анимации за server components)
+- Потвърдихме, че scroll reveal вече съществува (`use-scroll-reveal.ts`, `use-visible-animation.ts`) и е активен в hero, features, about, stats, cta-banner
+- **Dashboard hero** — разширихме от 2 на 4 stat карти (Courses, Modules, Materials, Pinned)
+  - Добавихме DB заявки за брой модули и материали в `getDashboardData`
+  - Добавихме `useCountUp` hook с `requestAnimationFrame` + easeOut крива — числата бройт от 0 при зареждане
+  - Gradient текст на числата (brand→cyan)
+- **Hero landing** — "Learning Journey" разделено на два отделни `block` спана
+  - Всеки ред получава собствен градиент `from-white via-cyan-300 to-white`
+- Добавен `.hero-gradient-text` CSS клас в `globals.css` — запазен за Social Features
+
+**Решения:**
+- Page transitions — не вървят добре с Next.js App Router, отказахме се
+- Пагинация за модули/материали — не е нужна за текущия обхват на проекта
+
+---
+
 ## 2026-03-27
 
 ### Сесия 1 (вечер)
