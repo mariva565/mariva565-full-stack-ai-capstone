@@ -110,28 +110,6 @@ export function buildMobileProfileDeepLink(userId: number): string {
   return `${MOBILE_PROFILE_SCHEME}/${userId}`;
 }
 
-export function buildMobileProfileDevDeepLink(
-  userId: number,
-  devBaseLink: string | undefined
-): string | null {
-  const base = devBaseLink?.trim();
-  if (!base) {
-    return null;
-  }
-
-  const normalizedBase = base.endsWith("/") ? base.slice(0, -1) : base;
-
-  if (normalizedBase.includes("{userId}")) {
-    return normalizedBase.replace("{userId}", String(userId));
-  }
-
-  if (normalizedBase.endsWith("/profile")) {
-    return `${normalizedBase}/${userId}`;
-  }
-
-  return `${normalizedBase}/profile/${userId}`;
-}
-
 export function buildMobileProfileQrImageUrl(deepLink: string): string {
   const encodedData = encodeURIComponent(deepLink);
   return `https://api.qrserver.com/v1/create-qr-code/?size=280x280&format=png&data=${encodedData}`;

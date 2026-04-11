@@ -6007,3 +6007,21 @@ Sprint 2 - Production standards
 
 **Verification:**
 - `npm.cmd run typecheck:web` -> pass
+
+### Session 205 (Jury polish: QR section cleanup to single production link)
+
+**Goal:**
+- Remove developer-facing QR details and keep a clean profile QR section for jury handoff.
+
+**What we changed:**
+- Simplified QR card UI to a single production deep-link block:
+  - `apps/web/components/profile/profile-qr-card.tsx`
+  - removed Expo Go dev section and setup hints from the visible profile UI.
+- Updated profile client wiring to pass only production link:
+  - `apps/web/components/profile/profile-page-client.tsx`
+- Removed now-unused dev helper from profile lib:
+  - `apps/web/lib/profile.ts`
+- Cleaned `.env.example` from temporary dev-only QR env entries.
+
+**Verification:**
+- `npm.cmd run typecheck:web` -> pass

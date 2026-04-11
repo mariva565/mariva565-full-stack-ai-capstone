@@ -3,7 +3,6 @@
 import { motion } from "framer-motion";
 
 import type { ProfileUser } from "../../lib/profile";
-import { buildMobileProfileDevDeepLink } from "../../lib/profile";
 import { buildMobileProfileDeepLink } from "../../lib/profile";
 import { ProfileAdminCard } from "./profile-admin-card";
 import { ProfileDetailsCard } from "./profile-details-card";
@@ -46,10 +45,6 @@ export function ProfilePageClient({ initialUser }: ProfilePageClientProps) {
     closeToast,
   } = useProfilePageState({ initialUser });
   const mobileProductionDeepLink = buildMobileProfileDeepLink(user.id);
-  const mobileDevDeepLink = buildMobileProfileDevDeepLink(
-    user.id,
-    process.env.NEXT_PUBLIC_MOBILE_DEV_DEEP_LINK_BASE
-  );
 
   return (
     <>
@@ -116,7 +111,6 @@ export function ProfilePageClient({ initialUser }: ProfilePageClientProps) {
 
               <ProfileQrCard
                 productionDeepLink={mobileProductionDeepLink}
-                devDeepLink={mobileDevDeepLink}
                 userId={user.id}
               />
 
