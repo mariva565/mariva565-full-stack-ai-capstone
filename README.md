@@ -1,7 +1,7 @@
 <img src="https://capsule-render.vercel.app/api?type=waving&color=0:6366F1,50:8B5CF6,100:06B6D4&height=200&section=header&text=Study%20Hub%20v2&fontSize=60&fontColor=ffffff&animation=fadeIn&fontAlignY=38&desc=Your%20Personal%20Learning%20Platform&descAlignY=60&descAlign=50" width="100%"/>
 
 <div align="center">
-  <img src="docs/assets/readme/mascot-rounded.svg" width="200" alt="Study Hub mascot animation" />
+  <img src="docs/assets/readme/mascot.gif" width="200" style="border-radius: 12%" alt="Study Hub mascot animation" />
 </div>
 
 <p align="center">
