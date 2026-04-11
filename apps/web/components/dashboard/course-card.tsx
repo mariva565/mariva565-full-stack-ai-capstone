@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import {
@@ -54,7 +55,7 @@ function CourseCardGlyph() {
   );
 }
 
-export function CourseCard({ course, onEdit, onDelete }: CourseCardProps) {
+function CourseCardComponent({ course, onEdit, onDelete }: CourseCardProps) {
   const courseHref = `/courses/${course.id}/${slugify(course.title)}`;
   const shouldShowState = course.status !== "draft";
   const statusTone =
@@ -133,3 +134,10 @@ export function CourseCard({ course, onEdit, onDelete }: CourseCardProps) {
     </motion.article>
   );
 }
+
+export const CourseCard = memo(CourseCardComponent, (prev, next) =>
+  prev.course.id === next.course.id &&
+  prev.course.title === next.course.title &&
+  prev.course.description === next.course.description &&
+  prev.course.status === next.course.status
+);

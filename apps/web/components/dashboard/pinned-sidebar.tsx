@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { motion } from "framer-motion";
 import { parseTags } from "../../lib/materials";
 import { PinnedMaterialItem } from "./pinned-material-item";
@@ -55,35 +56,33 @@ export function PinnedSidebar({
   onSearchChange,
   onTagSelect,
 }: PinnedSidebarProps) {
-  const availableTags = Array.from(
-    new Set(
-      favorites.flatMap((favorite) => parseTags(favorite.tags))
-    )
-  ).sort((left, right) => left.localeCompare(right));
+  const availableTags = useMemo(
+    () =>
+      Array.from(new Set(favorites.flatMap((favorite) => parseTags(favorite.tags)))).sort(
+        (left, right) => left.localeCompare(right)
+      ),
+    [favorites]
+  );
 
-  const filteredItems = favorites.filter((favorite) => {
-    const normalizedQuery = searchValue.trim().toLowerCase();
-    const matchesSearch =
-      normalizedQuery.length === 0 ||
-      favorite.materialTitle.toLowerCase().includes(normalizedQuery) ||
-      favorite.moduleTitle.toLowerCase().includes(normalizedQuery) ||
-      favorite.courseTitle.toLowerCase().includes(normalizedQuery) ||
-      parseTags(favorite.tags).some((tag) =>
-        tag.toLowerCase().includes(normalizedQuery)
-      );
+  const filteredItems = useMemo(
+    () =>
+      favorites.filter((favorite) => {
+        const normalizedQuery = searchValue.trim().toLowerCase();
+        const matchesSearch =
+          normalizedQuery.length === 0 ||
+          favorite.materialTitle.toLowerCase().includes(normalizedQuery) ||
+          favorite.moduleTitle.toLowerCase().includes(normalizedQuery) ||
+          favorite.courseTitle.toLowerCase().includes(normalizedQuery) ||
+          parseTags(favorite.tags).some((tag) => tag.toLowerCase().includes(normalizedQuery));
 
-    if (!matchesSearch) {
-      return false;
-    }
-
-    if (!activeTag) {
-      return true;
-    }
-
-    return parseTags(favorite.tags)
-      .map((tag) => tag.toLowerCase())
-      .includes(activeTag.toLowerCase());
-  });
+        if (!matchesSearch) return false;
+        if (!activeTag) return true;
+        return parseTags(favorite.tags)
+          .map((tag) => tag.toLowerCase())
+          .includes(activeTag.toLowerCase());
+      }),
+    [favorites, searchValue, activeTag]
+  );
 
   return (
     <motion.aside
@@ -103,6 +102,7 @@ export function PinnedSidebar({
         value={searchValue}
         onChange={(event) => onSearchChange(event.target.value)}
         placeholder="Search pinned..."
+        spellCheck={false}
         className="mt-3 block w-full rounded-[1rem] border border-slate-200/80 bg-white/95 px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-slate-700/80 dark:bg-slate-950/60 dark:text-white"
       />
 

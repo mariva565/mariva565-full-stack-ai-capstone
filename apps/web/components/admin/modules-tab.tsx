@@ -4,6 +4,7 @@ import { useEffect, useState, useRef, useMemo } from "react";
 
 import { readErrorMessage } from "../../lib/http";
 import { ConfirmModal } from "../ui/confirm-modal";
+import { Toast, type ToastTone } from "../ui/toast";
 import { EditModal } from "./edit-modal";
 import { BulkActionToolbar } from "./bulk-action-toolbar";
 import { useBulkSelection } from "./use-bulk-selection";
@@ -34,6 +35,7 @@ export function ModulesTab() {
   const [editingModule, setEditingModule] = useState<AdminModule | null>(null);
   const [bulkDeleteBusy, setBulkDeleteBusy] = useState(false);
   const [page, setPage] = useState(1);
+  const [toast, setToast] = useState<{ tone: ToastTone; message: string } | null>(null);
   const headerCheckboxRef = useRef<HTMLInputElement>(null);
 
   const { searchQuery, viewAsFilter, settings } = useAdminContext();
@@ -69,7 +71,7 @@ export function ModulesTab() {
       setModulesList((prev) => prev.filter((m) => m.id !== moduleToDelete.id));
       setModuleToDelete(null);
     } else {
-      alert(await readErrorMessage(res, "Failed to delete module."));
+      setToast({ tone: "error", message: await readErrorMessage(res, "Failed to delete module.") });
     }
   }
 
@@ -154,6 +156,8 @@ export function ModulesTab() {
       />
 
       <EditModal isOpen={editingModule !== null} entityType="module" entity={editingModule} onClose={() => setEditingModule(null)} onSaved={fetchModules} />
+
+      {toast ? <Toast message={toast.message} tone={toast.tone} onClose={() => setToast(null)} /> : null}
     </>
   );
 }

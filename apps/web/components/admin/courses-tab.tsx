@@ -4,6 +4,7 @@ import { useEffect, useState, useRef, useMemo } from "react";
 
 import { readErrorMessage } from "../../lib/http";
 import { ConfirmModal } from "../ui/confirm-modal";
+import { Toast, type ToastTone } from "../ui/toast";
 import { EditModal } from "./edit-modal";
 import { BulkActionToolbar } from "./bulk-action-toolbar";
 import { useBulkSelection } from "./use-bulk-selection";
@@ -34,6 +35,7 @@ export function CoursesTab() {
   const [editingCourse, setEditingCourse] = useState<AdminCourse | null>(null);
   const [bulkDeleteBusy, setBulkDeleteBusy] = useState(false);
   const [page, setPage] = useState(1);
+  const [toast, setToast] = useState<{ tone: ToastTone; message: string } | null>(null);
   const headerCheckboxRef = useRef<HTMLInputElement>(null);
 
   const { searchQuery, viewAsFilter, settings } = useAdminContext();
@@ -69,7 +71,7 @@ export function CoursesTab() {
       setCourses((prev) => prev.filter((c) => c.id !== courseToDelete.id));
       setCourseToDelete(null);
     } else {
-      alert(await readErrorMessage(res, "Failed to delete course."));
+      setToast({ tone: "error", message: await readErrorMessage(res, "Failed to delete course.") });
     }
   }
 
@@ -160,6 +162,8 @@ export function CoursesTab() {
       />
 
       <EditModal isOpen={editingCourse !== null} entityType="course" entity={editingCourse} onClose={() => setEditingCourse(null)} onSaved={fetchCourses} />
+
+      {toast ? <Toast message={toast.message} tone={toast.tone} onClose={() => setToast(null)} /> : null}
     </>
   );
 }

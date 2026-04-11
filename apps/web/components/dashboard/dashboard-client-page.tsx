@@ -194,9 +194,30 @@ export function DashboardClientPage({
 
             <div className="grid gap-4 sm:grid-cols-2">
               {filteredCourses.length === 0 && (
-                <p className="sm:col-span-2 rounded-xl border border-slate-200 bg-white px-5 py-4 text-sm text-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400">
-                  No courses match this search or course-state filter yet.
-                </p>
+                <div className="sm:col-span-2 rounded-[1.8rem] border border-dashed border-slate-300/80 bg-white/75 px-6 py-10 text-center shadow-sm backdrop-blur dark:border-slate-700 dark:bg-slate-900/55">
+                  {courses.length === 0 ? (
+                    <>
+                      <p className="text-lg font-semibold text-slate-900 dark:text-white">No courses yet</p>
+                      <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+                        Create your first course and start organising your learning materials.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => setShowCreateForm(true)}
+                        className="mt-4 rounded-full bg-[linear-gradient(135deg,#6366f1_0%,#8b5cf6_55%,#06b6d4_100%)] px-5 py-2 text-sm font-semibold text-white shadow-[0_12px_28px_rgba(99,102,241,0.22)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_36px_rgba(99,102,241,0.28)]"
+                      >
+                        Create first course
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-lg font-semibold text-slate-900 dark:text-white">No matches</p>
+                      <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+                        Try a different search or course-state filter.
+                      </p>
+                    </>
+                  )}
+                </div>
               )}
               {filteredCourses.map((course) => (
                 <CourseCard

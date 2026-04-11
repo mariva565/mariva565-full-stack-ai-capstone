@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 import { readErrorMessage } from "../../lib/http";
 import { ConfirmModal } from "../ui/confirm-modal";
+import { Toast, type ToastTone } from "../ui/toast";
 import { UserModal } from "./user-modal";
 import { RoleBadge } from "./role-badge";
 import { RoleConfirmModal } from "./role-confirm-modal";
@@ -35,6 +36,7 @@ export function UsersTab() {
   const [roleChangeUser, setRoleChangeUser] = useState<AdminUser | null>(null);
   const [roleBusy, setRoleBusy] = useState(false);
   const [page, setPage] = useState(1);
+  const [toast, setToast] = useState<{ tone: ToastTone; message: string } | null>(null);
 
   const { searchQuery, viewAsFilter, settings } = useAdminContext();
   const filtered = useFilteredData(users, searchQuery, SEARCHABLE, viewAsFilter, "email");
@@ -67,7 +69,7 @@ export function UsersTab() {
       setRoleChangeUser(null);
     } else {
       const data = await res.json();
-      alert(data.message || "Failed to update role");
+      setToast({ tone: "error", message: data.message || "Failed to update role." });
     }
   }
 
@@ -91,7 +93,7 @@ export function UsersTab() {
       setUsers((prev) => prev.filter((u) => u.id !== userToDelete.id));
       setUserToDelete(null);
     } else {
-      alert(await readErrorMessage(res, "Failed to delete user."));
+      setToast({ tone: "error", message: await readErrorMessage(res, "Failed to delete user.") });
     }
   }
 
@@ -205,6 +207,8 @@ export function UsersTab() {
         onClose={() => { setShowCreateModal(false); setEditingUser(null); }}
         onSaved={fetchUsers}
       />
+
+      {toast ? <Toast message={toast.message} tone={toast.tone} onClose={() => setToast(null)} /> : null}
     </>
   );
 }
