@@ -68,6 +68,7 @@ function AuthGate() {
         <Stack.Screen name="register" options={{ title: "Register" }} />
         <Stack.Screen name="profile/[userId]" options={{ headerShown: false }} />
         <Stack.Screen name="settings" options={{ title: "Settings" }} />
+        <Stack.Screen name="chat" options={{ presentation: "modal", title: "StudyHub Mentor" }} />
       </Stack>
     </>
   );

@@ -1,5 +1,6 @@
 import { FlatList, Image, RefreshControl, Text, TouchableOpacity, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { useRouter } from "expo-router";
 
 import { ConfirmModal } from "../confirm-modal";
 import { NetworkBanner } from "../network-banner";
@@ -44,6 +45,7 @@ function CoursesHeader({
   materialsCount,
   styles,
   heroGradient,
+  onChat,
 }: {
   userName: string;
   coursesCount: number;
@@ -51,6 +53,7 @@ function CoursesHeader({
   materialsCount: number;
   styles: CoursesListStyles;
   heroGradient: readonly [string, string];
+  onChat: () => void;
 }) {
   return (
     <LinearGradient
@@ -60,21 +63,43 @@ function CoursesHeader({
       style={styles.headerGradient}
     >
       <View style={styles.headerContent}>
-        <View style={styles.brandRow}>
-          <Image
-            source={require("../../assets/branding/mascot.png")}
-            style={styles.brandMascot}
-            resizeMode="contain"
-            accessibilityIgnoresInvertColors
-          />
-          <View>
-            <Text style={styles.brandTitle}>
-              Study<Text style={styles.brandTitleAccent}>Hub</Text>
-            </Text>
-            <Text style={styles.brandSubtitle} maxFontSizeMultiplier={1.2}>
-              Learn smarter, every day.
-            </Text>
+        <View style={[styles.brandRow, { justifyContent: "space-between", width: "100%" }]}>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
+            <Image
+              source={require("../../assets/branding/mascot.png")}
+              style={styles.brandMascot}
+              resizeMode="contain"
+              accessibilityIgnoresInvertColors
+            />
+            <View>
+              <Text style={styles.brandTitle}>
+                Study<Text style={styles.brandTitleAccent}>Hub</Text>
+              </Text>
+              <Text style={styles.brandSubtitle} maxFontSizeMultiplier={1.2}>
+                Learn smarter, every day.
+              </Text>
+            </View>
           </View>
+          
+          <TouchableOpacity
+            style={{ 
+              backgroundColor: "rgba(255,255,255,0.15)", 
+              width: 44, 
+              height: 44, 
+              borderRadius: 22, 
+              justifyContent: "center", 
+              alignItems: "center" 
+            }}
+            onPress={onChat}
+            accessibilityRole="button"
+            accessibilityLabel="Open AI Chatbot"
+          >
+            <Image 
+              source={require("../../assets/branding/AI-icon-1.png")} 
+              style={{ width: 40, height: 40, transform: [{ scale: 1.5 }] }} 
+              resizeMode="contain" 
+            />
+          </TouchableOpacity>
         </View>
 
         <View>
@@ -236,6 +261,7 @@ export function CoursesListScreen({ viewModel }: CoursesListScreenProps) {
   const styles = useThemedStyles(makeCoursesListStyles);
   const heroGradient = [colors.brandDeep, colors.brandPrimary] as const;
   const primaryActionGradient = [colors.brandPrimary, colors.brandAccent] as const;
+  const router = useRouter();
 
   return (
     <View style={styles.container}>
@@ -246,6 +272,7 @@ export function CoursesListScreen({ viewModel }: CoursesListScreenProps) {
         materialsCount={viewModel.stats.materials}
         styles={styles}
         heroGradient={heroGradient}
+        onChat={() => router.push("/chat")}
       />
       <CoursesState
         viewModel={viewModel}

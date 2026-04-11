@@ -195,7 +195,7 @@ Owner: Mobile stream
   - Checklist references live smoke/telemetry outcomes and confirms handoff-readiness with all smoke rows passing.
 - [x] Product polish: Settings screen in Profile flow (not extra bottom tab), with initial scope theme mode (system/light/dark), haptics toggle, app version/about links, and account actions entry points.
 - [x] Optional feature: Profile QR handoff card in web profile (deep-link to mobile app) for future social direction.
-- [ ] DEFERRED optional feature: Mobile AI tools entry points (summarize/quiz/chat or read-only outputs), after Phases 1-2 pass.
+- [x] DEFERRED optional feature: Mobile AI tools entry points (summarize/quiz/chat or read-only outputs) - AI Tools and Mentor Chatbot integrated successfully.
 - [ ] Planned feature cluster: Storage-backed material uploads (PDF/DOC/images) with shared backend APIs.
 - [ ] Planned feature cluster: Mobile avatar upload flow (camera/gallery + upload endpoint).
 - [ ] Planned feature cluster: Note/PDF transformations (`note -> PDF export`, `PDF -> note text extraction`).
@@ -449,5 +449,16 @@ Owner: Mobile stream
   - API contracts
   - auth flow
   - existing query lifecycle and UI behavior
+- Verification:
+  - `npm.cmd run typecheck:mobile` -> pass
+
+### Completed UX Feature Slice (2026-04-11, Mobile AI Chatbot)
+- Integrated StudyHub Mentor AI Chatbot natively into the mobile app:
+  - `apps/mobile/app/chat.tsx`
+  - `apps/mobile/components/chat/*`
+- Added `expo-clipboard` for copying AI responses.
+- Handled mobile keyboard overlapping with robust `KeyboardAvoidingView` logic.
+- Included error rollback state for graceful degradation when Gemini API throws 502/400.
+- Restored visual parity with web using native `AI-icon-1.png` and `AI-icon-3.png`.
 - Verification:
   - `npm.cmd run typecheck:mobile` -> pass

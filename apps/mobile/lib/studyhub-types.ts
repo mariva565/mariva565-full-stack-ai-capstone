@@ -152,3 +152,8 @@ export function isSavedAiToolOutput(value: unknown): value is SavedAiToolOutput 
   );
 }
 
+export type ChatMessage = {
+  role: "user" | "model";
+  parts: string;
+};
+

@@ -1,5 +1,5 @@
-import { Tabs } from "expo-router";
-import { StyleSheet, Text as RNText, View } from "react-native";
+import { Tabs, useRouter } from "expo-router";
+import { StyleSheet, Text as RNText, View, TouchableOpacity, Image } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AntDesign } from "@expo/vector-icons";
 import { COLORS } from "../../lib/colors";
@@ -25,6 +25,7 @@ function TabIcon({ name, focused }: TabIconProps) {
 
 export default function TabsLayout() {
   const insets = useSafeAreaInsets();
+  const router = useRouter();
 
   return (
     <Tabs
@@ -33,6 +34,20 @@ export default function TabsLayout() {
         headerTintColor: COLORS.textOnBrand,
         headerTitleStyle: { fontWeight: "700" },
         headerShadowVisible: false,
+        headerRight: () => (
+          <TouchableOpacity 
+            onPress={() => router.push("/chat")} 
+            style={{ marginRight: 12, width: 44, height: 44, justifyContent: "center", alignItems: "center" }}
+            accessibilityRole="button"
+            accessibilityLabel="Open AI Chatbot"
+          >
+            <Image 
+              source={require("../../assets/branding/AI-icon-1.png")} 
+              style={{ width: 48, height: 48, transform: [{ scale: 1.4 }] }} 
+              resizeMode="contain" 
+            />
+          </TouchableOpacity>
+        ),
         tabBarHideOnKeyboard: true,
         tabBarStyle: {
           backgroundColor: COLORS.surface,

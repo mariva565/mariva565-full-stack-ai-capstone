@@ -6231,3 +6231,23 @@ Sprint 2 - Production standards
 - No API contract changes.
 - No auth flow changes.
 - No UI/UX flow changes.
+
+### Session 212 (Mobile AI Chatbot Integration)
+
+**Goal:**
+- Integrate the StudyHub Mentor AI Chatbot natively into the mobile application to match web feature parity.
+- Provide a robust conversational UI that responds correctly to the OS keyboard without occluding the input field.
+
+**What we implemented:**
+- Added `expo-clipboard` to allow users to securely copy AI responses to the device clipboard.
+- Created robust Mobile Chat API and UI modules:
+  - `apps/mobile/app/chat.tsx` (Global Modal route for non-destructive activation)
+  - `apps/mobile/components/chat/message-bubble.tsx`
+  - `apps/mobile/components/chat/chat-screen.tsx` (KeyboardAvoidingView)
+  - `apps/mobile/components/chat/use-chat.ts` 
+- Wired resilient state-rollback logic in `use-chat.ts` to cleanly drop un-committed optimistic user messages if Gemini API faults (preventing strict array session corruption `[user, user...]`).
+- Replaced text-based sparkler placeholders (`✨`) with native mascot brand icons (`AI-icon-1.png`, `AI-icon-3.png`) matching the desktop presentation.
+
+**Verification:**
+- `npm.cmd run typecheck:mobile` -> pass
+- Verified that handled `502 AI service temporarily unavailable` HTTP exceptions safely map to local Toast interventions without tripping Sentry server exception alarms.

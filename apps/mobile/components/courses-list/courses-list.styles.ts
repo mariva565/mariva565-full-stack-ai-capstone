@@ -8,7 +8,7 @@ export function makeCoursesListStyles(colors: AppColors) {
     container: { flex: 1, backgroundColor: colors.canvas },
     headerGradient: { paddingTop: 48, paddingBottom: 20, paddingHorizontal: 20 },
     headerContent: {
-      gap: 14,
+      gap: 18,
       flexDirection: "column",
       justifyContent: "flex-start",
       alignItems: "flex-start",
@@ -36,19 +36,35 @@ export function makeCoursesListStyles(colors: AppColors) {
     },
     brandSubtitle: {
       marginTop: 2,
-      fontSize: 12,
-      color: "rgba(255,255,255,0.72)",
-      fontWeight: "600",
+      fontSize: 13,
+      color: "rgba(255,255,255,0.85)",
+      fontFamily: BRAND_FONT_FAMILY,
+      fontWeight: "500",
+      letterSpacing: 0.5,
+      fontStyle: "italic",
     },
-    headerGreeting: { fontSize: 14, color: "rgba(255,255,255,0.7)", fontWeight: "500" },
-    headerName: { fontSize: 22, fontWeight: "800", color: colors.textOnBrand, marginTop: 2 },
-    statsRow: { flexDirection: "row", marginTop: 20, gap: 12 },
+    headerGreeting: { 
+      fontSize: 12, 
+      color: "rgba(255,255,255,0.75)", 
+      fontWeight: "700",
+      textTransform: "uppercase", 
+      letterSpacing: 1.2 
+    },
+    headerName: { 
+      fontSize: 26, 
+      fontFamily: BRAND_FONT_FAMILY, 
+      color: colors.textOnBrand, 
+      marginTop: 2 
+    },
+    statsRow: { flexDirection: "row", marginTop: 24, gap: 12 },
     statItem: {
       flex: 1,
-      backgroundColor: "rgba(255,255,255,0.1)",
-      borderRadius: 12,
-      paddingVertical: 12,
+      backgroundColor: "rgba(255,255,255,0.15)",
+      borderRadius: 16,
+      paddingVertical: 14,
       alignItems: "center",
+      borderWidth: 1,
+      borderColor: "rgba(255,255,255,0.08)",
     },
     statNumber: { fontSize: 20, fontWeight: "800", color: colors.textOnBrand },
     statLabel: {
