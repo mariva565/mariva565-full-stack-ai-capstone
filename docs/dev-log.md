@@ -6138,3 +6138,50 @@ Sprint 2 - Production standards
 - No React Query query key/invalidation changes.
 - No auth flow changes.
 - Fix is scoped to router file placement + request timeout budget.
+
+### Session 208 (Mobile performance: N+1 courses stats -> aggregated dashboard counts)
+
+**Goal:**
+- Remove N+1 mobile stats fetching on Courses tab and use server-aggregated stats to reduce request fan-out and latency risk.
+
+**What we changed:**
+- Updated mobile Courses stats query implementation:
+  - `apps/mobile/components/courses-list/use-courses-list.ts`
+  - replaced `fetchCourseTreeStats(...)` (per-course modules + per-module materials fan-out) with single `fetchDashboardStats()` call to `/api/dashboard`.
+  - preserved existing `courses-tree-stats` query key shape (`course ids` segment), retry policy, stale time, and fallback behavior.
+
+**Verification:**
+- `npm.cmd run typecheck:mobile` -> pass
+
+**Behavior notes:**
+- No API contract changes.
+- No auth flow changes.
+- React Query lifecycle preserved (same stats query lifecycle entrypoint and fallback UX).
+
+### Session 209 (Mobile performance: immediate stats sync after mutations)
+
+**Goal:**
+- Ensure Courses stats card (`courses/modules/materials`) refreshes immediately after create/edit/delete/toggle-favorite mutations, without waiting for stats query stale window.
+
+**What we changed:**
+- Centralized stats query key + invalidate path:
+  - `apps/mobile/lib/query-keys.ts`
+  - added `queryKeys.dashboard.courseStatsRoot()` and `queryKeys.dashboard.courseStats(...)`.
+  - updated invalidate helpers to also invalidate stats:
+    - `invalidateCoursesList(...)`
+    - `invalidateCourseQueries(...)`
+    - `invalidateModuleQueries(...)`
+    - `invalidateMaterialQueries(...)`
+    - `invalidateFavoritesList(...)`
+- Rewired courses stats hook to use centralized key helper:
+  - `apps/mobile/components/courses-list/use-courses-list.ts`
+- Unified favorites mutation settle path to shared invalidate helper:
+  - `apps/mobile/app/(tabs)/favorites.tsx`
+
+**Verification:**
+- `npm.cmd run typecheck:mobile` -> pass
+
+**Behavior notes:**
+- No API contract changes.
+- No auth flow changes.
+- No UI/UX flow changes (same screens, toasts, haptics, navigation).

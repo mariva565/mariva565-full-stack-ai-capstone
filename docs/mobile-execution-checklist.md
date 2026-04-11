@@ -395,3 +395,32 @@ Owner: Mobile stream
   - auth flow and mutation behavior
 - Verification:
   - `npm.cmd run typecheck:mobile` -> pass
+
+### Completed Performance Slice (2026-04-11, Session 208)
+- Replaced N+1 mobile Courses stats loading with single aggregated backend fetch:
+  - `apps/mobile/components/courses-list/use-courses-list.ts`
+  - old flow: `/api/courses -> /api/courses/:id/modules (N) -> /api/modules/:id/materials (M)`
+  - new flow: single `/api/dashboard` read and map `moduleCount` / `materialCount`.
+- Kept runtime behavior contracts intact:
+  - no API response contract changes
+  - no auth flow changes
+  - same React Query retry/stale/fallback behavior for the stats card
+- Verification:
+  - `npm.cmd run typecheck:mobile` -> pass
+
+### Completed Performance Slice (2026-04-11, Session 209)
+- Added immediate Courses stats synchronization after key mobile mutations:
+  - `apps/mobile/lib/query-keys.ts`
+    - introduced shared stats key helpers:
+      - `queryKeys.dashboard.courseStatsRoot()`
+      - `queryKeys.dashboard.courseStats(...)`
+    - extended invalidate helpers to include stats invalidation:
+      - courses, course, module, material, favorites invalidate helpers
+  - `apps/mobile/components/courses-list/use-courses-list.ts`
+    - stats query now uses shared key helper (same lifecycle config).
+  - `apps/mobile/app/(tabs)/favorites.tsx`
+    - favorites removal mutation now uses shared invalidate helper on settle.
+- Result:
+  - stats card no longer waits for stale window after mutation-side data changes.
+- Verification:
+  - `npm.cmd run typecheck:mobile` -> pass

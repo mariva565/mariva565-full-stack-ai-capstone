@@ -20,7 +20,7 @@ import { getUserFriendlyError } from "../../lib/api";
 import { fetchFavorites, removeFavorite, removeOptimisticFavorite } from "../../lib/favorites";
 import { splitTags } from "../../lib/material-utils";
 import { useIsOffline } from "../../lib/network";
-import { queryKeys } from "../../lib/query-keys";
+import { invalidateFavoritesList, queryKeys } from "../../lib/query-keys";
 import type { FavoriteItem } from "../../lib/studyhub-types";
 import { useToast } from "../../lib/toast-context";
 import {
@@ -166,7 +166,7 @@ export default function FavoritesTabScreen() {
     },
     onSettled: async () => {
       setBusyMaterialId(null);
-      await queryClient.invalidateQueries({ queryKey: queryKeys.favorites.lists() });
+      await invalidateFavoritesList(queryClient);
     },
   });
 

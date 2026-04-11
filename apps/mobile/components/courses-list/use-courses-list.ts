@@ -13,7 +13,7 @@ import { useAuth } from "../../lib/auth-context";
 import { apiFetch, getUserFriendlyError } from "../../lib/api";
 import { invalidateCoursesList, queryKeys } from "../../lib/query-keys";
 import { useToast } from "../../lib/toast-context";
-import type { Course, Material, Module } from "../../lib/studyhub-types";
+import type { Course } from "../../lib/studyhub-types";
 import type { CoursesStats, CoursesListViewModel } from "./courses-list.types";
 
 type DeleteCoursesRollback = { previousCourses: Course[] };
@@ -90,33 +90,29 @@ function getFallbackStats(courses: Course[]): CoursesStats {
   return { courses: courses.length, modules: 0, materials: 0 };
 }
 
-async function fetchCourseTreeStats(courses: Course[]): Promise<CoursesStats> {
-  if (courses.length === 0) {
-    return { courses: 0, modules: 0, materials: 0 };
-  }
+type DashboardStatsResponse = {
+  courses: Array<{ id: number }>;
+  moduleCount: number;
+  materialCount: number;
+};
 
-  const modulesByCourse = await Promise.all(
-    courses.map((course) =>
-      apiFetch<{ modules: Module[] }>(`/api/courses/${course.id}/modules`, { cache: false })
-    )
-  );
-  const modules = modulesByCourse.flatMap((result) => result.modules);
+async function fetchDashboardStats(): Promise<CoursesStats> {
+  const dashboard = await apiFetch<DashboardStatsResponse>("/api/dashboard", { cache: false });
+  return {
+    courses: dashboard.courses.length,
+    modules: dashboard.moduleCount,
+    materials: dashboard.materialCount,
+  };
+}
 
-  if (modules.length === 0) {
-    return { courses: courses.length, modules: 0, materials: 0 };
-  }
-
-  const materialsByModule = await Promise.all(
-    modules.map((module) =>
-      apiFetch<{ materials: Material[] }>(`/api/modules/${module.id}/materials`, { cache: false })
-    )
-  );
-  const materialsCount = materialsByModule.reduce(
-    (total, result) => total + result.materials.length,
-    0
-  );
-
-  return { courses: courses.length, modules: modules.length, materials: materialsCount };
+function useDashboardStatsQuery(courses: Course[]) {
+  return useQuery({
+    queryKey: queryKeys.dashboard.courseStats(courses.map((course) => course.id)),
+    queryFn: fetchDashboardStats,
+    enabled: courses.length > 0,
+    retry: 1,
+    staleTime: 1000 * 60,
+  });
 }
 
 function useDeleteDialogState(deleteCourseMutation: DeleteCourseMutation): DeleteDialogState {
@@ -183,13 +179,7 @@ export function useCoursesList(): CoursesListViewModel {
   useRefetchCoursesOnFocus(queryClient);
 
   const courses = coursesQuery.data ?? [];
-  const statsQuery = useQuery({
-    queryKey: ["courses-tree-stats", courses.map((course) => course.id)],
-    queryFn: () => fetchCourseTreeStats(courses),
-    enabled: courses.length > 0,
-    retry: 1,
-    staleTime: 1000 * 60,
-  });
+  const statsQuery = useDashboardStatsQuery(courses);
   const loading = coursesQuery.isPending && courses.length === 0;
   const refreshing = coursesQuery.isRefetching && !coursesQuery.isPending;
   const error = coursesQuery.error
