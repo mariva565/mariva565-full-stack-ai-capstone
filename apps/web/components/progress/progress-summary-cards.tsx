@@ -8,11 +8,7 @@ type ProgressSummaryCardsProps = {
   ideas: number;
 };
 
-type SummaryCard = {
-  label: string;
-  value: number;
-  valueClassName?: string;
-};
+type SummaryCard = { label: string; value: number };
 
 export function ProgressSummaryCards({
   total,
@@ -22,11 +18,11 @@ export function ProgressSummaryCards({
   ideas,
 }: ProgressSummaryCardsProps) {
   const cards: SummaryCard[] = [
-    { label: "Total", value: total, valueClassName: "text-brand-700 dark:text-brand-100" },
-    { label: "Done", value: done, valueClassName: "text-emerald-600 dark:text-emerald-300" },
-    { label: "Active", value: active, valueClassName: "text-amber-600 dark:text-amber-300" },
-    { label: "Overdue", value: overdue, valueClassName: "text-rose-600 dark:text-rose-300" },
-    { label: "Ideas", value: ideas, valueClassName: "text-cyan-600 dark:text-cyan-300" },
+    { label: "Total", value: total },
+    { label: "Done", value: done },
+    { label: "Active", value: active },
+    { label: "Overdue", value: overdue },
+    { label: "Ideas", value: ideas },
   ];
 
   return (
@@ -39,11 +35,7 @@ export function ProgressSummaryCards({
           <p className="font-rubik text-xs font-semibold uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">
             {card.label}
           </p>
-          <p
-            className={`font-rubik mt-1 text-[1.75rem] font-black tracking-tight text-slate-700 dark:text-slate-100 ${
-              card.valueClassName ?? ""
-            }`}
-          >
+          <p className="font-rubik mt-1 text-[1.75rem] font-black tracking-tight bg-gradient-to-br from-brand-500 to-cyan-500 bg-clip-text text-transparent">
             {card.value}
           </p>
         </div>
