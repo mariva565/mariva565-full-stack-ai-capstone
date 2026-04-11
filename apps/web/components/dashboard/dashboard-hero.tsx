@@ -28,16 +28,18 @@ function useCountUp(target: number, duration = 1000) {
   useEffect(() => {
     if (target === 0) { setCount(0); return; }
     let startTime: number | null = null;
+    let rafId: number;
 
     function step(timestamp: number) {
       if (!startTime) startTime = timestamp;
       const progress = Math.min((timestamp - startTime) / duration, 1);
       const eased = 1 - Math.pow(1 - progress, 3);
       setCount(Math.round(eased * target));
-      if (progress < 1) requestAnimationFrame(step);
+      if (progress < 1) rafId = requestAnimationFrame(step);
     }
 
-    requestAnimationFrame(step);
+    rafId = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(rafId);
   }, [target, duration]);
 
   return count;

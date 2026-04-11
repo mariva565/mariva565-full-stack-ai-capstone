@@ -400,7 +400,7 @@ export function ChatWidget() {
 
         /* ---- State: idle ---- */
         .chat-fab--idle .chat-fab__avatar {
-          animation: fabIdleFloat 4s ease-in-out infinite;
+          animation: none;
         }
 
         /* ---- State: open ---- */

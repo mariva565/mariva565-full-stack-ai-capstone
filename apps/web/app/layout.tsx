@@ -39,7 +39,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
       suppressHydrationWarning
       className={`${rubik.variable} ${shantellSans.variable}`}
     >
-      <body className="min-h-screen bg-white font-rubik text-slate-900 antialiased transition-colors duration-300 selection:bg-primary-100 selection:text-primary-900 dark:bg-slate-950 dark:text-slate-100">
+      <body className="min-h-screen bg-white font-rubik text-slate-900 antialiased selection:bg-primary-100 selection:text-primary-900 dark:bg-slate-950 dark:text-slate-100">
         <ThemeScript />
         <Providers>
           <Navbar />
