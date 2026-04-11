@@ -26,4 +26,7 @@ pnpm-debug.log*
 Thumbs.db
 .idea/
 .vscode/
+
+# Claude Code local config
+.claude/settings.local.json
 apps/mobile/tsconfig.tsbuildinfo
