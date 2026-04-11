@@ -54,9 +54,9 @@ export function ProfilePageClient({ initialUser }: ProfilePageClientProps) {
         <div className="pointer-events-none absolute -right-20 top-40 h-72 w-72 rounded-full bg-cyan-300/30 blur-3xl dark:hidden" />
 
         <div className="pointer-events-none absolute inset-0 hidden dark:block bg-[linear-gradient(180deg,rgba(2,6,23,0.98)_0%,rgba(2,8,23,1)_100%)]" />
-        <div className="pointer-events-none absolute -left-24 top-20 hidden h-80 w-80 rounded-full bg-brand-500/10 blur-[120px] dark:block" />
-        <div className="pointer-events-none absolute -right-20 top-36 hidden h-80 w-80 rounded-full bg-cyan-500/10 blur-[140px] dark:block" />
-        <div className="pointer-events-none absolute bottom-[-10rem] left-1/2 hidden h-[22rem] w-[28rem] -translate-x-1/2 rounded-full bg-cyan-500/6 blur-[140px] dark:block" />
+        <div className="pointer-events-none absolute -left-24 top-20 hidden h-80 w-80 rounded-full bg-brand-500/10 blur-3xl dark:block" />
+        <div className="pointer-events-none absolute -right-20 top-36 hidden h-80 w-80 rounded-full bg-cyan-500/10 blur-3xl dark:block" />
+        <div className="pointer-events-none absolute bottom-[-10rem] left-1/2 hidden h-[22rem] w-[28rem] -translate-x-1/2 rounded-full bg-cyan-500/6 blur-3xl dark:block" />
 
         <div className="relative mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
           <ProfilePageHeader />

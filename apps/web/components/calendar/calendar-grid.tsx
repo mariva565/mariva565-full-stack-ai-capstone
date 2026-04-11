@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { memo, useMemo } from "react";
 import type { CalendarEvent } from "./types";
 
 type Props = {
@@ -24,6 +24,64 @@ const DAY_NAMES = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 function pad(n: number) {
   return String(n).padStart(2, "0");
 }
+
+type CalendarDayProps = {
+  day: number;
+  dateStr: string;
+  isToday: boolean;
+  isSelected: boolean;
+  dayEvents: CalendarEvent[];
+  onSelectDate: (date: string) => void;
+};
+
+const CalendarDay = memo(
+  function CalendarDay({ day, dateStr, isToday, isSelected, dayEvents, onSelectDate }: CalendarDayProps) {
+    return (
+      <button
+        onClick={() => onSelectDate(dateStr)}
+        className={`relative flex min-h-[3.75rem] flex-col items-center rounded-xl border px-1 py-2 transition ${
+          isSelected
+            ? "border-violet-300 bg-violet-50 shadow-[0_10px_26px_rgba(139,92,246,0.12)] dark:border-violet-500/60 dark:bg-violet-500/16"
+            : isToday
+              ? "border-slate-300 bg-white/95 shadow-sm dark:border-slate-600 dark:bg-slate-800/70"
+              : "border-transparent hover:border-slate-200 hover:bg-white/80 dark:hover:border-slate-700 dark:hover:bg-slate-800/55"
+        }`}
+      >
+        <span className={`text-sm ${
+          isToday
+            ? "font-bold text-brand-700 dark:text-cyan-200"
+            : isSelected
+              ? "font-semibold text-brand-700 dark:text-slate-100"
+              : "text-slate-600 dark:text-slate-300"
+        }`}>
+          {day}
+        </span>
+
+        {dayEvents.length > 0 && (
+          <div className="mt-1 flex flex-wrap justify-center gap-0.5">
+            {dayEvents.slice(0, 3).map((event) => (
+              <span
+                key={event.id}
+                className={`h-1.5 w-1.5 rounded-full ${event.color ? "" : typeColors[event.type] ?? "bg-slate-400"}`}
+                style={event.color ? { backgroundColor: event.color } : undefined}
+              />
+            ))}
+            {dayEvents.length > 3 && (
+              <span className="text-[9px] text-slate-400 dark:text-slate-500">
+                +{dayEvents.length - 3}
+              </span>
+            )}
+          </div>
+        )}
+      </button>
+    );
+  },
+  (prev, next) =>
+    prev.isSelected === next.isSelected &&
+    prev.isToday === next.isToday &&
+    prev.day === next.day &&
+    prev.dayEvents.length === next.dayEvents.length
+);
 
 export function CalendarGrid({ year, month, events, selectedDate, onSelectDate }: Props) {
   const days = useMemo(() => {
@@ -78,54 +136,16 @@ export function CalendarGrid({ year, month, events, selectedDate, onSelectDate }
             return <div key={`empty-${index}`} />;
           }
 
-          const dayEvents = eventsByDate[cell.dateStr] ?? [];
-          const isToday = cell.dateStr === todayStr;
-          const isSelected = cell.dateStr === selectedDate;
-
           return (
-            <button
+            <CalendarDay
               key={cell.dateStr}
-              onClick={() => onSelectDate(cell.dateStr)}
-              className={`relative flex min-h-[3.75rem] flex-col items-center rounded-xl border px-1 py-2 transition ${
-                isSelected
-                  ? "border-violet-300 bg-violet-50 shadow-[0_10px_26px_rgba(139,92,246,0.12)] dark:border-violet-500/60 dark:bg-violet-500/16"
-                  : isToday
-                  ? "border-slate-300 bg-white/95 shadow-sm dark:border-slate-600 dark:bg-slate-800/70"
-                  : "border-transparent hover:border-slate-200 hover:bg-white/80 dark:hover:border-slate-700 dark:hover:bg-slate-800/55"
-              }`}
-            >
-              <span
-                className={`text-sm ${
-                  isToday
-                    ? "font-bold text-brand-700 dark:text-cyan-200"
-                    : isSelected
-                    ? "font-semibold text-brand-700 dark:text-slate-100"
-                    : "text-slate-600 dark:text-slate-300"
-                }`}
-              >
-                {cell.day}
-              </span>
-
-              {dayEvents.length > 0 && (
-                <div className="mt-1 flex flex-wrap justify-center gap-0.5">
-                  {dayEvents.slice(0, 3).map((event) => (
-                    <span
-                      key={event.id}
-                      className={`h-1.5 w-1.5 rounded-full ${
-                        event.color ? "" : typeColors[event.type] ?? "bg-slate-400"
-                      }`}
-                      style={event.color ? { backgroundColor: event.color } : undefined}
-                    />
-                  ))}
-
-                  {dayEvents.length > 3 && (
-                    <span className="text-[9px] text-slate-400 dark:text-slate-500">
-                      +{dayEvents.length - 3}
-                    </span>
-                  )}
-                </div>
-              )}
-            </button>
+              day={cell.day}
+              dateStr={cell.dateStr}
+              isToday={cell.dateStr === todayStr}
+              isSelected={cell.dateStr === selectedDate}
+              dayEvents={eventsByDate[cell.dateStr] ?? []}
+              onSelectDate={onSelectDate}
+            />
           );
         })}
       </div>

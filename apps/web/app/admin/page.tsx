@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 
 import { AnimatePresence, motion } from "framer-motion";
 import { AdminProvider, useAdminContext } from "../../components/admin/admin-context";
@@ -8,12 +9,14 @@ import { SearchBar } from "../../components/admin/search-bar";
 import { SettingsModal } from "../../components/admin/settings-modal";
 import { ViewAsFilter } from "../../components/admin/view-as-filter";
 import { OverviewTab } from "../../components/admin/overview-tab";
-import { UsersTab } from "../../components/admin/users-tab";
-import { MaterialsTab } from "../../components/admin/materials-tab";
-import { CoursesTab } from "../../components/admin/courses-tab";
-import { ModulesTab } from "../../components/admin/modules-tab";
-import { ActivityTab } from "../../components/admin/activity-tab";
-import { NetworkMapTab } from "../../components/admin/network-map-tab";
+import { SkeletonTable } from "../../components/admin/skeleton-table";
+
+const UsersTab     = dynamic(() => import("../../components/admin/users-tab").then((m) => m.UsersTab), { loading: () => <SkeletonTable rows={5} columns={6} />, ssr: false });
+const MaterialsTab = dynamic(() => import("../../components/admin/materials-tab").then((m) => m.MaterialsTab), { loading: () => <SkeletonTable rows={5} columns={7} />, ssr: false });
+const CoursesTab   = dynamic(() => import("../../components/admin/courses-tab").then((m) => m.CoursesTab), { loading: () => <SkeletonTable rows={5} columns={7} />, ssr: false });
+const ModulesTab   = dynamic(() => import("../../components/admin/modules-tab").then((m) => m.ModulesTab), { loading: () => <SkeletonTable rows={5} columns={6} />, ssr: false });
+const ActivityTab  = dynamic(() => import("../../components/admin/activity-tab").then((m) => m.ActivityTab), { loading: () => <SkeletonTable rows={5} columns={5} />, ssr: false });
+const NetworkMapTab = dynamic(() => import("../../components/admin/network-map-tab").then((m) => m.NetworkMapTab), { loading: () => <div className="h-[500px] animate-pulse rounded-xl bg-slate-100 dark:bg-slate-800" />, ssr: false });
 
 const TABS = ["Overview", "Users", "Materials", "Courses", "Modules", "Activity Logs", "Network Map"] as const;
 type Tab = (typeof TABS)[number];
