@@ -27,6 +27,7 @@ type Props = {
   onDraftDueDateChange: (value: string) => void;
   onToggleExpand: () => void;
   onCycleStatus: () => void;
+  onSetStatus: (status: Milestone["status"]) => void;
   onStartEdit: () => void;
   onCancelEdit: () => void;
   onSaveEdit: () => void;
@@ -34,6 +35,12 @@ type Props = {
   onMoveDown: () => void;
   onDelete: () => void;
 };
+
+const STATUS_OPTIONS: { value: Milestone["status"]; label: string }[] = [
+  { value: "not_started", label: "Not Started" },
+  { value: "in_progress", label: "In Progress" },
+  { value: "done", label: "Done" },
+];
 
 export function MilestoneTimelineItem({
   milestone,
@@ -54,6 +61,7 @@ export function MilestoneTimelineItem({
   onDraftDueDateChange,
   onToggleExpand,
   onCycleStatus,
+  onSetStatus,
   onStartEdit,
   onCancelEdit,
   onSaveEdit,
@@ -240,6 +248,28 @@ export function MilestoneTimelineItem({
                           Completed {formatTimelineDate(milestone.completedAt)}
                         </span>
                       ) : null}
+                    </div>
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <span className="text-xs text-slate-400 dark:text-slate-500 mr-0.5">Status:</span>
+                      {STATUS_OPTIONS.map((opt) => {
+                        const isActive = milestone.status === opt.value;
+                        const optCfg = statusConfig[opt.value];
+                        return (
+                          <button
+                            key={opt.value}
+                            type="button"
+                            disabled={isBusy || isActive}
+                            onClick={() => onSetStatus(opt.value)}
+                            className={
+                              isActive
+                                ? `rounded-full px-3 py-1 text-xs font-semibold cursor-default ${optCfg.badge}`
+                                : "rounded-full border border-slate-200 bg-white/85 px-3 py-1 text-xs font-medium text-slate-500 transition hover:-translate-y-0.5 hover:border-brand-200 hover:text-brand-700 disabled:opacity-40 dark:border-slate-700 dark:bg-slate-950/40 dark:text-slate-400 dark:hover:border-brand-500/40 dark:hover:text-brand-300"
+                            }
+                          >
+                            {opt.label}
+                          </button>
+                        );
+                      })}
                     </div>
                   </>
                 )}

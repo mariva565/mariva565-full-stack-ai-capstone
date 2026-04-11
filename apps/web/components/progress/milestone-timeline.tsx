@@ -150,6 +150,7 @@ export function MilestoneTimeline({
               onCycleStatus={() =>
                 onStatusChange(milestone.id, nextStatus[milestone.status])
               }
+              onSetStatus={(status) => onStatusChange(milestone.id, status)}
               onStartEdit={() => startEdit(milestone)}
               onCancelEdit={cancelEdit}
               onSaveEdit={() => {
