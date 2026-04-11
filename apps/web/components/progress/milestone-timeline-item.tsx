@@ -1,8 +1,13 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
+import { memo, useState } from "react";
 import { ArrowDownIcon, ArrowUpIcon, PencilIcon, TrashIcon } from "../ui/action-icons";
-import { classifyMilestoneDueDate, formatMilestoneDueDate } from "../../lib/progress";
+import { classifyMilestoneDueDate, formatMilestoneDueDate, toDateKey } from "../../lib/progress";
+
+function toDateInputValue(value: string | null) {
+  return toDateKey(value) ?? "";
+}
 import { DeadlinePill } from "./deadline-pill";
 import { MilestoneEditor } from "./milestone-editor";
 import type { Milestone } from "./types";
@@ -19,18 +24,12 @@ type Props = {
   canMoveDown: boolean;
   reduceMotion: boolean;
   nextStatusLabel: string;
-  draftTitle: string;
-  draftDescription: string;
-  draftDueDate: string;
-  onDraftTitleChange: (value: string) => void;
-  onDraftDescriptionChange: (value: string) => void;
-  onDraftDueDateChange: (value: string) => void;
   onToggleExpand: () => void;
   onCycleStatus: () => void;
   onSetStatus: (status: Milestone["status"]) => void;
   onStartEdit: () => void;
   onCancelEdit: () => void;
-  onSaveEdit: () => void;
+  onSaveEdit: (title: string, description: string, dueDate: string) => void;
   onMoveUp: () => void;
   onMoveDown: () => void;
   onDelete: () => void;
@@ -42,7 +41,22 @@ const STATUS_OPTIONS: { value: Milestone["status"]; label: string }[] = [
   { value: "done", label: "Done" },
 ];
 
-export function MilestoneTimelineItem({
+function arePropsEqual(prev: Props, next: Props) {
+  return (
+    prev.milestone === next.milestone &&
+    prev.index === next.index &&
+    prev.isExpanded === next.isExpanded &&
+    prev.isEditing === next.isEditing &&
+    prev.isBusy === next.isBusy &&
+    prev.isRevealed === next.isRevealed &&
+    prev.canMoveUp === next.canMoveUp &&
+    prev.canMoveDown === next.canMoveDown &&
+    prev.reduceMotion === next.reduceMotion &&
+    prev.nextStatusLabel === next.nextStatusLabel
+  );
+}
+
+export const MilestoneTimelineItem = memo(function MilestoneTimelineItem({
   milestone,
   index,
   isExpanded,
@@ -53,12 +67,6 @@ export function MilestoneTimelineItem({
   canMoveDown,
   reduceMotion,
   nextStatusLabel,
-  draftTitle,
-  draftDescription,
-  draftDueDate,
-  onDraftTitleChange,
-  onDraftDescriptionChange,
-  onDraftDueDateChange,
   onToggleExpand,
   onCycleStatus,
   onSetStatus,
@@ -69,6 +77,9 @@ export function MilestoneTimelineItem({
   onMoveDown,
   onDelete,
 }: Props) {
+  const [draftTitle, setDraftTitle] = useState(milestone.title);
+  const [draftDescription, setDraftDescription] = useState(milestone.description ?? "");
+  const [draftDueDate, setDraftDueDate] = useState(toDateInputValue(milestone.dueDate));
   const cfg = statusConfig[milestone.status];
   const previewText = toTimelinePreviewText(milestone.description);
   const metaLabel = getTimelineMetaLabel(milestone);
@@ -220,11 +231,11 @@ export function MilestoneTimelineItem({
                     description={draftDescription}
                     dueDate={draftDueDate}
                     busy={isBusy}
-                    onTitleChange={onDraftTitleChange}
-                    onDescriptionChange={onDraftDescriptionChange}
-                    onDueDateChange={onDraftDueDateChange}
+                    onTitleChange={setDraftTitle}
+                    onDescriptionChange={setDraftDescription}
+                    onDueDateChange={setDraftDueDate}
                     onCancel={onCancelEdit}
-                    onSave={onSaveEdit}
+                    onSave={() => onSaveEdit(draftTitle, draftDescription, draftDueDate)}
                   />
                 ) : (
                   <>
@@ -318,4 +329,4 @@ export function MilestoneTimelineItem({
       </motion.article>
     </motion.li>
   );
-}
+}, arePropsEqual);

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useReducedMotion } from "framer-motion";
 
-import { STATUS_TOAST_LABEL, toDateKey } from "../../lib/progress";
+import { STATUS_TOAST_LABEL } from "../../lib/progress";
 import { MilestoneTimelineItem } from "./milestone-timeline-item";
 import type { Milestone, MilestoneUpdate } from "./types";
 
@@ -31,10 +31,6 @@ const nextStatus: Record<Milestone["status"], Milestone["status"]> = {
   done: "not_started",
 };
 
-function toDateInputValue(value: string | null) {
-  return toDateKey(value) ?? "";
-}
-
 export function MilestoneTimeline({
   milestones,
   revealedMilestoneId = null,
@@ -48,9 +44,6 @@ export function MilestoneTimeline({
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [flashedId, setFlashedId] = useState<number | null>(null);
-  const [draftTitle, setDraftTitle] = useState("");
-  const [draftDescription, setDraftDescription] = useState("");
-  const [draftDueDate, setDraftDueDate] = useState("");
   const reduceMotion = useReducedMotion() ?? false;
 
   const orderedIds = milestones.map((item) => item.id);
@@ -81,26 +74,18 @@ export function MilestoneTimeline({
     };
   }, [reduceMotion, revealedMilestoneId]);
 
-  function startEdit(milestone: Milestone) {
-    setExpandedId(milestone.id);
-    setEditingId(milestone.id);
-    setDraftTitle(milestone.title);
-    setDraftDescription(milestone.description ?? "");
-    setDraftDueDate(toDateInputValue(milestone.dueDate));
-  }
-
   function cancelEdit() {
     setEditingId(null);
   }
 
-  async function saveEdit(milestoneId: number) {
-    const trimmedTitle = draftTitle.trim();
+  async function saveEdit(milestoneId: number, title: string, description: string, dueDate: string) {
+    const trimmedTitle = title.trim();
     if (!trimmedTitle) return;
 
     const saved = await onUpdate(milestoneId, {
       title: trimmedTitle,
-      description: draftDescription.trim(),
-      dueDate: draftDueDate || null,
+      description: description.trim(),
+      dueDate: dueDate || null,
     });
 
     if (saved) {
@@ -138,12 +123,6 @@ export function MilestoneTimeline({
               canMoveDown={index < milestones.length - 1}
               reduceMotion={reduceMotion}
               nextStatusLabel={STATUS_TOAST_LABEL[nextStatus[milestone.status]]}
-              draftTitle={draftTitle}
-              draftDescription={draftDescription}
-              draftDueDate={draftDueDate}
-              onDraftTitleChange={setDraftTitle}
-              onDraftDescriptionChange={setDraftDescription}
-              onDraftDueDateChange={setDraftDueDate}
               onToggleExpand={() =>
                 setExpandedId(isExpanded ? null : milestone.id)
               }
@@ -151,10 +130,13 @@ export function MilestoneTimeline({
                 onStatusChange(milestone.id, nextStatus[milestone.status])
               }
               onSetStatus={(status) => onStatusChange(milestone.id, status)}
-              onStartEdit={() => startEdit(milestone)}
+              onStartEdit={() => {
+                setExpandedId(milestone.id);
+                setEditingId(milestone.id);
+              }}
               onCancelEdit={cancelEdit}
-              onSaveEdit={() => {
-                void saveEdit(milestone.id);
+              onSaveEdit={(title, description, dueDate) => {
+                void saveEdit(milestone.id, title, description, dueDate);
               }}
               onMoveUp={() => void onMove(milestone.id, "up", orderedIds)}
               onMoveDown={() => void onMove(milestone.id, "down", orderedIds)}
