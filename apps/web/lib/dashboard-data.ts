@@ -1,5 +1,5 @@
-import { desc, eq } from "drizzle-orm";
-import { courses } from "../../../drizzle/schema";
+import { count, desc, eq } from "drizzle-orm";
+import { courses, modules, materials } from "../../../drizzle/schema";
 import type { DashboardData } from "../components/dashboard/types";
 import { db } from "./db";
 import { getFavoriteItems } from "./favorites-data";
@@ -9,7 +9,7 @@ function toIsoString(value: Date | string) {
 }
 
 export async function getDashboardData(userId: number): Promise<DashboardData> {
-  const [courseRows, favoriteRows] = await Promise.all([
+  const [courseRows, favoriteRows, moduleCountRow, materialCountRow] = await Promise.all([
     db
       .select({
         id: courses.id,
@@ -22,6 +22,8 @@ export async function getDashboardData(userId: number): Promise<DashboardData> {
       .where(eq(courses.createdBy, userId))
       .orderBy(desc(courses.createdAt)),
     getFavoriteItems(userId),
+    db.select({ count: count() }).from(modules).where(eq(modules.createdBy, userId)),
+    db.select({ count: count() }).from(materials).where(eq(materials.createdBy, userId)),
   ]);
 
   return {
@@ -30,5 +32,7 @@ export async function getDashboardData(userId: number): Promise<DashboardData> {
       createdAt: toIsoString(course.createdAt),
     })),
     favorites: favoriteRows,
+    moduleCount: moduleCountRow[0]?.count ?? 0,
+    materialCount: materialCountRow[0]?.count ?? 0,
   };
 }

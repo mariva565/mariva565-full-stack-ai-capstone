@@ -21,4 +21,6 @@ export type PinnedMaterial = {
 export type DashboardData = {
   courses: DashboardCourse[];
   favorites: PinnedMaterial[];
+  moduleCount: number;
+  materialCount: number;
 };

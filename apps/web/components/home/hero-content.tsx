@@ -26,9 +26,8 @@ export function HeroContent() {
         className="text-5xl lg:text-7xl font-extrabold font-shantell text-white leading-[1.1] relative z-10 drop-shadow-[2px_2px_10px_rgba(0,0,0,0.3)]"
       >
         Master Your <br />
-        <span className="bg-gradient-to-r from-white to-cyan-200 bg-clip-text text-transparent [-webkit-background-clip:text] drop-shadow-xl">
-          Learning Journey
-        </span>
+        <span className="block pb-3 bg-gradient-to-r from-white via-cyan-300 to-white bg-clip-text text-transparent [-webkit-background-clip:text] drop-shadow-xl">Learning</span>
+        <span className="block pb-2 bg-gradient-to-r from-white via-cyan-300 to-white bg-clip-text text-transparent [-webkit-background-clip:text] drop-shadow-xl">Journey</span>
       </motion.h1>
 
       {/* Subtext */}

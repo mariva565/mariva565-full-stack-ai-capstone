@@ -19,6 +19,8 @@ import { readErrorMessage } from "../../lib/http";
 type DashboardClientPageProps = {
   initialCourses: DashboardCourse[];
   initialFavorites: PinnedMaterial[];
+  initialModuleCount: number;
+  initialMaterialCount: number;
 };
 
 type ToastState = {
@@ -40,10 +42,14 @@ function matchesCourse(course: DashboardCourse, search: string, status: CourseSt
 export function DashboardClientPage({
   initialCourses,
   initialFavorites,
+  initialModuleCount,
+  initialMaterialCount,
 }: DashboardClientPageProps) {
   const router = useRouter();
   const [courses, setCourses] = useState<DashboardCourse[]>(initialCourses);
   const [favorites, setFavorites] = useState<PinnedMaterial[]>(initialFavorites);
+  const [moduleCount, setModuleCount] = useState(initialModuleCount);
+  const [materialCount, setMaterialCount] = useState(initialMaterialCount);
   const [creating, setCreating] = useState(false);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [title, setTitle] = useState("");
@@ -87,6 +93,8 @@ export function DashboardClientPage({
       const data = (await response.json()) as DashboardData;
       setCourses(data.courses);
       setFavorites(data.favorites);
+      setModuleCount(data.moduleCount);
+      setMaterialCount(data.materialCount);
     } catch {
       setToast({ tone: "error", message: "Could not refresh your dashboard." });
     }
@@ -157,6 +165,8 @@ export function DashboardClientPage({
       <DashboardPageShell>
         <DashboardHero
           courseCount={courses.length}
+          moduleCount={moduleCount}
+          materialCount={materialCount}
           pinnedCount={favorites.length}
           showCreateForm={showCreateForm}
           onToggleCreateForm={() => setShowCreateForm((current) => !current)}

@@ -1,9 +1,12 @@
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeftIcon } from "../auth/auth-icons";
 import { DashboardActionButton } from "./dashboard-controls";
 
 type DashboardHeroProps = {
   courseCount: number;
+  moduleCount: number;
+  materialCount: number;
   pinnedCount: number;
   showCreateForm: boolean;
   onToggleCreateForm: () => void;
@@ -19,7 +22,30 @@ type HeroActionsProps = {
   onToggleCreateForm: () => void;
 };
 
+function useCountUp(target: number, duration = 1000) {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    if (target === 0) { setCount(0); return; }
+    let startTime: number | null = null;
+
+    function step(timestamp: number) {
+      if (!startTime) startTime = timestamp;
+      const progress = Math.min((timestamp - startTime) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setCount(Math.round(eased * target));
+      if (progress < 1) requestAnimationFrame(step);
+    }
+
+    requestAnimationFrame(step);
+  }, [target, duration]);
+
+  return count;
+}
+
 function StatCard({ label, value }: StatCardProps) {
+  const displayValue = useCountUp(value);
+
   return (
     <motion.div
       whileHover={{ y: -5, scale: 1.01 }}
@@ -29,7 +55,7 @@ function StatCard({ label, value }: StatCardProps) {
       <p className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-slate-400 dark:text-cyan-100/70">
         {label}
       </p>
-      <p className="mt-2 text-3xl font-black text-slate-800 dark:text-white">{value}</p>
+      <p className="mt-2 text-3xl font-black bg-gradient-to-br from-brand-500 to-cyan-500 bg-clip-text text-transparent">{displayValue}</p>
     </motion.div>
   );
 }
@@ -81,6 +107,8 @@ function HeroActions({ showCreateForm, onToggleCreateForm }: HeroActionsProps) {
 
 export function DashboardHero({
   courseCount,
+  moduleCount,
+  materialCount,
   pinnedCount,
   showCreateForm,
   onToggleCreateForm,
@@ -101,9 +129,11 @@ export function DashboardHero({
         />
       </div>
 
-      <div className="relative mt-6 grid gap-3 sm:grid-cols-2">
+      <div className="relative mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard label="Courses" value={courseCount} />
-        <StatCard label="Pinned Materials" value={pinnedCount} />
+        <StatCard label="Modules" value={moduleCount} />
+        <StatCard label="Materials" value={materialCount} />
+        <StatCard label="Pinned" value={pinnedCount} />
       </div>
     </section>
   );
