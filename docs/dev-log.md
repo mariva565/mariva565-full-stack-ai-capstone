@@ -6185,3 +6185,26 @@ Sprint 2 - Production standards
 - No API contract changes.
 - No auth flow changes.
 - No UI/UX flow changes (same screens, toasts, haptics, navigation).
+
+### Session 210 (Mobile resilience: defensive stats mapping for partial payloads)
+
+**Goal:**
+- Harden Courses stats mapping against partial/inconsistent `/api/dashboard` payloads (edge-case data integrity) without changing contracts or UX.
+
+**What we changed:**
+- Updated stats mapping safeguards in:
+  - `apps/mobile/components/courses-list/use-courses-list.ts`
+- Added defensive normalization:
+  - `toNonNegativeCount(...)` for `moduleCount` and `materialCount`.
+  - `resolveCoursesCount(...)` with fallback to already-loaded courses length when dashboard payload is partial/malformed.
+- Kept same query lifecycle:
+  - same key family
+  - same `enabled`, `retry`, `staleTime`.
+
+**Verification:**
+- `npm.cmd run typecheck:mobile` -> pass
+
+**Behavior notes:**
+- No API contract changes.
+- No auth flow changes.
+- No navigation/toast/haptics changes.

@@ -91,24 +91,48 @@ function getFallbackStats(courses: Course[]): CoursesStats {
 }
 
 type DashboardStatsResponse = {
-  courses: Array<{ id: number }>;
-  moduleCount: number;
-  materialCount: number;
+  courses?: unknown;
+  moduleCount?: unknown;
+  materialCount?: unknown;
 };
 
-async function fetchDashboardStats(): Promise<CoursesStats> {
+function toNonNegativeCount(value: unknown): number {
+  if (typeof value === "number" && Number.isFinite(value) && value >= 0) {
+    return Math.floor(value);
+  }
+
+  if (typeof value === "string") {
+    const parsed = Number(value);
+    if (Number.isFinite(parsed) && parsed >= 0) {
+      return Math.floor(parsed);
+    }
+  }
+
+  return 0;
+}
+
+function resolveCoursesCount(value: unknown, fallbackCount: number): number {
+  if (Array.isArray(value)) {
+    return value.length;
+  }
+
+  const normalized = toNonNegativeCount(value);
+  return normalized > 0 ? normalized : fallbackCount;
+}
+
+async function fetchDashboardStats(fallbackCourseCount: number): Promise<CoursesStats> {
   const dashboard = await apiFetch<DashboardStatsResponse>("/api/dashboard", { cache: false });
   return {
-    courses: dashboard.courses.length,
-    modules: dashboard.moduleCount,
-    materials: dashboard.materialCount,
+    courses: resolveCoursesCount(dashboard.courses, fallbackCourseCount),
+    modules: toNonNegativeCount(dashboard.moduleCount),
+    materials: toNonNegativeCount(dashboard.materialCount),
   };
 }
 
 function useDashboardStatsQuery(courses: Course[]) {
   return useQuery({
     queryKey: queryKeys.dashboard.courseStats(courses.map((course) => course.id)),
-    queryFn: fetchDashboardStats,
+    queryFn: () => fetchDashboardStats(courses.length),
     enabled: courses.length > 0,
     retry: 1,
     staleTime: 1000 * 60,

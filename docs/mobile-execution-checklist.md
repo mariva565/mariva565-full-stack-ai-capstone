@@ -424,3 +424,15 @@ Owner: Mobile stream
   - stats card no longer waits for stale window after mutation-side data changes.
 - Verification:
   - `npm.cmd run typecheck:mobile` -> pass
+
+### Completed Resilience Slice (2026-04-11, Session 210)
+- Added defensive Courses stats mapping for partial dashboard payloads:
+  - `apps/mobile/components/courses-list/use-courses-list.ts`
+  - `moduleCount` / `materialCount` now normalize to non-negative numeric values.
+  - `courses` count now safely falls back to loaded courses length when dashboard payload is incomplete.
+- Kept intact:
+  - stats query lifecycle settings (`enabled`, `retry`, `staleTime`)
+  - API contracts and auth flow
+  - UI behavior (same card surface, same fallback UX)
+- Verification:
+  - `npm.cmd run typecheck:mobile` -> pass
