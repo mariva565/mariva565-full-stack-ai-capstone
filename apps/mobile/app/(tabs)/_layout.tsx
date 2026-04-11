@@ -77,6 +77,7 @@ export default function TabsLayout() {
         name="favorites"
         options={{
           title: "Favorites",
+          headerShown: false,
           tabBarIcon: ({ focused }) => <TabIcon name="heart" focused={focused} />,
         }}
       />

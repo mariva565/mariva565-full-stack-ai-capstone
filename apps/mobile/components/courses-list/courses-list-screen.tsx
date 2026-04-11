@@ -1,6 +1,6 @@
-import { FlatList, Image, RefreshControl, Text, TouchableOpacity, View } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
+import { FlatList, RefreshControl, Text, TouchableOpacity, View } from "react-native";
 import { useRouter } from "expo-router";
+import { LinearGradient } from "expo-linear-gradient";
 
 import { ConfirmModal } from "../confirm-modal";
 import { NetworkBanner } from "../network-banner";
@@ -9,138 +9,13 @@ import { useTheme, useThemedStyles } from "../../lib/app-preferences";
 import { useIsOffline } from "../../lib/network";
 import { CourseCard } from "./course-card";
 import { CoursesListSkeleton } from "./courses-list-skeleton";
+import { CoursesHeader } from "./courses-header";
+import { NoCoursesState } from "./no-courses-state";
 import { makeCoursesListStyles, type CoursesListStyles } from "./courses-list.styles";
 import type { CoursesListViewModel } from "./courses-list.types";
 
 type CoursesListScreenProps = { viewModel: CoursesListViewModel };
 
-function NoCoursesState({ styles }: { styles: CoursesListStyles }) {
-  return (
-    <View style={styles.noCoursesWrap}>
-      <View style={styles.noCoursesCard}>
-        <Image
-          source={require("../../assets/branding/mascot.png")}
-          style={styles.noCoursesMascot}
-          resizeMode="contain"
-          accessibilityIgnoresInvertColors
-        />
-        <Text style={styles.noCoursesTitle} maxFontSizeMultiplier={1.2}>
-          Study<Text style={styles.brandTitleAccent}>Hub</Text>
-        </Text>
-        <Text style={styles.noCoursesHeading} maxFontSizeMultiplier={1.2}>
-          No courses yet
-        </Text>
-        <Text style={styles.noCoursesSubtitle} maxFontSizeMultiplier={1.2}>
-          Tap + to create your first course.
-        </Text>
-      </View>
-    </View>
-  );
-}
-
-function CoursesHeader({
-  userName,
-  coursesCount,
-  modulesCount,
-  materialsCount,
-  styles,
-  heroGradient,
-  onChat,
-}: {
-  userName: string;
-  coursesCount: number;
-  modulesCount: number;
-  materialsCount: number;
-  styles: CoursesListStyles;
-  heroGradient: readonly [string, string];
-  onChat: () => void;
-}) {
-  return (
-    <LinearGradient
-      colors={heroGradient}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={styles.headerGradient}
-    >
-      <View style={styles.headerContent}>
-        <View style={[styles.brandRow, { justifyContent: "space-between", width: "100%" }]}>
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
-            <Image
-              source={require("../../assets/branding/mascot.png")}
-              style={styles.brandMascot}
-              resizeMode="contain"
-              accessibilityIgnoresInvertColors
-            />
-            <View>
-              <Text style={styles.brandTitle}>
-                Study<Text style={styles.brandTitleAccent}>Hub</Text>
-              </Text>
-              <Text style={styles.brandSubtitle} maxFontSizeMultiplier={1.2}>
-                Learn smarter, every day.
-              </Text>
-            </View>
-          </View>
-          
-          <TouchableOpacity
-            style={{ 
-              backgroundColor: "rgba(255,255,255,0.15)", 
-              width: 44, 
-              height: 44, 
-              borderRadius: 22, 
-              justifyContent: "center", 
-              alignItems: "center" 
-            }}
-            onPress={onChat}
-            accessibilityRole="button"
-            accessibilityLabel="Open AI Chatbot"
-          >
-            <Image 
-              source={require("../../assets/branding/AI-icon-1.png")} 
-              style={{ width: 40, height: 40, transform: [{ scale: 1.5 }] }} 
-              resizeMode="contain" 
-            />
-          </TouchableOpacity>
-        </View>
-
-        <View>
-          <Text style={styles.headerGreeting} maxFontSizeMultiplier={1.2}>
-            Welcome back,
-          </Text>
-          <Text style={styles.headerName} maxFontSizeMultiplier={1.3}>
-            {userName}
-          </Text>
-        </View>
-      </View>
-
-      <View style={styles.statsRow}>
-        <View style={styles.statItem}>
-          <Text style={styles.statNumber} maxFontSizeMultiplier={1.3}>
-            {coursesCount}
-          </Text>
-          <Text style={styles.statLabel} maxFontSizeMultiplier={1.2}>
-            {coursesCount === 1 ? "Course" : "Courses"}
-          </Text>
-        </View>
-        <View style={styles.statItem}>
-          <Text style={styles.statNumber} maxFontSizeMultiplier={1.3}>
-            {modulesCount}
-          </Text>
-          <Text style={styles.statLabel} maxFontSizeMultiplier={1.2}>
-            {modulesCount === 1 ? "Module" : "Modules"}
-          </Text>
-        </View>
-        <View style={styles.statItem}>
-          <Text style={styles.statNumber} maxFontSizeMultiplier={1.3}>
-            {materialsCount}
-          </Text>
-          <Text style={styles.statLabel} maxFontSizeMultiplier={1.2}>
-            {materialsCount === 1 ? "Material" : "Materials"}
-          </Text>
-        </View>
-      </View>
-    </LinearGradient>
-  );
-}
 
 function CoursesState({
   viewModel,

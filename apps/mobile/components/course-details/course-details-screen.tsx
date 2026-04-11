@@ -42,7 +42,9 @@ function CourseHero({
       {description ? <Text style={styles.heroDesc}>{description}</Text> : null}
       <View style={styles.heroMetaRow}>
         <Text style={styles.heroMeta}>{modulesCount} modules</Text>
-        <Text style={styles.heroMeta}>Created {new Date(createdAt).toLocaleDateString()}</Text>
+        {createdAt && !isNaN(new Date(createdAt).getTime()) ? (
+          <Text style={styles.heroMeta}>Created {new Date(createdAt).toLocaleDateString()}</Text>
+        ) : null}
       </View>
       <View style={styles.courseActionsRow}>
         <TouchableOpacity

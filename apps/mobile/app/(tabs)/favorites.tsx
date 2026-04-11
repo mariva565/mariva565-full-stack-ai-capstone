@@ -216,15 +216,16 @@ export default function FavoritesTabScreen() {
   return (
     <View style={styles.container}>
       <LinearGradient colors={heroGradient} style={styles.hero}>
-        <RNText style={styles.heroLabel} maxFontSizeMultiplier={1.2}>
-          Quick Access
-        </RNText>
         <RNText style={styles.heroTitle} maxFontSizeMultiplier={1.3}>
           Favorites
         </RNText>
-        <RNText style={styles.heroMeta} maxFontSizeMultiplier={1.2}>
-          {favorites.length} {favorites.length === 1 ? "material pinned" : "materials pinned"}
-        </RNText>
+        {favorites.length > 0 ? (
+          <View style={styles.heroPinnedBadge}>
+            <RNText style={styles.heroPinnedText} maxFontSizeMultiplier={1.2}>
+              {favorites.length} {favorites.length === 1 ? "material pinned" : "materials pinned"}
+            </RNText>
+          </View>
+        ) : null}
       </LinearGradient>
 
       {offline ? (

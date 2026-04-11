@@ -1,5 +1,6 @@
 import { StyleSheet } from "react-native";
 
+import { BRAND_FONT_FAMILY } from "../../lib/brand-font";
 import type { AppColors } from "../../lib/colors";
 
 export function makeFavoritesStyles(colors: AppColors) {
@@ -7,26 +8,37 @@ export function makeFavoritesStyles(colors: AppColors) {
     container: { flex: 1, backgroundColor: colors.canvas },
     hero: {
       paddingTop: 56,
-      paddingBottom: 18,
+      paddingBottom: 16,
       paddingHorizontal: 20,
-    },
-    heroLabel: {
-      fontSize: 12,
-      color: "rgba(255,255,255,0.62)",
-      fontWeight: "700",
-      textTransform: "uppercase",
-      letterSpacing: 0.8,
+      gap: 6,
+      elevation: 6,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.15,
+      shadowRadius: 8,
     },
     heroTitle: {
-      marginTop: 6,
-      fontSize: 24,
-      fontWeight: "800",
+      fontSize: 30,
+      lineHeight: 36,
+      fontFamily: BRAND_FONT_FAMILY,
       color: colors.textOnBrand,
+      includeFontPadding: false,
     },
-    heroMeta: {
-      marginTop: 8,
-      fontSize: 13,
-      color: "rgba(255,255,255,0.72)",
+    heroPinnedBadge: {
+      marginTop: 6,
+      alignSelf: "flex-start",
+      backgroundColor: "rgba(255,255,255,0.16)",
+      borderRadius: 20,
+      paddingHorizontal: 14,
+      paddingVertical: 5,
+      borderWidth: 1,
+      borderColor: "rgba(255,255,255,0.22)",
+    },
+    heroPinnedText: {
+      fontSize: 12,
+      color: "rgba(255,255,255,0.9)",
+      fontWeight: "700",
+      letterSpacing: 0.3,
     },
     offlineBannerWrap: {
       marginHorizontal: 16,
