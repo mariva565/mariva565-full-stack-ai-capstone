@@ -1,8 +1,7 @@
 import { BrandedSpinner } from "../../../components/branded-spinner";
 import { MaterialFormScreen } from "../../../components/material-form/material-form-screen";
+import { useEditMaterialScreen } from "../../../components/material-form/use-edit-material-screen";
 import { Stack } from "expo-router";
-
-import { useEditMaterialScreen } from "./use-edit-material-screen";
 
 export default function EditMaterialScreen() {
   const {

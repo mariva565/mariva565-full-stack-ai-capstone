@@ -2,15 +2,15 @@ import { useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useLocalSearchParams, useRouter } from "expo-router";
 
-import { ApiError, apiFetch } from "../../../lib/api";
-import { invalidateModuleQueries } from "../../../lib/query-keys";
-import { useConfirmDiscard } from "../../../lib/use-confirm-discard";
+import { ApiError, apiFetch } from "../../lib/api";
+import { invalidateModuleQueries } from "../../lib/query-keys";
+import { useConfirmDiscard } from "../../lib/use-confirm-discard";
 import {
   DEFAULT_MATERIAL_TYPE,
   isUrlMaterialType,
   type MaterialType,
-} from "../../../lib/material-utils";
-import type { MaterialFormValues } from "../../../components/material-form/material-form.types";
+} from "../../lib/material-utils";
+import type { MaterialFormValues } from "./material-form.types";
 
 type MaterialCreatePayload = {
   title: string | null;

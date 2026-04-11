@@ -1,6 +1,5 @@
 import { MaterialFormScreen } from "../../../components/material-form/material-form-screen";
-
-import { useAddMaterialScreen } from "./use-add-material-screen";
+import { useAddMaterialScreen } from "../../../components/material-form/use-add-material-screen";
 
 export default function AddMaterialScreen() {
   const {

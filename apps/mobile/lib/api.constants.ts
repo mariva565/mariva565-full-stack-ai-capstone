@@ -4,7 +4,8 @@ import { Platform } from "react-native";
 export const TOKEN_KEY = "studyhub_token";
 export const API_CACHE_PREFIX = "studyhub_api_cache_v1";
 export const DEFAULT_CACHE_TTL_MS = 1000 * 60 * 10;
-export const DEFAULT_GET_REQUEST_TIMEOUT_MS = 1000 * 6;
+// Read requests need more headroom on Neon wake-up over LAN/device hops.
+export const DEFAULT_GET_REQUEST_TIMEOUT_MS = 1000 * 20;
 // 45s covers Neon serverless cold-start (free tier can take 20-30s+ to wake).
 export const DEFAULT_MUTATION_REQUEST_TIMEOUT_MS = 1000 * 45;
 export const CACHE_INDEX_LIMIT = 200;

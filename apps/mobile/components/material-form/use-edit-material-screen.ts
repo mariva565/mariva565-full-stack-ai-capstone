@@ -2,20 +2,20 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useLocalSearchParams, useRouter } from "expo-router";
 
-import type { MaterialFormValues } from "../../../components/material-form/material-form.types";
-import { ApiError, apiFetch } from "../../../lib/api";
+import type { MaterialFormValues } from "./material-form.types";
+import { ApiError, apiFetch } from "../../lib/api";
 import {
   invalidateMaterialQueries,
   invalidateModuleQueries,
   queryKeys,
-} from "../../../lib/query-keys";
-import { useConfirmDiscard } from "../../../lib/use-confirm-discard";
+} from "../../lib/query-keys";
+import { useConfirmDiscard } from "../../lib/use-confirm-discard";
 import {
   DEFAULT_MATERIAL_TYPE,
   isUrlMaterialType,
   normalizeMaterialType,
   type MaterialType,
-} from "../../../lib/material-utils";
+} from "../../lib/material-utils";
 
 type MaterialResponse = {
   material: {
