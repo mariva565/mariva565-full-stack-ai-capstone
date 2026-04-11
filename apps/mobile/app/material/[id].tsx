@@ -10,7 +10,7 @@ import {
 import { useFocusEffect } from "@react-navigation/native";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { LinearGradient } from "expo-linear-gradient";
-import { Stack, useLocalSearchParams } from "expo-router";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { apiFetch, getUserFriendlyError } from "../../lib/api";
 import { useTheme, useThemedStyles } from "../../lib/app-preferences";
 import { NetworkBanner } from "../../components/network-banner";
@@ -48,6 +48,7 @@ type MaterialDetailResponse = {
 export default function MaterialScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const routeId = String(id);
+  const router = useRouter();
   const queryClient = useQueryClient();
   const { showToast } = useToast();
   const offline = useIsOffline();
@@ -277,6 +278,20 @@ export default function MaterialScreen() {
           </Text>
           <Text style={styles.linkUrl} numberOfLines={2} maxFontSizeMultiplier={1.2}>
             {material.fileUrl}
+          </Text>
+        </TouchableOpacity>
+      ) : null}
+
+      {material.content ? (
+        <TouchableOpacity
+          style={styles.aiToolsBtn}
+          onPress={() => router.push(`/material/${material.id}/ai-tools`)}
+          activeOpacity={0.8}
+          accessibilityRole="button"
+          accessibilityLabel="Open AI Study Tools"
+        >
+          <Text style={styles.aiToolsBtnText} maxFontSizeMultiplier={1.2}>
+            ✨ AI Study Tools
           </Text>
         </TouchableOpacity>
       ) : null}

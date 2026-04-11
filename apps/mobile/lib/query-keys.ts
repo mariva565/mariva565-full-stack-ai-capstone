@@ -35,6 +35,8 @@ export const queryKeys = {
     all: ["materials"] as const,
     detail: (materialId: QueryEntityId) =>
       ["materials", "detail", toKeyId(materialId)] as const,
+    aiOutputs: (materialId: QueryEntityId) =>
+      ["materials", "detail", toKeyId(materialId), "aiOutputs"] as const,
   },
   favorites: {
     all: ["favorites"] as const,
