@@ -436,3 +436,18 @@ Owner: Mobile stream
   - UI behavior (same card surface, same fallback UX)
 - Verification:
   - `npm.cmd run typecheck:mobile` -> pass
+
+### Completed Performance Slice (2026-04-11, Session 211)
+- Added lightweight latency telemetry for mobile Courses stats fetch:
+  - `apps/mobile/lib/telemetry.ts`
+    - new helper: `captureTelemetryMessage(message, context?)`.
+  - `apps/mobile/components/courses-list/use-courses-list.ts`
+    - measures `/api/dashboard` fetch duration for stats card.
+    - emits telemetry only when duration exceeds threshold (`1500ms`).
+    - includes dev-only console perf log for local diagnosis.
+- Kept intact:
+  - API contracts
+  - auth flow
+  - existing query lifecycle and UI behavior
+- Verification:
+  - `npm.cmd run typecheck:mobile` -> pass

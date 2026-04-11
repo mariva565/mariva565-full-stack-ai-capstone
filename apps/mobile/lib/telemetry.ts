@@ -137,3 +137,22 @@ export function captureTelemetryException(error: unknown, context?: TelemetryCon
 
   Sentry.captureMessage("Non-error exception captured.");
 }
+
+export function captureTelemetryMessage(message: string, context?: TelemetryContext): void {
+  if (!telemetryEnabled()) {
+    return;
+  }
+
+  if (context) {
+    Sentry.withScope((scope) => {
+      scope.setTag("mobile_area", context.area);
+      if (context.details) {
+        scope.setContext("details", context.details);
+      }
+      Sentry.captureMessage(message);
+    });
+    return;
+  }
+
+  Sentry.captureMessage(message);
+}

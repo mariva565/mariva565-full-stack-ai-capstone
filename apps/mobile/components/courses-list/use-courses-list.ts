@@ -12,6 +12,7 @@ import { useRouter } from "expo-router";
 import { useAuth } from "../../lib/auth-context";
 import { apiFetch, getUserFriendlyError } from "../../lib/api";
 import { invalidateCoursesList, queryKeys } from "../../lib/query-keys";
+import { captureTelemetryMessage } from "../../lib/telemetry";
 import { useToast } from "../../lib/toast-context";
 import type { Course } from "../../lib/studyhub-types";
 import type { CoursesStats, CoursesListViewModel } from "./courses-list.types";
@@ -96,6 +97,8 @@ type DashboardStatsResponse = {
   materialCount?: unknown;
 };
 
+const DASHBOARD_STATS_SLOW_THRESHOLD_MS = 1500;
+
 function toNonNegativeCount(value: unknown): number {
   if (typeof value === "number" && Number.isFinite(value) && value >= 0) {
     return Math.floor(value);
@@ -120,8 +123,33 @@ function resolveCoursesCount(value: unknown, fallbackCount: number): number {
   return normalized > 0 ? normalized : fallbackCount;
 }
 
+function reportDashboardStatsLatency(elapsedMs: number, courseCount: number): void {
+  if (elapsedMs < DASHBOARD_STATS_SLOW_THRESHOLD_MS) {
+    return;
+  }
+
+  captureTelemetryMessage("Slow mobile dashboard stats fetch", {
+    area: "courses_stats_latency",
+    details: {
+      path: "/api/dashboard",
+      elapsedMs,
+      courseCount,
+      thresholdMs: DASHBOARD_STATS_SLOW_THRESHOLD_MS,
+    },
+  });
+
+  if (__DEV__) {
+    console.info(
+      `[perf] /api/dashboard slow fetch: ${elapsedMs}ms for ${courseCount} courses`
+    );
+  }
+}
+
 async function fetchDashboardStats(fallbackCourseCount: number): Promise<CoursesStats> {
+  const requestStartedAt = Date.now();
   const dashboard = await apiFetch<DashboardStatsResponse>("/api/dashboard", { cache: false });
+  reportDashboardStatsLatency(Date.now() - requestStartedAt, fallbackCourseCount);
+
   return {
     courses: resolveCoursesCount(dashboard.courses, fallbackCourseCount),
     modules: toNonNegativeCount(dashboard.moduleCount),

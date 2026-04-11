@@ -6208,3 +6208,26 @@ Sprint 2 - Production standards
 - No API contract changes.
 - No auth flow changes.
 - No navigation/toast/haptics changes.
+
+### Session 211 (Mobile perf polish: dashboard stats latency telemetry)
+
+**Goal:**
+- Add lightweight observability for slow `/api/dashboard` stats fetches on mobile Courses tab.
+
+**What we changed:**
+- Added generic telemetry message helper:
+  - `apps/mobile/lib/telemetry.ts`
+  - new `captureTelemetryMessage(message, context?)` with the same area/details tagging model.
+- Added slow-fetch reporting in courses stats flow:
+  - `apps/mobile/components/courses-list/use-courses-list.ts`
+  - records elapsed ms for `/api/dashboard` read.
+  - sends telemetry event only when fetch exceeds threshold (`1500ms`).
+  - includes dev-only console perf log for local visibility.
+
+**Verification:**
+- `npm.cmd run typecheck:mobile` -> pass
+
+**Behavior notes:**
+- No API contract changes.
+- No auth flow changes.
+- No UI/UX flow changes.
