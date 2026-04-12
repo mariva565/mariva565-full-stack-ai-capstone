@@ -22,7 +22,7 @@
   <img src="https://img.shields.io/badge/TypeScript-Strict%20Mode-6366F1?style=flat-square" alt="TypeScript strict mode" />
   <img src="https://img.shields.io/badge/Tables-14-8B5CF6?style=flat-square" alt="14 database tables" />
   <img src="https://img.shields.io/badge/API-49%20endpoints-06B6D4?style=flat-square" alt="49 API endpoints" />
-  <img src="https://img.shields.io/badge/Web-18%20pages-6366F1?style=flat-square" alt="18 web pages" />
+  <img src="https://img.shields.io/badge/Web-19%20pages-6366F1?style=flat-square" alt="19 web pages" />
   <img src="https://img.shields.io/badge/Mobile-React%20Query%20Cache-8B5CF6?style=flat-square" alt="mobile react query cache" />
 </p>
 
@@ -76,7 +76,7 @@ The app is a personal **Learning Management System (LMS)** — a structured elec
 | Phase 8 | UI polish (landing, how-it-works, contact, animations) | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
 | Social S0 | Roles (user / mentor / admin) + Course Membership | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
 | Social S1 | Community Board — posts, comments, likes, bookmarks, moderation | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
-| Social S2 | Ask Mentor — Q&A workflow with Mentor Inbox | ![Planned](https://img.shields.io/badge/Planned-64748B?style=flat-square) |
+| Social S2 | Ask Mentor — Q&A workflow with Mentor Inbox | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
 | Phase 9 | File storage (Cloudflare R2 — PDF upload, export) | ![Planned](https://img.shields.io/badge/Planned-64748B?style=flat-square) |
 | Phase 10 | Deployment (Vercel/Netlify) | ![Planned](https://img.shields.io/badge/Planned-64748B?style=flat-square) |
 
@@ -262,8 +262,10 @@ sequenceDiagram
 | Action | Where |
 |---|---|
 | Everything a student can do | — |
-| View questions from own courses in Mentor Inbox | `/community?type=question` |
-| Answer questions (via comments) | `/community/[id]` |
+| View questions from own courses in Mentor Inbox | `/mentor-inbox` |
+| Filter questions by status (open / answered / closed) | `/mentor-inbox` |
+| Mark questions as answered or close them | `/mentor-inbox` → inline status buttons |
+| Answer questions via comments | `/community/[id]` |
 | Assigned per-course via `course_members` table | Admin panel → Members tab |
 
 ### Admin (role: `admin`)
@@ -485,7 +487,7 @@ erDiagram
 
 ## Screens
 
-### Web — 14 pages
+### Web — 19 pages
 
 | # | Route | Description | Auth |
 |---|---|---|---|
@@ -507,6 +509,7 @@ erDiagram
 | 16 | `/community/new` | Create Post — type, course, title, content | Protected |
 | 17 | `/community/[id]` | Post Details — full content, comments, like/bookmark actions | Protected |
 | 18 | `/community/[id]/edit` | Edit Post — author or admin only | Protected |
+| 19 | `/mentor-inbox` | Mentor Inbox — questions from own courses with status management | Mentor / Admin |
 
 ### Mobile — current flows
 
@@ -602,6 +605,13 @@ The mobile app connects to the **same Next.js backend** — no separate API need
 | `POST` | `/api/ai/tools` | AI analysis tools (summarize, quiz, explain) |
 | `GET/POST/DELETE` | `/api/materials/[id]/ai-outputs` | Saved AI results per material |
 
+### Ask Mentor — Social S2 (2 endpoints)
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/api/mentor/questions` | List questions from mentored courses (mentor/admin); supports `?status=` filter |
+| `PUT` | `/api/posts/[id]/answer-status` | Change `question_status` (open / answered / closed) — mentor of the course or admin |
+
 ### Community Board — Social S1 (12 endpoints)
 
 | Method | Endpoint | Description |
@@ -681,6 +691,16 @@ The mobile app connects to the **same Next.js backend** — no separate API need
 5. **Post Details** — open a post, read comments, like ♥ or bookmark 🔖
 6. **Add Comment** — write a comment, press Post
 7. **Edit / Delete** — available on your own posts
+
+### As a Mentor
+
+1. **Login** with mentor credentials (or promote a user to mentor via Admin → Users tab)
+2. **Mentor Inbox** — go to `/mentor-inbox` (visible in navbar for mentor/admin)
+3. **Stats row** — see open / answered / closed question counts at a glance
+4. **Filter** — click a stat card to filter by status; click again to show all
+5. **Mark answered** — open a question card, click "Mark answered" to update its status
+6. **Close / Reopen** — manage question lifecycle without leaving the inbox
+7. **Open post** — click the title to go to the full post and add a comment
 
 ### As an Admin
 

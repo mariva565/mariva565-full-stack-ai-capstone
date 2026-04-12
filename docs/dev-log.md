@@ -8,6 +8,66 @@
 
 - [ ] **How It Works — реални скрийншотове** — `/how-it-works` страницата има placeholder изображения в секцията със стъпките. Когато всички web + mobile екрани са готови, да се направят реални скрийншотове и да се заменят. Засяга и README assets (web-preview, mobile-preview) — може в една сесия.
 - [ ] **`.hero-gradient-text`** CSS клас е готов в `globals.css` — запазен за заглавия в Social Features екраните.
+- [ ] **ConfirmModal** — `confirm()` в `post-details.tsx` и `posts-tab.tsx` трябва да се замени с styled modal (спрямо правилото "No native dialogs").
+
+---
+
+## 2026-04-12
+
+### Сесия — Social S2: Ask Mentor + UI polish + bug fixes
+
+**Какво направихме:**
+
+#### UI Polish — Community Board (бранд цветове)
+- Открихме и поправихме всички `primary-*` Tailwind класове в community компонентите — `primary-*` не съществува в Tailwind config (само като CSS variables), което водеше до липсващи стилове в светлия/тъмния режим
+- Заменени с `brand-*` в 5 файла: `community-feed.tsx`, `post-details.tsx`, `create-post-form.tsx`, `edit-post-form.tsx`, `posts-tab.tsx`
+- Засяга: avatar градиенти, hover цветове на заглавия, focus rings на inputs, pinned бейджове, filter бутони в admin
+- Commit: `fix: replace primary-* with brand-* in community components`
+
+#### Шрифт на заглавия
+- `font-shantell` добавен на post заглавия в `community-feed.tsx`, `post-details.tsx`, `mentor-inbox.tsx` — signature brand font
+
+#### Social S2 — Ask Mentor (ново)
+Имплементирахме пълния Q&A workflow за ментори.
+
+**Нови API endpoints:**
+- `GET /api/mentor/questions` — списък с въпроси от курсовете, в които потребителят е ментор; admin вижда всички; поддържа `?status=` филтър
+- `PUT /api/posts/[id]/answer-status` — mentor/admin сменя `question_status` (open → answered → closed); валидира course membership за ментори
+
+**Нова страница:**
+- `/mentor-inbox` — Mentor Inbox с три колони статистика (open/answered/closed), click-to-filter, списък с въпроси и inline status бутони (Mark answered / Close / Reopen)
+- Server-side role guard: redirect към `/forbidden` ако не е mentor/admin
+
+**Navbar:**
+- "Inbox" линк добавен — видим само за `mentor` и `admin` роли
+
+**Файлове:**
+- `apps/web/app/api/mentor/questions/route.ts` (нов)
+- `apps/web/app/api/posts/[id]/answer-status/route.ts` (нов)
+- `apps/web/app/mentor-inbox/page.tsx` (нов)
+- `apps/web/components/mentor/mentor-inbox.tsx` (нов)
+- `apps/web/components/navbar-client.tsx` (обновен)
+
+Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
+
+#### Bug fix — Mentor Inbox броячи
+- **Проблем:** при натискане на stat карта (напр. "open"), API се извикваше с `?status=open` → другите броячи ставаха 0
+- **Решение:** зареждаме всички въпроси веднъж (без server-side филтър); броячите се изчисляват от пълния dataset; филтрирането е само client-side
+- Commit: `fix: mentor inbox counts stay correct when filter is active`
+
+#### Bug fix — Back бутон от post detail
+- **Проблем:** "← Community" бутонът в post details беше hardcoded към `/community` — отварен от mentor-inbox, бутонът връщаше в Community вместо в Inbox
+- **Решение:** `router.back()` вместо `<Link href="/community">` — следва browser history
+- Лейбълът е сменен от "Community" на "Back"
+
+#### Bug fix — Navbar активен таб при четене на пост
+- **Проблем:** `/community/[id]` пътят съдържа `/community` → `pathname.startsWith("/community")` беше true → Community табът светваше при четене на пост от Inbox
+- **Решение:** Custom `isActive()` функция в `navbar-client.tsx`:
+  - `/community` активен само при: `/community`, `/community/new`, `/community/[id]/edit`
+  - `/community/[id]` (четене на конкретен пост) е неутрална страница — нищо не светва
+  - Останалите линкове ползват `startsWith` (непроменено)
+
+**Typecheck:** `tsc --noEmit` → pass (0 грешки) след всички промени
 
 ---
 
