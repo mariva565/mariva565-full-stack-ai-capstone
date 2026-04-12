@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyToken, type JwtPayload } from "./jwt";
+import { db } from "./db";
+import { courseMembers } from "../../../drizzle/schema";
+import { and, eq } from "drizzle-orm";
 
 /**
  * Extract and verify the JWT from request cookies or Authorization header.
@@ -46,6 +49,49 @@ export function requireAdmin(user: JwtPayload): NextResponse | null {
   if (user.role !== "admin") {
     return NextResponse.json(
       { code: "FORBIDDEN", message: "Admin access required" },
+      { status: 403 }
+    );
+  }
+  return null;
+}
+
+/**
+ * Require mentor or admin role. Call after requireAuth.
+ */
+export function requireMentor(user: JwtPayload): NextResponse | null {
+  if (user.role !== "mentor" && user.role !== "admin") {
+    return NextResponse.json(
+      { code: "FORBIDDEN", message: "Mentor access required" },
+      { status: 403 }
+    );
+  }
+  return null;
+}
+
+/**
+ * Check if the user is a mentor (or admin) for a specific course.
+ * Returns null if allowed, or a 403 NextResponse if not.
+ */
+export async function requireCourseMentor(
+  user: JwtPayload,
+  courseId: number
+): Promise<NextResponse | null> {
+  if (user.role === "admin") return null;
+
+  const [membership] = await db
+    .select({ role: courseMembers.role })
+    .from(courseMembers)
+    .where(
+      and(
+        eq(courseMembers.courseId, courseId),
+        eq(courseMembers.userId, user.sub)
+      )
+    )
+    .limit(1);
+
+  if (!membership || membership.role !== "mentor") {
+    return NextResponse.json(
+      { code: "FORBIDDEN", message: "Course mentor access required" },
       { status: 403 }
     );
   }

@@ -33,9 +33,9 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
   const changedFields: string[] = [];
 
   if (role) {
-    if (!["user", "admin"].includes(role)) {
+    if (!["user", "mentor", "admin"].includes(role)) {
       return NextResponse.json(
-        { code: "INVALID_ROLE", message: "Role must be 'user' or 'admin'" },
+        { code: "INVALID_ROLE", message: "Role must be 'user', 'mentor', or 'admin'" },
         { status: 400 }
       );
     }

@@ -54,9 +54,9 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  if (role && !["user", "admin"].includes(role)) {
+  if (role && !["user", "mentor", "admin"].includes(role)) {
     return NextResponse.json(
-      { code: "INVALID_ROLE", message: "Role must be 'user' or 'admin'" },
+      { code: "INVALID_ROLE", message: "Role must be 'user', 'mentor', or 'admin'" },
       { status: 400 }
     );
   }

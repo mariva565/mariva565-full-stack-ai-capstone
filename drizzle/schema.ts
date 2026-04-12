@@ -18,7 +18,7 @@ export const users = pgTable("users", {
   email: varchar("email", { length: 255 }).notNull().unique(),
   name: varchar("name", { length: 255 }).notNull(),
   passwordHash: text("password_hash").notNull(),
-  role: varchar("role", { length: 20 }).notNull().default("user"), // 'user' | 'admin'
+  role: varchar("role", { length: 20 }).notNull().default("user"), // 'user' | 'mentor' | 'admin'
   avatarUrl: text("avatar_url"),
   blocked: boolean("blocked").notNull().default(false),
   createdAt: timestamp("created_at").notNull().defaultNow(),
@@ -154,7 +154,26 @@ export const activityLogs = pgTable("activity_logs", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
-// ─── 9. oauth_accounts ──────────────────────────────────────
+// ─── 9. course_members ──────────────────────────────────────
+export const courseMembers = pgTable(
+  "course_members",
+  {
+    id: serial("id").primaryKey(),
+    courseId: integer("course_id")
+      .notNull()
+      .references(() => courses.id, { onDelete: "cascade" }),
+    userId: integer("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    role: varchar("role", { length: 20 }).notNull().default("student"), // 'student' | 'mentor'
+    joinedAt: timestamp("joined_at").notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("course_members_course_user_idx").on(table.courseId, table.userId),
+  ]
+);
+
+// ─── 10. oauth_accounts ─────────────────────────────────────
 export const oauthAccounts = pgTable(
   "oauth_accounts",
   {

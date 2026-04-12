@@ -173,7 +173,6 @@ export function CoursesTab() {
           <p className="mt-4 text-center text-slate-500 dark:text-slate-400">No courses found.</p>
         )}
       </div>
-      </div>
 
       <Pagination currentPage={page} totalItems={filtered.length} itemsPerPage={settings.itemsPerPage} onPageChange={setPage} />
 
