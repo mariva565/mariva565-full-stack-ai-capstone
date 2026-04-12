@@ -81,7 +81,7 @@ export function PostDetails({ postId, currentUser }: {
     return (
       <div className="mx-auto max-w-3xl px-4 py-20 text-center text-slate-500">
         Post not found.{" "}
-        <Link href="/community" className="font-semibold text-primary-600 hover:underline">Back to Community</Link>
+        <Link href="/community" className="font-semibold text-brand-600 hover:underline">Back to Community</Link>
       </div>
     );
   }
@@ -105,7 +105,7 @@ export function PostDetails({ postId, currentUser }: {
         {/* Author + meta */}
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary-500 via-fuchsia-500 to-cyan-400 text-xs font-black text-white overflow-hidden">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-brand-500 via-fuchsia-500 to-cyan-400 text-xs font-black text-white overflow-hidden">
               {post.authorAvatarUrl ? (
                 <img src={post.authorAvatarUrl} alt={post.authorName} className="h-full w-full object-cover" />
               ) : initials}
@@ -140,7 +140,7 @@ export function PostDetails({ postId, currentUser }: {
           <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${TYPE_COLORS[post.postType] ?? ""}`}>
             {TYPE_LABELS[post.postType] ?? post.postType}
           </span>
-          {post.isPinned && <span className="text-xs font-bold text-primary-500">📌 Pinned</span>}
+          {post.isPinned && <span className="text-xs font-bold text-brand-500">📌 Pinned</span>}
           {post.questionStatus && (
             <span className="rounded-full border border-amber-300 bg-amber-50 px-2.5 py-0.5 text-xs font-semibold text-amber-700 dark:border-amber-700 dark:bg-amber-900/20 dark:text-amber-300">
               {post.questionStatus}
@@ -168,7 +168,7 @@ export function PostDetails({ postId, currentUser }: {
 
           <button
             onClick={handleBookmark}
-            className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-semibold transition hover:bg-slate-100 dark:hover:bg-slate-800 ${post.isBookmarked ? "text-primary-500 dark:text-primary-400" : "text-slate-500"}`}
+            className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-semibold transition hover:bg-slate-100 dark:hover:bg-slate-800 ${post.isBookmarked ? "text-brand-500 dark:text-brand-400" : "text-slate-500"}`}
           >
             <svg className="h-4 w-4" fill={post.isBookmarked ? "currentColor" : "none"} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" />
@@ -191,7 +191,7 @@ export function PostDetails({ postId, currentUser }: {
             onChange={(e) => setNewComment(e.target.value)}
             rows={2}
             placeholder="Write a comment..."
-            className="flex-1 rounded-xl border border-slate-200 bg-white/80 px-4 py-3 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-400 dark:border-slate-700 dark:bg-slate-900/60 dark:text-white resize-none"
+            className="flex-1 rounded-xl border border-slate-200 bg-white/80 px-4 py-3 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-400 dark:border-slate-700 dark:bg-slate-900/60 dark:text-white resize-none"
           />
           <button
             type="submit"

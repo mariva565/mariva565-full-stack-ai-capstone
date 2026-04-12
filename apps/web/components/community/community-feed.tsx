@@ -57,14 +57,14 @@ function PostCard({ post, currentUserId, onLike }: {
   const initials = getProfileInitials(post.authorName);
 
   return (
-    <div className={`group relative rounded-2xl border bg-white/80 p-5 shadow-sm backdrop-blur-sm transition-all hover:-translate-y-0.5 hover:shadow-md dark:bg-slate-900/60 dark:border-slate-700/60 ${post.isPinned ? "border-primary-300 dark:border-primary-700/60" : "border-slate-200/80"}`}>
+    <div className={`group relative rounded-2xl border bg-white/80 p-5 shadow-sm backdrop-blur-sm transition-all hover:-translate-y-0.5 hover:shadow-md dark:bg-slate-900/60 dark:border-slate-700/60 ${post.isPinned ? "border-brand-300 dark:border-brand-700/60" : "border-slate-200/80"}`}>
       {post.isPinned && (
-        <span className="absolute right-4 top-4 text-xs font-bold text-primary-500 dark:text-primary-400">📌 Pinned</span>
+        <span className="absolute right-4 top-4 text-xs font-bold text-brand-500 dark:text-brand-400">📌 Pinned</span>
       )}
 
       <div className="flex items-start gap-3">
         {/* Avatar */}
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary-500 via-fuchsia-500 to-cyan-400 text-xs font-black text-white shadow-sm overflow-hidden">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-brand-500 via-fuchsia-500 to-cyan-400 text-xs font-black text-white shadow-sm overflow-hidden">
           {post.authorAvatarUrl ? (
             <img src={post.authorAvatarUrl} alt={post.authorName} className="h-full w-full object-cover" />
           ) : initials}
@@ -88,7 +88,7 @@ function PostCard({ post, currentUserId, onLike }: {
 
           {/* Title */}
           <Link href={`/community/${post.id}`} className="mt-1 block">
-            <h3 className="text-base font-bold text-slate-800 transition group-hover:text-primary-600 dark:text-slate-100 dark:group-hover:text-primary-400 line-clamp-2">
+            <h3 className="text-base font-bold text-slate-800 transition group-hover:text-brand-600 dark:text-slate-100 dark:group-hover:text-brand-400 line-clamp-2">
               {post.title}
             </h3>
           </Link>
@@ -231,7 +231,7 @@ export function CommunityFeed({ currentUser }: { currentUser: { id: number; role
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search posts..."
-          className="flex-1 rounded-xl border border-slate-200 bg-white/80 px-4 py-2.5 text-sm shadow-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-400 dark:border-slate-700 dark:bg-slate-900/60 dark:text-white"
+          className="flex-1 rounded-xl border border-slate-200 bg-white/80 px-4 py-2.5 text-sm shadow-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-400 dark:border-slate-700 dark:bg-slate-900/60 dark:text-white"
         />
         <select
           value={filterType}
@@ -259,7 +259,7 @@ export function CommunityFeed({ currentUser }: { currentUser: { id: number; role
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
           </svg>
           <p className="text-slate-500 dark:text-slate-400">No posts yet — be the first!</p>
-          <Link href="/community/new" className="text-sm font-semibold text-primary-600 hover:underline dark:text-primary-400">
+          <Link href="/community/new" className="text-sm font-semibold text-brand-600 hover:underline dark:text-brand-400">
             Create a post
           </Link>
         </div>

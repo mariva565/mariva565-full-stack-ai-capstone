@@ -100,7 +100,7 @@ export function PostsTab() {
             onClick={() => setFilterStatus(s)}
             className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
               filterStatus === s
-                ? "bg-primary-500 text-white"
+                ? "bg-brand-500 text-white"
                 : "border border-slate-200 text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-400"
             }`}
           >
@@ -140,8 +140,8 @@ export function PostsTab() {
                 <tr key={post.id} className={`transition hover:bg-slate-50 dark:hover:bg-slate-800/40 ${actionId === post.id ? "opacity-50" : ""}`}>
                   <td className="max-w-[220px] px-4 py-3">
                     <div className="flex items-center gap-1.5">
-                      {post.isPinned && <span title="Pinned" className="text-primary-500">📌</span>}
-                      <Link href={`/community/${post.id}`} className="truncate font-medium text-slate-800 hover:text-primary-600 dark:text-slate-200 dark:hover:text-primary-400" target="_blank">
+                      {post.isPinned && <span title="Pinned" className="text-brand-500">📌</span>}
+                      <Link href={`/community/${post.id}`} className="truncate font-medium text-slate-800 hover:text-brand-600 dark:text-slate-200 dark:hover:text-brand-400" target="_blank">
                         {post.title}
                       </Link>
                     </div>
@@ -184,7 +184,7 @@ export function PostsTab() {
                       )}
                       <button
                         onClick={() => togglePin(post.id, post.isPinned)}
-                        className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition ${post.isPinned ? "bg-primary-100 text-primary-600 dark:bg-primary-900/20" : "bg-slate-100 text-slate-500 dark:bg-slate-800"} hover:opacity-80`}
+                        className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition ${post.isPinned ? "bg-brand-100 text-brand-600 dark:bg-brand-900/20" : "bg-slate-100 text-slate-500 dark:bg-slate-800"} hover:opacity-80`}
                         title={post.isPinned ? "Unpin" : "Pin"}
                       >
                         {post.isPinned ? "Unpin" : "Pin"}

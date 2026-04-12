@@ -131,7 +131,7 @@ export function EditPostForm({ postId }: { postId: number }) {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             maxLength={255}
-            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
           />
         </div>
 
@@ -142,7 +142,7 @@ export function EditPostForm({ postId }: { postId: number }) {
             value={content}
             onChange={(e) => setContent(e.target.value)}
             rows={8}
-            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-primary-400 dark:border-slate-700 dark:bg-slate-800 dark:text-white resize-none"
+            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-brand-400 dark:border-slate-700 dark:bg-slate-800 dark:text-white resize-none"
           />
         </div>
 
