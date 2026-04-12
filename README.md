@@ -20,9 +20,9 @@
   <img src="https://img.shields.io/badge/Status-In%20Progress-F59E0B?style=flat-square" alt="Status in progress" />
   <img src="https://img.shields.io/badge/Commits-75%2B-22C55E?style=flat-square" alt="75 plus commits" />
   <img src="https://img.shields.io/badge/TypeScript-Strict%20Mode-6366F1?style=flat-square" alt="TypeScript strict mode" />
-  <img src="https://img.shields.io/badge/Tables-10-8B5CF6?style=flat-square" alt="10 database tables" />
-  <img src="https://img.shields.io/badge/API-37%20endpoints-06B6D4?style=flat-square" alt="37 API endpoints" />
-  <img src="https://img.shields.io/badge/Web-14%20pages-6366F1?style=flat-square" alt="14 web pages" />
+  <img src="https://img.shields.io/badge/Tables-14-8B5CF6?style=flat-square" alt="14 database tables" />
+  <img src="https://img.shields.io/badge/API-49%20endpoints-06B6D4?style=flat-square" alt="49 API endpoints" />
+  <img src="https://img.shields.io/badge/Web-18%20pages-6366F1?style=flat-square" alt="18 web pages" />
   <img src="https://img.shields.io/badge/Mobile-React%20Query%20Cache-8B5CF6?style=flat-square" alt="mobile react query cache" />
 </p>
 
@@ -74,6 +74,9 @@ The app is a personal **Learning Management System (LMS)** — a structured elec
 | Phase 6 | Admin panel (user management, moderation, logs) | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
 | Phase 7 | AI study tools (Gemini chat, summarize, quiz) | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
 | Phase 8 | UI polish (landing, how-it-works, contact, animations) | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
+| Social S0 | Roles (user / mentor / admin) + Course Membership | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
+| Social S1 | Community Board — posts, comments, likes, bookmarks, moderation | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
+| Social S2 | Ask Mentor — Q&A workflow with Mentor Inbox | ![Planned](https://img.shields.io/badge/Planned-64748B?style=flat-square) |
 | Phase 9 | File storage (Cloudflare R2 — PDF upload, export) | ![Planned](https://img.shields.io/badge/Planned-64748B?style=flat-square) |
 | Phase 10 | Deployment (Vercel/Netlify) | ![Planned](https://img.shields.io/badge/Planned-64748B?style=flat-square) |
 
@@ -254,17 +257,28 @@ sequenceDiagram
 | Plan with calendar events | `/calendar` |
 | Edit profile and avatar | `/profile` |
 
+### Mentor (role: `mentor`)
+
+| Action | Where |
+|---|---|
+| Everything a student can do | — |
+| View questions from own courses in Mentor Inbox | `/community?type=question` |
+| Answer questions (via comments) | `/community/[id]` |
+| Assigned per-course via `course_members` table | Admin panel → Members tab |
+
 ### Admin (role: `admin`)
 
-Everything a student can do, plus:
+Everything a mentor can do, plus:
 
 | Action | Where |
 |---|---|
 | View all users | `/admin` |
-| Change user roles (user / admin) | `/admin` |
-| Delete users (with self-protection) | `/admin` |
-| View and delete any material | `/admin` |
-| View activity logs (audit trail) | `/admin` |
+| Change user roles (user / mentor / admin) | `/admin` → Users tab |
+| Delete users (with self-protection) | `/admin` → Users tab |
+| Manage course members and mentor assignments | `/admin` → Members tab |
+| View and delete any material | `/admin` → Materials tab |
+| Approve / hide / pin community posts | `/admin` → Moderation tab |
+| View activity logs (audit trail) | `/admin` → Activity Logs tab |
 
 Admin cannot delete themselves or change their own role (self-protection enforced server-side).
 
@@ -367,6 +381,49 @@ erDiagram
         timestamp created_at
     }
 
+    course_members {
+        serial id PK
+        integer course_id FK
+        integer user_id FK
+        varchar role "student | mentor"
+        timestamp joined_at
+    }
+
+    posts {
+        serial id PK
+        integer author_id FK
+        varchar title
+        text content
+        varchar post_type "discussion | question | resource | article"
+        varchar status "pending | approved | hidden"
+        integer course_id FK
+        boolean is_pinned
+        varchar question_status "open | answered | closed"
+        timestamp created_at
+    }
+
+    comments {
+        serial id PK
+        integer post_id FK
+        integer author_id FK
+        text content
+        timestamp created_at
+    }
+
+    post_likes {
+        serial id PK
+        integer post_id FK
+        integer user_id FK
+        timestamp created_at
+    }
+
+    post_bookmarks {
+        serial id PK
+        integer post_id FK
+        integer user_id FK
+        timestamp created_at
+    }
+
     oauth_accounts {
         serial id PK
         integer user_id FK
@@ -393,13 +450,23 @@ erDiagram
 
     courses ||--o{ events : "linked to"
     milestones ||--o{ events : "linked to"
+    courses ||--o{ course_members : has
+    users ||--o{ course_members : joins
+    users ||--o{ posts : writes
+    courses ||--o{ posts : "discussed in"
+    posts ||--o{ comments : has
+    users ||--o{ comments : writes
+    posts ||--o{ post_likes : receives
+    users ||--o{ post_likes : gives
+    posts ||--o{ post_bookmarks : saved_in
+    users ||--o{ post_bookmarks : saves
 ```
 
 ### Table Descriptions
 
 | # | Table | Purpose | Key relationships |
 |---|---|---|---|
-| 1 | `users` | User accounts with email, hashed password, role | Referenced by almost all tables via `created_by` or `user_id` |
+| 1 | `users` | User accounts with email, hashed password, role (user/mentor/admin) | Referenced by almost all tables via `created_by` or `user_id` |
 | 2 | `courses` | Top-level containers for learning content | Created by user; contains modules |
 | 3 | `modules` | Ordered sections within a course | Belongs to course (cascade delete); contains materials |
 | 4 | `materials` | Learning content — text notes, links, or files | Belongs to module (cascade delete); can be favorited |
@@ -409,6 +476,10 @@ erDiagram
 | 8 | `activity_logs` | Audit trail for all user actions | Stores action_type + structured JSON details |
 | 9 | `ai_tool_outputs` | Saved AI analysis results (summaries, quizzes) | Per user + material; indexed for fast lookup |
 | 10 | `oauth_accounts` | External auth provider identities | Links Google OAuth to user; unique on (provider, provider_user_id) |
+| 11 | `course_members` | Course membership + per-course mentor assignments | Unique (course_id, user_id); role: student or mentor |
+| 12 | `posts` | Community Board posts (discussions, questions, resources, articles) | Linked to author and optionally to a course; supports pinning + moderation |
+| 13 | `comments` | Flat comment threads on posts | Belongs to post (cascade delete); linked to author |
+| 14 | `post_likes` / `post_bookmarks` | Social interactions on posts | Unique (post_id, user_id) prevents duplicates |
 
 ---
 
@@ -430,8 +501,12 @@ erDiagram
 | 10 | `/profile` | Edit name, avatar upload | Protected |
 | 11 | `/progress` | Milestones tracker with status workflow | Protected |
 | 12 | `/calendar` | Calendar with events (deadlines, reminders, exams) | Protected |
-| 13 | `/admin` | Admin panel — users, materials, activity logs | Admin only |
+| 13 | `/admin` | Admin panel — users, materials, moderation, activity logs | Admin only |
 | 14 | `/forbidden` | 403 access denied page | Auto-redirect |
+| 15 | `/community` | Community Feed — posts list with search, type filter, Load More | Protected |
+| 16 | `/community/new` | Create Post — type, course, title, content | Protected |
+| 17 | `/community/[id]` | Post Details — full content, comments, like/bookmark actions | Protected |
+| 18 | `/community/[id]/edit` | Edit Post — author or admin only | Protected |
 
 ### Mobile — current flows
 
@@ -527,6 +602,23 @@ The mobile app connects to the **same Next.js backend** — no separate API need
 | `POST` | `/api/ai/tools` | AI analysis tools (summarize, quiz, explain) |
 | `GET/POST/DELETE` | `/api/materials/[id]/ai-outputs` | Saved AI results per material |
 
+### Community Board — Social S1 (12 endpoints)
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/api/posts` | List posts (filters: type, courseId, search, page — 20/page) |
+| `POST` | `/api/posts` | Create post |
+| `GET` | `/api/posts/[id]` | Post details + comments + like/bookmark state |
+| `PUT` | `/api/posts/[id]` | Edit post (author only) |
+| `DELETE` | `/api/posts/[id]` | Delete post (author or admin) |
+| `POST` | `/api/posts/[id]/comments` | Add comment |
+| `DELETE` | `/api/comments/[id]` | Delete comment (author or admin) |
+| `POST` | `/api/posts/[id]/like` | Toggle like |
+| `POST` | `/api/posts/[id]/bookmark` | Toggle bookmark |
+| `GET` | `/api/admin/posts` | All posts for moderation (admin only) |
+| `PUT` | `/api/admin/posts/[id]` | Approve / hide / pin post (admin only) |
+| `DELETE` | `/api/admin/posts/[id]` | Hard delete post (admin only) |
+
 ### Admin (11 endpoints)
 
 | Method | Endpoint | Description |
@@ -580,13 +672,25 @@ The mobile app connects to the **same Next.js backend** — no separate API need
 7. **Calendar** — go to `/calendar`, create an event (deadline, exam, reminder)
 8. **Profile** — go to `/profile`, change your name and upload an avatar
 
+### As a Community Member
+
+1. **Community Feed** — go to `/community`, browse posts
+2. **Filter** — use type filter (Discussion / Question / Resource / Article) or search bar
+3. **Load More** — server-side pagination, 20 posts per page
+4. **New Post** — click "New Post", choose type, optionally link to a course
+5. **Post Details** — open a post, read comments, like ♥ or bookmark 🔖
+6. **Add Comment** — write a comment, press Post
+7. **Edit / Delete** — available on your own posts
+
 ### As an Admin
 
 1. **Login** with admin credentials (see [Demo Credentials](#demo-credentials))
 2. **Admin Panel** — go to `/admin`
-3. **Users tab** — see all registered users, change a user's role
-4. **Materials tab** — see all materials across all users
-5. **Activity Logs tab** — see the audit trail of all actions
+3. **Users tab** — see all registered users, change a user's role (user / mentor / admin)
+4. **Members tab** — assign users as course mentors
+5. **Moderation tab** — approve / hide / pin community posts
+6. **Materials tab** — see all materials across all users
+7. **Activity Logs tab** — see the audit trail of all actions
 
 ### On Mobile
 
@@ -787,13 +891,34 @@ npm run dev:mobile:usb
 | Frontend | Vanilla JS + Bootstrap | React + Next.js + TypeScript + Tailwind |
 | Backend | Supabase (BaaS) | Next.js API Routes (custom) |
 | Auth | Supabase Auth (GoTrue) | Custom JWT + Google OAuth |
-| Database | Supabase PostgreSQL (6 tables) | Neon PostgreSQL + Drizzle ORM (10 tables) |
+| Database | Supabase PostgreSQL (6 tables) | Neon PostgreSQL + Drizzle ORM (14 tables) |
 | Mobile | None | React Native + Expo + tabs/CRUD flows + persisted React Query cache |
 | File structure | Single app, monolithic files | Monorepo + modular components (<300 LOC each)† |
 | Deployment | Netlify + Vercel (dual) | Planned: Vercel |
 | Security | RLS + CSP + MFA (partial) | JWT guards + middleware + role-based endpoints |
 
 > **†** Two files intentionally exceed 300 lines. `chat-widget.tsx` (494 lines) contains a `<style jsx global>` block with all FAB animation keyframes — extracting it into a sub-component creates a render-timing risk where the floating button loses its styles at certain lifecycle moments; the correct fix (moving to `globals.css`) was evaluated and deferred as low-priority. `material-form-screen.tsx` (395 lines) co-locates 8 tightly related sub-components for a single form screen — all individual functions are under 60 lines and splitting across files would increase navigation cost without improving readability. All other source files remain under 300 lines. No inline styles exist outside of cases where a dynamic runtime value (scroll progress, cursor position, Framer Motion spring) cannot be expressed as a static Tailwind class.
+
+---
+
+## Performance Testing with Large Data
+
+Per course requirement, the application was tested with a high volume of records to validate pagination, filtering, and query performance under realistic load.
+
+### Community Board — Load Test
+
+| Metric | Result |
+|---|---|
+| Posts seeded | 150 |
+| Comments seeded | ~300 (1–4 per post) |
+| Likes seeded | ~120 |
+| Bookmarks seeded | ~30 |
+| Pagination | Server-side, 20 posts/page — Load More button |
+| Type filter at 150 posts | Instant — single indexed WHERE clause |
+| Full-text search at 150 posts | Responsive — `ILIKE` on title + content |
+| Seed script | `drizzle/seeds/community_demo.sql` |
+
+The Load More pattern was chosen over numbered pagination for the Community Feed (social UX — Reddit/Twitter style). Numbered pagination is used in the Admin Panel tables where precise navigation matters.
 
 ---
 
