@@ -18,6 +18,75 @@
 
 **Какво направихме:**
 
+#### Social S0 — Course Membership + Mentor Role (ново)
+
+**Schema:**
+- Нова таблица `course_members` (migration `0006_course_members.sql`): `course_id`, `user_id`, `role` (student | mentor), `joined_at`
+- Уникален индекс `(course_id, user_id)` — потребителят може да е в курс само веднъж
+- `users.role` разширен: вече поддържа `'mentor'` освен `'user'` и `'admin'`
+
+**Нови API endpoints:**
+- `GET/POST /api/courses/[id]/members` — списък на членове / добавяне
+- `PUT/DELETE /api/courses/[id]/members/[userId]` — смяна на роля / премахване
+- `GET/POST /api/admin/members` — admin преглед на всички членства
+- `PUT/DELETE /api/admin/members/[id]` — admin управление
+
+**Auth helpers:**
+- `requireMentor()` — 403 ако не е mentor или admin
+- `requireCourseMentor(courseId)` — 403 ако не е ментор точно на този курс
+
+**Admin panel:**
+- Нов "Members" таб — добавяне/премахване на членства, toggle на роля (student ↔ mentor)
+- Fix: стray `</div>` JSX грешки в 4 admin tab компонента
+
+**Друго:**
+- `scripts/run-migration.mjs` — helper script за ръчно пускане на SQL миграции
+
+Commit: `feat: implement Social S0 — course membership + mentor role`
+
+---
+
+#### Social S1 — Community Board (ново)
+
+**Schema (4 нови таблици, migration `0007_community_board.sql`):**
+- `posts` — автор, заглавие, съдържание, тип (discussion/question/resource/article), статус (pending/approved/hidden), pinning, `question_status`
+- `comments` — flat thread към пост
+- `post_likes` — toggle like с уникален constraint
+- `post_bookmarks` — bookmark с уникален constraint
+
+**API endpoints (12):**
+- `GET/POST /api/posts` — лист (филтри: type, courseId, search, page/20) + създаване
+- `GET/PUT/DELETE /api/posts/[id]` — детайли (+ comments + like/bookmark state), редактиране, изтриване
+- `POST /api/posts/[id]/comments` — добавяне на коментар
+- `DELETE /api/comments/[id]` — изтриване (автор или admin)
+- `POST /api/posts/[id]/like` — toggle like
+- `POST /api/posts/[id]/bookmark` — toggle bookmark
+- `GET /api/admin/posts` — всички постове за модерация
+- `PUT /api/admin/posts/[id]` — approve / hide / pin
+- `DELETE /api/admin/posts/[id]` — hard delete
+
+**Web страници:**
+- `/community` — CommunityFeed: списък с search + type filter + Load More (pagination)
+- `/community/new` — CreatePostForm: избор на тип, курс, заглавие, съдържание
+- `/community/[id]` — PostDetails: пълен пост, коментари, like/bookmark
+- `/community/[id]/edit` — EditPostForm: редактиране (автор или admin)
+
+**Shared типове:**
+- `post-types.ts` — `Post`, `Comment` типове; `TYPE_LABELS`, `TYPE_COLORS`, `timeAgo()`
+- `comment-item.tsx` — reusable коментар компонент
+
+**Admin:**
+- `posts-tab.tsx` — Moderation таб: approve/hide/pin/delete с inline actions
+- Добавен като "Moderation" таб в `/admin`
+
+**Navbar:** "Community" линк добавен
+
+**Seed данни:** `drizzle/seeds/community_demo.sql` — 150 demo posts, ~300 comments
+
+Commits: `feat: implement community forum system...` + `feat: implement community board features...`
+
+---
+
 #### UI Polish — Community Board (бранд цветове)
 - Открихме и поправихме всички `primary-*` Tailwind класове в community компонентите — `primary-*` не съществува в Tailwind config (само като CSS variables), което водеше до липсващи стилове в светлия/тъмния режим
 - Заменени с `brand-*` в 5 файла: `community-feed.tsx`, `post-details.tsx`, `create-post-form.tsx`, `edit-post-form.tsx`, `posts-tab.tsx`
@@ -6311,3 +6380,88 @@ Sprint 2 - Production standards
 **Verification:**
 - `npm.cmd run typecheck:mobile` -> pass
 - Verified that handled `502 AI service temporarily unavailable` HTTP exceptions safely map to local Toast interventions without tripping Sentry server exception alarms.
+
+---
+
+## 2026-04-11 (ретроактивен запис — web UI сесии без devlog)
+
+> Следните commit-и модифицираха кода но не добавиха devlog запис. Документирани ретроактивно.
+
+### Session 213 — Web: globals cleanup + spinner + dashboard polish
+
+**Commits:** `3a8c625`
+
+**Какво направихме:**
+- `globals.css` — почистване на излишни стилове
+- `layout.tsx` — дребни корекции
+- `chat-widget.tsx` — леко подобрение
+- `dashboard-hero.tsx` / `dashboard-page-shell.tsx` — layout корекции
+- `ui/spinner.tsx` — опростен и по-лек спинър компонент
+
+### Session 214 — Web: Progress + Admin tabs UI polish
+
+**Commits:** `71a8d64`, `43e9e89`, `be8cd86`, `d7ec503`
+
+**Какво направихме:**
+- `ProgressSummaryCards` — визуални подобрения (brand цветове, layout)
+- `MilestoneTimeline` + `MilestoneTimelineItem` — нови компоненти за прогрес страница; интерактивен изглед на timeline
+- Admin tabs (`courses-tab`, `materials-tab`, `modules-tab`, `users-tab`) — UI подобрения (course cards, filters, pinned sidebar)
+- `dashboard-client-page.tsx` — допълнителни course card подобрения
+
+---
+
+## 2026-04-12 (ретроактивен запис — web UI преди Social S0)
+
+> Следните commit-и бяха направени в ранната сесия на 12 април преди Social features. Не са документирани.
+
+### Session 215 — Web: HeroMesh refactor + CalendarGrid + ProfilePageClient
+
+**Commit:** `9d7d470`
+
+**Какво направихме:**
+- `admin/hero/HeroMesh.tsx` — рефакторинг на 3D hero mesh компонента
+- `calendar/calendar-grid.tsx` — преработен CalendarGrid (114 реда, подобрена responsive логика)
+- `profile/profile-page-client.tsx` — дребни подобрения на profile page компонента
+
+### Session 216 — Web: How It Works + root layout improvements
+
+**Commit:** `38c630c`
+
+**Какво направихме:**
+- `app/how-it-works/page.tsx` — подобрена How It Works страница (metadata, структура)
+- `app/layout.tsx` — добавени font preloads, метаданни подобрения
+- `app/page.tsx` — корекции на landing page структура
+- `how-it-works/how-it-works-page.tsx` — layout подобрения
+
+### Session 217 — Web: Module workspace UI + Admin mobile cards + нови UI компоненти
+
+**Commit:** `f8ef618`
+
+**Какво направихме:**
+- `globals.css` — нови utility класове (29 реда)
+- `app/layout.tsx` + `loading.tsx` — подобрени loading states
+- **Нови UI компоненти:**
+  - `ui/add-material-fab.tsx` — Floating Action Button за добавяне на материал
+  - `ui/nav-progress-bar.tsx` — навигационна прогрес лента
+  - `ui/page-enter-effect.tsx` — page entrance анимация
+  - `admin/admin-mobile-card.tsx` — responsive mobile карта за admin таблици
+- Admin tabs (`courses`, `materials`, `modules`, `users`) — добавена responsive mobile card поддръжка (30+ реда за всяка)
+- Module sidebar компоненти — дребни корекции
+
+### Session 218 — Web: Progress components polish
+
+**Commit:** `2c49fb4`
+
+**Какво направихме:**
+- `progress/add-milestone-form.tsx` — brand цвят корекции
+- `progress/milestone-timeline-item.tsx` — добавени 8 реда допълнителна функционалност
+- `progress/progress-page-client.tsx` — подобрена progress page интеграция
+- `progress/progress-summary-cards.tsx` — brand цвят корекции
+
+### Session 219 — Web: Admin panel responsive + members tab improvements
+
+**Commit:** `eab53c8`
+
+**Какво направихме:**
+- `app/admin/page.tsx` — значително преработена admin страница (62 реда промени, по-добра responsive структура)
+- `components/admin/members-tab.tsx` — подобрен Members таб (responsive layout, по-добри action бутони)
