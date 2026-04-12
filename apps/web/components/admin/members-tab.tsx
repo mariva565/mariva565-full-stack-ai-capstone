@@ -134,11 +134,11 @@ export function MembersTab() {
       {/* Add membership form */}
       <div className="mb-6 rounded-2xl border border-slate-200 bg-white/60 p-4 dark:border-slate-700 dark:bg-slate-800/40">
         <h3 className="mb-3 text-sm font-semibold text-slate-700 dark:text-slate-200">Add Membership</h3>
-        <div className="flex flex-wrap gap-3">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-[1fr_1fr_auto_auto]">
           <select
             value={addCourseId}
             onChange={(e) => setAddCourseId(e.target.value)}
-            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white"
+            className="min-w-0 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white"
           >
             <option value="">Select course…</option>
             {courses.map((c) => (
@@ -148,7 +148,7 @@ export function MembersTab() {
           <select
             value={addUserId}
             onChange={(e) => setAddUserId(e.target.value)}
-            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white"
+            className="min-w-0 truncate rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white"
           >
             <option value="">Select user…</option>
             {users.map((u) => (
@@ -175,19 +175,21 @@ export function MembersTab() {
       </div>
 
       {/* Course filter */}
-      <div className="mb-4 flex items-center gap-3">
-        <label className="text-sm font-medium text-slate-600 dark:text-slate-400">Filter by course:</label>
-        <select
-          value={courseFilter}
-          onChange={(e) => setCourseFilter(e.target.value)}
-          className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white"
-        >
-          <option value="">All courses</option>
-          {courses.map((c) => (
-            <option key={c.id} value={c.id}>{c.title}</option>
-          ))}
-        </select>
-        <span className="text-xs text-slate-400">{filtered.length} memberships</span>
+      <div className="mb-4 flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-2">
+        <label className="text-sm font-medium text-slate-600 dark:text-slate-400 shrink-0">Filter by course:</label>
+        <div className="flex items-center gap-2 min-w-0">
+          <select
+            value={courseFilter}
+            onChange={(e) => setCourseFilter(e.target.value)}
+            className="min-w-0 flex-1 sm:max-w-[200px] rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white"
+          >
+            <option value="">All courses</option>
+            {courses.map((c) => (
+              <option key={c.id} value={c.id}>{c.title}</option>
+            ))}
+          </select>
+          <span className="text-xs text-slate-400 shrink-0">{filtered.length} memberships</span>
+        </div>
       </div>
 
       {/* Mobile cards */}

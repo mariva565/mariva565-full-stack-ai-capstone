@@ -28,7 +28,7 @@ function AdminContent() {
   const { searchQuery, setSearchQuery } = useAdminContext();
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-7xl overflow-x-hidden px-4 py-8 sm:px-6 lg:px-8">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -62,29 +62,45 @@ function AdminContent() {
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="mt-6 flex gap-1 overflow-x-auto border-b border-slate-200 hide-scrollbar dark:border-slate-700">
-        {TABS.map((tab) => (
-          <button
-            type="button"
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`relative whitespace-nowrap px-6 py-3.5 text-sm font-bold tracking-tight transition-all ${
-              activeTab === tab
-                ? "text-primary-600 dark:text-primary-400"
-                : "text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200"
-            }`}
+      {/* Tabs — dropdown on mobile, tab bar on desktop */}
+      <div className="mt-6">
+        {/* Mobile dropdown */}
+        <div className="sm:hidden">
+          <select
+            value={activeTab}
+            onChange={(e) => setActiveTab(e.target.value as Tab)}
+            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm dark:border-slate-700 dark:bg-slate-800 dark:text-white"
           >
-            {tab}
-            {activeTab === tab && (
-              <motion.div
-                layoutId="activeTab"
-                className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-500"
-                transition={{ type: "spring", stiffness: 380, damping: 30 }}
-              />
-            )}
-          </button>
-        ))}
+            {TABS.map((tab) => (
+              <option key={tab} value={tab}>{tab}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* Desktop tab bar */}
+        <div className="hidden sm:flex gap-1 overflow-x-auto border-b border-slate-200 hide-scrollbar dark:border-slate-700">
+          {TABS.map((tab) => (
+            <button
+              type="button"
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`relative whitespace-nowrap px-6 py-3.5 text-sm font-bold tracking-tight transition-all ${
+                activeTab === tab
+                  ? "text-primary-600 dark:text-primary-400"
+                  : "text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200"
+              }`}
+            >
+              {tab}
+              {activeTab === tab && (
+                <motion.div
+                  layoutId="activeTab"
+                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-500"
+                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                />
+              )}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Tab content — premium glassmorphism panel */}
