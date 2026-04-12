@@ -18,8 +18,9 @@ const ModulesTab   = dynamic(() => import("../../components/admin/modules-tab").
 const ActivityTab  = dynamic(() => import("../../components/admin/activity-tab").then((m) => m.ActivityTab), { loading: () => <SkeletonTable rows={5} columns={5} />, ssr: false });
 const NetworkMapTab = dynamic(() => import("../../components/admin/network-map-tab").then((m) => m.NetworkMapTab), { loading: () => <div className="h-[500px] animate-pulse rounded-xl bg-slate-100 dark:bg-slate-800" />, ssr: false });
 const MembersTab    = dynamic(() => import("../../components/admin/members-tab").then((m) => m.MembersTab), { loading: () => <SkeletonTable rows={5} columns={5} />, ssr: false });
+const PostsTab      = dynamic(() => import("../../components/admin/posts-tab").then((m) => m.PostsTab), { loading: () => <SkeletonTable rows={5} columns={6} />, ssr: false });
 
-const TABS = ["Overview", "Users", "Materials", "Courses", "Modules", "Members", "Activity Logs", "Network Map"] as const;
+const TABS = ["Overview", "Users", "Materials", "Courses", "Modules", "Members", "Moderation", "Activity Logs", "Network Map"] as const;
 type Tab = (typeof TABS)[number];
 
 function AdminContent() {
@@ -120,6 +121,7 @@ function AdminContent() {
             {activeTab === "Courses" && <CoursesTab />}
             {activeTab === "Modules" && <ModulesTab />}
             {activeTab === "Members" && <MembersTab />}
+            {activeTab === "Moderation" && <PostsTab />}
             {activeTab === "Activity Logs" && <ActivityTab />}
             {activeTab === "Network Map" && <NetworkMapTab />}
           </motion.div>

@@ -173,7 +173,59 @@ export const courseMembers = pgTable(
   ]
 );
 
-// ─── 10. oauth_accounts ─────────────────────────────────────
+// ─── 10. posts ──────────────────────────────────────────────
+export const posts = pgTable("posts", {
+  id: serial("id").primaryKey(),
+  authorId: integer("author_id").notNull().references(() => users.id),
+  title: varchar("title", { length: 255 }).notNull(),
+  content: text("content").notNull(),
+  postType: varchar("post_type", { length: 20 }).notNull().default("discussion"), // 'discussion' | 'question' | 'resource' | 'article'
+  status: varchar("status", { length: 20 }).notNull().default("approved"), // 'pending' | 'approved' | 'hidden'
+  courseId: integer("course_id").references(() => courses.id, { onDelete: "set null" }),
+  isPinned: boolean("is_pinned").notNull().default(false),
+  questionStatus: varchar("question_status", { length: 20 }), // NULL | 'open' | 'answered' | 'closed'
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// ─── 11. comments ───────────────────────────────────────────
+export const comments = pgTable("comments", {
+  id: serial("id").primaryKey(),
+  postId: integer("post_id").notNull().references(() => posts.id, { onDelete: "cascade" }),
+  authorId: integer("author_id").notNull().references(() => users.id),
+  content: text("content").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+// ─── 12. post_likes ─────────────────────────────────────────
+export const postLikes = pgTable(
+  "post_likes",
+  {
+    id: serial("id").primaryKey(),
+    postId: integer("post_id").notNull().references(() => posts.id, { onDelete: "cascade" }),
+    userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("post_likes_post_user_idx").on(table.postId, table.userId),
+  ]
+);
+
+// ─── 13. post_bookmarks ─────────────────────────────────────
+export const postBookmarks = pgTable(
+  "post_bookmarks",
+  {
+    id: serial("id").primaryKey(),
+    postId: integer("post_id").notNull().references(() => posts.id, { onDelete: "cascade" }),
+    userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("post_bookmarks_post_user_idx").on(table.postId, table.userId),
+  ]
+);
+
+// ─── 14. oauth_accounts ─────────────────────────────────────
 export const oauthAccounts = pgTable(
   "oauth_accounts",
   {

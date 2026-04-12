@@ -65,6 +65,7 @@ export function NavbarClient({ initialUser }: NavbarClientProps) {
   const links = [
     { href: "/", label: "Home" },
     { href: "/dashboard", label: "Dashboard" },
+    { href: "/community", label: "Community" },
     { href: "/progress", label: "Progress" },
     { href: "/calendar", label: "Calendar" },
     { href: "/profile", label: "Profile" },
@@ -75,7 +76,9 @@ export function NavbarClient({ initialUser }: NavbarClientProps) {
   }
 
   const userInitials = getProfileInitials(user?.name ?? "Study Hub");
-  const roleLabel = user?.role === "admin" ? "Administrator" : "Student";
+  const roleLabel =
+    user?.role === "admin" ? "Administrator" :
+    user?.role === "mentor" ? "Mentor" : "Student";
 
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/80 backdrop-blur-xl dark:border-cyan-400/10 dark:bg-[linear-gradient(180deg,rgba(2,8,22,0.94)_0%,rgba(3,11,28,0.88)_100%)]">
