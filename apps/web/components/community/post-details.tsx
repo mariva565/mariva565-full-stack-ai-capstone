@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { getProfileInitials } from "@/lib/profile";
 import { type Post, type Comment, TYPE_LABELS, TYPE_COLORS, timeAgo } from "./post-types";
 import { CommentItem } from "./comment-item";
+import { ConfirmModal } from "../ui/confirm-modal";
 
 export function PostDetails({ postId, currentUser }: {
   postId: number;
@@ -18,6 +19,7 @@ export function PostDetails({ postId, currentUser }: {
   const [newComment, setNewComment] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [deleting, setDeleting]     = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   useEffect(() => {
     fetch(`/api/posts/${postId}`)
@@ -42,7 +44,6 @@ export function PostDetails({ postId, currentUser }: {
   }
 
   async function handleDeletePost() {
-    if (!confirm("Delete this post?")) return;
     setDeleting(true);
     await fetch(`/api/posts/${postId}`, { method: "DELETE" });
     router.push("/community");
@@ -128,7 +129,7 @@ export function PostDetails({ postId, currentUser }: {
                 </Link>
               )}
               <button
-                onClick={handleDeletePost}
+                onClick={() => setConfirmOpen(true)}
                 disabled={deleting}
                 className="rounded-xl border border-rose-200 px-3 py-1.5 text-xs font-semibold text-rose-500 transition hover:bg-rose-50 dark:border-rose-800 dark:hover:bg-rose-900/20"
               >
@@ -219,6 +220,16 @@ export function PostDetails({ postId, currentUser }: {
           )}
         </div>
       </div>
+
+      <ConfirmModal
+        isOpen={confirmOpen}
+        title="Delete post?"
+        description="This will permanently delete the post and all its comments. This cannot be undone."
+        confirmLabel="Delete"
+        busy={deleting}
+        onConfirm={() => { setConfirmOpen(false); handleDeletePost(); }}
+        onCancel={() => setConfirmOpen(false)}
+      />
     </div>
   );
 }

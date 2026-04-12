@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import { ConfirmModal } from "../ui/confirm-modal";
 
 type AdminPost = {
   id: number;
@@ -45,6 +46,7 @@ export function PostsTab() {
   const [loading, setLoading]     = useState(true);
   const [filterStatus, setFilterStatus] = useState("");
   const [actionId, setActionId]   = useState<number | null>(null);
+  const [confirmId, setConfirmId] = useState<number | null>(null);
 
   const fetchPosts = useCallback(async () => {
     setLoading(true);
@@ -81,7 +83,6 @@ export function PostsTab() {
   }
 
   async function deletePost(postId: number) {
-    if (!confirm("Permanently delete this post?")) return;
     setActionId(postId);
     await fetch(`/api/admin/posts/${postId}`, { method: "DELETE" });
     setPosts((prev) => prev.filter((p) => p.id !== postId));
@@ -190,7 +191,7 @@ export function PostsTab() {
                         {post.isPinned ? "Unpin" : "Pin"}
                       </button>
                       <button
-                        onClick={() => deletePost(post.id)}
+                        onClick={() => setConfirmId(post.id)}
                         className="rounded-lg bg-rose-50 px-2.5 py-1 text-xs font-semibold text-rose-500 transition hover:bg-rose-100 dark:bg-rose-900/20 dark:text-rose-400"
                       >
                         Delete
@@ -203,6 +204,16 @@ export function PostsTab() {
           </table>
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={confirmId !== null}
+        title="Delete post?"
+        description="This will permanently delete the post and all its comments."
+        confirmLabel="Delete"
+        busy={actionId === confirmId}
+        onConfirm={() => { const id = confirmId!; setConfirmId(null); deletePost(id); }}
+        onCancel={() => setConfirmId(null)}
+      />
     </div>
   );
 }
