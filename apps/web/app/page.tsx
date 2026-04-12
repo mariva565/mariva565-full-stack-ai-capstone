@@ -1,16 +1,15 @@
-"use client";
-
+import dynamic from "next/dynamic";
 import { V1Hero } from "../components/home/v1-hero";
-import { HomeFeatures } from "../components/home/features";
-import { HomeAbout } from "../components/home/about";
-// import { HomeStats } from "../components/home/stats"; // Moved to README for jury, will add back later
-import { HomeFaq } from "../components/home/faq";
-import { HomeCtaBanner } from "../components/home/cta-banner";
 import { Navbar } from "../components/layout/Navbar";
 import { CursorGlow } from "../components/ui/cursor-glow";
 import { ScrollToTop } from "../components/ui/scroll-to-top";
 import Link from "next/link";
-import { motion } from "framer-motion";
+
+// Below-fold sections — loaded lazily so initial JS bundle stays small
+const HomeFeatures = dynamic(() => import("../components/home/features").then(m => m.HomeFeatures));
+const HomeAbout = dynamic(() => import("../components/home/about").then(m => m.HomeAbout));
+const HomeFaq = dynamic(() => import("../components/home/faq").then(m => m.HomeFaq));
+const HomeCtaBanner = dynamic(() => import("../components/home/cta-banner").then(m => m.HomeCtaBanner));
 
 function SocialLink({ href, label, children }: { href: string; label: string; children: React.ReactNode }) {
   return (

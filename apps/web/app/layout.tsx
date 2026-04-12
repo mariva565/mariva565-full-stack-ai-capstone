@@ -26,6 +26,17 @@ export const metadata: Metadata = {
     shortcut: "/assets/v1/favicon.png",
     apple: "/assets/v1/apple-touch-icon.png",
   },
+  openGraph: {
+    title: "Study Hub | Master Your Learning Journey",
+    description: "The ultimate platform for students and educators to organize courses and materials.",
+    type: "website",
+    siteName: "Study Hub",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Study Hub | Master Your Learning Journey",
+    description: "The ultimate platform for students and educators to organize courses and materials.",
+  },
 };
 
 type RootLayoutProps = {

@@ -1,9 +1,12 @@
+import dynamic from "next/dynamic";
 import { Navbar } from "../layout/Navbar";
 import { ScrollToTop } from "../ui/scroll-to-top";
-import { HowItWorksCta } from "./how-it-works-cta";
-import { HowItWorksGallery } from "./how-it-works-gallery";
 import { HowItWorksHero } from "./how-it-works-hero";
 import { HowItWorksTimeline } from "./how-it-works-timeline";
+
+// Below-fold sections — lazy loaded
+const HowItWorksGallery = dynamic(() => import("./how-it-works-gallery").then(m => m.HowItWorksGallery));
+const HowItWorksCta = dynamic(() => import("./how-it-works-cta").then(m => m.HowItWorksCta));
 
 function SocialIcon({
   label,
