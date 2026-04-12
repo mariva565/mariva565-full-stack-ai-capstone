@@ -1,8 +1,10 @@
+import { redirect } from "next/navigation";
 import dynamic from "next/dynamic";
 import { V1Hero } from "../components/home/v1-hero";
 import { Navbar } from "../components/layout/Navbar";
 import { CursorGlow } from "../components/ui/cursor-glow";
 import { ScrollToTop } from "../components/ui/scroll-to-top";
+import { getRequestUserOrNull } from "../lib/server-auth";
 import Link from "next/link";
 
 // Below-fold sections — loaded lazily so initial JS bundle stays small
@@ -33,7 +35,10 @@ function SocialLink({ href, label, children }: { href: string; label: string; ch
   );
 }
 
-export default function HomePage() {
+export default async function HomePage() {
+  const user = await getRequestUserOrNull();
+  if (user) redirect("/dashboard");
+
   return (
     <div className="min-h-screen bg-purple-50 flex flex-col p-4 md:p-8 selection:bg-brand-100 selection:text-brand-900 overflow-x-hidden transition-colors duration-500">
       {/* App-Wrapper (Rounded Box Container) */}

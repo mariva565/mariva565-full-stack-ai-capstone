@@ -13,6 +13,7 @@ import { useFilteredData } from "./use-filtered-data";
 import { Pagination } from "./pagination";
 import { ExportButton } from "./export-button";
 import { SkeletonTable } from "./skeleton-table";
+import { AdminMobileCard } from "./admin-mobile-card";
 
 type AdminUser = {
   id: number;
@@ -118,7 +119,44 @@ export function UsersTab() {
         </button>
       </div>
 
-      <div className="overflow-x-auto">
+      {/* Mobile card view */}
+      <div className="md:hidden space-y-3">
+        {paged.map((user) => (
+          <AdminMobileCard
+            key={user.id}
+            dimmed={user.blocked}
+            title={
+              <span className="flex items-center gap-2">
+                <img
+                  src={user.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=6366f1&color=fff&size=32`}
+                  alt=""
+                  className="h-7 w-7 rounded-full object-cover"
+                />
+                {user.name}
+              </span>
+            }
+            subtitle={user.email}
+            badge={<RoleBadge role={user.role} onClick={() => setRoleChangeUser(user)} />}
+            meta={[
+              { label: "Status", value: (
+                <button
+                  onClick={() => toggleBlock(user)}
+                  className={`rounded-full px-2 py-0.5 text-xs font-medium ${user.blocked ? "bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-300" : "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300"}`}
+                >
+                  {user.blocked ? "Blocked" : "Active"}
+                </button>
+              )},
+              { label: "Joined", value: new Date(user.createdAt).toLocaleDateString() },
+            ]}
+            onEdit={() => setEditingUser(user)}
+            onDelete={() => setUserToDelete({ id: user.id, email: user.email })}
+          />
+        ))}
+        {filtered.length === 0 && <p className="text-center text-slate-500 dark:text-slate-400">No users found.</p>}
+      </div>
+
+      {/* Desktop table view */}
+      <div className="hidden md:block overflow-x-auto">
         <table className="w-full text-left text-sm">
           <thead>
             <tr className="border-b border-slate-200 dark:border-slate-700">
@@ -178,6 +216,7 @@ export function UsersTab() {
         {filtered.length === 0 && (
           <p className="mt-4 text-center text-slate-500 dark:text-slate-400">No users found.</p>
         )}
+      </div>
       </div>
 
       <Pagination currentPage={page} totalItems={filtered.length} itemsPerPage={settings.itemsPerPage} onPageChange={setPage} />

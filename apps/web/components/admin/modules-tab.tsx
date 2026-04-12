@@ -13,6 +13,7 @@ import { useFilteredData } from "./use-filtered-data";
 import { Pagination } from "./pagination";
 import { ExportButton } from "./export-button";
 import { SkeletonTable } from "./skeleton-table";
+import { AdminMobileCard } from "./admin-mobile-card";
 
 type AdminModule = {
   id: number;
@@ -104,7 +105,28 @@ export function ModulesTab() {
           filename="modules"
         />
       </div>
-      <div className="overflow-x-auto">
+      {/* Mobile card view */}
+      <div className="md:hidden space-y-3">
+        {paged.map((mod) => (
+          <AdminMobileCard
+            key={mod.id}
+            checked={bulk.isSelected(mod.id)}
+            onCheck={() => bulk.toggle(mod.id)}
+            title={mod.title}
+            subtitle={mod.courseTitle}
+            meta={[
+              { label: "Author", value: mod.authorName },
+              { label: "Order", value: `#${mod.orderIndex + 1}` },
+            ]}
+            onEdit={() => setEditingModule(mod)}
+            onDelete={() => setModuleToDelete({ id: mod.id, title: mod.title })}
+          />
+        ))}
+        {filtered.length === 0 && <p className="text-center text-slate-500 dark:text-slate-400">No modules found.</p>}
+      </div>
+
+      {/* Desktop table view */}
+      <div className="hidden md:block overflow-x-auto">
         <table className="w-full text-left text-sm">
           <thead>
             <tr className="border-b border-slate-200 dark:border-slate-700">
@@ -139,6 +161,7 @@ export function ModulesTab() {
         {filtered.length === 0 && (
           <p className="mt-4 text-center text-slate-500 dark:text-slate-400">No modules found.</p>
         )}
+      </div>
       </div>
 
       <Pagination currentPage={page} totalItems={filtered.length} itemsPerPage={settings.itemsPerPage} onPageChange={setPage} />

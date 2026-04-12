@@ -13,6 +13,7 @@ import { useFilteredData } from "./use-filtered-data";
 import { Pagination } from "./pagination";
 import { ExportButton } from "./export-button";
 import { SkeletonTable } from "./skeleton-table";
+import { AdminMobileCard } from "./admin-mobile-card";
 
 type AdminMaterial = {
   id: number;
@@ -104,7 +105,33 @@ export function MaterialsTab() {
           filename="materials"
         />
       </div>
-      <div className="overflow-x-auto">
+      {/* Mobile card view */}
+      <div className="md:hidden space-y-3">
+        {paged.map((mat) => (
+          <AdminMobileCard
+            key={mat.id}
+            checked={bulk.isSelected(mat.id)}
+            onCheck={() => bulk.toggle(mat.id)}
+            title={mat.title}
+            subtitle={`${mat.moduleTitle} · ${mat.courseTitle}`}
+            badge={
+              <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600 dark:bg-slate-700 dark:text-slate-300">
+                {mat.materialType}
+              </span>
+            }
+            meta={[
+              { label: "Author", value: mat.authorName },
+              { label: "Created", value: new Date(mat.createdAt).toLocaleDateString() },
+            ]}
+            onEdit={() => setEditingMaterial(mat)}
+            onDelete={() => setMaterialToDelete({ id: mat.id, title: mat.title })}
+          />
+        ))}
+        {filtered.length === 0 && <p className="text-center text-slate-500 dark:text-slate-400">No materials found.</p>}
+      </div>
+
+      {/* Desktop table view */}
+      <div className="hidden md:block overflow-x-auto">
         <table className="w-full text-left text-sm">
           <thead>
             <tr className="border-b border-slate-200 dark:border-slate-700">
@@ -158,6 +185,7 @@ export function MaterialsTab() {
         {filtered.length === 0 && (
           <p className="mt-4 text-center text-slate-500 dark:text-slate-400">No materials found.</p>
         )}
+      </div>
       </div>
 
       <Pagination currentPage={page} totalItems={filtered.length} itemsPerPage={settings.itemsPerPage} onPageChange={setPage} />

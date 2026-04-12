@@ -200,9 +200,6 @@
     background-clip: text;
     -webkit-text-fill-color: transparent;
     color: transparent;
-    filter:
-      drop-shadow(0 8px 20px rgba(129, 140, 248, 0.1))
-      drop-shadow(0 0 10px rgba(34, 211, 238, 0.05));
   }
 
   .dark .dashboard-script-title,
@@ -225,9 +222,6 @@
     background-clip: text;
     -webkit-text-fill-color: transparent;
     color: transparent;
-    filter:
-      drop-shadow(0 10px 24px rgba(99, 102, 241, 0.08))
-      drop-shadow(0 0 12px rgba(6, 182, 212, 0.05));
   }
 
   .home-ink-title {
@@ -574,4 +568,27 @@
   #global-spinner-overlay {
     background-color: rgba(15, 23, 42, 0.8);
   }
+}
+
+/* ===== Navigation progress bar ===== */
+@keyframes navProgressFill {
+  0%   { transform: scaleX(0); }
+  20%  { transform: scaleX(0.45); }
+  60%  { transform: scaleX(0.72); }
+  100% { transform: scaleX(0.88); }
+}
+
+.nav-progress-fill {
+  transform-origin: left;
+  animation: navProgressFill 3s cubic-bezier(0.1, 0.6, 0.4, 1) forwards;
+}
+
+/* ===== Page enter animation (triggered by PageEnterEffect) ===== */
+@keyframes pageEnter {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.page-enter-animation {
+  animation: pageEnter 0.22s ease-out both;
 }

@@ -19,7 +19,7 @@ type ModulePinnedSidebarProps = {
 export function ModulePinnedSidebar({ items }: ModulePinnedSidebarProps) {
   return (
     <aside className="rounded-[1.8rem] border border-slate-200/80 bg-white/85 p-4 shadow-[0_24px_55px_rgba(15,23,42,0.06)] backdrop-blur dark:border-cyan-400/10 dark:bg-slate-950/55 xl:sticky xl:top-24 xl:h-fit">
-      <div className="rounded-[1.4rem] border border-slate-200/80 bg-[linear-gradient(160deg,rgba(255,255,255,0.95)_0%,rgba(248,250,252,0.92)_100%)] px-4 py-4 dark:border-slate-800 dark:bg-slate-900/80">
+      <div className="rounded-[1.4rem] border border-slate-200/80 bg-[linear-gradient(160deg,rgba(255,255,255,0.95)_0%,rgba(248,250,252,0.92)_100%)] px-4 py-4 dark:border-slate-800 dark:bg-none dark:bg-slate-900/80">
         <p className="text-[0.68rem] font-semibold uppercase tracking-[0.3em] text-slate-400 dark:text-slate-500">
           Quick Access
         </p>

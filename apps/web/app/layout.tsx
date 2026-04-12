@@ -5,10 +5,12 @@ import { ThemeScript } from "@/components/theme/theme-script";
 import { Navbar } from "@/components/navbar";
 import { ChatGate } from "@/components/chat/chat-gate";
 import { Providers } from "@/components/providers";
+import { PageEnterEffect } from "@/components/ui/page-enter-effect";
 import "./globals.css";
 
 const shantellSans = Shantell_Sans({
   subsets: ["latin", "cyrillic"],
+  weight: ["400", "600", "700", "800"],
   variable: "--font-shantell",
 });
 
@@ -54,7 +56,9 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <ThemeScript />
         <Providers>
           <Navbar />
-          {children}
+          <PageEnterEffect>
+            {children}
+          </PageEnterEffect>
           <ChatGate />
         </Providers>
       </body>

@@ -11,6 +11,7 @@ import { ModulePinnedSidebar } from "./module-pinned-sidebar";
 import { ModuleSidebar } from "./module-sidebar";
 import type { ModuleWorkspaceData } from "./types";
 import { ModuleWorkspaceHeader } from "./module-workspace-header";
+import { AddMaterialFab } from "../ui/add-material-fab";
 import { Toast, type ToastTone } from "../ui/toast";
 import {
   matchesFilter,
@@ -270,6 +271,8 @@ export function ModuleWorkspaceClientPage({
           </div>
         </div>
       </div>
+
+      <AddMaterialFab active={showCreateForm} onClick={toggleCreateForm} />
 
       {toast ? <Toast message={toast.message} tone={toast.tone} onClose={() => setToast(null)} /> : null}
     </>

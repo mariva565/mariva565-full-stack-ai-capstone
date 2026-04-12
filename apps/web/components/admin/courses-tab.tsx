@@ -13,6 +13,7 @@ import { useFilteredData } from "./use-filtered-data";
 import { Pagination } from "./pagination";
 import { ExportButton } from "./export-button";
 import { SkeletonTable } from "./skeleton-table";
+import { AdminMobileCard } from "./admin-mobile-card";
 
 type AdminCourse = {
   id: number;
@@ -104,7 +105,33 @@ export function CoursesTab() {
           filename="courses"
         />
       </div>
-      <div className="overflow-x-auto">
+      {/* Mobile card view */}
+      <div className="md:hidden space-y-3">
+        {paged.map((course) => (
+          <AdminMobileCard
+            key={course.id}
+            checked={bulk.isSelected(course.id)}
+            onCheck={() => bulk.toggle(course.id)}
+            title={course.title}
+            subtitle={course.authorName}
+            badge={
+              <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${course.status === "published" ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300" : "bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300"}`}>
+                {course.status}
+              </span>
+            }
+            meta={[
+              ...(course.description ? [{ label: "Desc", value: <span className="max-w-[160px] truncate block">{course.description}</span> }] : []),
+              { label: "Created", value: new Date(course.createdAt).toLocaleDateString() },
+            ]}
+            onEdit={() => setEditingCourse(course)}
+            onDelete={() => setCourseToDelete({ id: course.id, title: course.title })}
+          />
+        ))}
+        {filtered.length === 0 && <p className="text-center text-slate-500 dark:text-slate-400">No courses found.</p>}
+      </div>
+
+      {/* Desktop table view */}
+      <div className="hidden md:block overflow-x-auto">
         <table className="w-full text-left text-sm">
           <thead>
             <tr className="border-b border-slate-200 dark:border-slate-700">
@@ -145,6 +172,7 @@ export function CoursesTab() {
         {filtered.length === 0 && (
           <p className="mt-4 text-center text-slate-500 dark:text-slate-400">No courses found.</p>
         )}
+      </div>
       </div>
 
       <Pagination currentPage={page} totalItems={filtered.length} itemsPerPage={settings.itemsPerPage} onPageChange={setPage} />
