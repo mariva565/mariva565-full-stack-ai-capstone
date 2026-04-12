@@ -153,13 +153,31 @@ Current mobile quality-gate status:
 - **No Monolithic Pages**: Page files in `app/` should mostly be orchestrators, delegating UI to specialized components.
 
 ### Handoff
-- Update `docs/dev-log.md` at end of each session
-- Update `docs/implementation-plan.md` status when a phase completes
-- Keep mobile execution docs synced when working on mobile quality/release:
+
+> ⚠️ **ЗАДЪЛЖИТЕЛНО — ВСЯКА СЕСИЯ БЕЗ ИЗКЛЮЧЕНИЕ**
+>
+> Преди да приключиш сесията ТРЯБВА да обновиш `docs/dev-log.md`.
+> Ако не го направиш, работата от сесията е невидима за следващия агент и потребителя.
+
+**`docs/dev-log.md` — правила за попълване:**
+
+- Добавяй нов запис в началото на файла (под "Предстоящо") с формат `## YYYY-MM-DD`
+- Всяка логически свързана група промени → отделен `### Session NNN — <кратко описание>` блок
+- За всеки блок включи:
+  - **Какво направихме** — списък с конкретни промени (нови файлове, API endpoints, компоненти)
+  - **Файлове** — кои файлове са засегнати
+  - **Verification** — резултат от `tsc --noEmit` или `typecheck` скрипта
+  - **Решения** — важни архитектурни или UX решения, ако има такива
+- Commit-ни devlog заедно с кода — не като отделен commit след това
+
+**Останала документация:**
+- `docs/implementation-plan.md` — обнови статуса когато фаза завършва
+- При mobile quality/release работа синхронизирай:
   - `docs/mobile-execution-checklist.md`
   - `docs/mobile-smoke-test-matrix.md`
   - `docs/mobile-release-checklist.md`
-- New chat prompt: "Read `docs/dev-log.md`, `docs/implementation-plan.md`, `docs/performance-guardrails.md`, `docs/mobile-execution-checklist.md`, and `docs/mobile-smoke-test-matrix.md`, then continue from the current phase."
+
+**Prompt за нов чат:** "Read `docs/dev-log.md`, `docs/implementation-plan.md`, `docs/performance-guardrails.md`, `docs/mobile-execution-checklist.md`, and `docs/mobile-smoke-test-matrix.md`, then continue from the current phase."
 
 ## Legacy Reference
 
