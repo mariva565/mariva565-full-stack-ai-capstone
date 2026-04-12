@@ -62,6 +62,17 @@ export function NavbarClient({ initialUser }: NavbarClientProps) {
     });
   }
 
+  // Custom active check per link — post detail pages (/community/[id]) are neutral
+  function isActive(href: string): boolean {
+    if (href === "/") return pathname === "/";
+    if (href === "/community") {
+      return pathname === "/community" ||
+        pathname === "/community/new" ||
+        /^\/community\/\d+\/edit$/.test(pathname);
+    }
+    return pathname.startsWith(href);
+  }
+
   const links = [
     { href: "/", label: "Home" },
     { href: "/dashboard", label: "Dashboard" },
@@ -99,7 +110,7 @@ export function NavbarClient({ initialUser }: NavbarClientProps) {
               key={link.href}
               href={link.href}
               className={`rounded-full px-3 py-1.5 text-sm font-medium transition ${
-                (link.href === "/" ? pathname === "/" : pathname.startsWith(link.href))
+                isActive(link.href)
                   ? "bg-[linear-gradient(135deg,#6366f1_0%,#8b5cf6_55%,#06b6d4_100%)] text-white shadow-[0_12px_30px_rgba(99,102,241,0.22)]"
                   : "text-slate-600 hover:bg-white/70 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-900/60 dark:hover:text-white"
               }`}

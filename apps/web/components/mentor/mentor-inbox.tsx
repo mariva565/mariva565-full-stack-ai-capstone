@@ -158,7 +158,7 @@ export function MentorInbox() {
 
                   {/* Title */}
                   <Link href={`/community/${q.id}`} className="mt-1 block">
-                    <h3 className="text-base font-bold text-slate-800 hover:text-brand-600 dark:text-slate-100 dark:hover:text-brand-400 line-clamp-2 transition">
+                    <h3 className="font-shantell text-base font-bold text-slate-800 hover:text-brand-600 dark:text-slate-100 dark:hover:text-brand-400 line-clamp-2 transition">
                       {q.title}
                     </h3>
                   </Link>

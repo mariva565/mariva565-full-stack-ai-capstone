@@ -88,7 +88,7 @@ function PostCard({ post, currentUserId, onLike }: {
 
           {/* Title */}
           <Link href={`/community/${post.id}`} className="mt-1 block">
-            <h3 className="text-base font-bold text-slate-800 transition group-hover:text-brand-600 dark:text-slate-100 dark:group-hover:text-brand-400 line-clamp-2">
+            <h3 className="font-shantell text-base font-bold text-slate-800 transition group-hover:text-brand-600 dark:text-slate-100 dark:group-hover:text-brand-400 line-clamp-2">
               {post.title}
             </h3>
           </Link>

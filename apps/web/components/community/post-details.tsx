@@ -93,12 +93,15 @@ export function PostDetails({ postId, currentUser }: {
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
       {/* Back */}
-      <Link href="/community" className="mb-6 inline-flex items-center gap-2 text-sm text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition">
+      <button
+        onClick={() => router.back()}
+        className="mb-6 inline-flex items-center gap-2 text-sm text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition"
+      >
         <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
         </svg>
-        Community
-      </Link>
+        Back
+      </button>
 
       {/* Post card */}
       <div className="rounded-2xl border border-slate-200/80 bg-white/80 p-6 shadow-sm backdrop-blur-sm dark:border-slate-700/60 dark:bg-slate-900/60">
@@ -149,7 +152,7 @@ export function PostDetails({ postId, currentUser }: {
         </div>
 
         {/* Title + Content */}
-        <h1 className="mt-3 text-xl font-black text-slate-900 dark:text-white">{post.title}</h1>
+        <h1 className="mt-3 font-shantell text-xl font-black text-slate-900 dark:text-white">{post.title}</h1>
         <div className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-slate-600 dark:text-slate-300">
           {post.content}
         </div>
