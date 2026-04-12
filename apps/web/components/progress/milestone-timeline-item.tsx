@@ -191,6 +191,14 @@ export const MilestoneTimelineItem = memo(function MilestoneTimelineItem({
                 </span>
               </div>
             </div>
+            {/* Mobile-only chevron */}
+            <motion.span
+              animate={{ rotate: isExpanded ? 180 : 0, scale: isExpanded ? 1.05 : 1 }}
+              transition={reduceMotion ? { duration: 0 } : ITEM_SPRING}
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white/85 text-slate-400 shadow-sm sm:hidden dark:border-slate-700 dark:bg-slate-950/40 dark:text-slate-400"
+            >
+              <ChevronDownIcon />
+            </motion.span>
             <div className="hidden shrink-0 items-start gap-2 sm:flex">
               {milestone.dueDate ? (
                 <DeadlinePill category={dueCategory} label={duePillLabel} />

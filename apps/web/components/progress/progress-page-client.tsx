@@ -82,6 +82,12 @@ export function ProgressPageClient({ initialData }: ProgressPageClientProps) {
           </div>
         </section>
 
+        {/* Mobile-only: sidebar panels appear before the timeline */}
+        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:hidden">
+          <UpcomingEventsPanel events={events} />
+          <DueSoonList milestones={dueSoonMilestones} />
+        </div>
+
         <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
           <div className="space-y-6">
             <ProgressBar milestones={milestones} />
@@ -103,7 +109,8 @@ export function ProgressPageClient({ initialData }: ProgressPageClientProps) {
             />
           </div>
 
-          <div className="space-y-6">
+          {/* Desktop-only right column */}
+          <div className="hidden space-y-6 lg:block">
             <UpcomingEventsPanel events={events} />
             <DueSoonList milestones={dueSoonMilestones} />
           </div>

@@ -60,14 +60,14 @@ export function AddMilestoneForm({ onAdd, busy }: Props) {
         rows={2}
         className="w-full resize-none rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-500 focus:border-brand-500 focus:outline-none dark:border-slate-600 dark:bg-slate-900 dark:text-white dark:placeholder-slate-500"
       />
-      <div className="flex items-center gap-3">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
         <input
           type="date"
           value={dueDate}
           onChange={(e) => setDueDate(e.target.value)}
-          className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-brand-500 focus:outline-none dark:border-slate-600 dark:bg-slate-900 dark:text-white"
+          className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-brand-500 focus:outline-none sm:w-auto dark:border-slate-600 dark:bg-slate-900 dark:text-white"
         />
-        <div className="ml-auto flex gap-2">
+        <div className="flex justify-end gap-2 sm:ml-auto">
           <button
             type="button"
             onClick={() => setOpen(false)}

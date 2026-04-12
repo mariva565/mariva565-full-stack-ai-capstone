@@ -26,11 +26,11 @@ export function ProgressSummaryCards({
   ];
 
   return (
-    <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-      {cards.map((card) => (
+    <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
+      {cards.map((card, i) => (
         <div
           key={card.label}
-          className="rounded-xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-slate-700 dark:bg-slate-900/60"
+          className={`rounded-xl border border-slate-200 bg-white/80 px-4 py-3 dark:border-slate-700 dark:bg-slate-900/60${i === cards.length - 1 && cards.length % 2 !== 0 ? " col-span-2 md:col-span-1" : ""}`}
         >
           <p className="font-rubik text-xs font-semibold uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">
             {card.label}
