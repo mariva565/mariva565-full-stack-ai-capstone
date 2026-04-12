@@ -41,20 +41,18 @@ function timeAgo(dateStr: string) {
 }
 
 export function MentorInbox() {
-  const [questions, setQuestions] = useState<Question[]>([]);
-  const [loading, setLoading]     = useState(true);
-  const [filter, setFilter]       = useState("");
-  const [updating, setUpdating]   = useState<number | null>(null);
+  const [allQuestions, setAllQuestions] = useState<Question[]>([]);
+  const [loading, setLoading]           = useState(true);
+  const [filter, setFilter]             = useState("");
+  const [updating, setUpdating]         = useState<number | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
-    const params = new URLSearchParams();
-    if (filter) params.set("status", filter);
-    const res = await fetch(`/api/mentor/questions?${params}`);
+    const res = await fetch("/api/mentor/questions");
     const data = await res.json();
-    setQuestions(data.questions ?? []);
+    setAllQuestions(data.questions ?? []);
     setLoading(false);
-  }, [filter]);
+  }, []);
 
   useEffect(() => { load(); }, [load]);
 
@@ -65,17 +63,21 @@ export function MentorInbox() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ questionStatus }),
     });
-    setQuestions((prev) =>
+    setAllQuestions((prev) =>
       prev.map((q) => q.id === questionId ? { ...q, questionStatus } : q)
     );
     setUpdating(null);
   }
 
+  // Counts always from the full dataset — don't change when filter is active
   const counts = {
-    open:     questions.filter((q) => q.questionStatus === "open").length,
-    answered: questions.filter((q) => q.questionStatus === "answered").length,
-    closed:   questions.filter((q) => q.questionStatus === "closed").length,
+    open:     allQuestions.filter((q) => q.questionStatus === "open").length,
+    answered: allQuestions.filter((q) => q.questionStatus === "answered").length,
+    closed:   allQuestions.filter((q) => q.questionStatus === "closed").length,
   };
+
+  // Client-side filtering for display
+  const questions = filter ? allQuestions.filter((q) => q.questionStatus === filter) : allQuestions;
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6">
