@@ -71,6 +71,9 @@ export function NavbarClient({ initialUser }: NavbarClientProps) {
     { href: "/profile", label: "Profile" },
   ];
 
+  if (user?.role === "mentor" || user?.role === "admin") {
+    links.push({ href: "/mentor-inbox", label: "Inbox" });
+  }
   if (user?.role === "admin") {
     links.push({ href: "/admin", label: "Admin" });
   }
