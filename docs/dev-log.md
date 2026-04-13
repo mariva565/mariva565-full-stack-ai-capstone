@@ -6,14 +6,200 @@
 
 ## Предстоящо (финален етап)
 
+- [ ] **Community animated gradient title (`.hero-gradient-text`)** — да приложим запазената преливаща text анимация в Social/Community заглавията (web + mobile parity), с reduced-motion fallback и без ненужни постоянни loops.
+- [ ] **Mobile Social completion (S2/S3): Inbox + Messages** — да довършим social модула в mobile клиента:
+  - inbox списък с разговори (последно съобщение, timestamp, unread state)
+  - conversation thread екран с изпращане/получаване на съобщения
+  - entry points от Community/QR handoff към конкретен потребител
+  - consistency с web messaging поведението и auth guard-ите
+- [ ] **QR → Community DM flow** — да разширим profile QR handoff-а: след сканиране на user link да има shortcut „Send message“ към conversation с този потребител (reuse на messaging API и guard-ите).
+- [ ] **Community moderation workflow** — да дефинираме и имплементираме moderation режим (mentor/admin): pending/approved/hidden queue, UI за review, и ясни права кой може да approve/hide posts.
+- [ ] **Screenshot attachments in posts** — да преценим upload архитектурата за изображения в Community posts/comments:
+  - Option A: Cloudflare R2 (препоръчително за production)
+  - Option B: base64/inline (само временно, не се препоръчва)
+  - да добавим file size/type validation, abuse limits и thumbnail стратегия.
 - [ ] **How It Works — реални скрийншотове** — `/how-it-works` страницата има placeholder изображения в секцията със стъпките. Когато всички web + mobile екрани са готови, да се направят реални скрийншотове и да се заменят. Засяга и README assets (web-preview, mobile-preview) — може в една сесия.
-- [ ] **`.hero-gradient-text`** CSS клас е готов в `globals.css` — запазен за заглавия в Social Features екраните.
 - [ ] **ConfirmModal** — `confirm()` в `post-details.tsx` и `posts-tab.tsx` трябва да се замени с styled modal (спрямо правилото "No native dialogs").
 - [x] **S3 Chat — build + тест** — Тествано с два акаунта; Pusher real-time работи.
 - [x] **S3 Chat — височина** — фиксирано: динамично измерване на navbar offset вместо hardcoded `5rem`.
 - [ ] **S3 Chat — "Send message" от профил** — засега бутонът е само в post details. При нужда да се добави и в `/profile` страницата на друг потребител.
 
 ---
+
+## 2026-04-13
+
+### Session 225 — Backlog priority reminder: mobile social not finished
+
+**Какво направихме:**
+- Добавихме explicit TODO приоритет за незавършения mobile social обхват:
+  - `Mobile Social completion (S2/S3): Inbox + Messages`
+- Описахме подзадачите, които остават за затваряне на mobile social вертикала:
+  - inbox списък с разговори
+  - conversation thread екран
+  - Community/QR entry points към DM
+  - parity с web messaging + auth guard-ите
+
+**Файлове:**
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- Документационна промяна (няма runtime/typecheck нужда)
+
+**Решения:**
+- Маркирахме mobile inbox/messages като отделен high-priority backlog item, за да не се изгуби фокусът върху незавършения social scope.
+
+### Session 224 — TODO clarification: Social gradient animation (not font)
+
+**Какво направихме:**
+- Уточнихме backlog елементa за Community визуала: не става дума за шрифт, а за преливащата gradient text анимация.
+- Обновихме TODO записа от „Community typography pass (Shantell)“ към конкретния елемент:
+  - `Community animated gradient title (.hero-gradient-text)`
+- Премахнахме дублиращ стар TODO ред за `.hero-gradient-text`, за да остане само един source of truth в „Предстоящо“.
+- Причината: има исторически запис, че `.hero-gradient-text` е „запазен за Social Features“, но реално остава неизползван (включително отчетен при одит като unused).
+
+**Файлове:**
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- Документационна промяна (няма runtime/typecheck нужда)
+
+**Решения:**
+- Фиксирахме формулировката в backlog-а към точния visual artifact, за да няма бъдещо объркване между typography и animation задача.
+
+### Session 223 — Backlog capture from Community follow-up ideas
+
+**Какво направихме:**
+- Добавихме нови TODO точки в секцията „Предстоящо“ по последните product идеи за Community:
+  - typography pass с `font-shantell`
+  - QR handoff → директен messaging shortcut към сканирания потребител
+  - moderation workflow за mentor/admin
+  - screenshot attachments архитектура (R2-first подход + security constraints)
+
+**Файлове:**
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- Документационна промяна (няма runtime/typecheck нужда)
+
+**Решения:**
+- Записахме задачите като explicit TODO backlog за да не се изгубят между сесиите и за да има ясен execution order за следващите стъпки.
+
+### Session 140 — Android safe-area fix for community writing inputs
+
+**Какво направихме:**
+- Оправихме припокриването със системните Android бутони при писане в Community екрани (create post и comment input в post details).
+- Добавихме `useSafeAreaInsets()` и динамичен `paddingBottom` за долните input/footer секции вместо фиксирана стойност.
+- Добавихме и safe-area-aware `paddingTop` за header-ите, плюс допълнителен bottom padding в `ScrollView`, за да не се скрива съдържание под фиксирания footer.
+
+**Файлове:**
+- `[MODIFY] apps/mobile/components/community/create-post-screen.tsx`
+- `[MODIFY] apps/mobile/components/community/post-details-screen.tsx`
+
+**Verification:**
+- `npm.cmd run typecheck:mobile` ✅
+
+**Решения:**
+- Стандартизирахме community input layout-а върху `safe area insets`, за да е стабилен на Android устройства с 3-button navigation и gesture nav.
+
+### Session 139 — Mobile community header cleanup for dynamic routes
+
+**Какво направихме:**
+- Оправихме странното auto-generated заглавие в mobile header-а (формат като `community/[id]`), което се виждаше след публикуване/отваряне на пост.
+- Добавихме explicit `Stack.Screen` конфигурация за community detail/create route-овете с `headerShown: false`, за да се ползва само custom in-screen header (без дублиран stack header).
+
+**Файлове:**
+- `[MODIFY] apps/mobile/app/_layout.tsx`
+
+**Verification:**
+- `npm.cmd run typecheck:mobile` ✅
+
+**Решения:**
+- Запазихме custom header UX в community екрани и изключихме route-name header-а от Expo Router stack за по-чист визуален резултат.
+
+### Session 138 — Courses list visibility fix (owner + member)
+
+**Какво направихме:**
+- Открихме причината за празен списък с курсове: `GET /api/courses` връщаше само курсовете, създадени от текущия потребител (`createdBy`).
+- Разширихме route-а да връща и курсовете, в които потребителят е записан като member през `course_members`.
+- Така се оправя зареждането както за mobile Courses tab, така и за Community create/edit формите, които ползват същия endpoint за course dropdown.
+
+**Файлове:**
+- `[MODIFY] apps/web/app/api/courses/route.ts`
+
+**Verification:**
+- `npm.cmd run typecheck:web` ✅
+
+**Решения:**
+- Запазихме единен source of truth (`/api/courses`) за всички клиенти вместо ad-hoc client-side workaround, за да няма разминаване между web и mobile.
+
+### Session 137 — Community post creation unblock (web + mobile)
+
+**Какво направихме:**
+- Подсилихме `POST /api/posts` с устойчив error handling (JSON contract), валидация за `postType` и `courseId`, и по-ясни API кодове при невалидни данни.
+- Добавихме защитен fallback в създаването на пост: route-ът вече задава експлицитно `status: "approved"` при insert, за да няма environment-specific fail при липсващ DB default.
+- Оправихме web create формата (`CreatePostForm`) да не блокира при non-JSON backend грешки и винаги да връща user-facing message + `saving` reset.
+- Добавихме mobile create flow за Community:
+  - нов екран за създаване на пост (`/community/new`)
+  - форма с избор на тип, title/content полета и publish mutation към `/api/posts`
+  - invalidation на community feed query при успешно публикуване
+- Добавихме CTA бутон "New Post" в mobile community header-а, който отваря новия create екран.
+
+**Файлове:**
+- `[MODIFY] apps/web/app/api/posts/route.ts`
+- `[MODIFY] apps/web/components/community/create-post-form.tsx`
+- `[MODIFY] apps/mobile/components/community/community-screen.tsx`
+- `[MODIFY] apps/mobile/components/community/community.styles.ts`
+- `[NEW] apps/mobile/components/community/create-post-screen.tsx`
+- `[NEW] apps/mobile/app/community/new.tsx`
+
+**Verification:**
+- `npm.cmd run typecheck:web` ✅
+- `npm.cmd run typecheck:mobile` ✅
+
+**Решения:**
+- Избрахме mobile MVP create flow без course picker (course остава optional `null`) за по-бърз unblock на публикуването и минимален UI риск.
+- Запазихме текущата community feed структура и добавихме write capability без breaking промени към съществуващите interactions (like/comment/details).
+
+### Session 136 — Mobile Community Interactions & Details
+
+**Какво направихме:**
+- Оправихме възможността за отваряне на "post" картичките в Community Feed.
+- Имплементирахме нов екран "Post Details" (чрез expo-router dynamic route `community/[id]`), който консумира `/api/posts/[id]` и рендира поста и коментарите.
+- Осъществихме възможността за реално коментиране на постовете (чрез `TextInput` и `commentMutation` към `/api/posts/[id]/comments`) с `KeyboardAvoidingView` оптимизация.
+- Добавихме логика за "Like" (чрез `useMutation` и `/api/posts/[id]/like`), работеща директно от списъка и от детайлите, с автоматично инвалидиране на кеша.
+- Заменихме проблемната `AntDesign` 'hearto' иконка с `Ionicons`, за да предотвратим warning съобщенията.
+
+**Файлове:**
+- `[NEW] apps/mobile/app/community/[id].tsx`
+- `[NEW] apps/mobile/components/community/post-details-screen.tsx`
+- `[MODIFY] apps/mobile/components/community/use-community-feed.ts`
+- `[MODIFY] apps/mobile/components/community/post-card.tsx`
+- `[MODIFY] apps/mobile/components/community/community-screen.tsx`
+
+**Verification:**
+- Навигацията и mutator-ите работят и са строго типизирани; `post-details` успешно се свързва с backend.
+
+### Session 135 — Mobile Community Feed Implementation
+
+
+**Какво направихме:**
+- Създадохме мобилен изглед за "Community Board", консумирайки съществуващия backend endpoint `/api/posts`.
+- Добавихме `community` таб в долната навигация на мобилното приложение.
+- Спазихме стриктно принципа на модулност, като разделихме view логиката, state логиката, UI компонентите и стиловете.
+
+**Файлове:**
+- `[NEW] apps/mobile/app/(tabs)/community.tsx`
+- `[MODIFY] apps/mobile/app/(tabs)/_layout.tsx`
+- `[NEW] apps/mobile/components/community/community.styles.ts`
+- `[NEW] apps/mobile/components/community/use-community-feed.ts`
+- `[NEW] apps/mobile/components/community/post-card.tsx`
+- `[NEW] apps/mobile/components/community/community-screen.tsx`
+
+**Verification:**
+- Структурите очакват стандартен response от `/api/posts?page=1`.
+
+**Решения:**
+- Имплементацията предоставя честна основа за Social Features в мобилната версия спрямо `social-features-plan.md`.
 
 
 ## 2026-03-27

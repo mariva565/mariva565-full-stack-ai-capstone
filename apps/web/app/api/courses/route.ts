@@ -1,19 +1,33 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "../../../lib/db";
-import { courses } from "../../../../../drizzle/schema";
+import { courseMembers, courses } from "../../../../../drizzle/schema";
 import { requireAuth } from "../../../lib/api-utils";
 import { logActivity } from "../../../lib/activity";
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, inArray, or } from "drizzle-orm";
 
 // GET /api/courses — list all courses for the user
 export async function GET(request: NextRequest) {
   const auth = await requireAuth(request);
   if ("error" in auth) return auth.error;
 
+  const memberships = await db
+    .select({ courseId: courseMembers.courseId })
+    .from(courseMembers)
+    .where(eq(courseMembers.userId, auth.user.sub));
+
+  const memberCourseIds = memberships.map((membership) => membership.courseId);
+  const condition =
+    memberCourseIds.length > 0
+      ? or(
+          eq(courses.createdBy, auth.user.sub),
+          inArray(courses.id, memberCourseIds)
+        )
+      : eq(courses.createdBy, auth.user.sub);
+
   const rows = await db
     .select()
     .from(courses)
-    .where(eq(courses.createdBy, auth.user.sub))
+    .where(condition)
     .orderBy(desc(courses.createdAt));
 
   return NextResponse.json({ courses: rows });

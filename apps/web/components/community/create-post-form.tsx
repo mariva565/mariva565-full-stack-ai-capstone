@@ -36,21 +36,40 @@ export function CreatePostForm() {
     setSaving(true);
     setError("");
 
-    const res = await fetch("/api/posts", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title, content, postType, courseId: courseId || null }),
-    });
+    try {
+      const res = await fetch("/api/posts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, content, postType, courseId: courseId || null }),
+      });
 
-    if (!res.ok) {
-      const d = await res.json();
-      setError(d.message ?? "Failed to create post.");
+      const payload = await res.json().catch(() => null);
+      if (!res.ok) {
+        const message =
+          payload && typeof payload === "object" && "message" in payload
+            ? String((payload as { message?: unknown }).message ?? "")
+            : "";
+        setError(message || "Failed to create post.");
+        return;
+      }
+
+      const postId =
+        payload && typeof payload === "object" && "post" in payload
+          ? (payload as { post?: { id?: unknown } }).post?.id
+          : undefined;
+
+      if (typeof postId !== "number") {
+        setError("Post was created but could not open details.");
+        router.push("/community");
+        return;
+      }
+
+      router.push(`/community/${postId}`);
+    } catch {
+      setError("Failed to create post.");
+    } finally {
       setSaving(false);
-      return;
     }
-
-    const { post } = await res.json();
-    router.push(`/community/${post.id}`);
   }
 
   return (

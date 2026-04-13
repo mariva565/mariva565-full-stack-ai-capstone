@@ -1,0 +1,163 @@
+import { StyleSheet } from "react-native";
+import type { AppColors } from "../../lib/colors";
+
+export function makeCommunityStyles(colors: AppColors) {
+  return StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.canvas,
+    },
+    header: {
+      paddingHorizontal: 20,
+      paddingTop: 60,
+      paddingBottom: 20,
+    },
+    headerTopRow: {
+      flexDirection: "row",
+      alignItems: "flex-start",
+      justifyContent: "space-between",
+      gap: 12,
+    },
+    headerTextWrap: {
+      flex: 1,
+      minWidth: 0,
+    },
+    headerTitle: {
+      fontSize: 28,
+      fontWeight: "800",
+      color: "#ffffff",
+      marginBottom: 8,
+    },
+    headerSubtitle: {
+      fontSize: 15,
+      color: "rgba(255,255,255,0.8)",
+    },
+    newPostButton: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 6,
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+      borderRadius: 999,
+      backgroundColor: "#ffffff",
+    },
+    newPostButtonText: {
+      fontSize: 12,
+      fontWeight: "800",
+      color: colors.brandDeep,
+      textTransform: "uppercase",
+      letterSpacing: 0.4,
+    },
+    list: {
+      padding: 16,
+      paddingBottom: 80,
+    },
+    card: {
+      backgroundColor: colors.surface,
+      borderRadius: 16,
+      padding: 16,
+      marginBottom: 16,
+      borderWidth: 1,
+      borderColor: colors.borderMuted,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 6,
+      elevation: 2,
+    },
+    cardHeader: {
+      flexDirection: "row",
+      alignItems: "center",
+      marginBottom: 12,
+    },
+    avatar: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      backgroundColor: colors.violetSoft,
+      justifyContent: "center",
+      alignItems: "center",
+      marginRight: 12,
+    },
+    avatarInitials: {
+      color: colors.brandPrimary,
+      fontWeight: "700",
+      fontSize: 14,
+    },
+    authorName: {
+      color: colors.textPrimary,
+      fontSize: 16,
+      fontWeight: "600",
+    },
+    timeAgo: {
+      color: colors.textMuted,
+      fontSize: 12,
+      marginTop: 2,
+    },
+    cardTitle: {
+      color: colors.textPrimary,
+      fontSize: 18,
+      fontWeight: "700",
+      marginBottom: 8,
+      lineHeight: 24,
+    },
+    cardBody: {
+      color: colors.textSecondary,
+      fontSize: 15,
+      lineHeight: 22,
+      marginBottom: 16,
+    },
+    cardFooter: {
+      flexDirection: "row",
+      alignItems: "center",
+      borderTopWidth: 1,
+      borderTopColor: colors.borderMuted,
+      paddingTop: 12,
+    },
+    interactionRow: {
+      flexDirection: "row",
+      gap: 16,
+    },
+    interactionBtn: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 6,
+    },
+    interactionBtnText: {
+      color: colors.textSecondary,
+      fontSize: 14,
+      fontWeight: "500",
+    },
+    emptyContainer: {
+      paddingTop: 60,
+      alignItems: "center",
+    },
+    emptyTitle: {
+      fontSize: 18,
+      fontWeight: "600",
+      color: colors.textPrimary,
+      marginTop: 16,
+    },
+    emptySubtitle: {
+      fontSize: 14,
+      color: colors.textSecondary,
+      marginTop: 8,
+      textAlign: "center",
+    },
+    badge: {
+      position: "absolute",
+      right: 16,
+      top: 16,
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+      borderRadius: 12,
+      backgroundColor: colors.violetSoft,
+    },
+    badgeText: {
+      fontSize: 10,
+      fontWeight: "700",
+      color: colors.brandPrimary,
+      textTransform: "uppercase",
+    },
+  });
+}
