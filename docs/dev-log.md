@@ -15,154 +15,6 @@
 
 ---
 
-## 2026-04-12
-
-### Сесия — Social S2: Ask Mentor + UI polish + bug fixes
-
-**Какво направихме:**
-
-#### Social S0 — Course Membership + Mentor Role (ново)
-
-**Schema:**
-- Нова таблица `course_members` (migration `0006_course_members.sql`): `course_id`, `user_id`, `role` (student | mentor), `joined_at`
-- Уникален индекс `(course_id, user_id)` — потребителят може да е в курс само веднъж
-- `users.role` разширен: вече поддържа `'mentor'` освен `'user'` и `'admin'`
-
-**Нови API endpoints:**
-- `GET/POST /api/courses/[id]/members` — списък на членове / добавяне
-- `PUT/DELETE /api/courses/[id]/members/[userId]` — смяна на роля / премахване
-- `GET/POST /api/admin/members` — admin преглед на всички членства
-- `PUT/DELETE /api/admin/members/[id]` — admin управление
-
-**Auth helpers:**
-- `requireMentor()` — 403 ако не е mentor или admin
-- `requireCourseMentor(courseId)` — 403 ако не е ментор точно на този курс
-
-**Admin panel:**
-- Нов "Members" таб — добавяне/премахване на членства, toggle на роля (student ↔ mentor)
-- Fix: стray `</div>` JSX грешки в 4 admin tab компонента
-
-**Друго:**
-- `scripts/run-migration.mjs` — helper script за ръчно пускане на SQL миграции
-
-Commit: `feat: implement Social S0 — course membership + mentor role`
-
----
-
-#### Social S1 — Community Board (ново)
-
-**Schema (4 нови таблици, migration `0007_community_board.sql`):**
-- `posts` — автор, заглавие, съдържание, тип (discussion/question/resource/article), статус (pending/approved/hidden), pinning, `question_status`
-- `comments` — flat thread към пост
-- `post_likes` — toggle like с уникален constraint
-- `post_bookmarks` — bookmark с уникален constraint
-
-**API endpoints (12):**
-- `GET/POST /api/posts` — лист (филтри: type, courseId, search, page/20) + създаване
-- `GET/PUT/DELETE /api/posts/[id]` — детайли (+ comments + like/bookmark state), редактиране, изтриване
-- `POST /api/posts/[id]/comments` — добавяне на коментар
-- `DELETE /api/comments/[id]` — изтриване (автор или admin)
-- `POST /api/posts/[id]/like` — toggle like
-- `POST /api/posts/[id]/bookmark` — toggle bookmark
-- `GET /api/admin/posts` — всички постове за модерация
-- `PUT /api/admin/posts/[id]` — approve / hide / pin
-- `DELETE /api/admin/posts/[id]` — hard delete
-
-**Web страници:**
-- `/community` — CommunityFeed: списък с search + type filter + Load More (pagination)
-- `/community/new` — CreatePostForm: избор на тип, курс, заглавие, съдържание
-- `/community/[id]` — PostDetails: пълен пост, коментари, like/bookmark
-- `/community/[id]/edit` — EditPostForm: редактиране (автор или admin)
-
-**Shared типове:**
-- `post-types.ts` — `Post`, `Comment` типове; `TYPE_LABELS`, `TYPE_COLORS`, `timeAgo()`
-- `comment-item.tsx` — reusable коментар компонент
-
-**Admin:**
-- `posts-tab.tsx` — Moderation таб: approve/hide/pin/delete с inline actions
-- Добавен като "Moderation" таб в `/admin`
-
-**Navbar:** "Community" линк добавен
-
-**Seed данни:** `drizzle/seeds/community_demo.sql` — 150 demo posts, ~300 comments
-
-Commits: `feat: implement community forum system...` + `feat: implement community board features...`
-
----
-
-#### UI Polish — Community Board (бранд цветове)
-- Открихме и поправихме всички `primary-*` Tailwind класове в community компонентите — `primary-*` не съществува в Tailwind config (само като CSS variables), което водеше до липсващи стилове в светлия/тъмния режим
-- Заменени с `brand-*` в 5 файла: `community-feed.tsx`, `post-details.tsx`, `create-post-form.tsx`, `edit-post-form.tsx`, `posts-tab.tsx`
-- Засяга: avatar градиенти, hover цветове на заглавия, focus rings на inputs, pinned бейджове, filter бутони в admin
-- Commit: `fix: replace primary-* with brand-* in community components`
-
-#### Шрифт на заглавия
-- `font-shantell` добавен на post заглавия в `community-feed.tsx`, `post-details.tsx`, `mentor-inbox.tsx` — signature brand font
-
-#### Social S2 — Ask Mentor (ново)
-Имплементирахме пълния Q&A workflow за ментори.
-
-**Нови API endpoints:**
-- `GET /api/mentor/questions` — списък с въпроси от курсовете, в които потребителят е ментор; admin вижда всички; поддържа `?status=` филтър
-- `PUT /api/posts/[id]/answer-status` — mentor/admin сменя `question_status` (open → answered → closed); валидира course membership за ментори
-
-**Нова страница:**
-- `/mentor-inbox` — Mentor Inbox с три колони статистика (open/answered/closed), click-to-filter, списък с въпроси и inline status бутони (Mark answered / Close / Reopen)
-- Server-side role guard: redirect към `/forbidden` ако не е mentor/admin
-
-**Navbar:**
-- "Inbox" линк добавен — видим само за `mentor` и `admin` роли
-
-**Файлове:**
-- `apps/web/app/api/mentor/questions/route.ts` (нов)
-- `apps/web/app/api/posts/[id]/answer-status/route.ts` (нов)
-- `apps/web/app/mentor-inbox/page.tsx` (нов)
-- `apps/web/components/mentor/mentor-inbox.tsx` (нов)
-- `apps/web/components/navbar-client.tsx` (обновен)
-
-Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
-
-#### Bug fix — Mentor Inbox броячи
-- **Проблем:** при натискане на stat карта (напр. "open"), API се извикваше с `?status=open` → другите броячи ставаха 0
-- **Решение:** зареждаме всички въпроси веднъж (без server-side филтър); броячите се изчисляват от пълния dataset; филтрирането е само client-side
-- Commit: `fix: mentor inbox counts stay correct when filter is active`
-
-#### Bug fix — Back бутон от post detail
-- **Проблем:** "← Community" бутонът в post details беше hardcoded към `/community` — отварен от mentor-inbox, бутонът връщаше в Community вместо в Inbox
-- **Решение:** `router.back()` вместо `<Link href="/community">` — следва browser history
-- Лейбълът е сменен от "Community" на "Back"
-
-#### Bug fix — Navbar активен таб при четене на пост
-- **Проблем:** `/community/[id]` пътят съдържа `/community` → `pathname.startsWith("/community")` беше true → Community табът светваше при четене на пост от Inbox
-- **Решение:** Custom `isActive()` функция в `navbar-client.tsx`:
-  - `/community` активен само при: `/community`, `/community/new`, `/community/[id]/edit`
-  - `/community/[id]` (четене на конкретен пост) е неутрална страница — нищо не светва
-  - Останалите линкове ползват `startsWith` (непроменено)
-
-**Typecheck:** `tsc --noEmit` → pass (0 грешки) след всички промени
-
----
-
-## 2026-04-11
-
-### Сесия — Web UI polish (анимации)
-
-**Какво направихме:**
-- Проучихме page transitions с Framer Motion — опитахме, махнахме (App Router не поддържа exit анимации за server components)
-- Потвърдихме, че scroll reveal вече съществува (`use-scroll-reveal.ts`, `use-visible-animation.ts`) и е активен в hero, features, about, stats, cta-banner
-- **Dashboard hero** — разширихме от 2 на 4 stat карти (Courses, Modules, Materials, Pinned)
-  - Добавихме DB заявки за брой модули и материали в `getDashboardData`
-  - Добавихме `useCountUp` hook с `requestAnimationFrame` + easeOut крива — числата бройт от 0 при зареждане
-  - Gradient текст на числата (brand→cyan)
-- **Hero landing** — "Learning Journey" разделено на два отделни `block` спана
-  - Всеки ред получава собствен градиент `from-white via-cyan-300 to-white`
-- Добавен `.hero-gradient-text` CSS клас в `globals.css` — запазен за Social Features
-
-**Решения:**
-- Page transitions — не вървят добре с Next.js App Router, отказахме се
-- Пагинация за модули/материали — не е нужна за текущия обхват на проекта
-
----
 
 ## 2026-03-27
 
@@ -6471,6 +6323,154 @@ Sprint 2 - Production standards
 
 ---
 
+## 2026-04-12
+
+### Сесия — Social S2: Ask Mentor + UI polish + bug fixes
+
+**Какво направихме:**
+
+#### Social S0 — Course Membership + Mentor Role (ново)
+
+**Schema:**
+- Нова таблица `course_members` (migration `0006_course_members.sql`): `course_id`, `user_id`, `role` (student | mentor), `joined_at`
+- Уникален индекс `(course_id, user_id)` — потребителят може да е в курс само веднъж
+- `users.role` разширен: вече поддържа `'mentor'` освен `'user'` и `'admin'`
+
+**Нови API endpoints:**
+- `GET/POST /api/courses/[id]/members` — списък на членове / добавяне
+- `PUT/DELETE /api/courses/[id]/members/[userId]` — смяна на роля / премахване
+- `GET/POST /api/admin/members` — admin преглед на всички членства
+- `PUT/DELETE /api/admin/members/[id]` — admin управление
+
+**Auth helpers:**
+- `requireMentor()` — 403 ако не е mentor или admin
+- `requireCourseMentor(courseId)` — 403 ако не е ментор точно на този курс
+
+**Admin panel:**
+- Нов "Members" таб — добавяне/премахване на членства, toggle на роля (student ↔ mentor)
+- Fix: стray `</div>` JSX грешки в 4 admin tab компонента
+
+**Друго:**
+- `scripts/run-migration.mjs` — helper script за ръчно пускане на SQL миграции
+
+Commit: `feat: implement Social S0 — course membership + mentor role`
+
+---
+
+#### Social S1 — Community Board (ново)
+
+**Schema (4 нови таблици, migration `0007_community_board.sql`):**
+- `posts` — автор, заглавие, съдържание, тип (discussion/question/resource/article), статус (pending/approved/hidden), pinning, `question_status`
+- `comments` — flat thread към пост
+- `post_likes` — toggle like с уникален constraint
+- `post_bookmarks` — bookmark с уникален constraint
+
+**API endpoints (12):**
+- `GET/POST /api/posts` — лист (филтри: type, courseId, search, page/20) + създаване
+- `GET/PUT/DELETE /api/posts/[id]` — детайли (+ comments + like/bookmark state), редактиране, изтриване
+- `POST /api/posts/[id]/comments` — добавяне на коментар
+- `DELETE /api/comments/[id]` — изтриване (автор или admin)
+- `POST /api/posts/[id]/like` — toggle like
+- `POST /api/posts/[id]/bookmark` — toggle bookmark
+- `GET /api/admin/posts` — всички постове за модерация
+- `PUT /api/admin/posts/[id]` — approve / hide / pin
+- `DELETE /api/admin/posts/[id]` — hard delete
+
+**Web страници:**
+- `/community` — CommunityFeed: списък с search + type filter + Load More (pagination)
+- `/community/new` — CreatePostForm: избор на тип, курс, заглавие, съдържание
+- `/community/[id]` — PostDetails: пълен пост, коментари, like/bookmark
+- `/community/[id]/edit` — EditPostForm: редактиране (автор или admin)
+
+**Shared типове:**
+- `post-types.ts` — `Post`, `Comment` типове; `TYPE_LABELS`, `TYPE_COLORS`, `timeAgo()`
+- `comment-item.tsx` — reusable коментар компонент
+
+**Admin:**
+- `posts-tab.tsx` — Moderation таб: approve/hide/pin/delete с inline actions
+- Добавен като "Moderation" таб в `/admin`
+
+**Navbar:** "Community" линк добавен
+
+**Seed данни:** `drizzle/seeds/community_demo.sql` — 150 demo posts, ~300 comments
+
+Commits: `feat: implement community forum system...` + `feat: implement community board features...`
+
+---
+
+#### UI Polish — Community Board (бранд цветове)
+- Открихме и поправихме всички `primary-*` Tailwind класове в community компонентите — `primary-*` не съществува в Tailwind config (само като CSS variables), което водеше до липсващи стилове в светлия/тъмния режим
+- Заменени с `brand-*` в 5 файла: `community-feed.tsx`, `post-details.tsx`, `create-post-form.tsx`, `edit-post-form.tsx`, `posts-tab.tsx`
+- Засяга: avatar градиенти, hover цветове на заглавия, focus rings на inputs, pinned бейджове, filter бутони в admin
+- Commit: `fix: replace primary-* with brand-* in community components`
+
+#### Шрифт на заглавия
+- `font-shantell` добавен на post заглавия в `community-feed.tsx`, `post-details.tsx`, `mentor-inbox.tsx` — signature brand font
+
+#### Social S2 — Ask Mentor (ново)
+Имплементирахме пълния Q&A workflow за ментори.
+
+**Нови API endpoints:**
+- `GET /api/mentor/questions` — списък с въпроси от курсовете, в които потребителят е ментор; admin вижда всички; поддържа `?status=` филтър
+- `PUT /api/posts/[id]/answer-status` — mentor/admin сменя `question_status` (open → answered → closed); валидира course membership за ментори
+
+**Нова страница:**
+- `/mentor-inbox` — Mentor Inbox с три колони статистика (open/answered/closed), click-to-filter, списък с въпроси и inline status бутони (Mark answered / Close / Reopen)
+- Server-side role guard: redirect към `/forbidden` ако не е mentor/admin
+
+**Navbar:**
+- "Inbox" линк добавен — видим само за `mentor` и `admin` роли
+
+**Файлове:**
+- `apps/web/app/api/mentor/questions/route.ts` (нов)
+- `apps/web/app/api/posts/[id]/answer-status/route.ts` (нов)
+- `apps/web/app/mentor-inbox/page.tsx` (нов)
+- `apps/web/components/mentor/mentor-inbox.tsx` (нов)
+- `apps/web/components/navbar-client.tsx` (обновен)
+
+Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
+
+#### Bug fix — Mentor Inbox броячи
+- **Проблем:** при натискане на stat карта (напр. "open"), API се извикваше с `?status=open` → другите броячи ставаха 0
+- **Решение:** зареждаме всички въпроси веднъж (без server-side филтър); броячите се изчисляват от пълния dataset; филтрирането е само client-side
+- Commit: `fix: mentor inbox counts stay correct when filter is active`
+
+#### Bug fix — Back бутон от post detail
+- **Проблем:** "← Community" бутонът в post details беше hardcoded към `/community` — отварен от mentor-inbox, бутонът връщаше в Community вместо в Inbox
+- **Решение:** `router.back()` вместо `<Link href="/community">` — следва browser history
+- Лейбълът е сменен от "Community" на "Back"
+
+#### Bug fix — Navbar активен таб при четене на пост
+- **Проблем:** `/community/[id]` пътят съдържа `/community` → `pathname.startsWith("/community")` беше true → Community табът светваше при четене на пост от Inbox
+- **Решение:** Custom `isActive()` функция в `navbar-client.tsx`:
+  - `/community` активен само при: `/community`, `/community/new`, `/community/[id]/edit`
+  - `/community/[id]` (четене на конкретен пост) е неутрална страница — нищо не светва
+  - Останалите линкове ползват `startsWith` (непроменено)
+
+**Typecheck:** `tsc --noEmit` → pass (0 грешки) след всички промени
+
+---
+
+## 2026-04-11
+
+### Сесия — Web UI polish (анимации)
+
+**Какво направихме:**
+- Проучихме page transitions с Framer Motion — опитахме, махнахме (App Router не поддържа exit анимации за server components)
+- Потвърдихме, че scroll reveal вече съществува (`use-scroll-reveal.ts`, `use-visible-animation.ts`) и е активен в hero, features, about, stats, cta-banner
+- **Dashboard hero** — разширихме от 2 на 4 stat карти (Courses, Modules, Materials, Pinned)
+  - Добавихме DB заявки за брой модули и материали в `getDashboardData`
+  - Добавихме `useCountUp` hook с `requestAnimationFrame` + easeOut крива — числата бройт от 0 при зареждане
+  - Gradient текст на числата (brand→cyan)
+- **Hero landing** — "Learning Journey" разделено на два отделни `block` спана
+  - Всеки ред получава собствен градиент `from-white via-cyan-300 to-white`
+- Добавен `.hero-gradient-text` CSS клас в `globals.css` — запазен за Social Features
+
+**Решения:**
+- Page transitions — не вървят добре с Next.js App Router, отказахме се
+- Пагинация за модули/материали — не е нужна за текущия обхват на проекта
+
+---
 ## 2026-04-13
 
 ### Сесия 1 — Social S3: Real-time Messaging (имплементация)
