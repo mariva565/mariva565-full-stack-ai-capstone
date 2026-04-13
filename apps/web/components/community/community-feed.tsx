@@ -232,6 +232,7 @@ export function CommunityFeed({ currentUser }: { currentUser: { id: number; role
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search posts..."
           className="flex-1 rounded-xl border border-slate-200 bg-white/80 px-4 py-2.5 text-sm shadow-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-400 dark:border-slate-700 dark:bg-slate-900/60 dark:text-white"
+          suppressHydrationWarning
         />
         <select
           value={filterType}

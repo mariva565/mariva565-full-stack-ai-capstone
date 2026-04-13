@@ -20,6 +20,7 @@ export function PostDetails({ postId, currentUser }: {
   const [submitting, setSubmitting] = useState(false);
   const [deleting, setDeleting]     = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [messaging, setMessaging]   = useState(false);
 
   useEffect(() => {
     fetch(`/api/posts/${postId}`)
@@ -62,6 +63,18 @@ export function PostDetails({ postId, currentUser }: {
     setComments((prev) => [data.comment, ...prev]);
     setNewComment("");
     setSubmitting(false);
+  }
+
+  async function handleMessage() {
+    if (!post || messaging) return;
+    setMessaging(true);
+    const res = await fetch("/api/conversations", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId: post.authorId }),
+    });
+    const data = await res.json();
+    router.push(`/messages/${data.id}`);
   }
 
   async function handleDeleteComment(commentId: number) {
@@ -118,6 +131,15 @@ export function PostDetails({ postId, currentUser }: {
               <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">{post.authorName}</p>
               <p className="text-xs text-slate-400">{timeAgo(post.createdAt)}{post.courseTitle && ` · ${post.courseTitle}`}</p>
             </div>
+            {!isAuthor && (
+              <button
+                onClick={handleMessage}
+                disabled={messaging}
+                className="ml-2 rounded-xl border border-brand-300 px-3 py-1 text-xs font-semibold text-brand-600 transition hover:bg-brand-50 disabled:opacity-50 dark:border-brand-700 dark:text-brand-400 dark:hover:bg-brand-900/20"
+              >
+                {messaging ? "Opening…" : "Send message"}
+              </button>
+            )}
           </div>
 
           {/* Actions for author/admin */}

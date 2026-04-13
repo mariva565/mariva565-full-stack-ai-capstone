@@ -225,6 +225,55 @@ export const postBookmarks = pgTable(
   ]
 );
 
+// ─── 15. conversations ──────────────────────────────────────
+export const conversations = pgTable("conversations", {
+  id: serial("id").primaryKey(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+// ─── 16. conversation_members ───────────────────────────────
+export const conversationMembers = pgTable(
+  "conversation_members",
+  {
+    id: serial("id").primaryKey(),
+    conversationId: integer("conversation_id")
+      .notNull()
+      .references(() => conversations.id, { onDelete: "cascade" }),
+    userId: integer("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    joinedAt: timestamp("joined_at").notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("conversation_members_conv_user_idx").on(
+      table.conversationId,
+      table.userId
+    ),
+  ]
+);
+
+// ─── 17. messages ────────────────────────────────────────────
+export const messages = pgTable(
+  "messages",
+  {
+    id: serial("id").primaryKey(),
+    conversationId: integer("conversation_id")
+      .notNull()
+      .references(() => conversations.id, { onDelete: "cascade" }),
+    senderId: integer("sender_id")
+      .notNull()
+      .references(() => users.id),
+    content: text("content").notNull(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) => [
+    index("messages_conversation_created_idx").on(
+      table.conversationId,
+      table.createdAt
+    ),
+  ]
+);
+
 // ─── 14. oauth_accounts ─────────────────────────────────────
 export const oauthAccounts = pgTable(
   "oauth_accounts",

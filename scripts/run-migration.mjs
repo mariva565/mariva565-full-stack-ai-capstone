@@ -21,8 +21,18 @@ const query = readFileSync(resolve(__dirname, "..", migrationFile), "utf8");
 console.log("Running migration:", migrationFile);
 console.log("SQL:\n", query);
 
+// Split into individual statements (Neon serverless doesn't support multi-statement queries)
+// Strip line comments first, then split by semicolon
+const stripped = query.replace(/--[^\n]*/g, "");
+const statements = stripped
+  .split(";")
+  .map((s) => s.trim())
+  .filter((s) => s.length > 0);
+
 try {
-  await sql.query(query);
+  for (const statement of statements) {
+    await sql.query(statement);
+  }
   console.log("✓ Migration applied successfully.");
 } catch (err) {
   if (err.message?.includes("already exists")) {

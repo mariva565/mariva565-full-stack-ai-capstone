@@ -9,6 +9,63 @@
 - [ ] **How It Works — реални скрийншотове** — `/how-it-works` страницата има placeholder изображения в секцията със стъпките. Когато всички web + mobile екрани са готови, да се направят реални скрийншотове и да се заменят. Засяга и README assets (web-preview, mobile-preview) — може в една сесия.
 - [ ] **`.hero-gradient-text`** CSS клас е готов в `globals.css` — запазен за заглавия в Social Features екраните.
 - [ ] **ConfirmModal** — `confirm()` в `post-details.tsx` и `posts-tab.tsx` трябва да се замени с styled modal (спрямо правилото "No native dialogs").
+- [x] **S3 Chat — build + тест** — Тествано с два акаунта; Pusher real-time работи.
+- [x] **S3 Chat — височина** — фиксирано: динамично измерване на navbar offset вместо hardcoded `5rem`.
+- [ ] **S3 Chat — "Send message" от профил** — засега бутонът е само в post details. При нужда да се добави и в `/profile` страницата на друг потребител.
+
+---
+
+## 2026-04-13
+
+### Сесия 1 — Social S3: Real-time Messaging (имплементация)
+
+**Schema (migration `0008_messaging.sql`):**
+- `conversations`, `conversation_members`, `messages` — 3 таблици
+
+**Pusher setup:** `studyhub-chat` (eu), `pusher` + `pusher-js`, `lib/pusher.ts`, env vars в `apps/web/.env`
+
+**API endpoints:** GET/POST `/api/conversations`, GET/POST `/api/conversations/[id]/messages`, POST `/api/pusher/auth`
+
+**Web UI:** `/messages` (inbox), `/messages/[id]` (chat), "Send message" бутон в `post-details.tsx`, Navbar линк
+
+---
+
+### Сесия 2 — S3 Chat: Bug fixes + production тест
+
+**Критичен бъг (500 на GET /api/conversations):**
+- Оригиналният `DISTINCT ON` raw SQL чрез `db.execute` крашваше в production
+- Fix: замяна с чист Drizzle ORM query (select + orderBy desc + JS Map за last message)
+
+**UI подобрения:**
+- Chat window: контейнер (`max-w-2xl`, карта с `rounded-2xl`, border, shadow) вместо full-width
+- Chat height: `h-[calc(100dvh-5rem)]` + `flex-1 min-h-0` (все още може да иска фина настройка)
+- Messages anchored to bottom: `flex flex-col justify-end min-h-full`
+- Header показва правилно другия участник: API GET messages връща `{ messages, other }`
+- AI chatbot FAB скрит на `/messages/*` (overlap с send бутона)
+
+**Pusher real-time — потвърдено работещ:**
+- Admin ↔ Demo User, Admin ↔ Test User — съобщенията пристигат мигновено
+
+**Следваща сесия:**
+1. Fix chat височина (ако все още overflow-ва на някои резолюции)
+2. `npm run dev:web` за hot-reload вместо build+start цикъл
+3. Commit: `feat: implement S3 real-time messaging`
+4. Mobile фаза (Community + Mentor Inbox + Chat)
+
+---
+
+### Сесия 3 — S3 Chat: Height fix + commit
+
+**Chat container height fix:**
+- Проблем: `h-[calc(100dvh-5rem)]` hardcode-ваше navbar височината; при wrap на mobile линковете контейнерът overflow-ваше
+- Fix: `useEffect` + `getBoundingClientRect().top` измерва реалния navbar offset и задава `calc(100dvh - Xpx)` динамично
+- Resize listener преизчислява при промяна на viewport (navbar wrap/unwrap)
+- Файл: `apps/web/components/messages/chat-window.tsx`
+
+**Commit:** `feat: implement S3 real-time messaging` — всички S3 файлове
+
+**Следваща сесия:**
+1. Mobile фаза (Community Board + Mentor Inbox + Chat responsive)
 
 ---
 
