@@ -162,7 +162,7 @@ export function CreatePostForm() {
             disabled={saving}
             className="rounded-xl bg-v1-gradient px-5 py-2.5 text-sm font-bold text-white shadow-md transition hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-60"
           >
-            {saving ? "Publishing..." : "Publish"}
+            {saving ? "Submitting..." : "Submit Post"}
           </button>
         </div>
       </form>

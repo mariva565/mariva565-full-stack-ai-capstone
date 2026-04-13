@@ -3,6 +3,7 @@ import { db } from "../../../../../lib/db";
 import { posts, comments, users } from "../../../../../../../drizzle/schema";
 import { requireAuth } from "../../../../../lib/api-utils";
 import { logActivity } from "../../../../../lib/activity";
+import { canUserAccessPost } from "../../../../../lib/post-access";
 import { eq } from "drizzle-orm";
 
 type Params = { params: Promise<{ id: string }> };
@@ -15,8 +16,27 @@ export async function POST(request: NextRequest, { params }: Params) {
   const { id } = await params;
   const postId = parseInt(id, 10);
 
-  const [post] = await db.select({ id: posts.id, status: posts.status }).from(posts).where(eq(posts.id, postId)).limit(1);
-  if (!post || post.status === "hidden") {
+  const [post] = await db
+    .select({
+      id: posts.id,
+      status: posts.status,
+      authorId: posts.authorId,
+      courseId: posts.courseId,
+    })
+    .from(posts)
+    .where(eq(posts.id, postId))
+    .limit(1);
+
+  if (!post) {
+    return NextResponse.json({ code: "NOT_FOUND", message: "Post not found" }, { status: 404 });
+  }
+
+  const canAccessPost = await canUserAccessPost(auth.user, {
+    authorId: post.authorId,
+    status: post.status,
+    courseId: post.courseId,
+  });
+  if (!canAccessPost) {
     return NextResponse.json({ code: "NOT_FOUND", message: "Post not found" }, { status: 404 });
   }
 

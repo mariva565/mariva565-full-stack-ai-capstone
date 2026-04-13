@@ -3,6 +3,7 @@ import { db } from "../../../../lib/db";
 import { posts, users, courses, comments, postLikes, postBookmarks } from "../../../../../../drizzle/schema";
 import { requireAuth } from "../../../../lib/api-utils";
 import { logActivity } from "../../../../lib/activity";
+import { canUserAccessPost } from "../../../../lib/post-access";
 import { eq, and, desc, sql } from "drizzle-orm";
 
 type Params = { params: Promise<{ id: string }> };
@@ -43,7 +44,12 @@ export async function GET(request: NextRequest, { params }: Params) {
     return NextResponse.json({ code: "NOT_FOUND", message: "Post not found" }, { status: 404 });
   }
 
-  if (row.status === "hidden" && auth.user.role !== "admin" && row.authorId !== auth.user.sub) {
+  const canAccessPost = await canUserAccessPost(auth.user, {
+    authorId: row.authorId,
+    status: row.status,
+    courseId: row.courseId,
+  });
+  if (!canAccessPost) {
     return NextResponse.json({ code: "NOT_FOUND", message: "Post not found" }, { status: 404 });
   }
 

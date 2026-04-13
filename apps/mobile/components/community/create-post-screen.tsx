@@ -308,15 +308,15 @@ export function CreatePostScreen() {
             !canSubmit && styles.submitButtonDisabled,
           ]}
           accessibilityRole="button"
-          accessibilityLabel="Publish post"
+          accessibilityLabel="Submit post"
         >
           {publishMutation.isPending ? (
             <>
               <ActivityIndicator size="small" color="#ffffff" />
-              <Text style={styles.submitText}>Publishing...</Text>
+              <Text style={styles.submitText}>Submitting...</Text>
             </>
           ) : (
-            <Text style={styles.submitText}>Publish Post</Text>
+            <Text style={styles.submitText}>Submit Post</Text>
           )}
         </TouchableOpacity>
       </View>

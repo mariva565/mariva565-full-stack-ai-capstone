@@ -309,6 +309,17 @@
   animation: gradientShift 4s ease infinite;
 }
 
+.dark .hero-gradient-text {
+  background-image: linear-gradient(90deg, #f8fafc, #93c5fd, #c4b5fd, #f8fafc);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-gradient-text {
+    animation: none;
+    background-position: 0 50%;
+  }
+}
+
 /* Floating icon animation (About section benefit cards) */
 @keyframes floatIcon {
   0%, 100% { transform: translateY(0); }

@@ -9,6 +9,7 @@ import { useCommunityFeed } from "./use-community-feed";
 import { PostCard } from "./post-card";
 import { BrandedSpinner } from "../branded-spinner";
 import { useMessagesInbox } from "../messages/use-messages-inbox";
+import { CommunityGradientTitle } from "./community-gradient-title";
 
 export function CommunityScreen() {
   const { colors } = useTheme();
@@ -32,7 +33,11 @@ export function CommunityScreen() {
       <LinearGradient colors={[colors.brandDeep, colors.brandPrimary]} style={styles.header}>
         <View style={styles.headerTopRow}>
           <View style={styles.headerTextWrap}>
-            <Text style={styles.headerTitle}>Community</Text>
+            <CommunityGradientTitle
+              text="Community"
+              containerStyle={styles.headerTitleWrap}
+              textStyle={styles.headerTitleGlyph}
+            />
             <Text style={styles.headerSubtitle}>Discuss, ask questions, and share notes with fellow students.</Text>
           </View>
           <View style={styles.headerActions}>

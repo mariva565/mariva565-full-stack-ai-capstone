@@ -6,14 +6,14 @@
 
 ## РџСЂРµРґСЃС‚РѕСЏС‰Рѕ (С„РёРЅР°Р»РµРЅ РµС‚Р°Рї)
 
-- [ ] **Community animated gradient title (`.hero-gradient-text`)** вЂ” РґР° РїСЂРёР»РѕР¶РёРј Р·Р°РїР°Р·РµРЅР°С‚Р° РїСЂРµР»РёРІР°С‰Р° text Р°РЅРёРјР°С†РёСЏ РІ Social/Community Р·Р°РіР»Р°РІРёСЏС‚Р° (web + mobile parity), СЃ reduced-motion fallback Рё Р±РµР· РЅРµРЅСѓР¶РЅРё РїРѕСЃС‚РѕСЏРЅРЅРё loops.
+- [x] **Community animated gradient title (`.hero-gradient-text`)** вЂ” РІРЅРµРґСЂРµРЅРѕ РІ web + mobile СЃ reduced-motion fallback (2026-04-13, Session 234).
 - [ ] **Mobile Social completion (S2/S3): Inbox + Messages** вЂ” РґР° РґРѕРІСЉСЂС€РёРј social РјРѕРґСѓР»Р° РІ mobile РєР»РёРµРЅС‚Р°:
   - inbox СЃРїРёСЃСЉРє СЃ СЂР°Р·РіРѕРІРѕСЂРё (РїРѕСЃР»РµРґРЅРѕ СЃСЉРѕР±С‰РµРЅРёРµ, timestamp, unread state)
   - conversation thread РµРєСЂР°РЅ СЃ РёР·РїСЂР°С‰Р°РЅРµ/РїРѕР»СѓС‡Р°РІР°РЅРµ РЅР° СЃСЉРѕР±С‰РµРЅРёСЏ
   - entry points РѕС‚ Community/QR handoff РєСЉРј РєРѕРЅРєСЂРµС‚РµРЅ РїРѕС‚СЂРµР±РёС‚РµР»
   - consistency СЃ web messaging РїРѕРІРµРґРµРЅРёРµС‚Рѕ Рё auth guard-РёС‚Рµ
 - [x] **QR в†’ Community DM flow** вЂ” РґР° СЂР°Р·С€РёСЂРёРј profile QR handoff-Р°: СЃР»РµРґ СЃРєР°РЅРёСЂР°РЅРµ РЅР° user link РґР° РёРјР° shortcut вЂћSend messageвЂњ РєСЉРј conversation СЃ С‚РѕР·Рё РїРѕС‚СЂРµР±РёС‚РµР» (reuse РЅР° messaging API Рё guard-РёС‚Рµ).
-- [ ] **Community moderation workflow** вЂ” РґР° РґРµС„РёРЅРёСЂР°РјРµ Рё РёРјРїР»РµРјРµРЅС‚РёСЂР°РјРµ moderation СЂРµР¶РёРј (mentor/admin): pending/approved/hidden queue, UI Р·Р° review, Рё СЏСЃРЅРё РїСЂР°РІР° РєРѕР№ РјРѕР¶Рµ РґР° approve/hide posts.
+- [ ] **Community moderation workflow** вЂ” MVP pre-moderation Рµ РІРЅРµРґСЂРµРЅР° (Session 235: `user -> pending`, mentor/admin approve/hide, course-scoped mentor rights). РћСЃС‚Р°РІР°: РґРѕРїСЉР»РЅРёС‚РµР»РЅРѕ UX polishing/queue ergonomics Рё (РїСЂРё РЅСѓР¶РґР°) dedicated mentor web moderation view.
 - [ ] **Screenshot attachments in posts** вЂ” РґР° РїСЂРµС†РµРЅРёРј upload Р°СЂС…РёС‚РµРєС‚СѓСЂР°С‚Р° Р·Р° РёР·РѕР±СЂР°Р¶РµРЅРёСЏ РІ Community posts/comments:
   - Option A: Cloudflare R2 (РїСЂРµРїРѕСЂСЉС‡РёС‚РµР»РЅРѕ Р·Р° production)
   - Option B: base64/inline (СЃР°РјРѕ РІСЂРµРјРµРЅРЅРѕ, РЅРµ СЃРµ РїСЂРµРїРѕСЂСЉС‡РІР°)
@@ -28,6 +28,71 @@
 ---
 
 ## 2026-04-13
+### Session 235 - MVP true moderation flow (user pending + mentor/admin moderation)
+
+**Какво направихме:**
+- Enabled true pre-moderation for Community posts:
+  - new posts by `user` are now created as `pending`
+  - new posts by `mentor`/`admin` remain `approved`
+- Added centralized post access/moderation helper logic in web backend:
+  - visibility checks for `approved/pending/hidden`
+  - mentor scope checks bound to mentored courses
+- Hardened post interaction routes so non-visible posts cannot be liked/bookmarked/commented by unauthorized users.
+- Extended moderation API permissions from admin-only to mentor/admin for moderation actions:
+  - mentors can moderate only posts from courses they mentor
+  - mentors can `approve/hide` (pin changes remain admin-only)
+  - hard delete remains admin-only
+- Improved moderation queue behavior in web admin tab by defaulting status filter to `pending`.
+- Updated create-post CTA wording (`Publish` -> `Submit`) in web and mobile Community create flows to align with moderation semantics.
+
+**Файлове:**
+- `[NEW] apps/web/lib/post-access.ts`
+- `[MODIFY] apps/web/app/api/posts/route.ts`
+- `[MODIFY] apps/web/app/api/posts/[id]/route.ts`
+- `[MODIFY] apps/web/app/api/posts/[id]/comments/route.ts`
+- `[MODIFY] apps/web/app/api/posts/[id]/like/route.ts`
+- `[MODIFY] apps/web/app/api/posts/[id]/bookmark/route.ts`
+- `[MODIFY] apps/web/app/api/admin/posts/route.ts`
+- `[MODIFY] apps/web/app/api/admin/posts/[id]/route.ts`
+- `[MODIFY] apps/web/components/admin/posts-tab.tsx`
+- `[MODIFY] apps/web/components/community/create-post-form.tsx`
+- `[MODIFY] apps/mobile/components/community/create-post-screen.tsx`
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- `npm.cmd run typecheck:web` ✅
+- `npm.cmd run typecheck:mobile` ✅
+
+**Решения:**
+- Kept mobile without moderation/admin UI per scope decision; moderation remains web/backend-driven.
+- Applied mentor moderation with course-scoped authorization to avoid global mentor moderation rights.
+- Preserved admin-only destructive controls (`DELETE`, pin management) while opening `approve/hide` to mentors.
+
+### Session 234 - Community gradient title parity (web + mobile + reduced motion)
+
+**Какво направихме:**
+- Wired the reserved `.hero-gradient-text` animation into the web Community page title so it is no longer unused.
+- Added `prefers-reduced-motion` fallback for `.hero-gradient-text` in global web styles.
+- Built mobile parity for the same visual concept via animated multi-stop title coloring in Community header.
+- Added mobile reduced-motion accessibility hook (`AccessibilityInfo.isReduceMotionEnabled + reduceMotionChanged`) and disabled title animation when reduced motion is enabled.
+
+**Файлове:**
+- `[MODIFY] apps/web/components/community/community-feed.tsx`
+- `[MODIFY] apps/web/app/globals.css`
+- `[NEW] apps/mobile/lib/use-reduced-motion-preference.ts`
+- `[NEW] apps/mobile/components/community/community-gradient-title.tsx`
+- `[MODIFY] apps/mobile/components/community/community-screen.tsx`
+- `[MODIFY] apps/mobile/components/community/community.styles.ts`
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- `npm.cmd run typecheck:web` ✅
+- `npm.cmd run typecheck:mobile` ✅
+
+**Решения:**
+- Kept motion subtle and looped only for the title itself, while honoring reduced-motion on both platforms.
+- Used a dedicated mobile title component so the effect stays isolated to Community header and easy to reuse/tune later.
+
 ### Session 233 - Mobile native push notifications for chat messages
 
 **Какво направихме:**

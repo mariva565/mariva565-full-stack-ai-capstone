@@ -44,7 +44,7 @@ function timeAgo(dateStr: string) {
 export function PostsTab() {
   const [posts, setPosts]         = useState<AdminPost[]>([]);
   const [loading, setLoading]     = useState(true);
-  const [filterStatus, setFilterStatus] = useState("");
+  const [filterStatus, setFilterStatus] = useState("pending");
   const [actionId, setActionId]   = useState<number | null>(null);
   const [confirmId, setConfirmId] = useState<number | null>(null);
 

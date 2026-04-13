@@ -144,7 +144,10 @@ export async function POST(request: NextRequest) {
         title: title.trim(),
         content: content.trim(),
         postType: normalizedPostType,
-        status: "approved",
+        status:
+          auth.user.role === "admin" || auth.user.role === "mentor"
+            ? "approved"
+            : "pending",
         courseId: normalizedCourseId,
         questionStatus: normalizedPostType === "question" ? "open" : null,
       })
@@ -153,6 +156,7 @@ export async function POST(request: NextRequest) {
     await logActivity(auth.user.sub, "create_post", post.id, {
       title: post.title,
       postType: post.postType,
+      status: post.status,
     });
 
     return NextResponse.json({ post }, { status: 201 });

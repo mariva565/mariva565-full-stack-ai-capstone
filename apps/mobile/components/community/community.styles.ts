@@ -29,11 +29,12 @@ export function makeCommunityStyles(colors: AppColors) {
       flexWrap: "wrap",
       gap: 8,
     },
-    headerTitle: {
+    headerTitleWrap: {
+      marginBottom: 8,
+    },
+    headerTitleGlyph: {
       fontSize: 28,
       fontWeight: "800",
-      color: "#ffffff",
-      marginBottom: 8,
     },
     headerSubtitle: {
       fontSize: 15,

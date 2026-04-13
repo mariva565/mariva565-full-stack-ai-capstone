@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "../../../../../lib/db";
 import { posts } from "../../../../../../../drizzle/schema";
-import { requireAuth, requireAdmin } from "../../../../../lib/api-utils";
+import { requireAuth, requireAdmin, requireMentor } from "../../../../../lib/api-utils";
+import { canUserModeratePost } from "../../../../../lib/post-access";
 import { eq } from "drizzle-orm";
 
 type Params = { params: Promise<{ id: string }> };
@@ -10,15 +11,29 @@ type Params = { params: Promise<{ id: string }> };
 export async function PUT(request: NextRequest, { params }: Params) {
   const auth = await requireAuth(request);
   if ("error" in auth) return auth.error;
-  const adminErr = requireAdmin(auth.user);
-  if (adminErr) return adminErr;
+  const mentorErr = requireMentor(auth.user);
+  if (mentorErr) return mentorErr;
 
   const { id } = await params;
   const postId = parseInt(id, 10);
 
-  const [post] = await db.select({ id: posts.id }).from(posts).where(eq(posts.id, postId)).limit(1);
+  const [post] = await db
+    .select({ id: posts.id, courseId: posts.courseId })
+    .from(posts)
+    .where(eq(posts.id, postId))
+    .limit(1);
   if (!post) {
     return NextResponse.json({ code: "NOT_FOUND", message: "Post not found" }, { status: 404 });
+  }
+
+  const canModerate = await canUserModeratePost(auth.user, {
+    courseId: post.courseId,
+  });
+  if (!canModerate) {
+    return NextResponse.json(
+      { code: "FORBIDDEN", message: "You do not have moderation access for this post" },
+      { status: 403 }
+    );
   }
 
   const body = await request.json();
@@ -27,6 +42,27 @@ export async function PUT(request: NextRequest, { params }: Params) {
   const validStatuses = ["pending", "approved", "hidden"];
   if (status && !validStatuses.includes(status)) {
     return NextResponse.json({ code: "INVALID_STATUS", message: "Invalid status" }, { status: 400 });
+  }
+  if (status === undefined && isPinned === undefined) {
+    return NextResponse.json(
+      { code: "NO_CHANGES", message: "No moderation changes provided" },
+      { status: 400 }
+    );
+  }
+
+  if (auth.user.role === "mentor") {
+    if (isPinned !== undefined) {
+      return NextResponse.json(
+        { code: "FORBIDDEN", message: "Only admins can change pin state" },
+        { status: 403 }
+      );
+    }
+    if (status && status !== "approved" && status !== "hidden") {
+      return NextResponse.json(
+        { code: "INVALID_STATUS", message: "Mentors can only approve or hide posts" },
+        { status: 400 }
+      );
+    }
   }
 
   const [updated] = await db

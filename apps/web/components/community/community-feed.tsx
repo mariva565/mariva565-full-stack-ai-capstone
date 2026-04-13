@@ -206,7 +206,7 @@ export function CommunityFeed({ currentUser }: { currentUser: { id: number; role
       {/* Header */}
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="font-shantell text-3xl font-black tracking-tight bg-v1-gradient bg-clip-text text-transparent">
+          <h1 className="hero-gradient-text font-shantell text-3xl font-black tracking-tight">
             Community
           </h1>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
