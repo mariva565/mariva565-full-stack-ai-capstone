@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Platform } from "react-native";
-import { useRouter } from "expo-router";
+import { usePathname, useRouter } from "expo-router";
 import Constants from "expo-constants";
 import * as Notifications from "expo-notifications";
 import { useAuth } from "./auth-context";
@@ -9,12 +9,14 @@ import { captureTelemetryException } from "./telemetry";
 import { useToast } from "./toast-context";
 
 Notifications.setNotificationHandler({
+  // Foreground notifications are surfaced via in-app toast instead of
+  // an OS banner to avoid duplicated alerts while the app is already open.
   handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
+    shouldShowAlert: false,
+    shouldPlaySound: false,
     shouldSetBadge: false,
-    shouldShowBanner: true,
-    shouldShowList: true,
+    shouldShowBanner: false,
+    shouldShowList: false,
   }),
 });
 
@@ -36,6 +38,14 @@ function parseConversationId(value: unknown): number | null {
   return null;
 }
 
+function getActiveConversationId(pathname: string): number | null {
+  const match = pathname.match(/^\/messages\/(\d+)$/);
+  if (!match) {
+    return null;
+  }
+  return parseConversationId(match[1]);
+}
+
 function getExpoProjectId(): string | null {
   const fromEasConfig =
     (Constants.easConfig as { projectId?: string } | null)?.projectId ?? null;
@@ -55,8 +65,10 @@ function getExpoProjectId(): string | null {
 export function usePushNotifications(): void {
   const { user, isLoading } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
   const { showToast } = useToast();
   const registeredRef = useRef<string | null>(null);
+  const activeConversationId = getActiveConversationId(pathname);
 
   useEffect(() => {
     if (isLoading || !user) {
@@ -68,6 +80,13 @@ export function usePushNotifications(): void {
         const data = notification.request.content.data as MessageNotificationData;
         const type = typeof data?.type === "string" ? data.type : "";
         if (type !== "message") {
+          return;
+        }
+        const incomingConversationId = parseConversationId(data?.conversationId);
+        if (
+          incomingConversationId &&
+          activeConversationId === incomingConversationId
+        ) {
           return;
         }
 
@@ -106,7 +125,7 @@ export function usePushNotifications(): void {
       foregroundSubscription.remove();
       subscription.remove();
     };
-  }, [isLoading, router, showToast, user]);
+  }, [activeConversationId, isLoading, router, showToast, user]);
 
   useEffect(() => {
     if (isLoading) {

@@ -23,7 +23,8 @@ type ConversationListItem = {
 };
 
 type IncomingAlert = {
-  message: string;
+  title: string;
+  body: string;
   conversationId: number;
   createdAtTs: number;
 };
@@ -75,11 +76,15 @@ function resolveIncomingAlert(
       continue;
     }
 
-    const senderName = conversation.other?.name ?? "someone";
+    const senderName = conversation.other?.name ?? "StudyHub";
+    const rawPreview = conversation.lastMessage?.content?.trim() ?? "";
+    const preview =
+      rawPreview.length > 120 ? `${rawPreview.slice(0, 117)}...` : rawPreview;
     const createdAtTs = Date.parse(conversation.lastMessage?.createdAt ?? "");
     const safeCreatedAtTs = Number.isNaN(createdAtTs) ? Date.now() : createdAtTs;
     const nextAlert: IncomingAlert = {
-      message: `New message from ${senderName}`,
+      title: `New message from ${senderName}`,
+      body: preview || "Open Messages to reply.",
       conversationId: conversation.id,
       createdAtTs: safeCreatedAtTs,
     };
@@ -153,8 +158,8 @@ export function useWebMessagesNotifications(
         return false;
       }
 
-      const notification = new window.Notification("StudyHub Messages", {
-        body: alert.message,
+      const notification = new window.Notification(alert.title, {
+        body: alert.body,
         tag: `studyhub-message-${alert.conversationId}`,
       });
       notification.onclick = () => {
@@ -190,7 +195,7 @@ export function useWebMessagesNotifications(
         if (incomingAlert) {
           const displayedAsNative = showNativeMessageNotification(incomingAlert);
           if (!displayedAsNative) {
-            setToastMessage(incomingAlert.message);
+            setToastMessage(`${incomingAlert.title}: ${incomingAlert.body}`);
           }
         }
       }

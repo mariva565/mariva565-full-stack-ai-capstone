@@ -48,6 +48,10 @@ function timeAgo(dateStr: string) {
   return `${d}d ago`;
 }
 
+function shouldShowPendingBadge(post: Post, currentUserId: number) {
+  return post.status === "pending" && post.authorId === currentUserId;
+}
+
 function PostCard({ post, currentUserId, onLike }: {
   post: Post;
   currentUserId: number;
@@ -55,6 +59,7 @@ function PostCard({ post, currentUserId, onLike }: {
 }) {
   const typeInfo = TYPE_LABELS[post.postType] ?? TYPE_LABELS.discussion;
   const initials = getProfileInitials(post.authorName);
+  const showPendingBadge = shouldShowPendingBadge(post, currentUserId);
 
   return (
     <div className={`group relative rounded-2xl border bg-white/80 p-5 shadow-sm backdrop-blur-sm transition-all hover:-translate-y-0.5 hover:shadow-md dark:bg-slate-900/60 dark:border-slate-700/60 ${post.isPinned ? "border-brand-300 dark:border-brand-700/60" : "border-slate-200/80"}`}>
@@ -95,12 +100,22 @@ function PostCard({ post, currentUserId, onLike }: {
 
           {/* Excerpt */}
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400 line-clamp-2">{post.content}</p>
+          {showPendingBadge ? (
+            <p className="mt-2 text-xs font-medium text-amber-700 dark:text-amber-300">
+              Pending review. Visible only to you until approved.
+            </p>
+          ) : null}
 
           {/* Tags row */}
           <div className="mt-3 flex flex-wrap items-center gap-2">
             <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${typeInfo.color}`}>
               {typeInfo.label}
             </span>
+            {showPendingBadge ? (
+              <span className="rounded-full border border-amber-300 bg-amber-50 px-2.5 py-0.5 text-xs font-semibold text-amber-700 dark:border-amber-700 dark:bg-amber-900/20 dark:text-amber-300">
+                Pending review
+              </span>
+            ) : null}
             {post.questionStatus && (
               <span className={`rounded-full border px-2.5 py-0.5 text-xs font-semibold ${Q_STATUS[post.questionStatus] ?? ""}`}>
                 {post.questionStatus}

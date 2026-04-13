@@ -28,6 +28,40 @@
 ---
 
 ## 2026-04-13
+### Session 236 - Community pending UX + messaging notifications follow-up
+
+**Какво направихме:**
+- Added explicit pending-moderation visibility in Community web UI so authors can clearly see moderation state:
+  - Community feed cards now show `Pending review` status and helper copy for own pending posts.
+  - Post details page now shows `Pending review` badge + moderation notice banner.
+- Polished web permission-based browser message notifications:
+  - native notification title/body now include sender context + message preview.
+  - in-app toast fallback mirrors the same content when native notifications are not shown.
+- Improved mobile foreground message alerts:
+  - switched foreground push behavior to in-app toast only (no duplicate OS foreground banner).
+  - suppressed foreground toast when user is already inside the same `/messages/[id]` thread.
+- Extended push verification tracking docs for full pipeline validation:
+  - added `SMK-21` / `SMK-22` / `SMK-23` (foreground/background/killed app flows) to mobile smoke matrix.
+  - synced mobile execution checklist with current verification status.
+
+**Файлове:**
+- `[MODIFY] apps/web/components/community/community-feed.tsx`
+- `[MODIFY] apps/web/components/community/post-details.tsx`
+- `[MODIFY] apps/web/components/messages/use-web-messages-notifications.ts`
+- `[MODIFY] apps/mobile/lib/use-push-notifications.ts`
+- `[MODIFY] docs/mobile-smoke-test-matrix.md`
+- `[MODIFY] docs/mobile-execution-checklist.md`
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- `npm.cmd run typecheck:web` ✅
+- `npm.cmd run typecheck:mobile` ✅
+
+**Решения:**
+- Kept moderation visibility UX scoped to authors' pending posts in Community feed/details, without introducing new moderation/admin surfaces on mobile.
+- Preserved browser notifications as permission-gated progressive enhancement and kept in-app fallback for unsupported/denied/visible-tab scenarios.
+- Marked push pipeline rows as `BLOCKED` in docs until physical-device validation is executed (foreground/background/killed app cannot be fully verified from terminal-only session).
+
 ### Session 235 - MVP true moderation flow (user pending + mentor/admin moderation)
 
 **Какво направихме:**

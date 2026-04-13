@@ -1,8 +1,8 @@
 # Mobile Smoke Test Matrix (Phase 3)
 
-Last updated: 2026-04-10 (Session 197)
+Last updated: 2026-04-13 (Session 236)
 Owner: Mobile stream  
-Status: Release-handoff ready - SMK-01 through SMK-20 PASS; telemetry validation complete
+Status: Core smoke ready - SMK-01 through SMK-20 PASS; SMK-21 through SMK-23 added for message push pipeline verification
 
 ## Goal
 
@@ -12,6 +12,7 @@ Validate that core mobile flows are stable end-to-end before telemetry and relea
 - Favorites parity
 - Offline/online recovery
 - Background/foreground recovery
+- Message push pipeline (foreground/background/killed app)
 
 ## Environment Preflight
 
@@ -59,12 +60,15 @@ Mark each item with `PASS`, `FAIL`, or `BLOCKED` and add short notes.
 | SMK-18 | AppState | Background app 30-60s, return foreground | Key screens refetch as expected, no stale lock | `PASS` | Passed after auth hydration smoothing (Session 191). |
 | SMK-19 | Form Safety | Back during dirty CRUD form | Discard confirmation appears consistently | `PASS` | Manual physical-device run reported stable behavior. |
 | SMK-20 | Accessibility sanity | VoiceOver/TalkBack basic pass on core actions | Primary controls are announced with meaningful labels | `PASS` | Verified in physical-device accessibility pass; no blocking announcement gaps found on core actions. |
+| SMK-21 | Messages Push | Foreground incoming message (app open) | In-app toast appears; no duplicate OS banner while actively using app | `BLOCKED` | Requires physical-device push run with two accounts; terminal session cannot execute this path. |
+| SMK-22 | Messages Push | Background incoming message (app backgrounded) | OS push notification appears; tapping notification opens `/messages/[id]` thread | `BLOCKED` | Requires physical-device push run with app backgrounded and notification tap validation. |
+| SMK-23 | Messages Push | Killed app incoming message | Notification tap cold-starts app and deep-links to `/messages/[id]` | `BLOCKED` | Requires physical-device push run for killed-app cold start behavior. |
 
 ## Exit Criteria
 
-- No `FAIL` in `SMK-01` through `SMK-19`.
+- No `FAIL` in `SMK-01` through `SMK-23`.
 - Any `BLOCKED` item has a clear blocker and owner.
-- If any `FAIL` appears, create fix task(s), re-run only impacted rows, then do one final full sanity sweep (`SMK-01`, `SMK-05`, `SMK-11`, `SMK-14`, `SMK-17`).
+- If any `FAIL` appears, create fix task(s), re-run only impacted rows, then do one final full sanity sweep (`SMK-01`, `SMK-05`, `SMK-11`, `SMK-14`, `SMK-17`, `SMK-21`).
 
 ## Run Log
 
@@ -103,3 +107,12 @@ Mark each item with `PASS`, `FAIL`, or `BLOCKED` and add short notes.
 - Result: smoke matrix now fully `PASS` (`SMK-01`..`SMK-20`).
 - Accessibility note:
   - `SMK-20` verified via VoiceOver/TalkBack sanity pass on core actions and primary navigation controls.
+
+### Run 5 (2026-04-13, Session 236 messaging notifications follow-up)
+- Result:
+  - Existing matrix remains `PASS` for `SMK-01`..`SMK-20`.
+  - Added new push-specific rows `SMK-21`..`SMK-23` for foreground/background/killed message delivery.
+  - Current status for the new rows is `BLOCKED` in this terminal-only session because physical-device push validation is required.
+- Code-path notes:
+  - Foreground path now intentionally uses in-app toast without duplicate OS banner when app is open.
+  - Background and killed-app tap handlers remain wired through notification response deep-link to `/messages/[id]`.

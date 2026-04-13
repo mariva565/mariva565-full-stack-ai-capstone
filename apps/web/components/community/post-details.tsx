@@ -103,6 +103,7 @@ export function PostDetails({ postId, currentUser }: {
   const isAuthor = post.authorId === currentUser.id;
   const isAdmin  = currentUser.role === "admin";
   const initials = getProfileInitials(post.authorName);
+  const showPendingBadge = post.status === "pending";
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
@@ -166,6 +167,11 @@ export function PostDetails({ postId, currentUser }: {
           <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${TYPE_COLORS[post.postType] ?? ""}`}>
             {TYPE_LABELS[post.postType] ?? post.postType}
           </span>
+          {showPendingBadge ? (
+            <span className="rounded-full border border-amber-300 bg-amber-50 px-2.5 py-0.5 text-xs font-semibold text-amber-700 dark:border-amber-700 dark:bg-amber-900/20 dark:text-amber-300">
+              Pending review
+            </span>
+          ) : null}
           {post.isPinned && <span className="text-xs font-bold text-brand-500">📌 Pinned</span>}
           {post.questionStatus && (
             <span className="rounded-full border border-amber-300 bg-amber-50 px-2.5 py-0.5 text-xs font-semibold text-amber-700 dark:border-amber-700 dark:bg-amber-900/20 dark:text-amber-300">
@@ -176,6 +182,13 @@ export function PostDetails({ postId, currentUser }: {
 
         {/* Title + Content */}
         <h1 className="mt-3 font-shantell text-xl font-black text-slate-900 dark:text-white">{post.title}</h1>
+        {showPendingBadge ? (
+          <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50/80 px-3 py-2 text-xs font-medium text-amber-700 dark:border-amber-800/70 dark:bg-amber-900/20 dark:text-amber-300">
+            {isAuthor
+              ? "Your post is pending moderation and remains visible to you until approved."
+              : "This post is pending moderation review."}
+          </div>
+        ) : null}
         <div className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-slate-600 dark:text-slate-300">
           {post.content}
         </div>

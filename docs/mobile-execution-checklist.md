@@ -1,6 +1,6 @@
 # Mobile Execution Checklist (Quality-First)
 
-Last updated: 2026-04-11
+Last updated: 2026-04-13
 Owner: Mobile stream
 
 ## Scope Decisions (2026-04-08)
@@ -193,6 +193,9 @@ Owner: Mobile stream
 - [x] Release checklist for mobile handoff and smoke verification.
   - Added `docs/mobile-release-checklist.md` with explicit go/no-go gates, known blocker handling, and signoff status.
   - Checklist references live smoke/telemetry outcomes and confirms handoff-readiness with all smoke rows passing.
+- [ ] Quality gates: full messaging push verification (`foreground`, `background`, `killed app`).
+  - Added dedicated smoke rows: `SMK-21`, `SMK-22`, `SMK-23` in `docs/mobile-smoke-test-matrix.md`.
+  - Current status is `BLOCKED` in Session 236 until physical-device validation is executed.
 - [x] Product polish: Settings screen in Profile flow (not extra bottom tab), with initial scope theme mode (system/light/dark), haptics toggle, app version/about links, and account actions entry points.
 - [x] Optional feature: Profile QR handoff card in web profile (deep-link to mobile app) for future social direction.
 - [x] DEFERRED optional feature: Mobile AI tools entry points (summarize/quiz/chat or read-only outputs) - AI Tools and Mentor Chatbot integrated successfully.
@@ -205,6 +208,16 @@ Owner: Mobile stream
 - [x] Key mobile flows pass smoke suite without regressions (`SMK-01` through `SMK-19`).
 - [x] Settings screen exists in mobile profile flow with persisted basic app preferences.
 - [x] README + dev-log are synced with the final mobile standard.
+
+### Messaging Notifications Follow-up (2026-04-13, Session 236)
+- Mobile foreground messaging alerts now use in-app toast only (no duplicate OS foreground banner while app is open):
+  - `apps/mobile/lib/use-push-notifications.ts`
+- Active-thread noise reduction added:
+  - Foreground toast is skipped when the user is already inside the same `/messages/[id]` conversation.
+- Push verification matrix expanded:
+  - `docs/mobile-smoke-test-matrix.md` now includes `SMK-21`/`SMK-22`/`SMK-23` for foreground/background/killed flows.
+- Verification constraints:
+  - Full push delivery verification remains blocked in this terminal-only session and must be run on physical devices with two authenticated accounts.
 
 ## Next Recommended Task
 
