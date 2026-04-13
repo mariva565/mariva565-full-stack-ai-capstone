@@ -276,6 +276,27 @@ export const messages = pgTable(
 );
 
 // ─── 14. oauth_accounts ─────────────────────────────────────
+export const userPushTokens = pgTable(
+  "user_push_tokens",
+  {
+    id: serial("id").primaryKey(),
+    userId: integer("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    token: text("token").notNull(),
+    platform: varchar("platform", { length: 20 }).notNull().default("unknown"),
+    appOwnership: varchar("app_ownership", { length: 20 }),
+    isActive: boolean("is_active").notNull().default(true),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+    lastSeenAt: timestamp("last_seen_at").notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("user_push_tokens_token_idx").on(table.token),
+    index("user_push_tokens_user_active_idx").on(table.userId, table.isActive),
+  ]
+);
+
 export const oauthAccounts = pgTable(
   "oauth_accounts",
   {

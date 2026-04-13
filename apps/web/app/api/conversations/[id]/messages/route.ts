@@ -3,13 +3,27 @@ import { db } from "../../../../../lib/db";
 import {
   conversationMembers,
   messages,
+  userPushTokens,
   users,
 } from "../../../../../../../drizzle/schema";
 import { requireAuth } from "../../../../../lib/api-utils";
 import { pusherServer } from "../../../../../lib/pusher";
-import { and, eq, asc } from "drizzle-orm";
+import { sendExpoPushNotifications } from "../../../../../lib/expo-push";
+import { and, eq, asc, inArray, ne } from "drizzle-orm";
 
 type Params = { params: Promise<{ id: string }> };
+
+function apiError(status: number, code: string, message: string) {
+  return NextResponse.json({ code, message }, { status });
+}
+
+function parseConversationId(rawId: string): number | null {
+  const conversationId = Number(rawId);
+  if (!Number.isInteger(conversationId) || conversationId <= 0) {
+    return null;
+  }
+  return conversationId;
+}
 
 // Verify current user is a member of the conversation
 async function requireMember(userId: number, conversationId: number) {
@@ -32,12 +46,15 @@ export async function GET(request: NextRequest, { params }: Params) {
   if ("error" in auth) return auth.error;
 
   const { id } = await params;
-  const conversationId = Number(id);
+  const conversationId = parseConversationId(id);
+  if (!conversationId) {
+    return apiError(400, "INVALID_CONVERSATION_ID", "Invalid conversation ID");
+  }
   const userId = auth.user.sub;
 
   const isMember = await requireMember(userId, conversationId);
   if (!isMember) {
-    return NextResponse.json({ message: "Forbidden" }, { status: 403 });
+    return apiError(403, "FORBIDDEN", "Forbidden");
   }
 
   const [rows, members] = await Promise.all([
@@ -87,17 +104,30 @@ export async function POST(request: NextRequest, { params }: Params) {
   if ("error" in auth) return auth.error;
 
   const { id } = await params;
-  const conversationId = Number(id);
+  const conversationId = parseConversationId(id);
+  if (!conversationId) {
+    return apiError(400, "INVALID_CONVERSATION_ID", "Invalid conversation ID");
+  }
 
   const isMember = await requireMember(auth.user.sub, conversationId);
   if (!isMember) {
-    return NextResponse.json({ message: "Forbidden" }, { status: 403 });
+    return apiError(403, "FORBIDDEN", "Forbidden");
   }
 
-  const body = await request.json();
-  const content = (body.content ?? "").trim();
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    return apiError(400, "INVALID_JSON", "Invalid JSON payload");
+  }
+
+  const rawContent =
+    body && typeof body === "object" && "content" in body
+      ? (body as { content?: unknown }).content
+      : "";
+  const content = typeof rawContent === "string" ? rawContent.trim() : "";
   if (!content) {
-    return NextResponse.json({ message: "Content is required" }, { status: 400 });
+    return apiError(400, "CONTENT_REQUIRED", "Content is required");
   }
 
   const [msg] = await db
@@ -135,6 +165,58 @@ export async function POST(request: NextRequest, { params }: Params) {
       senderAvatar: sender?.avatarUrl ?? null,
     }
   );
+
+  // Best-effort mobile native push notifications for the other participants.
+  try {
+    const recipients = await db
+      .select({ userId: conversationMembers.userId })
+      .from(conversationMembers)
+      .where(
+        and(
+          eq(conversationMembers.conversationId, conversationId),
+          ne(conversationMembers.userId, auth.user.sub)
+        )
+      );
+
+    const recipientIds = recipients.map((recipient) => recipient.userId);
+    if (recipientIds.length > 0) {
+      const tokens = await db
+        .select({ token: userPushTokens.token })
+        .from(userPushTokens)
+        .where(
+          and(
+            inArray(userPushTokens.userId, recipientIds),
+            eq(userPushTokens.isActive, true)
+          )
+        );
+
+      if (tokens.length > 0) {
+        const messagePreview =
+          msg.content.length > 140 ? `${msg.content.slice(0, 137)}...` : msg.content;
+
+        const { invalidTokens } = await sendExpoPushNotifications(
+          tokens.map((entry) => ({
+            token: entry.token,
+            title: sender?.name ?? "New message on StudyHub",
+            body: messagePreview,
+            data: {
+              type: "message",
+              conversationId,
+            },
+          }))
+        );
+
+        if (invalidTokens.length > 0) {
+          await db
+            .update(userPushTokens)
+            .set({ isActive: false, updatedAt: new Date() })
+            .where(inArray(userPushTokens.token, invalidTokens));
+        }
+      }
+    }
+  } catch (error) {
+    console.error("Failed to send mobile push notifications", error);
+  }
 
   return NextResponse.json(msg, { status: 201 });
 }

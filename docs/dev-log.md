@@ -18,6 +18,7 @@
   - Option A: Cloudflare R2 (РїСЂРµРїРѕСЂСЉС‡РёС‚РµР»РЅРѕ Р·Р° production)
   - Option B: base64/inline (СЃР°РјРѕ РІСЂРµРјРµРЅРЅРѕ, РЅРµ СЃРµ РїСЂРµРїРѕСЂСЉС‡РІР°)
   - РґР° РґРѕР±Р°РІРёРј file size/type validation, abuse limits Рё thumbnail СЃС‚СЂР°С‚РµРіРёСЏ.
+- [ ] **File attachments in posts (PDF/DOC/ZIP)** вЂ” РґР° РґРѕР±Р°РІРёРј РїСЂРёРєР°С‡РІР°РЅРµ РЅР° С„Р°Р№Р»РѕРІРµ РєСЉРј Community posts (web + mobile), СЃ upload storage, allowlist РЅР° С„РѕСЂРјР°С‚Рё, size limits, scanning/policy checks Рё download permissions.
 - [ ] **How It Works вЂ” СЂРµР°Р»РЅРё СЃРєСЂРёР№РЅС€РѕС‚РѕРІРµ** вЂ” `/how-it-works` СЃС‚СЂР°РЅРёС†Р°С‚Р° РёРјР° placeholder РёР·РѕР±СЂР°Р¶РµРЅРёСЏ РІ СЃРµРєС†РёСЏС‚Р° СЃСЉСЃ СЃС‚СЉРїРєРёС‚Рµ. РљРѕРіР°С‚Рѕ РІСЃРёС‡РєРё web + mobile РµРєСЂР°РЅРё СЃР° РіРѕС‚РѕРІРё, РґР° СЃРµ РЅР°РїСЂР°РІСЏС‚ СЂРµР°Р»РЅРё СЃРєСЂРёР№РЅС€РѕС‚РѕРІРµ Рё РґР° СЃРµ Р·Р°РјРµРЅСЏС‚. Р—Р°СЃСЏРіР° Рё README assets (web-preview, mobile-preview) вЂ” РјРѕР¶Рµ РІ РµРґРЅР° СЃРµСЃРёСЏ.
 - [ ] **ConfirmModal** вЂ” `confirm()` РІ `post-details.tsx` Рё `posts-tab.tsx` С‚СЂСЏР±РІР° РґР° СЃРµ Р·Р°РјРµРЅРё СЃ styled modal (СЃРїСЂСЏРјРѕ РїСЂР°РІРёР»РѕС‚Рѕ "No native dialogs").
 - [x] **S3 Chat вЂ” build + С‚РµСЃС‚** вЂ” РўРµСЃС‚РІР°РЅРѕ СЃ РґРІР° Р°РєР°СѓРЅС‚Р°; Pusher real-time СЂР°Р±РѕС‚Рё.
@@ -27,6 +28,41 @@
 ---
 
 ## 2026-04-13
+### Session 233 - Mobile native push notifications for chat messages
+
+**Какво направихме:**
+- Added push token persistence in DB with new `user_push_tokens` Drizzle model and SQL migration (`0010_user_push_tokens.sql`), aligned with the hosted Neon SQL rollout.
+- Added mobile endpoint `POST /api/mobile/push-token` to register/update Expo push tokens for the authenticated user.
+- Added Expo push helper (`sendExpoPushNotifications`) with Expo token validation and `DeviceNotRegistered` cleanup support.
+- Extended `POST /api/conversations/[id]/messages` to send best-effort native push notifications to other conversation members (excluding sender).
+- Added mobile push notifications integration:
+  - installed and configured `expo-notifications`
+  - created `usePushNotifications` hook for permission flow, token registration, foreground toast, and notification-tap deep-link to `/messages/[id]`
+  - wired the hook in app root layout so behavior is active app-wide for authenticated users.
+- Hardened updated conversation message API error handling to return `{ code, message }` for invalid conversation id, invalid JSON, missing content, and forbidden access.
+
+**Файлове:**
+- `[MODIFY] drizzle/schema.ts`
+- `[NEW] drizzle/migrations/0010_user_push_tokens.sql`
+- `[NEW] apps/web/lib/expo-push.ts`
+- `[NEW] apps/web/app/api/mobile/push-token/route.ts`
+- `[MODIFY] apps/web/app/api/conversations/[id]/messages/route.ts`
+- `[NEW] apps/mobile/lib/use-push-notifications.ts`
+- `[MODIFY] apps/mobile/app/_layout.tsx`
+- `[MODIFY] apps/mobile/app.json`
+- `[MODIFY] apps/mobile/package.json`
+- `[MODIFY] apps/mobile/package-lock.json`
+- `[MODIFY] .env.example`
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- `npm.cmd run typecheck:web` ✅
+- `npm.cmd run typecheck:mobile` ✅
+
+**Решения:**
+- Push dispatch is intentionally best-effort and does not block message delivery (chat send path stays fast/reliable even if Expo push fails).
+- Invalid Expo tokens are marked inactive server-side to reduce repeated failed push attempts over time.
+
 ### Session 232 - Server-side unread state for messages (web + mobile)
 
 **Какво направихме:**

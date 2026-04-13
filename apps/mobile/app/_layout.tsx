@@ -18,11 +18,13 @@ import {
 } from "../lib/query-client";
 import { configureReactQueryLifecycle } from "../lib/react-query-lifecycle";
 import { initializeTelemetry } from "../lib/telemetry";
+import { usePushNotifications } from "../lib/use-push-notifications";
 
 initializeTelemetry();
 
 function AuthGate() {
   const { user, isLoading } = useAuth();
+  usePushNotifications();
   const segments = useSegments();
   const router = useRouter();
   const navigationState = useRootNavigationState();
