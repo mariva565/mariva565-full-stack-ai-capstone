@@ -6,7 +6,9 @@ export type Post = {
   id: number;
   title: string;
   content: string;
+  authorId?: number;
   authorName: string | null;
+  authorAvatarUrl?: string | null;
   postType: string;
   likeCount: number;
   commentCount: number;

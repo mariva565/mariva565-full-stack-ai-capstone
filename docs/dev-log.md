@@ -1,150 +1,222 @@
-# Dev Log — StudyHub v2
+﻿# Dev Log вЂ” StudyHub v2
 
-Дневник на разработката. Обновява се при всяка сесия.
+Р”РЅРµРІРЅРёРє РЅР° СЂР°Р·СЂР°Р±РѕС‚РєР°С‚Р°. РћР±РЅРѕРІСЏРІР° СЃРµ РїСЂРё РІСЃСЏРєР° СЃРµСЃРёСЏ.
 
 ---
 
-## Предстоящо (финален етап)
+## РџСЂРµРґСЃС‚РѕСЏС‰Рѕ (С„РёРЅР°Р»РµРЅ РµС‚Р°Рї)
 
-- [ ] **Community animated gradient title (`.hero-gradient-text`)** — да приложим запазената преливаща text анимация в Social/Community заглавията (web + mobile parity), с reduced-motion fallback и без ненужни постоянни loops.
-- [ ] **Mobile Social completion (S2/S3): Inbox + Messages** — да довършим social модула в mobile клиента:
-  - inbox списък с разговори (последно съобщение, timestamp, unread state)
-  - conversation thread екран с изпращане/получаване на съобщения
-  - entry points от Community/QR handoff към конкретен потребител
-  - consistency с web messaging поведението и auth guard-ите
-- [ ] **QR → Community DM flow** — да разширим profile QR handoff-а: след сканиране на user link да има shortcut „Send message“ към conversation с този потребител (reuse на messaging API и guard-ите).
-- [ ] **Community moderation workflow** — да дефинираме и имплементираме moderation режим (mentor/admin): pending/approved/hidden queue, UI за review, и ясни права кой може да approve/hide posts.
-- [ ] **Screenshot attachments in posts** — да преценим upload архитектурата за изображения в Community posts/comments:
-  - Option A: Cloudflare R2 (препоръчително за production)
-  - Option B: base64/inline (само временно, не се препоръчва)
-  - да добавим file size/type validation, abuse limits и thumbnail стратегия.
-- [ ] **How It Works — реални скрийншотове** — `/how-it-works` страницата има placeholder изображения в секцията със стъпките. Когато всички web + mobile екрани са готови, да се направят реални скрийншотове и да се заменят. Засяга и README assets (web-preview, mobile-preview) — може в една сесия.
-- [ ] **ConfirmModal** — `confirm()` в `post-details.tsx` и `posts-tab.tsx` трябва да се замени с styled modal (спрямо правилото "No native dialogs").
-- [x] **S3 Chat — build + тест** — Тествано с два акаунта; Pusher real-time работи.
-- [x] **S3 Chat — височина** — фиксирано: динамично измерване на navbar offset вместо hardcoded `5rem`.
-- [ ] **S3 Chat — "Send message" от профил** — засега бутонът е само в post details. При нужда да се добави и в `/profile` страницата на друг потребител.
+- [ ] **Community animated gradient title (`.hero-gradient-text`)** вЂ” РґР° РїСЂРёР»РѕР¶РёРј Р·Р°РїР°Р·РµРЅР°С‚Р° РїСЂРµР»РёРІР°С‰Р° text Р°РЅРёРјР°С†РёСЏ РІ Social/Community Р·Р°РіР»Р°РІРёСЏС‚Р° (web + mobile parity), СЃ reduced-motion fallback Рё Р±РµР· РЅРµРЅСѓР¶РЅРё РїРѕСЃС‚РѕСЏРЅРЅРё loops.
+- [ ] **Mobile Social completion (S2/S3): Inbox + Messages** вЂ” РґР° РґРѕРІСЉСЂС€РёРј social РјРѕРґСѓР»Р° РІ mobile РєР»РёРµРЅС‚Р°:
+  - inbox СЃРїРёСЃСЉРє СЃ СЂР°Р·РіРѕРІРѕСЂРё (РїРѕСЃР»РµРґРЅРѕ СЃСЉРѕР±С‰РµРЅРёРµ, timestamp, unread state)
+  - conversation thread РµРєСЂР°РЅ СЃ РёР·РїСЂР°С‰Р°РЅРµ/РїРѕР»СѓС‡Р°РІР°РЅРµ РЅР° СЃСЉРѕР±С‰РµРЅРёСЏ
+  - entry points РѕС‚ Community/QR handoff РєСЉРј РєРѕРЅРєСЂРµС‚РµРЅ РїРѕС‚СЂРµР±РёС‚РµР»
+  - consistency СЃ web messaging РїРѕРІРµРґРµРЅРёРµС‚Рѕ Рё auth guard-РёС‚Рµ
+- [ ] **QR в†’ Community DM flow** вЂ” РґР° СЂР°Р·С€РёСЂРёРј profile QR handoff-Р°: СЃР»РµРґ СЃРєР°РЅРёСЂР°РЅРµ РЅР° user link РґР° РёРјР° shortcut вЂћSend messageвЂњ РєСЉРј conversation СЃ С‚РѕР·Рё РїРѕС‚СЂРµР±РёС‚РµР» (reuse РЅР° messaging API Рё guard-РёС‚Рµ).
+- [ ] **Community moderation workflow** вЂ” РґР° РґРµС„РёРЅРёСЂР°РјРµ Рё РёРјРїР»РµРјРµРЅС‚РёСЂР°РјРµ moderation СЂРµР¶РёРј (mentor/admin): pending/approved/hidden queue, UI Р·Р° review, Рё СЏСЃРЅРё РїСЂР°РІР° РєРѕР№ РјРѕР¶Рµ РґР° approve/hide posts.
+- [ ] **Screenshot attachments in posts** вЂ” РґР° РїСЂРµС†РµРЅРёРј upload Р°СЂС…РёС‚РµРєС‚СѓСЂР°С‚Р° Р·Р° РёР·РѕР±СЂР°Р¶РµРЅРёСЏ РІ Community posts/comments:
+  - Option A: Cloudflare R2 (РїСЂРµРїРѕСЂСЉС‡РёС‚РµР»РЅРѕ Р·Р° production)
+  - Option B: base64/inline (СЃР°РјРѕ РІСЂРµРјРµРЅРЅРѕ, РЅРµ СЃРµ РїСЂРµРїРѕСЂСЉС‡РІР°)
+  - РґР° РґРѕР±Р°РІРёРј file size/type validation, abuse limits Рё thumbnail СЃС‚СЂР°С‚РµРіРёСЏ.
+- [ ] **How It Works вЂ” СЂРµР°Р»РЅРё СЃРєСЂРёР№РЅС€РѕС‚РѕРІРµ** вЂ” `/how-it-works` СЃС‚СЂР°РЅРёС†Р°С‚Р° РёРјР° placeholder РёР·РѕР±СЂР°Р¶РµРЅРёСЏ РІ СЃРµРєС†РёСЏС‚Р° СЃСЉСЃ СЃС‚СЉРїРєРёС‚Рµ. РљРѕРіР°С‚Рѕ РІСЃРёС‡РєРё web + mobile РµРєСЂР°РЅРё СЃР° РіРѕС‚РѕРІРё, РґР° СЃРµ РЅР°РїСЂР°РІСЏС‚ СЂРµР°Р»РЅРё СЃРєСЂРёР№РЅС€РѕС‚РѕРІРµ Рё РґР° СЃРµ Р·Р°РјРµРЅСЏС‚. Р—Р°СЃСЏРіР° Рё README assets (web-preview, mobile-preview) вЂ” РјРѕР¶Рµ РІ РµРґРЅР° СЃРµСЃРёСЏ.
+- [ ] **ConfirmModal** вЂ” `confirm()` РІ `post-details.tsx` Рё `posts-tab.tsx` С‚СЂСЏР±РІР° РґР° СЃРµ Р·Р°РјРµРЅРё СЃ styled modal (СЃРїСЂСЏРјРѕ РїСЂР°РІРёР»РѕС‚Рѕ "No native dialogs").
+- [x] **S3 Chat вЂ” build + С‚РµСЃС‚** вЂ” РўРµСЃС‚РІР°РЅРѕ СЃ РґРІР° Р°РєР°СѓРЅС‚Р°; Pusher real-time СЂР°Р±РѕС‚Рё.
+- [x] **S3 Chat вЂ” РІРёСЃРѕС‡РёРЅР°** вЂ” С„РёРєСЃРёСЂР°РЅРѕ: РґРёРЅР°РјРёС‡РЅРѕ РёР·РјРµСЂРІР°РЅРµ РЅР° navbar offset РІРјРµСЃС‚Рѕ hardcoded `5rem`.
+- [ ] **S3 Chat вЂ” "Send message" РѕС‚ РїСЂРѕС„РёР»** вЂ” Р·Р°СЃРµРіР° Р±СѓС‚РѕРЅСЉС‚ Рµ СЃР°РјРѕ РІ post details. РџСЂРё РЅСѓР¶РґР° РґР° СЃРµ РґРѕР±Р°РІРё Рё РІ `/profile` СЃС‚СЂР°РЅРёС†Р°С‚Р° РЅР° РґСЂСѓРі РїРѕС‚СЂРµР±РёС‚РµР».
 
 ---
 
 ## 2026-04-13
-
-### Session 225 — Backlog priority reminder: mobile social not finished
+### Session 228 - Mobile Community Inbox unread badge
 
 **Какво направихме:**
-- Добавихме explicit TODO приоритет за незавършения mobile social обхват:
+- Added unread badge on the Community `Inbox` CTA so new incoming conversations are visible without opening messages.
+- Implemented local read-state persistence for conversations (`AsyncStorage`) and unread count calculation against latest incoming message timestamps.
+- Hooked message thread screen to mark a conversation as read when opened (based on latest incoming message timestamp), so the badge count drops after reading.
+
+**Файлове:**
+- `[NEW] apps/mobile/components/messages/messages-read-state.ts`
+- `[MODIFY] apps/mobile/components/community/community-screen.tsx`
+- `[MODIFY] apps/mobile/components/community/community.styles.ts`
+- `[MODIFY] apps/mobile/components/messages/message-thread-screen.tsx`
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- `npm.cmd run typecheck:mobile` ✅
+
+**Решения:**
+- Kept unread tracking as client-side MVP (no DB migration/API contract change) to ship fast and avoid breaking existing web/mobile messaging routes.
+- Badge semantics for this MVP: conversations with a newer incoming message than locally recorded read timestamp are counted as unread.
+### Session 227 - Community inbox CTA discoverability fix
+
+**Какво направихме:**
+- Improved the Community header inbox action so users can immediately recognize its purpose.
+- Replaced the icon-only circular inbox control with a labeled CTA (`Inbox`) next to the icon.
+- Kept existing navigation behavior unchanged (`/messages`), only improved clarity and visual affordance.
+
+**Файлове:**
+- `[MODIFY] apps/mobile/components/community/community-screen.tsx`
+- `[MODIFY] apps/mobile/components/community/community.styles.ts`
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- `npm.cmd run typecheck:mobile` ✅
+
+**Решения:**
+- Prioritized explicit labeling over icon-only affordance after UX feedback, so first-time users do not need prior guidance to find inbox/messages.
+### Session 226 - Mobile Inbox + Messages implementation (Community handoff)
+
+**Какво направихме:**
+- Implemented mobile inbox screen (`/messages`) that loads conversations from `GET /api/conversations` with pull-to-refresh and periodic refetch.
+- Implemented conversation thread screen (`/messages/[id]`) that loads history from `GET /api/conversations/[id]/messages` and sends messages via `POST /api/conversations/[id]/messages`.
+- Added reusable messaging hooks/types/styles in `apps/mobile/components/messages/`.
+- Added mobile stack routes for messages screens in `apps/mobile/app/_layout.tsx`.
+- Added Community entry points into messaging:
+  - Inbox button in Community header.
+  - "Message" action in post details that creates/opens conversation via `POST /api/conversations`.
+- Added query invalidation between inbox/thread/community so latest messages appear after send/start conversation.
+- Replaced fragile text-symbol icons in messages screens with stable icon rendering (`Ionicons` / unicode escape), avoiding mojibake risk.
+
+**Файлове:**
+- `[NEW] apps/mobile/components/messages/messages.types.ts`
+- `[NEW] apps/mobile/components/messages/messages.styles.ts`
+- `[NEW] apps/mobile/components/messages/use-messages-inbox.ts`
+- `[NEW] apps/mobile/components/messages/use-message-thread.ts`
+- `[NEW] apps/mobile/components/messages/messages-inbox-screen.tsx`
+- `[NEW] apps/mobile/components/messages/message-thread-screen.tsx`
+- `[NEW] apps/mobile/app/messages/index.tsx`
+- `[NEW] apps/mobile/app/messages/[id].tsx`
+- `[MODIFY] apps/mobile/app/_layout.tsx`
+- `[MODIFY] apps/mobile/components/community/community-screen.tsx`
+- `[MODIFY] apps/mobile/components/community/community.styles.ts`
+- `[MODIFY] apps/mobile/components/community/use-community-feed.ts`
+- `[MODIFY] apps/mobile/components/community/post-details-screen.tsx`
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- `npm.cmd run typecheck:mobile` ✅
+
+**Решения:**
+- Built mobile messaging by reusing existing web conversation endpoints to keep behavior/auth rules consistent across clients.
+- Kept QR-to-DM as a separate next step (tracked in TODO), while delivering Community-to-DM handoff now.
+
+### Session 225 вЂ” Backlog priority reminder: mobile social not finished
+
+**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ:**
+- Р”РѕР±Р°РІРёС…РјРµ explicit TODO РїСЂРёРѕСЂРёС‚РµС‚ Р·Р° РЅРµР·Р°РІСЉСЂС€РµРЅРёСЏ mobile social РѕР±С…РІР°С‚:
   - `Mobile Social completion (S2/S3): Inbox + Messages`
-- Описахме подзадачите, които остават за затваряне на mobile social вертикала:
-  - inbox списък с разговори
-  - conversation thread екран
-  - Community/QR entry points към DM
-  - parity с web messaging + auth guard-ите
+- РћРїРёСЃР°С…РјРµ РїРѕРґР·Р°РґР°С‡РёС‚Рµ, РєРѕРёС‚Рѕ РѕСЃС‚Р°РІР°С‚ Р·Р° Р·Р°С‚РІР°СЂСЏРЅРµ РЅР° mobile social РІРµСЂС‚РёРєР°Р»Р°:
+  - inbox СЃРїРёСЃСЉРє СЃ СЂР°Р·РіРѕРІРѕСЂРё
+  - conversation thread РµРєСЂР°РЅ
+  - Community/QR entry points РєСЉРј DM
+  - parity СЃ web messaging + auth guard-РёС‚Рµ
 
-**Файлове:**
+**Р¤Р°Р№Р»РѕРІРµ:**
 - `[MODIFY] docs/dev-log.md`
 
 **Verification:**
-- Документационна промяна (няма runtime/typecheck нужда)
+- Р”РѕРєСѓРјРµРЅС‚Р°С†РёРѕРЅРЅР° РїСЂРѕРјСЏРЅР° (РЅСЏРјР° runtime/typecheck РЅСѓР¶РґР°)
 
-**Решения:**
-- Маркирахме mobile inbox/messages като отделен high-priority backlog item, за да не се изгуби фокусът върху незавършения social scope.
+**Р РµС€РµРЅРёСЏ:**
+- РњР°СЂРєРёСЂР°С…РјРµ mobile inbox/messages РєР°С‚Рѕ РѕС‚РґРµР»РµРЅ high-priority backlog item, Р·Р° РґР° РЅРµ СЃРµ РёР·РіСѓР±Рё С„РѕРєСѓСЃСЉС‚ РІСЉСЂС…Сѓ РЅРµР·Р°РІСЉСЂС€РµРЅРёСЏ social scope.
 
-### Session 224 — TODO clarification: Social gradient animation (not font)
+### Session 224 вЂ” TODO clarification: Social gradient animation (not font)
 
-**Какво направихме:**
-- Уточнихме backlog елементa за Community визуала: не става дума за шрифт, а за преливащата gradient text анимация.
-- Обновихме TODO записа от „Community typography pass (Shantell)“ към конкретния елемент:
+**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ:**
+- РЈС‚РѕС‡РЅРёС…РјРµ backlog РµР»РµРјРµРЅС‚a Р·Р° Community РІРёР·СѓР°Р»Р°: РЅРµ СЃС‚Р°РІР° РґСѓРјР° Р·Р° С€СЂРёС„С‚, Р° Р·Р° РїСЂРµР»РёРІР°С‰Р°С‚Р° gradient text Р°РЅРёРјР°С†РёСЏ.
+- РћР±РЅРѕРІРёС…РјРµ TODO Р·Р°РїРёСЃР° РѕС‚ вЂћCommunity typography pass (Shantell)вЂњ РєСЉРј РєРѕРЅРєСЂРµС‚РЅРёСЏ РµР»РµРјРµРЅС‚:
   - `Community animated gradient title (.hero-gradient-text)`
-- Премахнахме дублиращ стар TODO ред за `.hero-gradient-text`, за да остане само един source of truth в „Предстоящо“.
-- Причината: има исторически запис, че `.hero-gradient-text` е „запазен за Social Features“, но реално остава неизползван (включително отчетен при одит като unused).
+- РџСЂРµРјР°С…РЅР°С…РјРµ РґСѓР±Р»РёСЂР°С‰ СЃС‚Р°СЂ TODO СЂРµРґ Р·Р° `.hero-gradient-text`, Р·Р° РґР° РѕСЃС‚Р°РЅРµ СЃР°РјРѕ РµРґРёРЅ source of truth РІ вЂћРџСЂРµРґСЃС‚РѕСЏС‰РѕвЂњ.
+- РџСЂРёС‡РёРЅР°С‚Р°: РёРјР° РёСЃС‚РѕСЂРёС‡РµСЃРєРё Р·Р°РїРёСЃ, С‡Рµ `.hero-gradient-text` Рµ вЂћР·Р°РїР°Р·РµРЅ Р·Р° Social FeaturesвЂњ, РЅРѕ СЂРµР°Р»РЅРѕ РѕСЃС‚Р°РІР° РЅРµРёР·РїРѕР»Р·РІР°РЅ (РІРєР»СЋС‡РёС‚РµР»РЅРѕ РѕС‚С‡РµС‚РµРЅ РїСЂРё РѕРґРёС‚ РєР°С‚Рѕ unused).
 
-**Файлове:**
+**Р¤Р°Р№Р»РѕРІРµ:**
 - `[MODIFY] docs/dev-log.md`
 
 **Verification:**
-- Документационна промяна (няма runtime/typecheck нужда)
+- Р”РѕРєСѓРјРµРЅС‚Р°С†РёРѕРЅРЅР° РїСЂРѕРјСЏРЅР° (РЅСЏРјР° runtime/typecheck РЅСѓР¶РґР°)
 
-**Решения:**
-- Фиксирахме формулировката в backlog-а към точния visual artifact, за да няма бъдещо объркване между typography и animation задача.
+**Р РµС€РµРЅРёСЏ:**
+- Р¤РёРєСЃРёСЂР°С…РјРµ С„РѕСЂРјСѓР»РёСЂРѕРІРєР°С‚Р° РІ backlog-Р° РєСЉРј С‚РѕС‡РЅРёСЏ visual artifact, Р·Р° РґР° РЅСЏРјР° Р±СЉРґРµС‰Рѕ РѕР±СЉСЂРєРІР°РЅРµ РјРµР¶РґСѓ typography Рё animation Р·Р°РґР°С‡Р°.
 
-### Session 223 — Backlog capture from Community follow-up ideas
+### Session 223 вЂ” Backlog capture from Community follow-up ideas
 
-**Какво направихме:**
-- Добавихме нови TODO точки в секцията „Предстоящо“ по последните product идеи за Community:
-  - typography pass с `font-shantell`
-  - QR handoff → директен messaging shortcut към сканирания потребител
-  - moderation workflow за mentor/admin
-  - screenshot attachments архитектура (R2-first подход + security constraints)
+**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ:**
+- Р”РѕР±Р°РІРёС…РјРµ РЅРѕРІРё TODO С‚РѕС‡РєРё РІ СЃРµРєС†РёСЏС‚Р° вЂћРџСЂРµРґСЃС‚РѕСЏС‰РѕвЂњ РїРѕ РїРѕСЃР»РµРґРЅРёС‚Рµ product РёРґРµРё Р·Р° Community:
+  - typography pass СЃ `font-shantell`
+  - QR handoff в†’ РґРёСЂРµРєС‚РµРЅ messaging shortcut РєСЉРј СЃРєР°РЅРёСЂР°РЅРёСЏ РїРѕС‚СЂРµР±РёС‚РµР»
+  - moderation workflow Р·Р° mentor/admin
+  - screenshot attachments Р°СЂС…РёС‚РµРєС‚СѓСЂР° (R2-first РїРѕРґС…РѕРґ + security constraints)
 
-**Файлове:**
+**Р¤Р°Р№Р»РѕРІРµ:**
 - `[MODIFY] docs/dev-log.md`
 
 **Verification:**
-- Документационна промяна (няма runtime/typecheck нужда)
+- Р”РѕРєСѓРјРµРЅС‚Р°С†РёРѕРЅРЅР° РїСЂРѕРјСЏРЅР° (РЅСЏРјР° runtime/typecheck РЅСѓР¶РґР°)
 
-**Решения:**
-- Записахме задачите като explicit TODO backlog за да не се изгубят между сесиите и за да има ясен execution order за следващите стъпки.
+**Р РµС€РµРЅРёСЏ:**
+- Р—Р°РїРёСЃР°С…РјРµ Р·Р°РґР°С‡РёС‚Рµ РєР°С‚Рѕ explicit TODO backlog Р·Р° РґР° РЅРµ СЃРµ РёР·РіСѓР±СЏС‚ РјРµР¶РґСѓ СЃРµСЃРёРёС‚Рµ Рё Р·Р° РґР° РёРјР° СЏСЃРµРЅ execution order Р·Р° СЃР»РµРґРІР°С‰РёС‚Рµ СЃС‚СЉРїРєРё.
 
-### Session 140 — Android safe-area fix for community writing inputs
+### Session 140 вЂ” Android safe-area fix for community writing inputs
 
-**Какво направихме:**
-- Оправихме припокриването със системните Android бутони при писане в Community екрани (create post и comment input в post details).
-- Добавихме `useSafeAreaInsets()` и динамичен `paddingBottom` за долните input/footer секции вместо фиксирана стойност.
-- Добавихме и safe-area-aware `paddingTop` за header-ите, плюс допълнителен bottom padding в `ScrollView`, за да не се скрива съдържание под фиксирания footer.
+**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ:**
+- РћРїСЂР°РІРёС…РјРµ РїСЂРёРїРѕРєСЂРёРІР°РЅРµС‚Рѕ СЃСЉСЃ СЃРёСЃС‚РµРјРЅРёС‚Рµ Android Р±СѓС‚РѕРЅРё РїСЂРё РїРёСЃР°РЅРµ РІ Community РµРєСЂР°РЅРё (create post Рё comment input РІ post details).
+- Р”РѕР±Р°РІРёС…РјРµ `useSafeAreaInsets()` Рё РґРёРЅР°РјРёС‡РµРЅ `paddingBottom` Р·Р° РґРѕР»РЅРёС‚Рµ input/footer СЃРµРєС†РёРё РІРјРµСЃС‚Рѕ С„РёРєСЃРёСЂР°РЅР° СЃС‚РѕР№РЅРѕСЃС‚.
+- Р”РѕР±Р°РІРёС…РјРµ Рё safe-area-aware `paddingTop` Р·Р° header-РёС‚Рµ, РїР»СЋСЃ РґРѕРїСЉР»РЅРёС‚РµР»РµРЅ bottom padding РІ `ScrollView`, Р·Р° РґР° РЅРµ СЃРµ СЃРєСЂРёРІР° СЃСЉРґСЉСЂР¶Р°РЅРёРµ РїРѕРґ С„РёРєСЃРёСЂР°РЅРёСЏ footer.
 
-**Файлове:**
+**Р¤Р°Р№Р»РѕРІРµ:**
 - `[MODIFY] apps/mobile/components/community/create-post-screen.tsx`
 - `[MODIFY] apps/mobile/components/community/post-details-screen.tsx`
 
 **Verification:**
-- `npm.cmd run typecheck:mobile` ✅
+- `npm.cmd run typecheck:mobile` вњ…
 
-**Решения:**
-- Стандартизирахме community input layout-а върху `safe area insets`, за да е стабилен на Android устройства с 3-button navigation и gesture nav.
+**Р РµС€РµРЅРёСЏ:**
+- РЎС‚Р°РЅРґР°СЂС‚РёР·РёСЂР°С…РјРµ community input layout-Р° РІСЉСЂС…Сѓ `safe area insets`, Р·Р° РґР° Рµ СЃС‚Р°Р±РёР»РµРЅ РЅР° Android СѓСЃС‚СЂРѕР№СЃС‚РІР° СЃ 3-button navigation Рё gesture nav.
 
-### Session 139 — Mobile community header cleanup for dynamic routes
+### Session 139 вЂ” Mobile community header cleanup for dynamic routes
 
-**Какво направихме:**
-- Оправихме странното auto-generated заглавие в mobile header-а (формат като `community/[id]`), което се виждаше след публикуване/отваряне на пост.
-- Добавихме explicit `Stack.Screen` конфигурация за community detail/create route-овете с `headerShown: false`, за да се ползва само custom in-screen header (без дублиран stack header).
+**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ:**
+- РћРїСЂР°РІРёС…РјРµ СЃС‚СЂР°РЅРЅРѕС‚Рѕ auto-generated Р·Р°РіР»Р°РІРёРµ РІ mobile header-Р° (С„РѕСЂРјР°С‚ РєР°С‚Рѕ `community/[id]`), РєРѕРµС‚Рѕ СЃРµ РІРёР¶РґР°С€Рµ СЃР»РµРґ РїСѓР±Р»РёРєСѓРІР°РЅРµ/РѕС‚РІР°СЂСЏРЅРµ РЅР° РїРѕСЃС‚.
+- Р”РѕР±Р°РІРёС…РјРµ explicit `Stack.Screen` РєРѕРЅС„РёРіСѓСЂР°С†РёСЏ Р·Р° community detail/create route-РѕРІРµС‚Рµ СЃ `headerShown: false`, Р·Р° РґР° СЃРµ РїРѕР»Р·РІР° СЃР°РјРѕ custom in-screen header (Р±РµР· РґСѓР±Р»РёСЂР°РЅ stack header).
 
-**Файлове:**
+**Р¤Р°Р№Р»РѕРІРµ:**
 - `[MODIFY] apps/mobile/app/_layout.tsx`
 
 **Verification:**
-- `npm.cmd run typecheck:mobile` ✅
+- `npm.cmd run typecheck:mobile` вњ…
 
-**Решения:**
-- Запазихме custom header UX в community екрани и изключихме route-name header-а от Expo Router stack за по-чист визуален резултат.
+**Р РµС€РµРЅРёСЏ:**
+- Р—Р°РїР°Р·РёС…РјРµ custom header UX РІ community РµРєСЂР°РЅРё Рё РёР·РєР»СЋС‡РёС…РјРµ route-name header-Р° РѕС‚ Expo Router stack Р·Р° РїРѕ-С‡РёСЃС‚ РІРёР·СѓР°Р»РµРЅ СЂРµР·СѓР»С‚Р°С‚.
 
-### Session 138 — Courses list visibility fix (owner + member)
+### Session 138 вЂ” Courses list visibility fix (owner + member)
 
-**Какво направихме:**
-- Открихме причината за празен списък с курсове: `GET /api/courses` връщаше само курсовете, създадени от текущия потребител (`createdBy`).
-- Разширихме route-а да връща и курсовете, в които потребителят е записан като member през `course_members`.
-- Така се оправя зареждането както за mobile Courses tab, така и за Community create/edit формите, които ползват същия endpoint за course dropdown.
+**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ:**
+- РћС‚РєСЂРёС…РјРµ РїСЂРёС‡РёРЅР°С‚Р° Р·Р° РїСЂР°Р·РµРЅ СЃРїРёСЃСЉРє СЃ РєСѓСЂСЃРѕРІРµ: `GET /api/courses` РІСЂСЉС‰Р°С€Рµ СЃР°РјРѕ РєСѓСЂСЃРѕРІРµС‚Рµ, СЃСЉР·РґР°РґРµРЅРё РѕС‚ С‚РµРєСѓС‰РёСЏ РїРѕС‚СЂРµР±РёС‚РµР» (`createdBy`).
+- Р Р°Р·С€РёСЂРёС…РјРµ route-Р° РґР° РІСЂСЉС‰Р° Рё РєСѓСЂСЃРѕРІРµС‚Рµ, РІ РєРѕРёС‚Рѕ РїРѕС‚СЂРµР±РёС‚РµР»СЏС‚ Рµ Р·Р°РїРёСЃР°РЅ РєР°С‚Рѕ member РїСЂРµР· `course_members`.
+- РўР°РєР° СЃРµ РѕРїСЂР°РІСЏ Р·Р°СЂРµР¶РґР°РЅРµС‚Рѕ РєР°РєС‚Рѕ Р·Р° mobile Courses tab, С‚Р°РєР° Рё Р·Р° Community create/edit С„РѕСЂРјРёС‚Рµ, РєРѕРёС‚Рѕ РїРѕР»Р·РІР°С‚ СЃСЉС‰РёСЏ endpoint Р·Р° course dropdown.
 
-**Файлове:**
+**Р¤Р°Р№Р»РѕРІРµ:**
 - `[MODIFY] apps/web/app/api/courses/route.ts`
 
 **Verification:**
-- `npm.cmd run typecheck:web` ✅
+- `npm.cmd run typecheck:web` вњ…
 
-**Решения:**
-- Запазихме единен source of truth (`/api/courses`) за всички клиенти вместо ad-hoc client-side workaround, за да няма разминаване между web и mobile.
+**Р РµС€РµРЅРёСЏ:**
+- Р—Р°РїР°Р·РёС…РјРµ РµРґРёРЅРµРЅ source of truth (`/api/courses`) Р·Р° РІСЃРёС‡РєРё РєР»РёРµРЅС‚Рё РІРјРµСЃС‚Рѕ ad-hoc client-side workaround, Р·Р° РґР° РЅСЏРјР° СЂР°Р·РјРёРЅР°РІР°РЅРµ РјРµР¶РґСѓ web Рё mobile.
 
-### Session 137 — Community post creation unblock (web + mobile)
+### Session 137 вЂ” Community post creation unblock (web + mobile)
 
-**Какво направихме:**
-- Подсилихме `POST /api/posts` с устойчив error handling (JSON contract), валидация за `postType` и `courseId`, и по-ясни API кодове при невалидни данни.
-- Добавихме защитен fallback в създаването на пост: route-ът вече задава експлицитно `status: "approved"` при insert, за да няма environment-specific fail при липсващ DB default.
-- Оправихме web create формата (`CreatePostForm`) да не блокира при non-JSON backend грешки и винаги да връща user-facing message + `saving` reset.
-- Добавихме mobile create flow за Community:
-  - нов екран за създаване на пост (`/community/new`)
-  - форма с избор на тип, title/content полета и publish mutation към `/api/posts`
-  - invalidation на community feed query при успешно публикуване
-- Добавихме CTA бутон "New Post" в mobile community header-а, който отваря новия create екран.
+**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ:**
+- РџРѕРґСЃРёР»РёС…РјРµ `POST /api/posts` СЃ СѓСЃС‚РѕР№С‡РёРІ error handling (JSON contract), РІР°Р»РёРґР°С†РёСЏ Р·Р° `postType` Рё `courseId`, Рё РїРѕ-СЏСЃРЅРё API РєРѕРґРѕРІРµ РїСЂРё РЅРµРІР°Р»РёРґРЅРё РґР°РЅРЅРё.
+- Р”РѕР±Р°РІРёС…РјРµ Р·Р°С‰РёС‚РµРЅ fallback РІ СЃСЉР·РґР°РІР°РЅРµС‚Рѕ РЅР° РїРѕСЃС‚: route-СЉС‚ РІРµС‡Рµ Р·Р°РґР°РІР° РµРєСЃРїР»РёС†РёС‚РЅРѕ `status: "approved"` РїСЂРё insert, Р·Р° РґР° РЅСЏРјР° environment-specific fail РїСЂРё Р»РёРїСЃРІР°С‰ DB default.
+- РћРїСЂР°РІРёС…РјРµ web create С„РѕСЂРјР°С‚Р° (`CreatePostForm`) РґР° РЅРµ Р±Р»РѕРєРёСЂР° РїСЂРё non-JSON backend РіСЂРµС€РєРё Рё РІРёРЅР°РіРё РґР° РІСЂСЉС‰Р° user-facing message + `saving` reset.
+- Р”РѕР±Р°РІРёС…РјРµ mobile create flow Р·Р° Community:
+  - РЅРѕРІ РµРєСЂР°РЅ Р·Р° СЃСЉР·РґР°РІР°РЅРµ РЅР° РїРѕСЃС‚ (`/community/new`)
+  - С„РѕСЂРјР° СЃ РёР·Р±РѕСЂ РЅР° С‚РёРї, title/content РїРѕР»РµС‚Р° Рё publish mutation РєСЉРј `/api/posts`
+  - invalidation РЅР° community feed query РїСЂРё СѓСЃРїРµС€РЅРѕ РїСѓР±Р»РёРєСѓРІР°РЅРµ
+- Р”РѕР±Р°РІРёС…РјРµ CTA Р±СѓС‚РѕРЅ "New Post" РІ mobile community header-Р°, РєРѕР№С‚Рѕ РѕС‚РІР°СЂСЏ РЅРѕРІРёСЏ create РµРєСЂР°РЅ.
 
-**Файлове:**
+**Р¤Р°Р№Р»РѕРІРµ:**
 - `[MODIFY] apps/web/app/api/posts/route.ts`
 - `[MODIFY] apps/web/components/community/create-post-form.tsx`
 - `[MODIFY] apps/mobile/components/community/community-screen.tsx`
@@ -153,23 +225,23 @@
 - `[NEW] apps/mobile/app/community/new.tsx`
 
 **Verification:**
-- `npm.cmd run typecheck:web` ✅
-- `npm.cmd run typecheck:mobile` ✅
+- `npm.cmd run typecheck:web` вњ…
+- `npm.cmd run typecheck:mobile` вњ…
 
-**Решения:**
-- Избрахме mobile MVP create flow без course picker (course остава optional `null`) за по-бърз unblock на публикуването и минимален UI риск.
-- Запазихме текущата community feed структура и добавихме write capability без breaking промени към съществуващите interactions (like/comment/details).
+**Р РµС€РµРЅРёСЏ:**
+- РР·Р±СЂР°С…РјРµ mobile MVP create flow Р±РµР· course picker (course РѕСЃС‚Р°РІР° optional `null`) Р·Р° РїРѕ-Р±СЉСЂР· unblock РЅР° РїСѓР±Р»РёРєСѓРІР°РЅРµС‚Рѕ Рё РјРёРЅРёРјР°Р»РµРЅ UI СЂРёСЃРє.
+- Р—Р°РїР°Р·РёС…РјРµ С‚РµРєСѓС‰Р°С‚Р° community feed СЃС‚СЂСѓРєС‚СѓСЂР° Рё РґРѕР±Р°РІРёС…РјРµ write capability Р±РµР· breaking РїСЂРѕРјРµРЅРё РєСЉРј СЃСЉС‰РµСЃС‚РІСѓРІР°С‰РёС‚Рµ interactions (like/comment/details).
 
-### Session 136 — Mobile Community Interactions & Details
+### Session 136 вЂ” Mobile Community Interactions & Details
 
-**Какво направихме:**
-- Оправихме възможността за отваряне на "post" картичките в Community Feed.
-- Имплементирахме нов екран "Post Details" (чрез expo-router dynamic route `community/[id]`), който консумира `/api/posts/[id]` и рендира поста и коментарите.
-- Осъществихме възможността за реално коментиране на постовете (чрез `TextInput` и `commentMutation` към `/api/posts/[id]/comments`) с `KeyboardAvoidingView` оптимизация.
-- Добавихме логика за "Like" (чрез `useMutation` и `/api/posts/[id]/like`), работеща директно от списъка и от детайлите, с автоматично инвалидиране на кеша.
-- Заменихме проблемната `AntDesign` 'hearto' иконка с `Ionicons`, за да предотвратим warning съобщенията.
+**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ:**
+- РћРїСЂР°РІРёС…РјРµ РІСЉР·РјРѕР¶РЅРѕСЃС‚С‚Р° Р·Р° РѕС‚РІР°СЂСЏРЅРµ РЅР° "post" РєР°СЂС‚РёС‡РєРёС‚Рµ РІ Community Feed.
+- РРјРїР»РµРјРµРЅС‚РёСЂР°С…РјРµ РЅРѕРІ РµРєСЂР°РЅ "Post Details" (С‡СЂРµР· expo-router dynamic route `community/[id]`), РєРѕР№С‚Рѕ РєРѕРЅСЃСѓРјРёСЂР° `/api/posts/[id]` Рё СЂРµРЅРґРёСЂР° РїРѕСЃС‚Р° Рё РєРѕРјРµРЅС‚Р°СЂРёС‚Рµ.
+- РћСЃСЉС‰РµСЃС‚РІРёС…РјРµ РІСЉР·РјРѕР¶РЅРѕСЃС‚С‚Р° Р·Р° СЂРµР°Р»РЅРѕ РєРѕРјРµРЅС‚РёСЂР°РЅРµ РЅР° РїРѕСЃС‚РѕРІРµС‚Рµ (С‡СЂРµР· `TextInput` Рё `commentMutation` РєСЉРј `/api/posts/[id]/comments`) СЃ `KeyboardAvoidingView` РѕРїС‚РёРјРёР·Р°С†РёСЏ.
+- Р”РѕР±Р°РІРёС…РјРµ Р»РѕРіРёРєР° Р·Р° "Like" (С‡СЂРµР· `useMutation` Рё `/api/posts/[id]/like`), СЂР°Р±РѕС‚РµС‰Р° РґРёСЂРµРєС‚РЅРѕ РѕС‚ СЃРїРёСЃСЉРєР° Рё РѕС‚ РґРµС‚Р°Р№Р»РёС‚Рµ, СЃ Р°РІС‚РѕРјР°С‚РёС‡РЅРѕ РёРЅРІР°Р»РёРґРёСЂР°РЅРµ РЅР° РєРµС€Р°.
+- Р—Р°РјРµРЅРёС…РјРµ РїСЂРѕР±Р»РµРјРЅР°С‚Р° `AntDesign` 'hearto' РёРєРѕРЅРєР° СЃ `Ionicons`, Р·Р° РґР° РїСЂРµРґРѕС‚РІСЂР°С‚РёРј warning СЃСЉРѕР±С‰РµРЅРёСЏС‚Р°.
 
-**Файлове:**
+**Р¤Р°Р№Р»РѕРІРµ:**
 - `[NEW] apps/mobile/app/community/[id].tsx`
 - `[NEW] apps/mobile/components/community/post-details-screen.tsx`
 - `[MODIFY] apps/mobile/components/community/use-community-feed.ts`
@@ -177,17 +249,17 @@
 - `[MODIFY] apps/mobile/components/community/community-screen.tsx`
 
 **Verification:**
-- Навигацията и mutator-ите работят и са строго типизирани; `post-details` успешно се свързва с backend.
+- РќР°РІРёРіР°С†РёСЏС‚Р° Рё mutator-РёС‚Рµ СЂР°Р±РѕС‚СЏС‚ Рё СЃР° СЃС‚СЂРѕРіРѕ С‚РёРїРёР·РёСЂР°РЅРё; `post-details` СѓСЃРїРµС€РЅРѕ СЃРµ СЃРІСЉСЂР·РІР° СЃ backend.
 
-### Session 135 — Mobile Community Feed Implementation
+### Session 135 вЂ” Mobile Community Feed Implementation
 
 
-**Какво направихме:**
-- Създадохме мобилен изглед за "Community Board", консумирайки съществуващия backend endpoint `/api/posts`.
-- Добавихме `community` таб в долната навигация на мобилното приложение.
-- Спазихме стриктно принципа на модулност, като разделихме view логиката, state логиката, UI компонентите и стиловете.
+**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ:**
+- РЎСЉР·РґР°РґРѕС…РјРµ РјРѕР±РёР»РµРЅ РёР·РіР»РµРґ Р·Р° "Community Board", РєРѕРЅСЃСѓРјРёСЂР°Р№РєРё СЃСЉС‰РµСЃС‚РІСѓРІР°С‰РёСЏ backend endpoint `/api/posts`.
+- Р”РѕР±Р°РІРёС…РјРµ `community` С‚Р°Р± РІ РґРѕР»РЅР°С‚Р° РЅР°РІРёРіР°С†РёСЏ РЅР° РјРѕР±РёР»РЅРѕС‚Рѕ РїСЂРёР»РѕР¶РµРЅРёРµ.
+- РЎРїР°Р·РёС…РјРµ СЃС‚СЂРёРєС‚РЅРѕ РїСЂРёРЅС†РёРїР° РЅР° РјРѕРґСѓР»РЅРѕСЃС‚, РєР°С‚Рѕ СЂР°Р·РґРµР»РёС…РјРµ view Р»РѕРіРёРєР°С‚Р°, state Р»РѕРіРёРєР°С‚Р°, UI РєРѕРјРїРѕРЅРµРЅС‚РёС‚Рµ Рё СЃС‚РёР»РѕРІРµС‚Рµ.
 
-**Файлове:**
+**Р¤Р°Р№Р»РѕРІРµ:**
 - `[NEW] apps/mobile/app/(tabs)/community.tsx`
 - `[MODIFY] apps/mobile/app/(tabs)/_layout.tsx`
 - `[NEW] apps/mobile/components/community/community.styles.ts`
@@ -196,71 +268,71 @@
 - `[NEW] apps/mobile/components/community/community-screen.tsx`
 
 **Verification:**
-- Структурите очакват стандартен response от `/api/posts?page=1`.
+- РЎС‚СЂСѓРєС‚СѓСЂРёС‚Рµ РѕС‡Р°РєРІР°С‚ СЃС‚Р°РЅРґР°СЂС‚РµРЅ response РѕС‚ `/api/posts?page=1`.
 
-**Решения:**
-- Имплементацията предоставя честна основа за Social Features в мобилната версия спрямо `social-features-plan.md`.
+**Р РµС€РµРЅРёСЏ:**
+- РРјРїР»РµРјРµРЅС‚Р°С†РёСЏС‚Р° РїСЂРµРґРѕСЃС‚Р°РІСЏ С‡РµСЃС‚РЅР° РѕСЃРЅРѕРІР° Р·Р° Social Features РІ РјРѕР±РёР»РЅР°С‚Р° РІРµСЂСЃРёСЏ СЃРїСЂСЏРјРѕ `social-features-plan.md`.
 
 
 ## 2026-03-27
 
-### Сесия 1 (вечер)
+### РЎРµСЃРёСЏ 1 (РІРµС‡РµСЂ)
 
-**Какво направихме:**
-- Обсъдихме проекта, решихме да преработим StudyHub v1 с нов стек
-- Прегледахме стария проект и legacy notes
-- Уточнихме всички функции и взехме решения (без MFA, Vercel, R2, Gemini)
-- Написахме пълен implementation plan (`docs/implementation-plan.md`)
-- Поправихме README (махнахме счупени SVG, fix `copy`→`cp`, optional→planned)
-- **Фаза 0** — потвърдена завършена (монорепо scaffold съществуваше)
-- **Фаза 1** — завършена:
-  - Инсталирахме Drizzle ORM + Neon driver + bcryptjs
-  - Създадохме `drizzle/schema.ts` с 6 таблици (users, courses, modules, materials, favorites, activity_logs)
-  - Генерирахме SQL миграция (`drizzle/migrations/0000_init.sql`)
-  - Създадохме Neon акаунт и база данни (EU Central)
-  - Push-нахме schema към Neon
-  - Seed-нахме demo users (admin + user)
-  - Тествахме: DB connection ✅, 6 tables ✅, Next.js стартира ✅
+**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ:**
+- РћР±СЃСЉРґРёС…РјРµ РїСЂРѕРµРєС‚Р°, СЂРµС€РёС…РјРµ РґР° РїСЂРµСЂР°Р±РѕС‚РёРј StudyHub v1 СЃ РЅРѕРІ СЃС‚РµРє
+- РџСЂРµРіР»РµРґР°С…РјРµ СЃС‚Р°СЂРёСЏ РїСЂРѕРµРєС‚ Рё legacy notes
+- РЈС‚РѕС‡РЅРёС…РјРµ РІСЃРёС‡РєРё С„СѓРЅРєС†РёРё Рё РІР·РµС…РјРµ СЂРµС€РµРЅРёСЏ (Р±РµР· MFA, Vercel, R2, Gemini)
+- РќР°РїРёСЃР°С…РјРµ РїСЉР»РµРЅ implementation plan (`docs/implementation-plan.md`)
+- РџРѕРїСЂР°РІРёС…РјРµ README (РјР°С…РЅР°С…РјРµ СЃС‡СѓРїРµРЅРё SVG, fix `copy`в†’`cp`, optionalв†’planned)
+- **Р¤Р°Р·Р° 0** вЂ” РїРѕС‚РІСЉСЂРґРµРЅР° Р·Р°РІСЉСЂС€РµРЅР° (РјРѕРЅРѕСЂРµРїРѕ scaffold СЃСЉС‰РµСЃС‚РІСѓРІР°С€Рµ)
+- **Р¤Р°Р·Р° 1** вЂ” Р·Р°РІСЉСЂС€РµРЅР°:
+  - РРЅСЃС‚Р°Р»РёСЂР°С…РјРµ Drizzle ORM + Neon driver + bcryptjs
+  - РЎСЉР·РґР°РґРѕС…РјРµ `drizzle/schema.ts` СЃ 6 С‚Р°Р±Р»РёС†Рё (users, courses, modules, materials, favorites, activity_logs)
+  - Р“РµРЅРµСЂРёСЂР°С…РјРµ SQL РјРёРіСЂР°С†РёСЏ (`drizzle/migrations/0000_init.sql`)
+  - РЎСЉР·РґР°РґРѕС…РјРµ Neon Р°РєР°СѓРЅС‚ Рё Р±Р°Р·Р° РґР°РЅРЅРё (EU Central)
+  - Push-РЅР°С…РјРµ schema РєСЉРј Neon
+  - Seed-РЅР°С…РјРµ demo users (admin + user)
+  - РўРµСЃС‚РІР°С…РјРµ: DB connection вњ…, 6 tables вњ…, Next.js СЃС‚Р°СЂС‚РёСЂР° вњ…
   - Commit + push: `feat(db): add Drizzle schema with 6 tables and Neon integration`
-  - Сменихме Neon паролата (старата е невалидна)
+  - РЎРјРµРЅРёС…РјРµ Neon РїР°СЂРѕР»Р°С‚Р° (СЃС‚Р°СЂР°С‚Р° Рµ РЅРµРІР°Р»РёРґРЅР°)
 
-- **Фаза 2** — завършена:
-  - `lib/db.ts` — Drizzle client с Neon
-  - `lib/jwt.ts` — sign/verify JWT с jose (Edge-compatible)
-  - `lib/auth.ts` — bcrypt password hashing
-  - `middleware.ts` — JWT guard за защитени routes + admin-only paths
+- **Р¤Р°Р·Р° 2** вЂ” Р·Р°РІСЉСЂС€РµРЅР°:
+  - `lib/db.ts` вЂ” Drizzle client СЃ Neon
+  - `lib/jwt.ts` вЂ” sign/verify JWT СЃ jose (Edge-compatible)
+  - `lib/auth.ts` вЂ” bcrypt password hashing
+  - `middleware.ts` вЂ” JWT guard Р·Р° Р·Р°С‰РёС‚РµРЅРё routes + admin-only paths
   - 4 API endpoints: register, login, logout, me
-  - Login + Register страници (responsive + dark mode)
-  - Tailwind dark mode включен (class strategy)
-  - Тествано: login ✅, register ✅, /me ✅, build ✅, browser ✅
+  - Login + Register СЃС‚СЂР°РЅРёС†Рё (responsive + dark mode)
+  - Tailwind dark mode РІРєР»СЋС‡РµРЅ (class strategy)
+  - РўРµСЃС‚РІР°РЅРѕ: login вњ…, register вњ…, /me вњ…, build вњ…, browser вњ…
   - Commit + push: `feat(auth): JWT auth with register, login, logout and role-aware middleware`
 
-- **Фаза 3** — завършена:
-  - `lib/api-utils.ts` — requireAuth + requireAdmin helpers
-  - `lib/activity.ts` — logActivity helper
-  - API: full CRUD за courses, modules, materials
-  - API: favorites (add/list/remove) с unique constraint
-  - Dashboard страница — list courses, create, delete
-  - Course Details страница — modules с materials, add/delete
-  - Material View/Edit страница — view, edit, delete
-  - Всички страници responsive + dark mode
-  - Build ✅
+- **Р¤Р°Р·Р° 3** вЂ” Р·Р°РІСЉСЂС€РµРЅР°:
+  - `lib/api-utils.ts` вЂ” requireAuth + requireAdmin helpers
+  - `lib/activity.ts` вЂ” logActivity helper
+  - API: full CRUD Р·Р° courses, modules, materials
+  - API: favorites (add/list/remove) СЃ unique constraint
+  - Dashboard СЃС‚СЂР°РЅРёС†Р° вЂ” list courses, create, delete
+  - Course Details СЃС‚СЂР°РЅРёС†Р° вЂ” modules СЃ materials, add/delete
+  - Material View/Edit СЃС‚СЂР°РЅРёС†Р° вЂ” view, edit, delete
+  - Р’СЃРёС‡РєРё СЃС‚СЂР°РЅРёС†Рё responsive + dark mode
+  - Build вњ…
   - Commit + push: `feat(crud): courses, modules, materials CRUD with favorites and activity logging`
-  - Обновихме AGENTS.md с code quality правила и handoff инструкции
+  - РћР±РЅРѕРІРёС…РјРµ AGENTS.md СЃ code quality РїСЂР°РІРёР»Р° Рё handoff РёРЅСЃС‚СЂСѓРєС†РёРё
 
-- **Фаза 4** — завършена:
-  - `PUT /api/auth/me` — profile update (name, avatarUrl) с activity logging
-  - Profile страница — avatar display (initials fallback), edit name/avatar, read-only email/date
+- **Р¤Р°Р·Р° 4** вЂ” Р·Р°РІСЉСЂС€РµРЅР°:
+  - `PUT /api/auth/me` вЂ” profile update (name, avatarUrl) СЃ activity logging
+  - Profile СЃС‚СЂР°РЅРёС†Р° вЂ” avatar display (initials fallback), edit name/avatar, read-only email/date
   - Admin API: `GET /api/admin/users`, `PUT /api/admin/users/:id` (role change), `DELETE /api/admin/users/:id`
   - Admin API: `GET /api/admin/materials`, `DELETE /api/admin/materials/:id`
-  - Admin API: `GET /api/admin/activity-logs` (с limit param)
-  - Admin panel: 3 таба (Users, Materials, Activity Logs)
-  - Users tab: role dropdown, delete user с cascade cleanup
-  - Materials tab: показва course/author, admin delete
-  - Activity tab: последни действия с user info и details JSON
-  - Всички компоненти разделени (<300 lines): `components/admin/{users,materials,activity}-tab.tsx`
-  - Self-protection: admin не може да изтрие себе си или да смени своята роля
-  - Build ✅
+  - Admin API: `GET /api/admin/activity-logs` (СЃ limit param)
+  - Admin panel: 3 С‚Р°Р±Р° (Users, Materials, Activity Logs)
+  - Users tab: role dropdown, delete user СЃ cascade cleanup
+  - Materials tab: РїРѕРєР°Р·РІР° course/author, admin delete
+  - Activity tab: РїРѕСЃР»РµРґРЅРё РґРµР№СЃС‚РІРёСЏ СЃ user info Рё details JSON
+  - Р’СЃРёС‡РєРё РєРѕРјРїРѕРЅРµРЅС‚Рё СЂР°Р·РґРµР»РµРЅРё (<300 lines): `components/admin/{users,materials,activity}-tab.tsx`
+  - Self-protection: admin РЅРµ РјРѕР¶Рµ РґР° РёР·С‚СЂРёРµ СЃРµР±Рµ СЃРё РёР»Рё РґР° СЃРјРµРЅРё СЃРІРѕСЏС‚Р° СЂРѕР»СЏ
+  - Build вњ…
 
 **Commit count:** 8 (target: 15+)
 **Commit days:** 1 (target: 3+)
@@ -269,41 +341,41 @@
 
 ## 2026-03-28
 
-### Сесия 2
+### РЎРµСЃРёСЏ 2
 
-**Какво направихме:**
+**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ:**
 
-- **Фаза 5** — завършена (Mobile App, 3 екрана):
-  - Backend: добавихме Bearer token поддръжка в `requireAuth` (cookie + Authorization header)
-  - Backend: login/register API-та вече връщат `token` в response body (за mobile storage)
-  - `lib/api.ts` — API клиент с SecureStore за token persistence, platform-aware base URL
-  - `lib/auth-context.tsx` — AuthProvider с auto-login check, login/logout
-  - `app/_layout.tsx` — AuthGate: автоматичен redirect към login/courses
-  - **Login екран** — email/password форма, error handling, demo credentials hint
-  - **Courses List екран** — FlatList с pull-to-refresh, course cards с status badge, welcome bar, logout
-  - **Course Details екран** — course info card, expandable modules, lazy-loaded materials с type icons и tags
-  - Инсталирахме `expo-secure-store` за secure token storage
-  - Fix: `@types/react` override в root `package.json` (deduplicate 19.0.14 vs 19.0.4 от react-native)
-  - Fix: explicit `jsx: "react-jsx"` в mobile tsconfig (VS Code IDE compatibility)
-  - Web build ✅, Mobile typecheck ✅
+- **Р¤Р°Р·Р° 5** вЂ” Р·Р°РІСЉСЂС€РµРЅР° (Mobile App, 3 РµРєСЂР°РЅР°):
+  - Backend: РґРѕР±Р°РІРёС…РјРµ Bearer token РїРѕРґРґСЂСЉР¶РєР° РІ `requireAuth` (cookie + Authorization header)
+  - Backend: login/register API-С‚Р° РІРµС‡Рµ РІСЂСЉС‰Р°С‚ `token` РІ response body (Р·Р° mobile storage)
+  - `lib/api.ts` вЂ” API РєР»РёРµРЅС‚ СЃ SecureStore Р·Р° token persistence, platform-aware base URL
+  - `lib/auth-context.tsx` вЂ” AuthProvider СЃ auto-login check, login/logout
+  - `app/_layout.tsx` вЂ” AuthGate: Р°РІС‚РѕРјР°С‚РёС‡РµРЅ redirect РєСЉРј login/courses
+  - **Login РµРєСЂР°РЅ** вЂ” email/password С„РѕСЂРјР°, error handling, demo credentials hint
+  - **Courses List РµРєСЂР°РЅ** вЂ” FlatList СЃ pull-to-refresh, course cards СЃ status badge, welcome bar, logout
+  - **Course Details РµРєСЂР°РЅ** вЂ” course info card, expandable modules, lazy-loaded materials СЃ type icons Рё tags
+  - РРЅСЃС‚Р°Р»РёСЂР°С…РјРµ `expo-secure-store` Р·Р° secure token storage
+  - Fix: `@types/react` override РІ root `package.json` (deduplicate 19.0.14 vs 19.0.4 РѕС‚ react-native)
+  - Fix: explicit `jsx: "react-jsx"` РІ mobile tsconfig (VS Code IDE compatibility)
+  - Web build вњ…, Mobile typecheck вњ…
 
-- CORS headers добавени в middleware за cross-origin API достъп (mobile web preview)
-- Тествано: Expo web preview ✅ (login → courses list → course details с модули и материали)
-- Expo Go на физическо устройство: "failed to download remote update" — за разследване по-късно
+- CORS headers РґРѕР±Р°РІРµРЅРё РІ middleware Р·Р° cross-origin API РґРѕСЃС‚СЉРї (mobile web preview)
+- РўРµСЃС‚РІР°РЅРѕ: Expo web preview вњ… (login в†’ courses list в†’ course details СЃ РјРѕРґСѓР»Рё Рё РјР°С‚РµСЂРёР°Р»Рё)
+- Expo Go РЅР° С„РёР·РёС‡РµСЃРєРѕ СѓСЃС‚СЂРѕР№СЃС‚РІРѕ: "failed to download remote update" вЂ” Р·Р° СЂР°Р·СЃР»РµРґРІР°РЅРµ РїРѕ-РєСЉСЃРЅРѕ
 - Commit + push: `feat(mobile): add login, courses list and course details screens`
 
 **Commit count:** 9 (target: 15+)
 **Commit days:** 2 (target: 3+)
 
-**Текуща фаза:** Фаза 5 завършена, Фаза 6 отложена
+**РўРµРєСѓС‰Р° С„Р°Р·Р°:** Р¤Р°Р·Р° 5 Р·Р°РІСЉСЂС€РµРЅР°, Р¤Р°Р·Р° 6 РѕС‚Р»РѕР¶РµРЅР°
 
-**Решение:** Deployment (Фаза 6) се отлага. Причина: безплатни планове на Netlify/Vercel — при всеки commit се deploy-ва и кредитите ще свършат. Първо ошлайфваме UI, после deploy-ваме наведнъж.
+**Р РµС€РµРЅРёРµ:** Deployment (Р¤Р°Р·Р° 6) СЃРµ РѕС‚Р»Р°РіР°. РџСЂРёС‡РёРЅР°: Р±РµР·РїР»Р°С‚РЅРё РїР»Р°РЅРѕРІРµ РЅР° Netlify/Vercel вЂ” РїСЂРё РІСЃРµРєРё commit СЃРµ deploy-РІР° Рё РєСЂРµРґРёС‚РёС‚Рµ С‰Рµ СЃРІСЉСЂС€Р°С‚. РџСЉСЂРІРѕ РѕС€Р»Р°Р№С„РІР°РјРµ UI, РїРѕСЃР»Рµ deploy-РІР°РјРµ РЅР°РІРµРґРЅСЉР¶.
 
-**Следващи стъпки:**
-- UI polish и ошлайфване на уеб екраните
-- Фаза 6: Deployment (когато UI е готов)
-  - Google OAuth: production SHA-1 (от EAS Build), consent screen → "Published", redirect URIs с production домейн, env vars в EAS
-- Фаза 7: Documentation (README + architecture + DB diagram)
+**РЎР»РµРґРІР°С‰Рё СЃС‚СЉРїРєРё:**
+- UI polish Рё РѕС€Р»Р°Р№С„РІР°РЅРµ РЅР° СѓРµР± РµРєСЂР°РЅРёС‚Рµ
+- Р¤Р°Р·Р° 6: Deployment (РєРѕРіР°С‚Рѕ UI Рµ РіРѕС‚РѕРІ)
+  - Google OAuth: production SHA-1 (РѕС‚ EAS Build), consent screen в†’ "Published", redirect URIs СЃ production РґРѕРјРµР№РЅ, env vars РІ EAS
+- Р¤Р°Р·Р° 7: Documentation (README + architecture + DB diagram)
 
 ### Session 3 (Expo Go stability investigation)
 
@@ -414,55 +486,55 @@
 **Purpose:**
 - Prevent repeated setup loops and preserve a deterministic mobile testing path for next sessions.
 
-### Session 10 (Expo Go — РЕШЕНО + UI планиране)
+### Session 10 (Expo Go вЂ” Р Р•РЁР•РќРћ + UI РїР»Р°РЅРёСЂР°РЅРµ)
 
-**Expo Go на физически телефон — РАБОТИ. Ето какво беше проблемът:**
+**Expo Go РЅР° С„РёР·РёС‡РµСЃРєРё С‚РµР»РµС„РѕРЅ вЂ” Р РђР‘РћРўР. Р•С‚Рѕ РєР°РєРІРѕ Р±РµС€Рµ РїСЂРѕР±Р»РµРјСЉС‚:**
 
 **1. Monorepo + Expo Router entry point**
-- Expo търсеше стар `App.js` файл, но проектът е в `apps/mobile` с `expo-router`.
-- Решение: Създадохме `apps/mobile/index.js` с `import "expo-router/entry"` и сменихме `"main": "index.js"` в `package.json`.
+- Expo С‚СЉСЂСЃРµС€Рµ СЃС‚Р°СЂ `App.js` С„Р°Р№Р», РЅРѕ РїСЂРѕРµРєС‚СЉС‚ Рµ РІ `apps/mobile` СЃ `expo-router`.
+- Р РµС€РµРЅРёРµ: РЎСЉР·РґР°РґРѕС…РјРµ `apps/mobile/index.js` СЃ `import "expo-router/entry"` Рё СЃРјРµРЅРёС…РјРµ `"main": "index.js"` РІ `package.json`.
 
-**2. Windows Firewall + мрежов профил**
-- WiFi мрежата беше на "Public" → Windows блокираше входящи връзки от телефона.
-- Решение: Сменихме на **Private** + разрешихме Node.js в Firewall при prompt.
-- LAN режимът (`--host lan`) работи след тези промени.
+**2. Windows Firewall + РјСЂРµР¶РѕРІ РїСЂРѕС„РёР»**
+- WiFi РјСЂРµР¶Р°С‚Р° Р±РµС€Рµ РЅР° "Public" в†’ Windows Р±Р»РѕРєРёСЂР°С€Рµ РІС…РѕРґСЏС‰Рё РІСЂСЉР·РєРё РѕС‚ С‚РµР»РµС„РѕРЅР°.
+- Р РµС€РµРЅРёРµ: РЎРјРµРЅРёС…РјРµ РЅР° **Private** + СЂР°Р·СЂРµС€РёС…РјРµ Node.js РІ Firewall РїСЂРё prompt.
+- LAN СЂРµР¶РёРјСЉС‚ (`--host lan`) СЂР°Р±РѕС‚Рё СЃР»РµРґ С‚РµР·Рё РїСЂРѕРјРµРЅРё.
 
-**3. Тунел като fallback**
-- `--tunnel` (ngrok) заобикаля firewall проблемите но е по-бавен и понякога timeout-ва.
-- За стабилна работа: **LAN + Private мрежа** е по-добро от тунел.
+**3. РўСѓРЅРµР» РєР°С‚Рѕ fallback**
+- `--tunnel` (ngrok) Р·Р°РѕР±РёРєР°Р»СЏ firewall РїСЂРѕР±Р»РµРјРёС‚Рµ РЅРѕ Рµ РїРѕ-Р±Р°РІРµРЅ Рё РїРѕРЅСЏРєРѕРіР° timeout-РІР°.
+- Р—Р° СЃС‚Р°Р±РёР»РЅР° СЂР°Р±РѕС‚Р°: **LAN + Private РјСЂРµР¶Р°** Рµ РїРѕ-РґРѕР±СЂРѕ РѕС‚ С‚СѓРЅРµР».
 
 **4. API URL**
-- Създадохме `apps/mobile/.env` с `EXPO_PUBLIC_API_URL=http://192.168.1.9:3000`.
-- Metro зарежда `.env` автоматично — потвърдено от `env: export EXPO_PUBLIC_API_URL` в лога.
+- РЎСЉР·РґР°РґРѕС…РјРµ `apps/mobile/.env` СЃ `EXPO_PUBLIC_API_URL=http://192.168.1.9:3000`.
+- Metro Р·Р°СЂРµР¶РґР° `.env` Р°РІС‚РѕРјР°С‚РёС‡РЅРѕ вЂ” РїРѕС‚РІСЉСЂРґРµРЅРѕ РѕС‚ `env: export EXPO_PUBLIC_API_URL` РІ Р»РѕРіР°.
 
-**5. Сив екран / навигация**
-- `useRootNavigationState()` в `_layout.tsx` изчаква навигацията да се инициализира преди redirect.
+**5. РЎРёРІ РµРєСЂР°РЅ / РЅР°РІРёРіР°С†РёСЏ**
+- `useRootNavigationState()` РІ `_layout.tsx` РёР·С‡Р°РєРІР° РЅР°РІРёРіР°С†РёСЏС‚Р° РґР° СЃРµ РёРЅРёС†РёР°Р»РёР·РёСЂР° РїСЂРµРґРё redirect.
 
-**Golden path за следващ път:**
-1. WiFi мрежа на "Private" (еднократна настройка)
-2. `npm run dev:web` (терминал 1)
-3. `npm --workspace @studyhub/mobile run dev:mobile:lan` (терминал 2)
-4. В Expo Go въведи: `exp://192.168.1.9:8081`
+**Golden path Р·Р° СЃР»РµРґРІР°С‰ РїСЉС‚:**
+1. WiFi РјСЂРµР¶Р° РЅР° "Private" (РµРґРЅРѕРєСЂР°С‚РЅР° РЅР°СЃС‚СЂРѕР№РєР°)
+2. `npm run dev:web` (С‚РµСЂРјРёРЅР°Р» 1)
+3. `npm --workspace @studyhub/mobile run dev:mobile:lan` (С‚РµСЂРјРёРЅР°Р» 2)
+4. Р’ Expo Go РІСЉРІРµРґРё: `exp://192.168.1.9:8081`
 
 ---
 
-### Session 10 (Expo Go deep investigation + UI планиране)
+### Session 10 (Expo Go deep investigation + UI РїР»Р°РЅРёСЂР°РЅРµ)
 
-**Expo Go — root cause идентифициран:**
-- Махнахме `eas.projectId` и `owner` от `app.json` (причиняваха OTA update check към EAS сървъри).
-- Махнахме deprecated `expo-router/babel` от `babel.config.js`.
-- Потвърдено: телефонът достига Metro (bundle се изтегля за 93ms кеширано).
-- Дори минимален "Hello World" layout гърми → проблемът е в Expo Go app-а на устройството, не в кода.
-- **Решение:** Инсталиран Android Studio + емулатор (Pixel 8, API 37, изтегля се). Ще се ползва вместо физически телефон.
+**Expo Go вЂ” root cause РёРґРµРЅС‚РёС„РёС†РёСЂР°РЅ:**
+- РњР°С…РЅР°С…РјРµ `eas.projectId` Рё `owner` РѕС‚ `app.json` (РїСЂРёС‡РёРЅСЏРІР°С…Р° OTA update check РєСЉРј EAS СЃСЉСЂРІСЉСЂРё).
+- РњР°С…РЅР°С…РјРµ deprecated `expo-router/babel` РѕС‚ `babel.config.js`.
+- РџРѕС‚РІСЉСЂРґРµРЅРѕ: С‚РµР»РµС„РѕРЅСЉС‚ РґРѕСЃС‚РёРіР° Metro (bundle СЃРµ РёР·С‚РµРіР»СЏ Р·Р° 93ms РєРµС€РёСЂР°РЅРѕ).
+- Р”РѕСЂРё РјРёРЅРёРјР°Р»РµРЅ "Hello World" layout РіСЉСЂРјРё в†’ РїСЂРѕР±Р»РµРјСЉС‚ Рµ РІ Expo Go app-Р° РЅР° СѓСЃС‚СЂРѕР№СЃС‚РІРѕС‚Рѕ, РЅРµ РІ РєРѕРґР°.
+- **Р РµС€РµРЅРёРµ:** РРЅСЃС‚Р°Р»РёСЂР°РЅ Android Studio + РµРјСѓР»Р°С‚РѕСЂ (Pixel 8, API 37, РёР·С‚РµРіР»СЏ СЃРµ). Р©Рµ СЃРµ РїРѕР»Р·РІР° РІРјРµСЃС‚Рѕ С„РёР·РёС‡РµСЃРєРё С‚РµР»РµС„РѕРЅ.
 
-**UI планиране — анализ на v1:**
-- Прегледан живия v1 проект за справка.
-- Идентифицирани липсващи функции в v2 спрямо v1.
-- Уточнена концепцията: StudyHub е **личен бележник**, не курс за завършване → progress tracking не е подходящ.
+**UI РїР»Р°РЅРёСЂР°РЅРµ вЂ” Р°РЅР°Р»РёР· РЅР° v1:**
+- РџСЂРµРіР»РµРґР°РЅ Р¶РёРІРёСЏ v1 РїСЂРѕРµРєС‚ Р·Р° СЃРїСЂР°РІРєР°.
+- РРґРµРЅС‚РёС„РёС†РёСЂР°РЅРё Р»РёРїСЃРІР°С‰Рё С„СѓРЅРєС†РёРё РІ v2 СЃРїСЂСЏРјРѕ v1.
+- РЈС‚РѕС‡РЅРµРЅР° РєРѕРЅС†РµРїС†РёСЏС‚Р°: StudyHub Рµ **Р»РёС‡РµРЅ Р±РµР»РµР¶РЅРёРє**, РЅРµ РєСѓСЂСЃ Р·Р° Р·Р°РІСЉСЂС€РІР°РЅРµ в†’ progress tracking РЅРµ Рµ РїРѕРґС…РѕРґСЏС‰.
 
-**Следващи стъпки — работен план:**
-- Виж секция "Фаза UI Polish + Feature Parity" в `docs/implementation-plan.md`.
-- Следващата задача: **Home page** (hero + features + faq, split компоненти).
+**РЎР»РµРґРІР°С‰Рё СЃС‚СЉРїРєРё вЂ” СЂР°Р±РѕС‚РµРЅ РїР»Р°РЅ:**
+- Р’РёР¶ СЃРµРєС†РёСЏ "Р¤Р°Р·Р° UI Polish + Feature Parity" РІ `docs/implementation-plan.md`.
+- РЎР»РµРґРІР°С‰Р°С‚Р° Р·Р°РґР°С‡Р°: **Home page** (hero + features + faq, split РєРѕРјРїРѕРЅРµРЅС‚Рё).
 
 ---
 
@@ -470,41 +542,41 @@
 
 ### Session 11 (Home page + React dedup fix)
 
-**Какво направихме:**
+**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ:**
 
-**Home страница — завършена:**
-- `components/home/hero.tsx` — mini-nav + hero с badge, headline, 2 CTA бутона, gradient blob
-- `components/home/features.tsx` — 6 feature карти в responsive grid (1→2→3 колони)
-- `components/home/faq.tsx` — accordion FAQ с 5 въпроса (client component, анимирана + иконка)
-- `app/page.tsx` — 16 реда, само импорти + footer
-- `app/layout.tsx` — премахнат hardcoded `className="dark"` → светла тема по подразбиране
+**Home СЃС‚СЂР°РЅРёС†Р° вЂ” Р·Р°РІСЉСЂС€РµРЅР°:**
+- `components/home/hero.tsx` вЂ” mini-nav + hero СЃ badge, headline, 2 CTA Р±СѓС‚РѕРЅР°, gradient blob
+- `components/home/features.tsx` вЂ” 6 feature РєР°СЂС‚Рё РІ responsive grid (1в†’2в†’3 РєРѕР»РѕРЅРё)
+- `components/home/faq.tsx` вЂ” accordion FAQ СЃ 5 РІСЉРїСЂРѕСЃР° (client component, Р°РЅРёРјРёСЂР°РЅР° + РёРєРѕРЅРєР°)
+- `app/page.tsx` вЂ” 16 СЂРµРґР°, СЃР°РјРѕ РёРјРїРѕСЂС‚Рё + footer
+- `app/layout.tsx` вЂ” РїСЂРµРјР°С…РЅР°С‚ hardcoded `className="dark"` в†’ СЃРІРµС‚Р»Р° С‚РµРјР° РїРѕ РїРѕРґСЂР°Р·Р±РёСЂР°РЅРµ
 
-**Бъг: дублиран React instance в монорепо (критичен, блокира build)**
+**Р‘СЉРі: РґСѓР±Р»РёСЂР°РЅ React instance РІ РјРѕРЅРѕСЂРµРїРѕ (РєСЂРёС‚РёС‡РµРЅ, Р±Р»РѕРєРёСЂР° build)**
 
-_Симптом:_ `npm run build` гърми с `TypeError: Cannot read properties of null (reading 'useContext')` при prerender на `/404`.
+_РЎРёРјРїС‚РѕРј:_ `npm run build` РіСЉСЂРјРё СЃ `TypeError: Cannot read properties of null (reading 'useContext')` РїСЂРё prerender РЅР° `/404`.
 
-_Root cause:_ npm workspace hoisting конфликт:
-- `apps/mobile` изисква `react@19.1.0` → hoisted на root като `node_modules/react@19.1.0`
-- `apps/web` имаше `react@19.0.0` → npm го инсталира в `apps/web/node_modules/react@19.0.0`
-- `react-dom` се закача към root (19.1.0), но Next.js `_error.js` изпълнява `useContext` с web instance (19.0.0) → `null`
+_Root cause:_ npm workspace hoisting РєРѕРЅС„Р»РёРєС‚:
+- `apps/mobile` РёР·РёСЃРєРІР° `react@19.1.0` в†’ hoisted РЅР° root РєР°С‚Рѕ `node_modules/react@19.1.0`
+- `apps/web` РёРјР°С€Рµ `react@19.0.0` в†’ npm РіРѕ РёРЅСЃС‚Р°Р»РёСЂР° РІ `apps/web/node_modules/react@19.0.0`
+- `react-dom` СЃРµ Р·Р°РєР°С‡Р° РєСЉРј root (19.1.0), РЅРѕ Next.js `_error.js` РёР·РїСЉР»РЅСЏРІР° `useContext` СЃ web instance (19.0.0) в†’ `null`
 
 _Fix:_
-1. Синхронизирахме версията: `apps/web/package.json` → `react: "19.1.0"`, `react-dom: "19.1.0"` (точно, без `^`)
-2. Изтрихме всички `node_modules/` и `package-lock.json` от root
-3. `npm install` от нулата → npm deduplica и ползва само root 19.1.0
+1. РЎРёРЅС…СЂРѕРЅРёР·РёСЂР°С…РјРµ РІРµСЂСЃРёСЏС‚Р°: `apps/web/package.json` в†’ `react: "19.1.0"`, `react-dom: "19.1.0"` (С‚РѕС‡РЅРѕ, Р±РµР· `^`)
+2. РР·С‚СЂРёС…РјРµ РІСЃРёС‡РєРё `node_modules/` Рё `package-lock.json` РѕС‚ root
+3. `npm install` РѕС‚ РЅСѓР»Р°С‚Р° в†’ npm deduplica Рё РїРѕР»Р·РІР° СЃР°РјРѕ root 19.1.0
 
-_Ако се повтори:_
+_РђРєРѕ СЃРµ РїРѕРІС‚РѕСЂРё:_
 ```bash
 rm -rf node_modules apps/web/node_modules apps/mobile/node_modules package-lock.json
 npm install
 ```
-Провери след това:
+РџСЂРѕРІРµСЂРё СЃР»РµРґ С‚РѕРІР°:
 ```bash
 node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.json').version)}catch(e){console.log('web: deduped OK')}; console.log('root:', require('./node_modules/react/package.json').version)"
-# Трябва: web: deduped OK / root: 19.1.0
+# РўСЂСЏР±РІР°: web: deduped OK / root: 19.1.0
 ```
 
-**Build ✅ — 26 routes, `/` = 106 kB First Load JS**
+**Build вњ… вЂ” 26 routes, `/` = 106 kB First Load JS**
 
 ### Session 12 (Feature parity pass for Course Details + Material pages)
 
@@ -858,7 +930,7 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
   - added icon-based email/password fields
   - added `Forgot password?` action, `OR` divider, and Google sign-in button as clearly planned/upcoming actions
   - restored mobile mascot presence instead of hiding it on smaller screens
-  - fixed the broken Bulgarian speech bubble text encoding (`Здравей! / Приятно учене!`)
+  - fixed the broken Bulgarian speech bubble text encoding (`Р—РґСЂР°РІРµР№! / РџСЂРёСЏС‚РЅРѕ СѓС‡РµРЅРµ!`)
 - Added real dark-mode support for the web app root:
   - `apps/web/components/theme/theme-utils.ts`
   - `apps/web/components/theme/theme-script.tsx`
@@ -1973,12 +2045,12 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 **What changed:**
 - `apps/web/components/profile/profile-hero-card.tsx`
   - moved the main profile hero name onto the shared signature title treatment
-  - replaced the old Cloudflare R2 upload copy with an honest “planned / not finalized yet” message
+  - replaced the old Cloudflare R2 upload copy with an honest вЂњplanned / not finalized yetвЂќ message
 - `apps/web/components/profile/profile-details-card.tsx`
   - updated avatar URL helper copy to say external image links work now
   - replaced the direct upload action block with a clear `Coming soon` state instead of pretending the flow is final
 - `apps/web/lib/profile.ts`
-  - updated the “photo missing” status description to reflect that direct photo upload is planned, while image URLs already work
+  - updated the вЂњphoto missingвЂќ status description to reflect that direct photo upload is planned, while image URLs already work
 - `apps/web/app/profile/page.tsx`
   - removed now-unused direct-upload props from the details card wiring
 
@@ -2088,7 +2160,7 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
   - kept the `MaterialTypePill` as the single textual type indicator on the card
 
 **Why:**
-- The material rows now feel quieter and more visual, which makes the user’s eye land on the title first instead of bouncing between repeated labels.
+- The material rows now feel quieter and more visual, which makes the userвЂ™s eye land on the title first instead of bouncing between repeated labels.
 - The cleanup also scales correctly for link and file materials once those appear in the module.
 
 **Validation:**
@@ -2137,7 +2209,7 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 
 **Problem investigated:**
 - Several headings in the new module/material flow still looked like leftover draft typography instead of the intended signature treatment.
-- Cyrillic titles were not reliably reading as “signature” because the handwritten stack needed a better fallback.
+- Cyrillic titles were not reliably reading as вЂњsignatureвЂќ because the handwritten stack needed a better fallback.
 - The material detail page was also repeating the same material title twice: once in the page header and once again inside the main content panel.
 
 **What changed:**
@@ -2147,14 +2219,14 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
   - moved the course title into the signature treatment
   - updated module titles so the active item reads in the signature style instead of a leftover draft sans look
 - `apps/web/components/modules/module-pinned-sidebar.tsx`
-  - updated the “Pinned materials” heading to the signature treatment
+  - updated the вЂњPinned materialsвЂќ heading to the signature treatment
 - `apps/web/components/course/material-row.tsx`
   - changed the material row title from the temporary heavy sans treatment to the signature title treatment
 - `apps/web/components/materials/material-view-panel.tsx`
   - moved the in-panel material title into the signature treatment
 - `apps/web/app/materials/[id]/page.tsx`
   - removed the duplicated material title from the page header
-  - turned the top section into a context header (“Material workspace”) so the actual content title only appears once
+  - turned the top section into a context header (вЂњMaterial workspaceвЂќ) so the actual content title only appears once
 
 **Why:**
 - The module/material flow now feels much more consistent with the premium signature direction already used in the stronger dashboard/profile passes.
@@ -2198,7 +2270,7 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 - `apps/web/app/courses/[id]/page.tsx`
   - turned the page back into a true modules workspace for the selected course
   - removed the flattened inline materials management from this screen
-  - added module creation, rename, delete, reorder, and clearer “Open materials” actions
+  - added module creation, rename, delete, reorder, and clearer вЂњOpen materialsвЂќ actions
 - `apps/web/components/course/course-workspace-header.tsx`
   - rebuilt the course hero around the restored `course -> modules -> materials` flow
 - `apps/web/components/course/module-list.tsx`
@@ -2865,7 +2937,7 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 - This fixes the uneven reading texture across notes, cards, helper copy, and other authenticated app surfaces.
 
 **Validation:**
-- `npm.cmd --workspace @studyhub/web run build` ✅
+- `npm.cmd --workspace @studyhub/web run build` вњ…
 - `npm.cmd --workspace @studyhub/web run typecheck` hit a local sandbox `.next/types` path mismatch after build, but the successful Next build already completed its own type/lint validation for this change.
 
 ### Session 105 (Home typography color refinement)
@@ -3499,12 +3571,12 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 ### Session 126 (Navigation polish, slug URLs, UI cleanup)
 
 **Goal:**
-- Make it crystal clear where the user is in the hierarchy (courses → modules → materials).
+- Make it crystal clear where the user is in the hierarchy (courses в†’ modules в†’ materials).
 - Make browser tab titles and URL addresses self-descriptive instead of just numeric IDs.
 - Remove all draft-style explanatory text that was leaked from development into production UI.
 
-**URL Structure — Slug URLs implemented:**
-- Created `apps/web/lib/slugify.ts` — utility that transforms titles into URL-safe strings.
+**URL Structure вЂ” Slug URLs implemented:**
+- Created `apps/web/lib/slugify.ts` вЂ” utility that transforms titles into URL-safe strings.
 - Restructured routing to use optional catch-all segments (`[[...slug]]`):
   - `apps/web/app/courses/[id]/[[...slug]]/page.tsx`
   - `apps/web/app/modules/[id]/[[...slug]]/page.tsx`
@@ -3514,19 +3586,19 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
   - `/courses/4/capstone-terminology-and-issues`
   - `/modules/1/terminology`
   - `/materials/9/linting`
-- The slug is decorative — the server only uses the numeric ID.
+- The slug is decorative вЂ” the server only uses the numeric ID.
 - Updated link generation in:
   - `course-card.tsx`, `module-section.tsx`, `module-sidebar.tsx`
   - `material-row.tsx`, `pinned-material-item.tsx`, `module-pinned-sidebar.tsx`
   - `module-workspace-header.tsx`, `material-page-client.tsx`
 
-**Browser tab titles — full breadcrumb path:**
+**Browser tab titles вЂ” full breadcrumb path:**
 - `generateMetadata` in each route page now builds a path matching the breadcrumbs:
-  - Course page: `Full-Stack Apps with AI — StudyHub`
-  - Module page: `TypeScript Basics › Full-Stack Apps with AI — StudyHub`
-  - Material page: `Video link › TypeScript Basics › Full-Stack Apps with AI — StudyHub`
+  - Course page: `Full-Stack Apps with AI вЂ” StudyHub`
+  - Module page: `TypeScript Basics вЂє Full-Stack Apps with AI вЂ” StudyHub`
+  - Material page: `Video link вЂє TypeScript Basics вЂє Full-Stack Apps with AI вЂ” StudyHub`
 
-**UI Cleanup — removed draft/redundant elements:**
+**UI Cleanup вЂ” removed draft/redundant elements:**
 - Removed duplicate sub-header navigation from course and module workspace headers:
   - `COURSE: ... / MODULE WORKSPACE` row deleted from `module-workspace-header.tsx`
   - `Course Workspace / Modules` row deleted from `course-workspace-header.tsx`
@@ -3560,7 +3632,7 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 - `apps/web/components/materials/material-page-client.tsx`
 
 **Validation:**
-- All changes are straightforward prop removal and string interpolation — no logic changes.
+- All changes are straightforward prop removal and string interpolation вЂ” no logic changes.
 - TypeScript check was attempted but tsc hung (environment issue, not code error).
 
 **Next steps for new chat:**
@@ -3714,7 +3786,7 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 **Validation:**
 - Micro-reactions and animations visually confirmed to perfectly match the original StudyHub presentation layout.
 
-### Session 133 (Contact Page — Tailwind-Only Compliance)
+### Session 133 (Contact Page вЂ” Tailwind-Only Compliance)
 
 **Why:**
 - The Contact page violated the project rule "Tailwind only, no inline styles" from `AGENTS.md`.
@@ -3725,11 +3797,11 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 | File | Violation | Fix |
 |---|---|---|
 | `app/contact/page.tsx` | `style={{ background, backgroundSize, animation }}` | Replaced with `.contact-bg` CSS class |
-| `components/contact/contact-aurora.tsx` | 3× `style={{}}` (dimensions, radial-gradient, blur, animation) | Replaced with Tailwind arbitrary values + `.aurora-1/2/3` CSS classes |
+| `components/contact/contact-aurora.tsx` | 3Г— `style={{}}` (dimensions, radial-gradient, blur, animation) | Replaced with Tailwind arbitrary values + `.aurora-1/2/3` CSS classes |
 | `components/contact/contact-form.tsx` | `style={{ background, backdropFilter }}` | Replaced with `bg-white/[0.06] backdrop-blur-[20px]` |
 
 - Added `.contact-bg`, `.aurora-1`, `.aurora-2`, `.aurora-3` CSS classes to `app/globals.css`.
-- The `cosmic-gradient` and `aurora-drift-1/2/3` keyframes already existed in `globals.css` — only the class wrappers were missing.
+- The `cosmic-gradient` and `aurora-drift-1/2/3` keyframes already existed in `globals.css` вЂ” only the class wrappers were missing.
 - Visual output is identical; only the implementation now complies with the project rules.
 
 **Files touched:**
@@ -3961,7 +4033,7 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 ### Session 143 (Legacy DB migration assessment note)
 
 **Goal:**
-- Preserve the current thinking about a possible StudyHub v1 → v2 data migration without starting implementation yet.
+- Preserve the current thinking about a possible StudyHub v1 в†’ v2 data migration without starting implementation yet.
 
 **What changed:**
 - `docs/implementation-plan.md`
@@ -4266,21 +4338,21 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 - The Next.js dev server was compiling pages very slowly and navigation between routes took a long time.
 
 **Root-cause analysis:**
-1. **Three.js statically imported** (~600 KB) in `hero-3d-scene.tsx` and `bohemian-particles.tsx` — bundled into the main chunk even for pages that never use 3D.
-2. **Zero `next/dynamic` usage** across the entire project — every heavy component (Three.js, ChatWidget) was statically imported.
-3. **Rubik font loaded 7 weights** (300–900) but weight 300 (`font-light`) was never used anywhere.
-4. **Double JWT verification per request** — both `<Navbar />` and `<ChatGate />` in root layout independently called `getRequestUserOrNull()`, running JWT decode twice on every navigation.
+1. **Three.js statically imported** (~600 KB) in `hero-3d-scene.tsx` and `bohemian-particles.tsx` вЂ” bundled into the main chunk even for pages that never use 3D.
+2. **Zero `next/dynamic` usage** across the entire project вЂ” every heavy component (Three.js, ChatWidget) was statically imported.
+3. **Rubik font loaded 7 weights** (300вЂ“900) but weight 300 (`font-light`) was never used anywhere.
+4. **Double JWT verification per request** вЂ” both `<Navbar />` and `<ChatGate />` in root layout independently called `getRequestUserOrNull()`, running JWT decode twice on every navigation.
 
 **What changed:**
 
 - `apps/web/components/how-it-works/how-it-works-hero.tsx`
-  - Replaced static `import { Hero3dScene }` with `next/dynamic` + `{ ssr: false }` — Three.js is now code-split and only loaded when the how-it-works page is visited.
+  - Replaced static `import { Hero3dScene }` with `next/dynamic` + `{ ssr: false }` вЂ” Three.js is now code-split and only loaded when the how-it-works page is visited.
 
 - `apps/web/components/how-it-works/how-it-works-cta.tsx`
-  - Replaced static `import { BohemianParticles }` with `next/dynamic` + `{ ssr: false }` — same treatment for the second Three.js consumer.
+  - Replaced static `import { BohemianParticles }` with `next/dynamic` + `{ ssr: false }` вЂ” same treatment for the second Three.js consumer.
 
 - `apps/web/components/chat/chat-route-visibility.tsx`
-  - Replaced static `import { ChatWidget }` with `next/dynamic` + `{ ssr: false }` — chat widget JS is no longer included in the initial page bundle.
+  - Replaced static `import { ChatWidget }` with `next/dynamic` + `{ ssr: false }` вЂ” chat widget JS is no longer included in the initial page bundle.
 
 - `apps/web/app/layout.tsx`
   - Removed Rubik weight `"300"` from the font declaration (6 weights instead of 7).
@@ -4292,92 +4364,92 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 - The landing-page `Navbar` (`components/layout/Navbar.tsx`) used by `/` and `/how-it-works` is a separate component from the global auth-aware navbar (`components/navbar.tsx`). The global navbar already hides itself on public routes via `PUBLIC_PATHS` check, so there is no visual duplication.
 
 **Verification:**
-- `tsc --noEmit` — PASS, zero errors.
+- `tsc --noEmit` вЂ” PASS, zero errors.
 
 ### Session 156 (Mobile UI Polish + Material Screen)
 
-**Какво направихме:**
+**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ:**
 
-- **UI polish на всички mobile екрани:**
-  - **Login** — purple→indigo gradient фон, fade-in + slide-up анимация на картата, input labels с focus states (purple border + glow), gradient бутон, demo credentials с divider
-  - **Courses List** — gradient header с welcome message + role badge + stats ред (courses/published/drafts), purple left accent на картите, staggered fade-in анимации, махнат draft/published badge от картите
-  - **Course Details** — gradient hero секция, module номера в кръгчета, material type icons като цветни кръгове (N/L/F/V) вместо emoji, material count badge на модулите, LayoutAnimation за expand/collapse
-  - **Global** — StatusBar light style с purple фон, header с тъмно purple + бял текст, loading screen с purple фон
+- **UI polish РЅР° РІСЃРёС‡РєРё mobile РµРєСЂР°РЅРё:**
+  - **Login** вЂ” purpleв†’indigo gradient С„РѕРЅ, fade-in + slide-up Р°РЅРёРјР°С†РёСЏ РЅР° РєР°СЂС‚Р°С‚Р°, input labels СЃ focus states (purple border + glow), gradient Р±СѓС‚РѕРЅ, demo credentials СЃ divider
+  - **Courses List** вЂ” gradient header СЃ welcome message + role badge + stats СЂРµРґ (courses/published/drafts), purple left accent РЅР° РєР°СЂС‚РёС‚Рµ, staggered fade-in Р°РЅРёРјР°С†РёРё, РјР°С…РЅР°С‚ draft/published badge РѕС‚ РєР°СЂС‚РёС‚Рµ
+  - **Course Details** вЂ” gradient hero СЃРµРєС†РёСЏ, module РЅРѕРјРµСЂР° РІ РєСЂСЉРіС‡РµС‚Р°, material type icons РєР°С‚Рѕ С†РІРµС‚РЅРё РєСЂСЉРіРѕРІРµ (N/L/F/V) РІРјРµСЃС‚Рѕ emoji, material count badge РЅР° РјРѕРґСѓР»РёС‚Рµ, LayoutAnimation Р·Р° expand/collapse
+  - **Global** вЂ” StatusBar light style СЃ purple С„РѕРЅ, header СЃ С‚СЉРјРЅРѕ purple + Р±СЏР» С‚РµРєСЃС‚, loading screen СЃ purple С„РѕРЅ
 
-- **Нов екран — Material View (`apps/mobile/app/material/[id].tsx`):**
-  - Gradient header с тип badge (Note/Link/File/Video)
-  - Пълен текст на материала (без numberOfLines ограничение)
-  - Link/File URL бутон с Linking.openURL
-  - Tags секция
+- **РќРѕРІ РµРєСЂР°РЅ вЂ” Material View (`apps/mobile/app/material/[id].tsx`):**
+  - Gradient header СЃ С‚РёРї badge (Note/Link/File/Video)
+  - РџСЉР»РµРЅ С‚РµРєСЃС‚ РЅР° РјР°С‚РµСЂРёР°Р»Р° (Р±РµР· numberOfLines РѕРіСЂР°РЅРёС‡РµРЅРёРµ)
+  - Link/File URL Р±СѓС‚РѕРЅ СЃ Linking.openURL
+  - Tags СЃРµРєС†РёСЏ
   - Pull-to-refresh
 
-- **Материалите в Course Details са натискаеми** — при tap навигират към `/material/[id]`
+- **РњР°С‚РµСЂРёР°Р»РёС‚Рµ РІ Course Details СЃР° РЅР°С‚РёСЃРєР°РµРјРё** вЂ” РїСЂРё tap РЅР°РІРёРіРёСЂР°С‚ РєСЉРј `/material/[id]`
 
-- **Добавен `expo-linear-gradient`** — за gradient фонове на всички екрани
+- **Р”РѕР±Р°РІРµРЅ `expo-linear-gradient`** вЂ” Р·Р° gradient С„РѕРЅРѕРІРµ РЅР° РІСЃРёС‡РєРё РµРєСЂР°РЅРё
 
-- **Обновен `docs/mobile-phone-testing-handoff.md`** — пренаписан с LAN golden path като препоръчан метод, USB като алтернатива, recovery checklist
+- **РћР±РЅРѕРІРµРЅ `docs/mobile-phone-testing-handoff.md`** вЂ” РїСЂРµРЅР°РїРёСЃР°РЅ СЃ LAN golden path РєР°С‚Рѕ РїСЂРµРїРѕСЂСЉС‡Р°РЅ РјРµС‚РѕРґ, USB РєР°С‚Рѕ Р°Р»С‚РµСЂРЅР°С‚РёРІР°, recovery checklist
 
-**Файлове:**
-- `apps/mobile/app/login.tsx` — redesign
-- `apps/mobile/app/index.tsx` — redesign
-- `apps/mobile/app/course/[id].tsx` — redesign + material navigation
-- `apps/mobile/app/material/[id].tsx` — нов екран
-- `apps/mobile/app/_layout.tsx` — StatusBar + header config
-- `apps/mobile/package.json` — expo-linear-gradient dependency
-- `docs/mobile-phone-testing-handoff.md` — пренаписан
+**Р¤Р°Р№Р»РѕРІРµ:**
+- `apps/mobile/app/login.tsx` вЂ” redesign
+- `apps/mobile/app/index.tsx` вЂ” redesign
+- `apps/mobile/app/course/[id].tsx` вЂ” redesign + material navigation
+- `apps/mobile/app/material/[id].tsx` вЂ” РЅРѕРІ РµРєСЂР°РЅ
+- `apps/mobile/app/_layout.tsx` вЂ” StatusBar + header config
+- `apps/mobile/package.json` вЂ” expo-linear-gradient dependency
+- `docs/mobile-phone-testing-handoff.md` вЂ” РїСЂРµРЅР°РїРёСЃР°РЅ
 
-**Тествано:**
-- `tsc --noEmit` — PASS
-- Expo Go на физическо устройство (LAN mode) — всички 4 екрана работят
-- Login → Courses List → Course Details → Material View — навигация ✅
+**РўРµСЃС‚РІР°РЅРѕ:**
+- `tsc --noEmit` вЂ” PASS
+- Expo Go РЅР° С„РёР·РёС‡РµСЃРєРѕ СѓСЃС‚СЂРѕР№СЃС‚РІРѕ (LAN mode) вЂ” РІСЃРёС‡РєРё 4 РµРєСЂР°РЅР° СЂР°Р±РѕС‚СЏС‚
+- Login в†’ Courses List в†’ Course Details в†’ Material View вЂ” РЅР°РІРёРіР°С†РёСЏ вњ…
 
-### Session 157 (Mobile — нови екрани + CRUD)
+### Session 157 (Mobile вЂ” РЅРѕРІРё РµРєСЂР°РЅРё + CRUD)
 
-**Какво направихме:**
+**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ:**
 
-- **Register екран (`apps/mobile/app/register.tsx`):**
-  - Gradient фон, 3 полета (name, email, password), fade-in анимация
-  - Линк към Login ("Already have an account? Sign In")
-  - AuthGate обновен да позволява `/register` без auth
+- **Register РµРєСЂР°РЅ (`apps/mobile/app/register.tsx`):**
+  - Gradient С„РѕРЅ, 3 РїРѕР»РµС‚Р° (name, email, password), fade-in Р°РЅРёРјР°С†РёСЏ
+  - Р›РёРЅРє РєСЉРј Login ("Already have an account? Sign In")
+  - AuthGate РѕР±РЅРѕРІРµРЅ РґР° РїРѕР·РІРѕР»СЏРІР° `/register` Р±РµР· auth
 
-- **Profile екран (`apps/mobile/app/profile.tsx`):**
-  - Gradient hero с initials аватар, име, роля
-  - Edit name с inline TextInput, Save/Cancel бутони
-  - Success/error feedback след запис
+- **Profile РµРєСЂР°РЅ (`apps/mobile/app/profile.tsx`):**
+  - Gradient hero СЃ initials Р°РІР°С‚Р°СЂ, РёРјРµ, СЂРѕР»СЏ
+  - Edit name СЃ inline TextInput, Save/Cancel Р±СѓС‚РѕРЅРё
+  - Success/error feedback СЃР»РµРґ Р·Р°РїРёСЃ
   - Pull-to-refresh
 
-- **Create Course екран (`apps/mobile/app/create-course.tsx`):**
-  - Title + Description полета, gradient бутон
-  - FAB бутон (+) добавен в Courses List за бърз достъп
-  - След създаване — автоматично връщане към списъка
+- **Create Course РµРєСЂР°РЅ (`apps/mobile/app/create-course.tsx`):**
+  - Title + Description РїРѕР»РµС‚Р°, gradient Р±СѓС‚РѕРЅ
+  - FAB Р±СѓС‚РѕРЅ (+) РґРѕР±Р°РІРµРЅ РІ Courses List Р·Р° Р±СЉСЂР· РґРѕСЃС‚СЉРї
+  - РЎР»РµРґ СЃСЉР·РґР°РІР°РЅРµ вЂ” Р°РІС‚РѕРјР°С‚РёС‡РЅРѕ РІСЂСЉС‰Р°РЅРµ РєСЉРј СЃРїРёСЃСЉРєР°
 
-- **Add Module екран (`apps/mobile/app/course/[id]/add-module.tsx`):**
-  - Title + Description полета
-  - Dashed "Add Module" бутон в Course Details
+- **Add Module РµРєСЂР°РЅ (`apps/mobile/app/course/[id]/add-module.tsx`):**
+  - Title + Description РїРѕР»РµС‚Р°
+  - Dashed "Add Module" Р±СѓС‚РѕРЅ РІ Course Details
 
-- **Add Material екран (`apps/mobile/app/module/[id]/add-material.tsx`):**
-  - Type selector (Note/Link/File/Video) с цветни chips
-  - Title, Content (multiline), URL (условно), Tags полета
-  - Dashed "Add Material" бутон в expanded module
+- **Add Material РµРєСЂР°РЅ (`apps/mobile/app/module/[id]/add-material.tsx`):**
+  - Type selector (Note/Link/File/Video) СЃ С†РІРµС‚РЅРё chips
+  - Title, Content (multiline), URL (СѓСЃР»РѕРІРЅРѕ), Tags РїРѕР»РµС‚Р°
+  - Dashed "Add Material" Р±СѓС‚РѕРЅ РІ expanded module
 
-- **Навигация обновена:**
-  - Login ↔ Register линкове
-  - Courses List → Profile бутон в header-а
-  - Courses List → Create Course (FAB)
-  - Course Details → Add Module
-  - Module (expanded) → Add Material
-  - `register` функция добавена в `auth-context.tsx`
+- **РќР°РІРёРіР°С†РёСЏ РѕР±РЅРѕРІРµРЅР°:**
+  - Login в†” Register Р»РёРЅРєРѕРІРµ
+  - Courses List в†’ Profile Р±СѓС‚РѕРЅ РІ header-Р°
+  - Courses List в†’ Create Course (FAB)
+  - Course Details в†’ Add Module
+  - Module (expanded) в†’ Add Material
+  - `register` С„СѓРЅРєС†РёСЏ РґРѕР±Р°РІРµРЅР° РІ `auth-context.tsx`
 
-- **Споделени компоненти:**
-  - `components/branded-spinner.tsx` — purple кръг с ActivityIndicator + message текст, интегриран в Courses List, Course Details, Material View, Profile
-  - `components/empty-state.tsx` — icon в кръг + title + subtitle, интегриран в Courses List и Course Details
+- **РЎРїРѕРґРµР»РµРЅРё РєРѕРјРїРѕРЅРµРЅС‚Рё:**
+  - `components/branded-spinner.tsx` вЂ” purple РєСЂСЉРі СЃ ActivityIndicator + message С‚РµРєСЃС‚, РёРЅС‚РµРіСЂРёСЂР°РЅ РІ Courses List, Course Details, Material View, Profile
+  - `components/empty-state.tsx` вЂ” icon РІ РєСЂСЉРі + title + subtitle, РёРЅС‚РµРіСЂРёСЂР°РЅ РІ Courses List Рё Course Details
 
-- **Структурна промяна:**
-  - `app/course/[id].tsx` преместен в `app/course/[id]/index.tsx` за поддръжка на nested routes (`add-module`)
+- **РЎС‚СЂСѓРєС‚СѓСЂРЅР° РїСЂРѕРјСЏРЅР°:**
+  - `app/course/[id].tsx` РїСЂРµРјРµСЃС‚РµРЅ РІ `app/course/[id]/index.tsx` Р·Р° РїРѕРґРґСЂСЉР¶РєР° РЅР° nested routes (`add-module`)
 
-- **Махнат draft/published badge** от course картите в Courses List (по желание на потребителя)
+- **РњР°С…РЅР°С‚ draft/published badge** РѕС‚ course РєР°СЂС‚РёС‚Рµ РІ Courses List (РїРѕ Р¶РµР»Р°РЅРёРµ РЅР° РїРѕС‚СЂРµР±РёС‚РµР»СЏ)
 
-**Файлове (нови):**
+**Р¤Р°Р№Р»РѕРІРµ (РЅРѕРІРё):**
 - `apps/mobile/app/register.tsx`
 - `apps/mobile/app/profile.tsx`
 - `apps/mobile/app/create-course.tsx`
@@ -4386,16 +4458,16 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 - `apps/mobile/components/branded-spinner.tsx`
 - `apps/mobile/components/empty-state.tsx`
 
-**Файлове (променени):**
-- `apps/mobile/lib/auth-context.tsx` — добавена `register()` функция
-- `apps/mobile/app/login.tsx` — добавен линк към Register
-- `apps/mobile/app/_layout.tsx` — AuthGate поддържа register екран
-- `apps/mobile/app/index.tsx` — FAB бутон, Profile бутон, BrandedSpinner, EmptyState
-- `apps/mobile/app/course/[id]/index.tsx` — Add Module/Material бутони, преместен от `[id].tsx`
+**Р¤Р°Р№Р»РѕРІРµ (РїСЂРѕРјРµРЅРµРЅРё):**
+- `apps/mobile/lib/auth-context.tsx` вЂ” РґРѕР±Р°РІРµРЅР° `register()` С„СѓРЅРєС†РёСЏ
+- `apps/mobile/app/login.tsx` вЂ” РґРѕР±Р°РІРµРЅ Р»РёРЅРє РєСЉРј Register
+- `apps/mobile/app/_layout.tsx` вЂ” AuthGate РїРѕРґРґСЉСЂР¶Р° register РµРєСЂР°РЅ
+- `apps/mobile/app/index.tsx` вЂ” FAB Р±СѓС‚РѕРЅ, Profile Р±СѓС‚РѕРЅ, BrandedSpinner, EmptyState
+- `apps/mobile/app/course/[id]/index.tsx` вЂ” Add Module/Material Р±СѓС‚РѕРЅРё, РїСЂРµРјРµСЃС‚РµРЅ РѕС‚ `[id].tsx`
 
-**Тествано:**
-- `tsc --noEmit` — PASS
-- Expo Go на физическо устройство — Create Course работи, курсът се появява в списъка
+**РўРµСЃС‚РІР°РЅРѕ:**
+- `tsc --noEmit` вЂ” PASS
+- Expo Go РЅР° С„РёР·РёС‡РµСЃРєРѕ СѓСЃС‚СЂРѕР№СЃС‚РІРѕ вЂ” Create Course СЂР°Р±РѕС‚Рё, РєСѓСЂСЃСЉС‚ СЃРµ РїРѕСЏРІСЏРІР° РІ СЃРїРёСЃСЉРєР°
 ### Session 158 (Mobile CRUD actions + refresh hardening)
 
 **What we changed:**
@@ -4487,30 +4559,30 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 **Verification:**
 - `npm.cmd run --workspace @studyhub/mobile typecheck`
 
-### Session 161 (Mobile UX layer — toast, confirm modal, search/filter, bottom tabs)
+### Session 161 (Mobile UX layer вЂ” toast, confirm modal, search/filter, bottom tabs)
 
 **What we changed:**
 
 1. **Toast notification system**
-   - Added `apps/mobile/lib/toast-context.tsx` — `ToastProvider` with animated slide-in toasts (success / error / info), auto-dismiss after 3 s, tap to dismiss
+   - Added `apps/mobile/lib/toast-context.tsx` вЂ” `ToastProvider` with animated slide-in toasts (success / error / info), auto-dismiss after 3 s, tap to dismiss
    - Wired into root layout (`apps/mobile/app/_layout.tsx`)
    - Available everywhere via `useToast().showToast(msg, type?)`
 
 2. **ConfirmModal component**
-   - Added `apps/mobile/components/confirm-modal.tsx` — styled modal with loading spinner on the confirm button, destructive variant for delete actions
+   - Added `apps/mobile/components/confirm-modal.tsx` вЂ” styled modal with loading spinner on the confirm button, destructive variant for delete actions
    - Replaces every `Alert.alert` confirmation across the app
 
 3. **Replaced all `Alert.alert` calls**
-   - `apps/mobile/app/(tabs)/index.tsx` — course delete
-   - `apps/mobile/app/course/[id]/index.tsx` — course + module delete
-   - `apps/mobile/app/module/[id]/index.tsx` — module + material delete
-   - `apps/mobile/app/material/[id].tsx` — link open errors
-   - `apps/mobile/app/(tabs)/profile.tsx` — profile save feedback
+   - `apps/mobile/app/(tabs)/index.tsx` вЂ” course delete
+   - `apps/mobile/app/course/[id]/index.tsx` вЂ” course + module delete
+   - `apps/mobile/app/module/[id]/index.tsx` вЂ” module + material delete
+   - `apps/mobile/app/material/[id].tsx` вЂ” link open errors
+   - `apps/mobile/app/(tabs)/profile.tsx` вЂ” profile save feedback
    - Zero `Alert.alert` imports remain in the codebase
 
 4. **Search + type filter in module workspace**
-   - Added `apps/mobile/components/search-bar.tsx` — reusable search input with clear button
-   - Added `apps/mobile/components/type-filter-chips.tsx` — horizontal scroll chips (All / Note / Link / File / Video)
+   - Added `apps/mobile/components/search-bar.tsx` вЂ” reusable search input with clear button
+   - Added `apps/mobile/components/type-filter-chips.tsx` вЂ” horizontal scroll chips (All / Note / Link / File / Video)
    - Integrated in `apps/mobile/app/module/[id]/index.tsx`:
      - filters by title, content, and tags
      - filters by material type
@@ -4519,13 +4591,13 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 
 5. **Bottom tab navigation**
    - Created `apps/mobile/app/(tabs)/_layout.tsx` with Courses + Profile tabs
-   - Moved `index.tsx` → `(tabs)/index.tsx`, `profile.tsx` → `(tabs)/profile.tsx`
+   - Moved `index.tsx` в†’ `(tabs)/index.tsx`, `profile.tsx` в†’ `(tabs)/profile.tsx`
    - Updated root `_layout.tsx` to register `(tabs)` as a headerless stack screen
    - Removed the old Profile button from the courses header (tabs handle it now)
    - Profile screen now uses toast instead of inline `saveMsg` banner
 
 **Why:**
-- `Alert.alert` is a native dialog that feels out of place in a branded app — the new toast and confirm modal match the StudyHub visual language and give loading feedback during async deletes.
+- `Alert.alert` is a native dialog that feels out of place in a branded app вЂ” the new toast and confirm modal match the StudyHub visual language and give loading feedback during async deletes.
 - Search + filter is the single most useful feature for a module workspace with many materials.
 - Bottom tabs make the app feel "app-like" instead of relying on header buttons for primary navigation.
 
@@ -4545,100 +4617,100 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 - `apps/mobile/app/material/[id].tsx`
 
 **Verification:**
-- `npm.cmd run --workspace @studyhub/mobile typecheck` — passes clean
+- `npm.cmd run --workspace @studyhub/mobile typecheck` вЂ” passes clean
 
 ---
 
 ## 2026-04-07
 
-### Сесия (Google OAuth за мобилно + import fix)
+### РЎРµСЃРёСЏ (Google OAuth Р·Р° РјРѕР±РёР»РЅРѕ + import fix)
 
-**Какво направихме:**
+**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ:**
 
-1. **Google Cloud Console — OAuth client IDs за мобилно приложение**
-   - Създадохме Android debug keystore (`~/.android/debug.keystore`) с `keytool`
-   - Извлякохме SHA-1 fingerprint: `ED:B9:01:61:F3:48:6F:DE:D5:AF:BE:F7:EE:79:59:C1:36:12:C7:F3`
-   - Създадохме Android OAuth client (package: `com.studyhub.mobile`)
-   - Създадохме iOS OAuth client (bundle ID: `com.studyhub.mobile`)
-   - Добавихме и трите client ID-та в `apps/mobile/.env`:
-     - `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID` (съществуваше — работи за десктоп)
-     - `EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID` (ново)
-     - `EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID` (ново)
+1. **Google Cloud Console вЂ” OAuth client IDs Р·Р° РјРѕР±РёР»РЅРѕ РїСЂРёР»РѕР¶РµРЅРёРµ**
+   - РЎСЉР·РґР°РґРѕС…РјРµ Android debug keystore (`~/.android/debug.keystore`) СЃ `keytool`
+   - РР·РІР»СЏРєРѕС…РјРµ SHA-1 fingerprint: `ED:B9:01:61:F3:48:6F:DE:D5:AF:BE:F7:EE:79:59:C1:36:12:C7:F3`
+   - РЎСЉР·РґР°РґРѕС…РјРµ Android OAuth client (package: `com.studyhub.mobile`)
+   - РЎСЉР·РґР°РґРѕС…РјРµ iOS OAuth client (bundle ID: `com.studyhub.mobile`)
+   - Р”РѕР±Р°РІРёС…РјРµ Рё С‚СЂРёС‚Рµ client ID-С‚Р° РІ `apps/mobile/.env`:
+     - `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID` (СЃСЉС‰РµСЃС‚РІСѓРІР°С€Рµ вЂ” СЂР°Р±РѕС‚Рё Р·Р° РґРµСЃРєС‚РѕРї)
+     - `EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID` (РЅРѕРІРѕ)
+     - `EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID` (РЅРѕРІРѕ)
 
-2. **Оправени счупени import пътища в 11 файла**
-   - Проблем: всички import-и имаха едно `../` в повече (вероятно от преместване на файлове при добавяне на `(tabs)/` layout)
-   - Засегнати файлове:
+2. **РћРїСЂР°РІРµРЅРё СЃС‡СѓРїРµРЅРё import РїСЉС‚РёС‰Р° РІ 11 С„Р°Р№Р»Р°**
+   - РџСЂРѕР±Р»РµРј: РІСЃРёС‡РєРё import-Рё РёРјР°С…Р° РµРґРЅРѕ `../` РІ РїРѕРІРµС‡Рµ (РІРµСЂРѕСЏС‚РЅРѕ РѕС‚ РїСЂРµРјРµСЃС‚РІР°РЅРµ РЅР° С„Р°Р№Р»РѕРІРµ РїСЂРё РґРѕР±Р°РІСЏРЅРµ РЅР° `(tabs)/` layout)
+   - Р—Р°СЃРµРіРЅР°С‚Рё С„Р°Р№Р»РѕРІРµ:
      - `app/login.tsx`, `app/register.tsx`, `app/create-course.tsx`
      - `app/(tabs)/index.tsx`
      - `app/course/[id]/add-module.tsx`, `app/course/[id]/edit.tsx`, `app/course/[id]/index.tsx`
      - `app/material/[id].tsx`
      - `app/module/[id]/add-material.tsx`, `app/module/[id]/edit.tsx`, `app/module/[id]/index.tsx`
 
-3. **Google OAuth backend — вече работи**
-   - `apps/web/app/api/auth/google/route.ts` обработва и `access_token` (от Expo), и `id_token` (от web)
-   - При нов Google потребител се генерира случаен 64-символен hex пароль (`crypto.randomBytes(32)`) и се хешира — акаунтът е защитен от password login
-   - Мобилният `loginWithGoogle()` в `auth-context.tsx` извиква същия endpoint
+3. **Google OAuth backend вЂ” РІРµС‡Рµ СЂР°Р±РѕС‚Рё**
+   - `apps/web/app/api/auth/google/route.ts` РѕР±СЂР°Р±РѕС‚РІР° Рё `access_token` (РѕС‚ Expo), Рё `id_token` (РѕС‚ web)
+   - РџСЂРё РЅРѕРІ Google РїРѕС‚СЂРµР±РёС‚РµР» СЃРµ РіРµРЅРµСЂРёСЂР° СЃР»СѓС‡Р°РµРЅ 64-СЃРёРјРІРѕР»РµРЅ hex РїР°СЂРѕР»СЊ (`crypto.randomBytes(32)`) Рё СЃРµ С…РµС€РёСЂР° вЂ” Р°РєР°СѓРЅС‚СЉС‚ Рµ Р·Р°С‰РёС‚РµРЅ РѕС‚ password login
+   - РњРѕР±РёР»РЅРёСЏС‚ `loginWithGoogle()` РІ `auth-context.tsx` РёР·РІРёРєРІР° СЃСЉС‰РёСЏ endpoint
 
-4. **Google Sign-In бутон компонент**
-   - `apps/mobile/components/auth/GoogleSignInButton.tsx` — стилизиран бутон с анимиран shine ефект, интегриран в login и register екраните
+4. **Google Sign-In Р±СѓС‚РѕРЅ РєРѕРјРїРѕРЅРµРЅС‚**
+   - `apps/mobile/components/auth/GoogleSignInButton.tsx` вЂ” СЃС‚РёР»РёР·РёСЂР°РЅ Р±СѓС‚РѕРЅ СЃ Р°РЅРёРјРёСЂР°РЅ shine РµС„РµРєС‚, РёРЅС‚РµРіСЂРёСЂР°РЅ РІ login Рё register РµРєСЂР°РЅРёС‚Рµ
 
-5. **Google OAuth в Expo Go — не работи (очаквано)**
-   - `auth.expo.io` proxy е deprecated от Expo SDK 50+ — Google оторизира потребителя, но proxy-то не може да върне redirect обратно в Expo Go
-   - Expo Go не поддържа native Google Sign-In (нужен е development build или production build)
-   - Грешката е `400: redirect_uri_mismatch` — Expo Go праща `exp://192.168.x.x:8081`, Google приема само `https://`
-   - **Решение:** За development — тестваме Google login на десктоп (работи), на мобилен — email/password. При EAS production build Google OAuth ще работи автоматично, защото:
-     - Приложението се компилира с правилния signing key
-     - SHA-1 fingerprint съвпада с Android client-а в Google Console
-     - Redirect минава native през Android/iOS системата (не през browser proxy)
+5. **Google OAuth РІ Expo Go вЂ” РЅРµ СЂР°Р±РѕС‚Рё (РѕС‡Р°РєРІР°РЅРѕ)**
+   - `auth.expo.io` proxy Рµ deprecated РѕС‚ Expo SDK 50+ вЂ” Google РѕС‚РѕСЂРёР·РёСЂР° РїРѕС‚СЂРµР±РёС‚РµР»СЏ, РЅРѕ proxy-С‚Рѕ РЅРµ РјРѕР¶Рµ РґР° РІСЉСЂРЅРµ redirect РѕР±СЂР°С‚РЅРѕ РІ Expo Go
+   - Expo Go РЅРµ РїРѕРґРґСЉСЂР¶Р° native Google Sign-In (РЅСѓР¶РµРЅ Рµ development build РёР»Рё production build)
+   - Р“СЂРµС€РєР°С‚Р° Рµ `400: redirect_uri_mismatch` вЂ” Expo Go РїСЂР°С‰Р° `exp://192.168.x.x:8081`, Google РїСЂРёРµРјР° СЃР°РјРѕ `https://`
+   - **Р РµС€РµРЅРёРµ:** Р—Р° development вЂ” С‚РµСЃС‚РІР°РјРµ Google login РЅР° РґРµСЃРєС‚РѕРї (СЂР°Р±РѕС‚Рё), РЅР° РјРѕР±РёР»РµРЅ вЂ” email/password. РџСЂРё EAS production build Google OAuth С‰Рµ СЂР°Р±РѕС‚Рё Р°РІС‚РѕРјР°С‚РёС‡РЅРѕ, Р·Р°С‰РѕС‚Рѕ:
+     - РџСЂРёР»РѕР¶РµРЅРёРµС‚Рѕ СЃРµ РєРѕРјРїРёР»РёСЂР° СЃ РїСЂР°РІРёР»РЅРёСЏ signing key
+     - SHA-1 fingerprint СЃСЉРІРїР°РґР° СЃ Android client-Р° РІ Google Console
+     - Redirect РјРёРЅР°РІР° native РїСЂРµР· Android/iOS СЃРёСЃС‚РµРјР°С‚Р° (РЅРµ РїСЂРµР· browser proxy)
 
 6. **Fix: `package.json` main entry point**
-   - Поправихме `"main": "index.js"` → `"main": "expo-router/entry"` (беше счупено от предишна сесия)
+   - РџРѕРїСЂР°РІРёС…РјРµ `"main": "index.js"` в†’ `"main": "expo-router/entry"` (Р±РµС€Рµ СЃС‡СѓРїРµРЅРѕ РѕС‚ РїСЂРµРґРёС€РЅР° СЃРµСЃРёСЏ)
 
-7. **Google Cloud Console настройки**
-   - Web client: добавен Authorized redirect URI `https://auth.expo.io/@mariva/studyhub-v2`
-   - Android client: SHA-1 от debug keystore, package `com.studyhub.mobile`
-   - iOS client: bundle ID `com.studyhub.mobile` (App Store ID и Team ID оставени празни — опционални)
-   - OAuth consent screen е в "Testing" режим — достатъчно за development
+7. **Google Cloud Console РЅР°СЃС‚СЂРѕР№РєРё**
+   - Web client: РґРѕР±Р°РІРµРЅ Authorized redirect URI `https://auth.expo.io/@mariva/studyhub-v2`
+   - Android client: SHA-1 РѕС‚ debug keystore, package `com.studyhub.mobile`
+   - iOS client: bundle ID `com.studyhub.mobile` (App Store ID Рё Team ID РѕСЃС‚Р°РІРµРЅРё РїСЂР°Р·РЅРё вЂ” РѕРїС†РёРѕРЅР°Р»РЅРё)
+   - OAuth consent screen Рµ РІ "Testing" СЂРµР¶РёРј вЂ” РґРѕСЃС‚Р°С‚СЉС‡РЅРѕ Р·Р° development
 
-8. **Инсталиран EAS CLI глобално** (`npm install -g eas-cli`) — готов за бъдещи production builds
+8. **РРЅСЃС‚Р°Р»РёСЂР°РЅ EAS CLI РіР»РѕР±Р°Р»РЅРѕ** (`npm install -g eas-cli`) вЂ” РіРѕС‚РѕРІ Р·Р° Р±СЉРґРµС‰Рё production builds
 
-9. **`.env.example` обновен** с всички Google OAuth env vars за документация
+9. **`.env.example` РѕР±РЅРѕРІРµРЅ** СЃ РІСЃРёС‡РєРё Google OAuth env vars Р·Р° РґРѕРєСѓРјРµРЅС‚Р°С†РёСЏ
 
-10. **Премахнати неизползвани import-и** (`makeRedirectUri` от `expo-auth-session` — не се ползва в крайния код)
+10. **РџСЂРµРјР°С…РЅР°С‚Рё РЅРµРёР·РїРѕР»Р·РІР°РЅРё import-Рё** (`makeRedirectUri` РѕС‚ `expo-auth-session` вЂ” РЅРµ СЃРµ РїРѕР»Р·РІР° РІ РєСЂР°Р№РЅРёСЏ РєРѕРґ)
 
-**Текущо състояние на Google OAuth:**
-- Десктоп (web): работи — login и register с Google акаунт ✅
-- Мобилен (Expo Go): не работи — auth proxy deprecated, ползва се email/password ⚠️
-- Мобилен (production build): ще работи при EAS Build с правилния SHA-1 🔜
+**РўРµРєСѓС‰Рѕ СЃСЉСЃС‚РѕСЏРЅРёРµ РЅР° Google OAuth:**
+- Р”РµСЃРєС‚РѕРї (web): СЂР°Р±РѕС‚Рё вЂ” login Рё register СЃ Google Р°РєР°СѓРЅС‚ вњ…
+- РњРѕР±РёР»РµРЅ (Expo Go): РЅРµ СЂР°Р±РѕС‚Рё вЂ” auth proxy deprecated, РїРѕР»Р·РІР° СЃРµ email/password вљ пёЏ
+- РњРѕР±РёР»РµРЅ (production build): С‰Рµ СЂР°Р±РѕС‚Рё РїСЂРё EAS Build СЃ РїСЂР°РІРёР»РЅРёСЏ SHA-1 рџ”њ
 
-**Deployment бележка — Google OAuth:**
-- При production deployment ще трябва:
-  - Нов SHA-1 от production keystore (EAS Build генерира свой) → нов Android OAuth client или добавяне на втори fingerprint
-  - Google OAuth consent screen да се смени от "Testing" на "Published" (за да могат всички потребители, не само test users)
-  - Authorized redirect URIs да се обновят с production домейна
-  - `EXPO_PUBLIC_GOOGLE_*` env vars да се добавят в EAS/production конфигурацията
-- Google OAuth в Expo Go не работи (auth proxy deprecated) — това е нормално и очаквано, не е бъг
+**Deployment Р±РµР»РµР¶РєР° вЂ” Google OAuth:**
+- РџСЂРё production deployment С‰Рµ С‚СЂСЏР±РІР°:
+  - РќРѕРІ SHA-1 РѕС‚ production keystore (EAS Build РіРµРЅРµСЂРёСЂР° СЃРІРѕР№) в†’ РЅРѕРІ Android OAuth client РёР»Рё РґРѕР±Р°РІСЏРЅРµ РЅР° РІС‚РѕСЂРё fingerprint
+  - Google OAuth consent screen РґР° СЃРµ СЃРјРµРЅРё РѕС‚ "Testing" РЅР° "Published" (Р·Р° РґР° РјРѕРіР°С‚ РІСЃРёС‡РєРё РїРѕС‚СЂРµР±РёС‚РµР»Рё, РЅРµ СЃР°РјРѕ test users)
+  - Authorized redirect URIs РґР° СЃРµ РѕР±РЅРѕРІСЏС‚ СЃ production РґРѕРјРµР№РЅР°
+  - `EXPO_PUBLIC_GOOGLE_*` env vars РґР° СЃРµ РґРѕР±Р°РІСЏС‚ РІ EAS/production РєРѕРЅС„РёРіСѓСЂР°С†РёСЏС‚Р°
+- Google OAuth РІ Expo Go РЅРµ СЂР°Р±РѕС‚Рё (auth proxy deprecated) вЂ” С‚РѕРІР° Рµ РЅРѕСЂРјР°Р»РЅРѕ Рё РѕС‡Р°РєРІР°РЅРѕ, РЅРµ Рµ Р±СЉРі
 
 **Verification:**
-- `npx tsc --noEmit` — 0 грешки
+- `npx tsc --noEmit` вЂ” 0 РіСЂРµС€РєРё
 
 ---
 
 ## 2026-04-08
 
-### Сесия 161
+### РЎРµСЃРёСЏ 161
 
-**Какво направихме:**
-- Преглед и анализ на мобилното приложение — идентифицирани 50 подобрения по приоритет (UX, code quality, липсващи функции)
-- **UI polish — emoji иконки вместо букви:**
-  - Tab bar: "C" → 📚, "P" → 👤 (с opacity fade за inactive състояние)
-  - Material types: "N" → 📝, "L" → 🔗, "F" → 📄, "V" → 🎬
-  - Променени файлове: `app/(tabs)/_layout.tsx`, `lib/material-utils.ts`, `app/module/[id]/add-material.tsx`, `app/material/[id]/edit.tsx`
+**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ:**
+- РџСЂРµРіР»РµРґ Рё Р°РЅР°Р»РёР· РЅР° РјРѕР±РёР»РЅРѕС‚Рѕ РїСЂРёР»РѕР¶РµРЅРёРµ вЂ” РёРґРµРЅС‚РёС„РёС†РёСЂР°РЅРё 50 РїРѕРґРѕР±СЂРµРЅРёСЏ РїРѕ РїСЂРёРѕСЂРёС‚РµС‚ (UX, code quality, Р»РёРїСЃРІР°С‰Рё С„СѓРЅРєС†РёРё)
+- **UI polish вЂ” emoji РёРєРѕРЅРєРё РІРјРµСЃС‚Рѕ Р±СѓРєРІРё:**
+  - Tab bar: "C" в†’ рџ“љ, "P" в†’ рџ‘¤ (СЃ opacity fade Р·Р° inactive СЃСЉСЃС‚РѕСЏРЅРёРµ)
+  - Material types: "N" в†’ рџ“ќ, "L" в†’ рџ”—, "F" в†’ рџ“„, "V" в†’ рџЋ¬
+  - РџСЂРѕРјРµРЅРµРЅРё С„Р°Р№Р»РѕРІРµ: `app/(tabs)/_layout.tsx`, `lib/material-utils.ts`, `app/module/[id]/add-material.tsx`, `app/material/[id]/edit.tsx`
 
-**Забележки от анализа (за следващи сесии):**
-- High priority: офлайн кеширане (React Query), по-добро error handling в api.ts, type safety (премахване на `any`)
-- Medium: form validation в реално време, accessibility labels, централизиране на дублиран MATERIAL_TYPES, color constants файл, logout в Profile вместо в header
-- Липсващи функции: progress tracking, favorites/bookmarks, глобално търсене, dark mode, course publish/draft toggle от мобилното
+**Р—Р°Р±РµР»РµР¶РєРё РѕС‚ Р°РЅР°Р»РёР·Р° (Р·Р° СЃР»РµРґРІР°С‰Рё СЃРµСЃРёРё):**
+- High priority: РѕС„Р»Р°Р№РЅ РєРµС€РёСЂР°РЅРµ (React Query), РїРѕ-РґРѕР±СЂРѕ error handling РІ api.ts, type safety (РїСЂРµРјР°С…РІР°РЅРµ РЅР° `any`)
+- Medium: form validation РІ СЂРµР°Р»РЅРѕ РІСЂРµРјРµ, accessibility labels, С†РµРЅС‚СЂР°Р»РёР·РёСЂР°РЅРµ РЅР° РґСѓР±Р»РёСЂР°РЅ MATERIAL_TYPES, color constants С„Р°Р№Р», logout РІ Profile РІРјРµСЃС‚Рѕ РІ header
+- Р›РёРїСЃРІР°С‰Рё С„СѓРЅРєС†РёРё: progress tracking, favorites/bookmarks, РіР»РѕР±Р°Р»РЅРѕ С‚СЉСЂСЃРµРЅРµ, dark mode, course publish/draft toggle РѕС‚ РјРѕР±РёР»РЅРѕС‚Рѕ
 
 ### Session 162 (Mobile backlog tracking after icon pass)
 
@@ -4844,20 +4916,20 @@ Missing features (later phase):
 
 **Root cause identified:**
 - All four FAIL rows (`SMK-03`, `SMK-05`, `SMK-06`, `SMK-07`) share the same pattern: action completes server-side, but mobile shows timeout error.
-- Backend uses `drizzle-orm/neon-http` — a stateless HTTP driver. Every DB query is a separate HTTP request to Neon serverless.
-- Neon free tier suspends the database after ~5 minutes of inactivity. Wake-up takes 5–30+ seconds.
-- The previous 25s mutation timeout was not enough to survive a full cold-start round-trip from mobile → Next.js → Neon wake → DB query → response.
+- Backend uses `drizzle-orm/neon-http` вЂ” a stateless HTTP driver. Every DB query is a separate HTTP request to Neon serverless.
+- Neon free tier suspends the database after ~5 minutes of inactivity. Wake-up takes 5вЂ“30+ seconds.
+- The previous 25s mutation timeout was not enough to survive a full cold-start round-trip from mobile в†’ Next.js в†’ Neon wake в†’ DB query в†’ response.
 
 **What we changed:**
 - `apps/mobile/lib/api.ts`:
   - Increased `DEFAULT_MUTATION_REQUEST_TIMEOUT_MS` from `25s` to `45s` (covers Neon cold-start window on free tier).
-  - Added exported `warmupBackend()` — fire-and-forget GET to `/api/ping` (60s timeout, no auth) to proactively wake the DB.
+  - Added exported `warmupBackend()` вЂ” fire-and-forget GET to `/api/ping` (60s timeout, no auth) to proactively wake the DB.
 - `apps/web/app/api/ping/route.ts` (NEW):
   - Lightweight DB-touching probe: `SELECT 1` via Drizzle, no auth, returns `{ ok: true, latency: N }`.
   - Used exclusively for pre-warming; not an application endpoint.
 - `apps/mobile/lib/auth-context.tsx`:
   - `warmupBackend()` called after successful explicit login (email/password).
-  - `warmupBackend()` called after successful auto-login (stored token → `/api/auth/me`).
+  - `warmupBackend()` called after successful auto-login (stored token в†’ `/api/auth/me`).
   - Both calls are fire-and-forget; never block the auth flow.
 
 **Smoke status after fix:**
@@ -4866,7 +4938,7 @@ Missing features (later phase):
 - PENDING: `SMK-08` through `SMK-20`
 
 **Verification:**
-- `npm.cmd run --workspace @studyhub/mobile typecheck` → pass
+- `npm.cmd run --workspace @studyhub/mobile typecheck` в†’ pass
 
 ---
 
@@ -5979,7 +6051,7 @@ Sprint 2 - Production standards
 **Verification:**
 - `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass.
 
-### Session 198 (Live theme switch — no reload)
+### Session 198 (Live theme switch вЂ” no reload)
 
 **Goal:**
 - Remove the full app reload triggered on theme change in Settings.
@@ -5989,9 +6061,9 @@ Sprint 2 - Production standards
 
 - Extended `apps/mobile/lib/app-preferences.tsx`:
   - Added `colors: AppColors` to context value (reactive, recomputed on every theme/system change).
-  - Exported `useTheme()` hook — returns `{ colors, resolvedTheme }` from context.
-  - Exported `useThemedStyles(factory)` hook — memoizes `StyleSheet.create(factory(colors))` per theme; recreates automatically when theme changes.
-  - Removed the boot-reload logic (`RUNTIME_BOOT_THEME_MODE` + `reloadAppForThemeChange` on mismatch) — no longer needed since styles are now computed dynamically.
+  - Exported `useTheme()` hook вЂ” returns `{ colors, resolvedTheme }` from context.
+  - Exported `useThemedStyles(factory)` hook вЂ” memoizes `StyleSheet.create(factory(colors))` per theme; recreates automatically when theme changes.
+  - Removed the boot-reload logic (`RUNTIME_BOOT_THEME_MODE` + `reloadAppForThemeChange` on mismatch) вЂ” no longer needed since styles are now computed dynamically.
 
 - Converted `apps/mobile/components/settings/settings-screen.styles.ts`:
   - Changed from static `StyleSheet.create({ ...COLORS... })` to `export function makeSettingsStyles(colors: AppColors)` factory.
@@ -5999,28 +6071,28 @@ Sprint 2 - Production standards
 - Updated `apps/mobile/components/settings/settings-screen.tsx`:
   - Each section now calls `useThemedStyles(makeSettingsStyles)` instead of importing a static `styles` object.
   - `Switch` color props now come from `useTheme()` (inline values, cannot use StyleSheet).
-  - Settings screen colors update immediately on theme change — no restart, no reload.
+  - Settings screen colors update immediately on theme change вЂ” no restart, no reload.
 
 - Updated `apps/mobile/components/settings/use-settings-screen.ts`:
   - Removed `reloadAppForThemeChange` import and call.
-  - Removed "Applying theme…" toast.
-  - `setThemeMode` now simply calls `preferences.setThemeMode(value)` — context re-renders subscribers instantly.
+  - Removed "Applying themeвЂ¦" toast.
+  - `setThemeMode` now simply calls `preferences.setThemeMode(value)` вЂ” context re-renders subscribers instantly.
 
 - Updated `apps/mobile/app/_layout.tsx`:
   - `AuthGate` now calls `useTheme()` to get live `colors`.
   - Stack `screenOptions` (header background, tint, shadow) and `StatusBar` are now driven by live colors.
-  - Font-loading fallback still uses static `COLORS` (acceptable — rendered before provider tree is active).
+  - Font-loading fallback still uses static `COLORS` (acceptable вЂ” rendered before provider tree is active).
 
 - Fixed `apps/mobile/tsconfig.json`:
   - Removed `.next/types/**/*.ts` include (irrelevant for Expo project, caused slowness).
   - Removed `next` plugin entry from compilerOptions.
-  - Changed `incremental: true` → `false` (avoids stale `.tsbuildinfo` hangs).
+  - Changed `incremental: true` в†’ `false` (avoids stale `.tsbuildinfo` hangs).
   - Added explicit `exclude` for `node_modules`, `.expo`, `dist`, `build`, `babel.config.js`, `metro.config.js`.
 
 **Architecture note:**
 - `theme-reload.ts` was kept as a stub in Session 198 and removed in Session 199 cleanup.
-- Static `StyleSheet.create()` files (courses, materials, profile, etc.) still capture boot-time colors. They are correct on first render and do not hot-swap — acceptable for this scope. Full migration of all style files can follow incrementally using `makeXxxStyles(colors)` factory pattern introduced here.
-- `system` mode reactivity is already covered by `useColorScheme()` in `AppPreferencesProvider` — no additional work needed.
+- Static `StyleSheet.create()` files (courses, materials, profile, etc.) still capture boot-time colors. They are correct on first render and do not hot-swap вЂ” acceptable for this scope. Full migration of all style files can follow incrementally using `makeXxxStyles(colors)` factory pattern introduced here.
+- `system` mode reactivity is already covered by `useColorScheme()` in `AppPreferencesProvider` вЂ” no additional work needed.
 
 **Kept intact (per guardrails):**
 - React Query lifecycle/cache behavior unchanged.
@@ -6030,7 +6102,7 @@ Sprint 2 - Production standards
 - SMK-20 remains PASS.
 
 **Verification:**
-- `npm.cmd run --workspace @studyhub/mobile typecheck` — run locally in IDE terminal (background runner unavailable this session due to stuck cmd.exe environment).
+- `npm.cmd run --workspace @studyhub/mobile typecheck` вЂ” run locally in IDE terminal (background runner unavailable this session due to stuck cmd.exe environment).
 
 ### Session 199 (Theme reload helper cleanup)
 
@@ -6416,7 +6488,7 @@ Sprint 2 - Production standards
   - `apps/mobile/components/chat/chat-screen.tsx` (KeyboardAvoidingView)
   - `apps/mobile/components/chat/use-chat.ts` 
 - Wired resilient state-rollback logic in `use-chat.ts` to cleanly drop un-committed optimistic user messages if Gemini API faults (preventing strict array session corruption `[user, user...]`).
-- Replaced text-based sparkler placeholders (`✨`) with native mascot brand icons (`AI-icon-1.png`, `AI-icon-3.png`) matching the desktop presentation.
+- Replaced text-based sparkler placeholders (`вњЁ`) with native mascot brand icons (`AI-icon-1.png`, `AI-icon-3.png`) matching the desktop presentation.
 
 **Verification:**
 - `npm.cmd run typecheck:mobile` -> pass
@@ -6424,307 +6496,310 @@ Sprint 2 - Production standards
 
 ---
 
-## 2026-04-11 (ретроактивен запис — web UI сесии без devlog)
+## 2026-04-11 (СЂРµС‚СЂРѕР°РєС‚РёРІРµРЅ Р·Р°РїРёСЃ вЂ” web UI СЃРµСЃРёРё Р±РµР· devlog)
 
-> Следните commit-и модифицираха кода но не добавиха devlog запис. Документирани ретроактивно.
+> РЎР»РµРґРЅРёС‚Рµ commit-Рё РјРѕРґРёС„РёС†РёСЂР°С…Р° РєРѕРґР° РЅРѕ РЅРµ РґРѕР±Р°РІРёС…Р° devlog Р·Р°РїРёСЃ. Р”РѕРєСѓРјРµРЅС‚РёСЂР°РЅРё СЂРµС‚СЂРѕР°РєС‚РёРІРЅРѕ.
 
-### Session 213 — Web: globals cleanup + spinner + dashboard polish
+### Session 213 вЂ” Web: globals cleanup + spinner + dashboard polish
 
 **Commits:** `3a8c625`
 
-**Какво направихме:**
-- `globals.css` — почистване на излишни стилове
-- `layout.tsx` — дребни корекции
-- `chat-widget.tsx` — леко подобрение
-- `dashboard-hero.tsx` / `dashboard-page-shell.tsx` — layout корекции
-- `ui/spinner.tsx` — опростен и по-лек спинър компонент
+**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ:**
+- `globals.css` вЂ” РїРѕС‡РёСЃС‚РІР°РЅРµ РЅР° РёР·Р»РёС€РЅРё СЃС‚РёР»РѕРІРµ
+- `layout.tsx` вЂ” РґСЂРµР±РЅРё РєРѕСЂРµРєС†РёРё
+- `chat-widget.tsx` вЂ” Р»РµРєРѕ РїРѕРґРѕР±СЂРµРЅРёРµ
+- `dashboard-hero.tsx` / `dashboard-page-shell.tsx` вЂ” layout РєРѕСЂРµРєС†РёРё
+- `ui/spinner.tsx` вЂ” РѕРїСЂРѕСЃС‚РµРЅ Рё РїРѕ-Р»РµРє СЃРїРёРЅСЉСЂ РєРѕРјРїРѕРЅРµРЅС‚
 
-### Session 214 — Web: Progress + Admin tabs UI polish
+### Session 214 вЂ” Web: Progress + Admin tabs UI polish
 
 **Commits:** `71a8d64`, `43e9e89`, `be8cd86`, `d7ec503`
 
-**Какво направихме:**
-- `ProgressSummaryCards` — визуални подобрения (brand цветове, layout)
-- `MilestoneTimeline` + `MilestoneTimelineItem` — нови компоненти за прогрес страница; интерактивен изглед на timeline
-- Admin tabs (`courses-tab`, `materials-tab`, `modules-tab`, `users-tab`) — UI подобрения (course cards, filters, pinned sidebar)
-- `dashboard-client-page.tsx` — допълнителни course card подобрения
+**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ:**
+- `ProgressSummaryCards` вЂ” РІРёР·СѓР°Р»РЅРё РїРѕРґРѕР±СЂРµРЅРёСЏ (brand С†РІРµС‚РѕРІРµ, layout)
+- `MilestoneTimeline` + `MilestoneTimelineItem` вЂ” РЅРѕРІРё РєРѕРјРїРѕРЅРµРЅС‚Рё Р·Р° РїСЂРѕРіСЂРµСЃ СЃС‚СЂР°РЅРёС†Р°; РёРЅС‚РµСЂР°РєС‚РёРІРµРЅ РёР·РіР»РµРґ РЅР° timeline
+- Admin tabs (`courses-tab`, `materials-tab`, `modules-tab`, `users-tab`) вЂ” UI РїРѕРґРѕР±СЂРµРЅРёСЏ (course cards, filters, pinned sidebar)
+- `dashboard-client-page.tsx` вЂ” РґРѕРїСЉР»РЅРёС‚РµР»РЅРё course card РїРѕРґРѕР±СЂРµРЅРёСЏ
 
 ---
 
-## 2026-04-12 (ретроактивен запис — web UI преди Social S0)
+## 2026-04-12 (СЂРµС‚СЂРѕР°РєС‚РёРІРµРЅ Р·Р°РїРёСЃ вЂ” web UI РїСЂРµРґРё Social S0)
 
-> Следните commit-и бяха направени в ранната сесия на 12 април преди Social features. Не са документирани.
+> РЎР»РµРґРЅРёС‚Рµ commit-Рё Р±СЏС…Р° РЅР°РїСЂР°РІРµРЅРё РІ СЂР°РЅРЅР°С‚Р° СЃРµСЃРёСЏ РЅР° 12 Р°РїСЂРёР» РїСЂРµРґРё Social features. РќРµ СЃР° РґРѕРєСѓРјРµРЅС‚РёСЂР°РЅРё.
 
-### Session 215 — Web: HeroMesh refactor + CalendarGrid + ProfilePageClient
+### Session 215 вЂ” Web: HeroMesh refactor + CalendarGrid + ProfilePageClient
 
 **Commit:** `9d7d470`
 
-**Какво направихме:**
-- `admin/hero/HeroMesh.tsx` — рефакторинг на 3D hero mesh компонента
-- `calendar/calendar-grid.tsx` — преработен CalendarGrid (114 реда, подобрена responsive логика)
-- `profile/profile-page-client.tsx` — дребни подобрения на profile page компонента
+**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ:**
+- `admin/hero/HeroMesh.tsx` вЂ” СЂРµС„Р°РєС‚РѕСЂРёРЅРі РЅР° 3D hero mesh РєРѕРјРїРѕРЅРµРЅС‚Р°
+- `calendar/calendar-grid.tsx` вЂ” РїСЂРµСЂР°Р±РѕС‚РµРЅ CalendarGrid (114 СЂРµРґР°, РїРѕРґРѕР±СЂРµРЅР° responsive Р»РѕРіРёРєР°)
+- `profile/profile-page-client.tsx` вЂ” РґСЂРµР±РЅРё РїРѕРґРѕР±СЂРµРЅРёСЏ РЅР° profile page РєРѕРјРїРѕРЅРµРЅС‚Р°
 
-### Session 216 — Web: How It Works + root layout improvements
+### Session 216 вЂ” Web: How It Works + root layout improvements
 
 **Commit:** `38c630c`
 
-**Какво направихме:**
-- `app/how-it-works/page.tsx` — подобрена How It Works страница (metadata, структура)
-- `app/layout.tsx` — добавени font preloads, метаданни подобрения
-- `app/page.tsx` — корекции на landing page структура
-- `how-it-works/how-it-works-page.tsx` — layout подобрения
+**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ:**
+- `app/how-it-works/page.tsx` вЂ” РїРѕРґРѕР±СЂРµРЅР° How It Works СЃС‚СЂР°РЅРёС†Р° (metadata, СЃС‚СЂСѓРєС‚СѓСЂР°)
+- `app/layout.tsx` вЂ” РґРѕР±Р°РІРµРЅРё font preloads, РјРµС‚Р°РґР°РЅРЅРё РїРѕРґРѕР±СЂРµРЅРёСЏ
+- `app/page.tsx` вЂ” РєРѕСЂРµРєС†РёРё РЅР° landing page СЃС‚СЂСѓРєС‚СѓСЂР°
+- `how-it-works/how-it-works-page.tsx` вЂ” layout РїРѕРґРѕР±СЂРµРЅРёСЏ
 
-### Session 217 — Web: Module workspace UI + Admin mobile cards + нови UI компоненти
+### Session 217 вЂ” Web: Module workspace UI + Admin mobile cards + РЅРѕРІРё UI РєРѕРјРїРѕРЅРµРЅС‚Рё
 
 **Commit:** `f8ef618`
 
-**Какво направихме:**
-- `globals.css` — нови utility класове (29 реда)
-- `app/layout.tsx` + `loading.tsx` — подобрени loading states
-- **Нови UI компоненти:**
-  - `ui/add-material-fab.tsx` — Floating Action Button за добавяне на материал
-  - `ui/nav-progress-bar.tsx` — навигационна прогрес лента
-  - `ui/page-enter-effect.tsx` — page entrance анимация
-  - `admin/admin-mobile-card.tsx` — responsive mobile карта за admin таблици
-- Admin tabs (`courses`, `materials`, `modules`, `users`) — добавена responsive mobile card поддръжка (30+ реда за всяка)
-- Module sidebar компоненти — дребни корекции
+**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ:**
+- `globals.css` вЂ” РЅРѕРІРё utility РєР»Р°СЃРѕРІРµ (29 СЂРµРґР°)
+- `app/layout.tsx` + `loading.tsx` вЂ” РїРѕРґРѕР±СЂРµРЅРё loading states
+- **РќРѕРІРё UI РєРѕРјРїРѕРЅРµРЅС‚Рё:**
+  - `ui/add-material-fab.tsx` вЂ” Floating Action Button Р·Р° РґРѕР±Р°РІСЏРЅРµ РЅР° РјР°С‚РµСЂРёР°Р»
+  - `ui/nav-progress-bar.tsx` вЂ” РЅР°РІРёРіР°С†РёРѕРЅРЅР° РїСЂРѕРіСЂРµСЃ Р»РµРЅС‚Р°
+  - `ui/page-enter-effect.tsx` вЂ” page entrance Р°РЅРёРјР°С†РёСЏ
+  - `admin/admin-mobile-card.tsx` вЂ” responsive mobile РєР°СЂС‚Р° Р·Р° admin С‚Р°Р±Р»РёС†Рё
+- Admin tabs (`courses`, `materials`, `modules`, `users`) вЂ” РґРѕР±Р°РІРµРЅР° responsive mobile card РїРѕРґРґСЂСЉР¶РєР° (30+ СЂРµРґР° Р·Р° РІСЃСЏРєР°)
+- Module sidebar РєРѕРјРїРѕРЅРµРЅС‚Рё вЂ” РґСЂРµР±РЅРё РєРѕСЂРµРєС†РёРё
 
-### Session 218 — Web: Progress components polish
+### Session 218 вЂ” Web: Progress components polish
 
 **Commit:** `2c49fb4`
 
-**Какво направихме:**
-- `progress/add-milestone-form.tsx` — brand цвят корекции
-- `progress/milestone-timeline-item.tsx` — добавени 8 реда допълнителна функционалност
-- `progress/progress-page-client.tsx` — подобрена progress page интеграция
-- `progress/progress-summary-cards.tsx` — brand цвят корекции
+**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ:**
+- `progress/add-milestone-form.tsx` вЂ” brand С†РІСЏС‚ РєРѕСЂРµРєС†РёРё
+- `progress/milestone-timeline-item.tsx` вЂ” РґРѕР±Р°РІРµРЅРё 8 СЂРµРґР° РґРѕРїСЉР»РЅРёС‚РµР»РЅР° С„СѓРЅРєС†РёРѕРЅР°Р»РЅРѕСЃС‚
+- `progress/progress-page-client.tsx` вЂ” РїРѕРґРѕР±СЂРµРЅР° progress page РёРЅС‚РµРіСЂР°С†РёСЏ
+- `progress/progress-summary-cards.tsx` вЂ” brand С†РІСЏС‚ РєРѕСЂРµРєС†РёРё
 
-### Session 219 — Web: Admin panel responsive + members tab improvements
+### Session 219 вЂ” Web: Admin panel responsive + members tab improvements
 
 **Commit:** `eab53c8`
 
-**Какво направихме:**
-- `app/admin/page.tsx` — значително преработена admin страница (62 реда промени, по-добра responsive структура)
-- `components/admin/members-tab.tsx` — подобрен Members таб (responsive layout, по-добри action бутони)
+**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ:**
+- `app/admin/page.tsx` вЂ” Р·РЅР°С‡РёС‚РµР»РЅРѕ РїСЂРµСЂР°Р±РѕС‚РµРЅР° admin СЃС‚СЂР°РЅРёС†Р° (62 СЂРµРґР° РїСЂРѕРјРµРЅРё, РїРѕ-РґРѕР±СЂР° responsive СЃС‚СЂСѓРєС‚СѓСЂР°)
+- `components/admin/members-tab.tsx` вЂ” РїРѕРґРѕР±СЂРµРЅ Members С‚Р°Р± (responsive layout, РїРѕ-РґРѕР±СЂРё action Р±СѓС‚РѕРЅРё)
 
 ---
 
 ## 2026-04-12
 
-### Сесия 220 — Social S2: Ask Mentor + UI polish + bug fixes
+### РЎРµСЃРёСЏ 220 вЂ” Social S2: Ask Mentor + UI polish + bug fixes
 
-**Какво направихме:**
+**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ:**
 
-#### Social S0 — Course Membership + Mentor Role (ново)
+#### Social S0 вЂ” Course Membership + Mentor Role (РЅРѕРІРѕ)
 
 **Schema:**
-- Нова таблица `course_members` (migration `0006_course_members.sql`): `course_id`, `user_id`, `role` (student | mentor), `joined_at`
-- Уникален индекс `(course_id, user_id)` — потребителят може да е в курс само веднъж
-- `users.role` разширен: вече поддържа `'mentor'` освен `'user'` и `'admin'`
+- РќРѕРІР° С‚Р°Р±Р»РёС†Р° `course_members` (migration `0006_course_members.sql`): `course_id`, `user_id`, `role` (student | mentor), `joined_at`
+- РЈРЅРёРєР°Р»РµРЅ РёРЅРґРµРєСЃ `(course_id, user_id)` вЂ” РїРѕС‚СЂРµР±РёС‚РµР»СЏС‚ РјРѕР¶Рµ РґР° Рµ РІ РєСѓСЂСЃ СЃР°РјРѕ РІРµРґРЅСЉР¶
+- `users.role` СЂР°Р·С€РёСЂРµРЅ: РІРµС‡Рµ РїРѕРґРґСЉСЂР¶Р° `'mentor'` РѕСЃРІРµРЅ `'user'` Рё `'admin'`
 
-**Нови API endpoints:**
-- `GET/POST /api/courses/[id]/members` — списък на членове / добавяне
-- `PUT/DELETE /api/courses/[id]/members/[userId]` — смяна на роля / премахване
-- `GET/POST /api/admin/members` — admin преглед на всички членства
-- `PUT/DELETE /api/admin/members/[id]` — admin управление
+**РќРѕРІРё API endpoints:**
+- `GET/POST /api/courses/[id]/members` вЂ” СЃРїРёСЃСЉРє РЅР° С‡Р»РµРЅРѕРІРµ / РґРѕР±Р°РІСЏРЅРµ
+- `PUT/DELETE /api/courses/[id]/members/[userId]` вЂ” СЃРјСЏРЅР° РЅР° СЂРѕР»СЏ / РїСЂРµРјР°С…РІР°РЅРµ
+- `GET/POST /api/admin/members` вЂ” admin РїСЂРµРіР»РµРґ РЅР° РІСЃРёС‡РєРё С‡Р»РµРЅСЃС‚РІР°
+- `PUT/DELETE /api/admin/members/[id]` вЂ” admin СѓРїСЂР°РІР»РµРЅРёРµ
 
 **Auth helpers:**
-- `requireMentor()` — 403 ако не е mentor или admin
-- `requireCourseMentor(courseId)` — 403 ако не е ментор точно на този курс
+- `requireMentor()` вЂ” 403 Р°РєРѕ РЅРµ Рµ mentor РёР»Рё admin
+- `requireCourseMentor(courseId)` вЂ” 403 Р°РєРѕ РЅРµ Рµ РјРµРЅС‚РѕСЂ С‚РѕС‡РЅРѕ РЅР° С‚РѕР·Рё РєСѓСЂСЃ
 
 **Admin panel:**
-- Нов "Members" таб — добавяне/премахване на членства, toggle на роля (student ↔ mentor)
-- Fix: стray `</div>` JSX грешки в 4 admin tab компонента
+- РќРѕРІ "Members" С‚Р°Р± вЂ” РґРѕР±Р°РІСЏРЅРµ/РїСЂРµРјР°С…РІР°РЅРµ РЅР° С‡Р»РµРЅСЃС‚РІР°, toggle РЅР° СЂРѕР»СЏ (student в†” mentor)
+- Fix: СЃС‚ray `</div>` JSX РіСЂРµС€РєРё РІ 4 admin tab РєРѕРјРїРѕРЅРµРЅС‚Р°
 
-**Друго:**
-- `scripts/run-migration.mjs` — helper script за ръчно пускане на SQL миграции
+**Р”СЂСѓРіРѕ:**
+- `scripts/run-migration.mjs` вЂ” helper script Р·Р° СЂСЉС‡РЅРѕ РїСѓСЃРєР°РЅРµ РЅР° SQL РјРёРіСЂР°С†РёРё
 
-Commit: `feat: implement Social S0 — course membership + mentor role`
+Commit: `feat: implement Social S0 вЂ” course membership + mentor role`
 
 ---
 
-#### Social S1 — Community Board (ново)
+#### Social S1 вЂ” Community Board (РЅРѕРІРѕ)
 
-**Schema (4 нови таблици, migration `0007_community_board.sql`):**
-- `posts` — автор, заглавие, съдържание, тип (discussion/question/resource/article), статус (pending/approved/hidden), pinning, `question_status`
-- `comments` — flat thread към пост
-- `post_likes` — toggle like с уникален constraint
-- `post_bookmarks` — bookmark с уникален constraint
+**Schema (4 РЅРѕРІРё С‚Р°Р±Р»РёС†Рё, migration `0007_community_board.sql`):**
+- `posts` вЂ” Р°РІС‚РѕСЂ, Р·Р°РіР»Р°РІРёРµ, СЃСЉРґСЉСЂР¶Р°РЅРёРµ, С‚РёРї (discussion/question/resource/article), СЃС‚Р°С‚СѓСЃ (pending/approved/hidden), pinning, `question_status`
+- `comments` вЂ” flat thread РєСЉРј РїРѕСЃС‚
+- `post_likes` вЂ” toggle like СЃ СѓРЅРёРєР°Р»РµРЅ constraint
+- `post_bookmarks` вЂ” bookmark СЃ СѓРЅРёРєР°Р»РµРЅ constraint
 
 **API endpoints (12):**
-- `GET/POST /api/posts` — лист (филтри: type, courseId, search, page/20) + създаване
-- `GET/PUT/DELETE /api/posts/[id]` — детайли (+ comments + like/bookmark state), редактиране, изтриване
-- `POST /api/posts/[id]/comments` — добавяне на коментар
-- `DELETE /api/comments/[id]` — изтриване (автор или admin)
-- `POST /api/posts/[id]/like` — toggle like
-- `POST /api/posts/[id]/bookmark` — toggle bookmark
-- `GET /api/admin/posts` — всички постове за модерация
-- `PUT /api/admin/posts/[id]` — approve / hide / pin
-- `DELETE /api/admin/posts/[id]` — hard delete
+- `GET/POST /api/posts` вЂ” Р»РёСЃС‚ (С„РёР»С‚СЂРё: type, courseId, search, page/20) + СЃСЉР·РґР°РІР°РЅРµ
+- `GET/PUT/DELETE /api/posts/[id]` вЂ” РґРµС‚Р°Р№Р»Рё (+ comments + like/bookmark state), СЂРµРґР°РєС‚РёСЂР°РЅРµ, РёР·С‚СЂРёРІР°РЅРµ
+- `POST /api/posts/[id]/comments` вЂ” РґРѕР±Р°РІСЏРЅРµ РЅР° РєРѕРјРµРЅС‚Р°СЂ
+- `DELETE /api/comments/[id]` вЂ” РёР·С‚СЂРёРІР°РЅРµ (Р°РІС‚РѕСЂ РёР»Рё admin)
+- `POST /api/posts/[id]/like` вЂ” toggle like
+- `POST /api/posts/[id]/bookmark` вЂ” toggle bookmark
+- `GET /api/admin/posts` вЂ” РІСЃРёС‡РєРё РїРѕСЃС‚РѕРІРµ Р·Р° РјРѕРґРµСЂР°С†РёСЏ
+- `PUT /api/admin/posts/[id]` вЂ” approve / hide / pin
+- `DELETE /api/admin/posts/[id]` вЂ” hard delete
 
-**Web страници:**
-- `/community` — CommunityFeed: списък с search + type filter + Load More (pagination)
-- `/community/new` — CreatePostForm: избор на тип, курс, заглавие, съдържание
-- `/community/[id]` — PostDetails: пълен пост, коментари, like/bookmark
-- `/community/[id]/edit` — EditPostForm: редактиране (автор или admin)
+**Web СЃС‚СЂР°РЅРёС†Рё:**
+- `/community` вЂ” CommunityFeed: СЃРїРёСЃСЉРє СЃ search + type filter + Load More (pagination)
+- `/community/new` вЂ” CreatePostForm: РёР·Р±РѕСЂ РЅР° С‚РёРї, РєСѓСЂСЃ, Р·Р°РіР»Р°РІРёРµ, СЃСЉРґСЉСЂР¶Р°РЅРёРµ
+- `/community/[id]` вЂ” PostDetails: РїСЉР»РµРЅ РїРѕСЃС‚, РєРѕРјРµРЅС‚Р°СЂРё, like/bookmark
+- `/community/[id]/edit` вЂ” EditPostForm: СЂРµРґР°РєС‚РёСЂР°РЅРµ (Р°РІС‚РѕСЂ РёР»Рё admin)
 
-**Shared типове:**
-- `post-types.ts` — `Post`, `Comment` типове; `TYPE_LABELS`, `TYPE_COLORS`, `timeAgo()`
-- `comment-item.tsx` — reusable коментар компонент
+**Shared С‚РёРїРѕРІРµ:**
+- `post-types.ts` вЂ” `Post`, `Comment` С‚РёРїРѕРІРµ; `TYPE_LABELS`, `TYPE_COLORS`, `timeAgo()`
+- `comment-item.tsx` вЂ” reusable РєРѕРјРµРЅС‚Р°СЂ РєРѕРјРїРѕРЅРµРЅС‚
 
 **Admin:**
-- `posts-tab.tsx` — Moderation таб: approve/hide/pin/delete с inline actions
-- Добавен като "Moderation" таб в `/admin`
+- `posts-tab.tsx` вЂ” Moderation С‚Р°Р±: approve/hide/pin/delete СЃ inline actions
+- Р”РѕР±Р°РІРµРЅ РєР°С‚Рѕ "Moderation" С‚Р°Р± РІ `/admin`
 
-**Navbar:** "Community" линк добавен
+**Navbar:** "Community" Р»РёРЅРє РґРѕР±Р°РІРµРЅ
 
-**Seed данни:** `drizzle/seeds/community_demo.sql` — 150 demo posts, ~300 comments
+**Seed РґР°РЅРЅРё:** `drizzle/seeds/community_demo.sql` вЂ” 150 demo posts, ~300 comments
 
 Commits: `feat: implement community forum system...` + `feat: implement community board features...`
 
 ---
 
-#### UI Polish — Community Board (бранд цветове)
-- Открихме и поправихме всички `primary-*` Tailwind класове в community компонентите — `primary-*` не съществува в Tailwind config (само като CSS variables), което водеше до липсващи стилове в светлия/тъмния режим
-- Заменени с `brand-*` в 5 файла: `community-feed.tsx`, `post-details.tsx`, `create-post-form.tsx`, `edit-post-form.tsx`, `posts-tab.tsx`
-- Засяга: avatar градиенти, hover цветове на заглавия, focus rings на inputs, pinned бейджове, filter бутони в admin
+#### UI Polish вЂ” Community Board (Р±СЂР°РЅРґ С†РІРµС‚РѕРІРµ)
+- РћС‚РєСЂРёС…РјРµ Рё РїРѕРїСЂР°РІРёС…РјРµ РІСЃРёС‡РєРё `primary-*` Tailwind РєР»Р°СЃРѕРІРµ РІ community РєРѕРјРїРѕРЅРµРЅС‚РёС‚Рµ вЂ” `primary-*` РЅРµ СЃСЉС‰РµСЃС‚РІСѓРІР° РІ Tailwind config (СЃР°РјРѕ РєР°С‚Рѕ CSS variables), РєРѕРµС‚Рѕ РІРѕРґРµС€Рµ РґРѕ Р»РёРїСЃРІР°С‰Рё СЃС‚РёР»РѕРІРµ РІ СЃРІРµС‚Р»РёСЏ/С‚СЉРјРЅРёСЏ СЂРµР¶РёРј
+- Р—Р°РјРµРЅРµРЅРё СЃ `brand-*` РІ 5 С„Р°Р№Р»Р°: `community-feed.tsx`, `post-details.tsx`, `create-post-form.tsx`, `edit-post-form.tsx`, `posts-tab.tsx`
+- Р—Р°СЃСЏРіР°: avatar РіСЂР°РґРёРµРЅС‚Рё, hover С†РІРµС‚РѕРІРµ РЅР° Р·Р°РіР»Р°РІРёСЏ, focus rings РЅР° inputs, pinned Р±РµР№РґР¶РѕРІРµ, filter Р±СѓС‚РѕРЅРё РІ admin
 - Commit: `fix: replace primary-* with brand-* in community components`
 
-#### Шрифт на заглавия
-- `font-shantell` добавен на post заглавия в `community-feed.tsx`, `post-details.tsx`, `mentor-inbox.tsx` — signature brand font
+#### РЁСЂРёС„С‚ РЅР° Р·Р°РіР»Р°РІРёСЏ
+- `font-shantell` РґРѕР±Р°РІРµРЅ РЅР° post Р·Р°РіР»Р°РІРёСЏ РІ `community-feed.tsx`, `post-details.tsx`, `mentor-inbox.tsx` вЂ” signature brand font
 
-#### Social S2 — Ask Mentor (ново)
-Имплементирахме пълния Q&A workflow за ментори.
+#### Social S2 вЂ” Ask Mentor (РЅРѕРІРѕ)
+РРјРїР»РµРјРµРЅС‚РёСЂР°С…РјРµ РїСЉР»РЅРёСЏ Q&A workflow Р·Р° РјРµРЅС‚РѕСЂРё.
 
-**Нови API endpoints:**
-- `GET /api/mentor/questions` — списък с въпроси от курсовете, в които потребителят е ментор; admin вижда всички; поддържа `?status=` филтър
-- `PUT /api/posts/[id]/answer-status` — mentor/admin сменя `question_status` (open → answered → closed); валидира course membership за ментори
+**РќРѕРІРё API endpoints:**
+- `GET /api/mentor/questions` вЂ” СЃРїРёСЃСЉРє СЃ РІСЉРїСЂРѕСЃРё РѕС‚ РєСѓСЂСЃРѕРІРµС‚Рµ, РІ РєРѕРёС‚Рѕ РїРѕС‚СЂРµР±РёС‚РµР»СЏС‚ Рµ РјРµРЅС‚РѕСЂ; admin РІРёР¶РґР° РІСЃРёС‡РєРё; РїРѕРґРґСЉСЂР¶Р° `?status=` С„РёР»С‚СЉСЂ
+- `PUT /api/posts/[id]/answer-status` вЂ” mentor/admin СЃРјРµРЅСЏ `question_status` (open в†’ answered в†’ closed); РІР°Р»РёРґРёСЂР° course membership Р·Р° РјРµРЅС‚РѕСЂРё
 
-**Нова страница:**
-- `/mentor-inbox` — Mentor Inbox с три колони статистика (open/answered/closed), click-to-filter, списък с въпроси и inline status бутони (Mark answered / Close / Reopen)
-- Server-side role guard: redirect към `/forbidden` ако не е mentor/admin
+**РќРѕРІР° СЃС‚СЂР°РЅРёС†Р°:**
+- `/mentor-inbox` вЂ” Mentor Inbox СЃ С‚СЂРё РєРѕР»РѕРЅРё СЃС‚Р°С‚РёСЃС‚РёРєР° (open/answered/closed), click-to-filter, СЃРїРёСЃСЉРє СЃ РІСЉРїСЂРѕСЃРё Рё inline status Р±СѓС‚РѕРЅРё (Mark answered / Close / Reopen)
+- Server-side role guard: redirect РєСЉРј `/forbidden` Р°РєРѕ РЅРµ Рµ mentor/admin
 
 **Navbar:**
-- "Inbox" линк добавен — видим само за `mentor` и `admin` роли
+- "Inbox" Р»РёРЅРє РґРѕР±Р°РІРµРЅ вЂ” РІРёРґРёРј СЃР°РјРѕ Р·Р° `mentor` Рё `admin` СЂРѕР»Рё
 
-**Файлове:**
-- `apps/web/app/api/mentor/questions/route.ts` (нов)
-- `apps/web/app/api/posts/[id]/answer-status/route.ts` (нов)
-- `apps/web/app/mentor-inbox/page.tsx` (нов)
-- `apps/web/components/mentor/mentor-inbox.tsx` (нов)
-- `apps/web/components/navbar-client.tsx` (обновен)
+**Р¤Р°Р№Р»РѕРІРµ:**
+- `apps/web/app/api/mentor/questions/route.ts` (РЅРѕРІ)
+- `apps/web/app/api/posts/[id]/answer-status/route.ts` (РЅРѕРІ)
+- `apps/web/app/mentor-inbox/page.tsx` (РЅРѕРІ)
+- `apps/web/components/mentor/mentor-inbox.tsx` (РЅРѕРІ)
+- `apps/web/components/navbar-client.tsx` (РѕР±РЅРѕРІРµРЅ)
 
-Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
+Commit: `feat: implement S2 Ask Mentor вЂ” mentor inbox + answer-status API`
 
-#### Bug fix — Mentor Inbox броячи
-- **Проблем:** при натискане на stat карта (напр. "open"), API се извикваше с `?status=open` → другите броячи ставаха 0
-- **Решение:** зареждаме всички въпроси веднъж (без server-side филтър); броячите се изчисляват от пълния dataset; филтрирането е само client-side
+#### Bug fix вЂ” Mentor Inbox Р±СЂРѕСЏС‡Рё
+- **РџСЂРѕР±Р»РµРј:** РїСЂРё РЅР°С‚РёСЃРєР°РЅРµ РЅР° stat РєР°СЂС‚Р° (РЅР°РїСЂ. "open"), API СЃРµ РёР·РІРёРєРІР°С€Рµ СЃ `?status=open` в†’ РґСЂСѓРіРёС‚Рµ Р±СЂРѕСЏС‡Рё СЃС‚Р°РІР°С…Р° 0
+- **Р РµС€РµРЅРёРµ:** Р·Р°СЂРµР¶РґР°РјРµ РІСЃРёС‡РєРё РІСЉРїСЂРѕСЃРё РІРµРґРЅСЉР¶ (Р±РµР· server-side С„РёР»С‚СЉСЂ); Р±СЂРѕСЏС‡РёС‚Рµ СЃРµ РёР·С‡РёСЃР»СЏРІР°С‚ РѕС‚ РїСЉР»РЅРёСЏ dataset; С„РёР»С‚СЂРёСЂР°РЅРµС‚Рѕ Рµ СЃР°РјРѕ client-side
 - Commit: `fix: mentor inbox counts stay correct when filter is active`
 
-#### Bug fix — Back бутон от post detail
-- **Проблем:** "← Community" бутонът в post details беше hardcoded към `/community` — отварен от mentor-inbox, бутонът връщаше в Community вместо в Inbox
-- **Решение:** `router.back()` вместо `<Link href="/community">` — следва browser history
-- Лейбълът е сменен от "Community" на "Back"
+#### Bug fix вЂ” Back Р±СѓС‚РѕРЅ РѕС‚ post detail
+- **РџСЂРѕР±Р»РµРј:** "в†ђ Community" Р±СѓС‚РѕРЅСЉС‚ РІ post details Р±РµС€Рµ hardcoded РєСЉРј `/community` вЂ” РѕС‚РІР°СЂРµРЅ РѕС‚ mentor-inbox, Р±СѓС‚РѕРЅСЉС‚ РІСЂСЉС‰Р°С€Рµ РІ Community РІРјРµСЃС‚Рѕ РІ Inbox
+- **Р РµС€РµРЅРёРµ:** `router.back()` РІРјРµСЃС‚Рѕ `<Link href="/community">` вЂ” СЃР»РµРґРІР° browser history
+- Р›РµР№Р±СЉР»СЉС‚ Рµ СЃРјРµРЅРµРЅ РѕС‚ "Community" РЅР° "Back"
 
-#### Bug fix — Navbar активен таб при четене на пост
-- **Проблем:** `/community/[id]` пътят съдържа `/community` → `pathname.startsWith("/community")` беше true → Community табът светваше при четене на пост от Inbox
-- **Решение:** Custom `isActive()` функция в `navbar-client.tsx`:
-  - `/community` активен само при: `/community`, `/community/new`, `/community/[id]/edit`
-  - `/community/[id]` (четене на конкретен пост) е неутрална страница — нищо не светва
-  - Останалите линкове ползват `startsWith` (непроменено)
+#### Bug fix вЂ” Navbar Р°РєС‚РёРІРµРЅ С‚Р°Р± РїСЂРё С‡РµС‚РµРЅРµ РЅР° РїРѕСЃС‚
+- **РџСЂРѕР±Р»РµРј:** `/community/[id]` РїСЉС‚СЏС‚ СЃСЉРґСЉСЂР¶Р° `/community` в†’ `pathname.startsWith("/community")` Р±РµС€Рµ true в†’ Community С‚Р°Р±СЉС‚ СЃРІРµС‚РІР°С€Рµ РїСЂРё С‡РµС‚РµРЅРµ РЅР° РїРѕСЃС‚ РѕС‚ Inbox
+- **Р РµС€РµРЅРёРµ:** Custom `isActive()` С„СѓРЅРєС†РёСЏ РІ `navbar-client.tsx`:
+  - `/community` Р°РєС‚РёРІРµРЅ СЃР°РјРѕ РїСЂРё: `/community`, `/community/new`, `/community/[id]/edit`
+  - `/community/[id]` (С‡РµС‚РµРЅРµ РЅР° РєРѕРЅРєСЂРµС‚РµРЅ РїРѕСЃС‚) Рµ РЅРµСѓС‚СЂР°Р»РЅР° СЃС‚СЂР°РЅРёС†Р° вЂ” РЅРёС‰Рѕ РЅРµ СЃРІРµС‚РІР°
+  - РћСЃС‚Р°РЅР°Р»РёС‚Рµ Р»РёРЅРєРѕРІРµ РїРѕР»Р·РІР°С‚ `startsWith` (РЅРµРїСЂРѕРјРµРЅРµРЅРѕ)
 
-**Typecheck:** `tsc --noEmit` → pass (0 грешки) след всички промени
+**Typecheck:** `tsc --noEmit` в†’ pass (0 РіСЂРµС€РєРё) СЃР»РµРґ РІСЃРёС‡РєРё РїСЂРѕРјРµРЅРё
 
 ---
 
 ## 2026-04-11
 
-### Сесия 221 — Web UI polish (анимации)
+### РЎРµСЃРёСЏ 221 вЂ” Web UI polish (Р°РЅРёРјР°С†РёРё)
 
-**Какво направихме:**
-- Проучихме page transitions с Framer Motion — опитахме, махнахме (App Router не поддържа exit анимации за server components)
-- Потвърдихме, че scroll reveal вече съществува (`use-scroll-reveal.ts`, `use-visible-animation.ts`) и е активен в hero, features, about, stats, cta-banner
-- **Dashboard hero** — разширихме от 2 на 4 stat карти (Courses, Modules, Materials, Pinned)
-  - Добавихме DB заявки за брой модули и материали в `getDashboardData`
-  - Добавихме `useCountUp` hook с `requestAnimationFrame` + easeOut крива — числата бройт от 0 при зареждане
-  - Gradient текст на числата (brand→cyan)
-- **Hero landing** — "Learning Journey" разделено на два отделни `block` спана
-  - Всеки ред получава собствен градиент `from-white via-cyan-300 to-white`
-- Добавен `.hero-gradient-text` CSS клас в `globals.css` — запазен за Social Features
+**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ:**
+- РџСЂРѕСѓС‡РёС…РјРµ page transitions СЃ Framer Motion вЂ” РѕРїРёС‚Р°С…РјРµ, РјР°С…РЅР°С…РјРµ (App Router РЅРµ РїРѕРґРґСЉСЂР¶Р° exit Р°РЅРёРјР°С†РёРё Р·Р° server components)
+- РџРѕС‚РІСЉСЂРґРёС…РјРµ, С‡Рµ scroll reveal РІРµС‡Рµ СЃСЉС‰РµСЃС‚РІСѓРІР° (`use-scroll-reveal.ts`, `use-visible-animation.ts`) Рё Рµ Р°РєС‚РёРІРµРЅ РІ hero, features, about, stats, cta-banner
+- **Dashboard hero** вЂ” СЂР°Р·С€РёСЂРёС…РјРµ РѕС‚ 2 РЅР° 4 stat РєР°СЂС‚Рё (Courses, Modules, Materials, Pinned)
+  - Р”РѕР±Р°РІРёС…РјРµ DB Р·Р°СЏРІРєРё Р·Р° Р±СЂРѕР№ РјРѕРґСѓР»Рё Рё РјР°С‚РµСЂРёР°Р»Рё РІ `getDashboardData`
+  - Р”РѕР±Р°РІРёС…РјРµ `useCountUp` hook СЃ `requestAnimationFrame` + easeOut РєСЂРёРІР° вЂ” С‡РёСЃР»Р°С‚Р° Р±СЂРѕР№С‚ РѕС‚ 0 РїСЂРё Р·Р°СЂРµР¶РґР°РЅРµ
+  - Gradient С‚РµРєСЃС‚ РЅР° С‡РёСЃР»Р°С‚Р° (brandв†’cyan)
+- **Hero landing** вЂ” "Learning Journey" СЂР°Р·РґРµР»РµРЅРѕ РЅР° РґРІР° РѕС‚РґРµР»РЅРё `block` СЃРїР°РЅР°
+  - Р’СЃРµРєРё СЂРµРґ РїРѕР»СѓС‡Р°РІР° СЃРѕР±СЃС‚РІРµРЅ РіСЂР°РґРёРµРЅС‚ `from-white via-cyan-300 to-white`
+- Р”РѕР±Р°РІРµРЅ `.hero-gradient-text` CSS РєР»Р°СЃ РІ `globals.css` вЂ” Р·Р°РїР°Р·РµРЅ Р·Р° Social Features
 
-**Решения:**
-- Page transitions — не вървят добре с Next.js App Router, отказахме се
-- Пагинация за модули/материали — не е нужна за текущия обхват на проекта
+**Р РµС€РµРЅРёСЏ:**
+- Page transitions вЂ” РЅРµ РІСЉСЂРІСЏС‚ РґРѕР±СЂРµ СЃ Next.js App Router, РѕС‚РєР°Р·Р°С…РјРµ СЃРµ
+- РџР°РіРёРЅР°С†РёСЏ Р·Р° РјРѕРґСѓР»Рё/РјР°С‚РµСЂРёР°Р»Рё вЂ” РЅРµ Рµ РЅСѓР¶РЅР° Р·Р° С‚РµРєСѓС‰РёСЏ РѕР±С…РІР°С‚ РЅР° РїСЂРѕРµРєС‚Р°
 
 ---
 ## 2026-04-13
 
-### Сесия 222 — Social S3: Real-time Messaging (имплементация)
+### РЎРµСЃРёСЏ 222 вЂ” Social S3: Real-time Messaging (РёРјРїР»РµРјРµРЅС‚Р°С†РёСЏ)
 
 **Schema (migration `0008_messaging.sql`):**
-- `conversations`, `conversation_members`, `messages` — 3 таблици
+- `conversations`, `conversation_members`, `messages` вЂ” 3 С‚Р°Р±Р»РёС†Рё
 
-**Pusher setup:** `studyhub-chat` (eu), `pusher` + `pusher-js`, `lib/pusher.ts`, env vars в `apps/web/.env`
+**Pusher setup:** `studyhub-chat` (eu), `pusher` + `pusher-js`, `lib/pusher.ts`, env vars РІ `apps/web/.env`
 
 **API endpoints:** GET/POST `/api/conversations`, GET/POST `/api/conversations/[id]/messages`, POST `/api/pusher/auth`
 
-**Web UI:** `/messages` (inbox), `/messages/[id]` (chat), "Send message" бутон в `post-details.tsx`, Navbar линк
+**Web UI:** `/messages` (inbox), `/messages/[id]` (chat), "Send message" Р±СѓС‚РѕРЅ РІ `post-details.tsx`, Navbar Р»РёРЅРє
 
 ---
 
-### Сесия 223 — S3 Chat: Bug fixes + production тест
+### РЎРµСЃРёСЏ 223 вЂ” S3 Chat: Bug fixes + production С‚РµСЃС‚
 
-**Критичен бъг (500 на GET /api/conversations):**
-- Оригиналният `DISTINCT ON` raw SQL чрез `db.execute` крашваше в production
-- Fix: замяна с чист Drizzle ORM query (select + orderBy desc + JS Map за last message)
+**РљСЂРёС‚РёС‡РµРЅ Р±СЉРі (500 РЅР° GET /api/conversations):**
+- РћСЂРёРіРёРЅР°Р»РЅРёСЏС‚ `DISTINCT ON` raw SQL С‡СЂРµР· `db.execute` РєСЂР°С€РІР°С€Рµ РІ production
+- Fix: Р·Р°РјСЏРЅР° СЃ С‡РёСЃС‚ Drizzle ORM query (select + orderBy desc + JS Map Р·Р° last message)
 
-**UI подобрения:**
-- Chat window: контейнер (`max-w-2xl`, карта с `rounded-2xl`, border, shadow) вместо full-width
-- Chat height: `h-[calc(100dvh-5rem)]` + `flex-1 min-h-0` (все още може да иска фина настройка)
+**UI РїРѕРґРѕР±СЂРµРЅРёСЏ:**
+- Chat window: РєРѕРЅС‚РµР№РЅРµСЂ (`max-w-2xl`, РєР°СЂС‚Р° СЃ `rounded-2xl`, border, shadow) РІРјРµСЃС‚Рѕ full-width
+- Chat height: `h-[calc(100dvh-5rem)]` + `flex-1 min-h-0` (РІСЃРµ РѕС‰Рµ РјРѕР¶Рµ РґР° РёСЃРєР° С„РёРЅР° РЅР°СЃС‚СЂРѕР№РєР°)
 - Messages anchored to bottom: `flex flex-col justify-end min-h-full`
-- Header показва правилно другия участник: API GET messages връща `{ messages, other }`
-- AI chatbot FAB скрит на `/messages/*` (overlap с send бутона)
+- Header РїРѕРєР°Р·РІР° РїСЂР°РІРёР»РЅРѕ РґСЂСѓРіРёСЏ СѓС‡Р°СЃС‚РЅРёРє: API GET messages РІСЂСЉС‰Р° `{ messages, other }`
+- AI chatbot FAB СЃРєСЂРёС‚ РЅР° `/messages/*` (overlap СЃ send Р±СѓС‚РѕРЅР°)
 
-**Pusher real-time — потвърдено работещ:**
-- Admin ↔ Demo User, Admin ↔ Test User — съобщенията пристигат мигновено
+**Pusher real-time вЂ” РїРѕС‚РІСЉСЂРґРµРЅРѕ СЂР°Р±РѕС‚РµС‰:**
+- Admin в†” Demo User, Admin в†” Test User вЂ” СЃСЉРѕР±С‰РµРЅРёСЏС‚Р° РїСЂРёСЃС‚РёРіР°С‚ РјРёРіРЅРѕРІРµРЅРѕ
 
 ---
 
-### Сесия 224 — S3 Chat: Height fix + commit
+### РЎРµСЃРёСЏ 224 вЂ” S3 Chat: Height fix + commit
 
 **Chat container height fix:**
-- Проблем: `h-[calc(100dvh-5rem)]` hardcode-ваше navbar височината; при wrap на mobile линковете контейнерът overflow-ваше
-- Fix: `useEffect` + `getBoundingClientRect().top` измерва реалния navbar offset и задава `calc(100dvh - Xpx)` динамично
-- Resize listener преизчислява при промяна на viewport (navbar wrap/unwrap)
-- Файл: `apps/web/components/messages/chat-window.tsx`
+- РџСЂРѕР±Р»РµРј: `h-[calc(100dvh-5rem)]` hardcode-РІР°С€Рµ navbar РІРёСЃРѕС‡РёРЅР°С‚Р°; РїСЂРё wrap РЅР° mobile Р»РёРЅРєРѕРІРµС‚Рµ РєРѕРЅС‚РµР№РЅРµСЂСЉС‚ overflow-РІР°С€Рµ
+- Fix: `useEffect` + `getBoundingClientRect().top` РёР·РјРµСЂРІР° СЂРµР°Р»РЅРёСЏ navbar offset Рё Р·Р°РґР°РІР° `calc(100dvh - Xpx)` РґРёРЅР°РјРёС‡РЅРѕ
+- Resize listener РїСЂРµРёР·С‡РёСЃР»СЏРІР° РїСЂРё РїСЂРѕРјСЏРЅР° РЅР° viewport (navbar wrap/unwrap)
+- Р¤Р°Р№Р»: `apps/web/components/messages/chat-window.tsx`
 
-**Commit:** `feat: implement S3 real-time messaging` — всички S3 файлове
+**Commit:** `feat: implement S3 real-time messaging` вЂ” РІСЃРёС‡РєРё S3 С„Р°Р№Р»РѕРІРµ
 
-### Сесия 225 — Messaging Premium UI Polish
+### РЎРµСЃРёСЏ 225 вЂ” Messaging Premium UI Polish
 
-**Какво направихме — Inbox (messages-inbox.tsx):**
-- **Заглавие Messages** — вече ползва `font-shantell` + `bg-v1-gradient` (текстът е градиентен)
-- **Карти на разговорите** — добавен glass (white/80 backdrop-blur) + hover анимация (подскачане и сянка)
-- **Avatar** — специфичен градиент `from-brand-500 via-fuchsia-500 to-cyan-400`
-- **Стрелка (hint)** — оцветява се при hover на цялата карта
-- **Skeleton placeholders** — заменени с "glass" пулсиращи карти
+**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ вЂ” Inbox (messages-inbox.tsx):**
+- **Р—Р°РіР»Р°РІРёРµ Messages** вЂ” РІРµС‡Рµ РїРѕР»Р·РІР° `font-shantell` + `bg-v1-gradient` (С‚РµРєСЃС‚СЉС‚ Рµ РіСЂР°РґРёРµРЅС‚РµРЅ)
+- **РљР°СЂС‚Рё РЅР° СЂР°Р·РіРѕРІРѕСЂРёС‚Рµ** вЂ” РґРѕР±Р°РІРµРЅ glass (white/80 backdrop-blur) + hover Р°РЅРёРјР°С†РёСЏ (РїРѕРґСЃРєР°С‡Р°РЅРµ Рё СЃСЏРЅРєР°)
+- **Avatar** вЂ” СЃРїРµС†РёС„РёС‡РµРЅ РіСЂР°РґРёРµРЅС‚ `from-brand-500 via-fuchsia-500 to-cyan-400`
+- **РЎС‚СЂРµР»РєР° (hint)** вЂ” РѕС†РІРµС‚СЏРІР° СЃРµ РїСЂРё hover РЅР° С†СЏР»Р°С‚Р° РєР°СЂС‚Р°
+- **Skeleton placeholders** вЂ” Р·Р°РјРµРЅРµРЅРё СЃ "glass" РїСѓР»СЃРёСЂР°С‰Рё РєР°СЂС‚Рё
 
-**Какво направихме — Chat window (chat-window.tsx):**
-- **Shell & Card** — по-лек фон (`bg-slate-50`) и ултра-стъкло за чат картата (`backdrop-blur-xl`)
-- **Header** — добавен Avatar на събеседника + `font-shantell bold` име
-- **Back бутон** — редизайн като стилно `rounded-lg` квадратче с hover състояние
-- **Собствени съобщения** — вече са с `bg-v1-gradient` (indigo→purple→cyan)
-- **Техните съобщения** — glass style (white/90 backdrop-blur)
-- **Input & Send** — `focus:ring-brand-400` и градиентен бутон с ховър анимация
-- **Empty state** — малка glass карта с емотикона 👋
+**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ вЂ” Chat window (chat-window.tsx):**
+- **Shell & Card** вЂ” РїРѕ-Р»РµРє С„РѕРЅ (`bg-slate-50`) Рё СѓР»С‚СЂР°-СЃС‚СЉРєР»Рѕ Р·Р° С‡Р°С‚ РєР°СЂС‚Р°С‚Р° (`backdrop-blur-xl`)
+- **Header** вЂ” РґРѕР±Р°РІРµРЅ Avatar РЅР° СЃСЉР±РµСЃРµРґРЅРёРєР° + `font-shantell bold` РёРјРµ
+- **Back Р±СѓС‚РѕРЅ** вЂ” СЂРµРґРёР·Р°Р№РЅ РєР°С‚Рѕ СЃС‚РёР»РЅРѕ `rounded-lg` РєРІР°РґСЂР°С‚С‡Рµ СЃ hover СЃСЉСЃС‚РѕСЏРЅРёРµ
+- **РЎРѕР±СЃС‚РІРµРЅРё СЃСЉРѕР±С‰РµРЅРёСЏ** вЂ” РІРµС‡Рµ СЃР° СЃ `bg-v1-gradient` (indigoв†’purpleв†’cyan)
+- **РўРµС…РЅРёС‚Рµ СЃСЉРѕР±С‰РµРЅРёСЏ** вЂ” glass style (white/90 backdrop-blur)
+- **Input & Send** вЂ” `focus:ring-brand-400` Рё РіСЂР°РґРёРµРЅС‚РµРЅ Р±СѓС‚РѕРЅ СЃ С…РѕРІСЉСЂ Р°РЅРёРјР°С†РёСЏ
+- **Empty state** вЂ” РјР°Р»РєР° glass РєР°СЂС‚Р° СЃ РµРјРѕС‚РёРєРѕРЅР° рџ‘‹
 
-**Файлове:**
+**Р¤Р°Р№Р»РѕРІРµ:**
 - `apps/web/components/messages/messages-inbox.tsx`
 - `apps/web/components/messages/chat-window.tsx`
 
-**Typecheck:** `tsc --noEmit` → pass
+**Typecheck:** `tsc --noEmit` в†’ pass
 
 ---
 
-**Следваща сесия:**
-1. Mobile фаза (Community Board + Mentor Inbox + Chat responsive)
+**РЎР»РµРґРІР°С‰Р° СЃРµСЃРёСЏ:**
+1. Mobile С„Р°Р·Р° (Community Board + Mentor Inbox + Chat responsive)
+
+
+

@@ -4,8 +4,10 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { apiFetch } from "../../lib/api";
+import { apiFetch, getUserFriendlyError } from "../../lib/api";
 import { useTheme, useThemedStyles } from "../../lib/app-preferences";
+import { useAuth } from "../../lib/auth-context";
+import { useToast } from "../../lib/toast-context";
 import { makeCommunityStyles } from "./community.styles";
 import { BrandedSpinner } from "../branded-spinner";
 import type { Post } from "./use-community-feed";
@@ -22,6 +24,8 @@ export function PostDetailsScreen({ postId }: { postId: number }) {
   const styles = useThemedStyles(makeCommunityStyles);
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const { user } = useAuth();
+  const { showToast } = useToast();
   const queryClient = useQueryClient();
 
   const [newComment, setNewComment] = useState("");
@@ -58,6 +62,24 @@ export function PostDetailsScreen({ postId }: { postId: number }) {
     }
   });
 
+  const startConversationMutation = useMutation({
+    mutationFn: async (targetUserId: number) =>
+      apiFetch<{ id: number }>("/api/conversations", {
+        method: "POST",
+        body: { userId: targetUserId },
+      }),
+    onSuccess: ({ id }) => {
+      void queryClient.invalidateQueries({ queryKey: ["messages", "inbox"] });
+      router.push(`/messages/${id}` as never);
+    },
+    onError: (error) => {
+      showToast(
+        getUserFriendlyError(error, "Could not open conversation."),
+        "error"
+      );
+    },
+  });
+
   const submitComment = () => {
     if (!newComment.trim() || commentMutation.isPending) return;
     commentMutation.mutate(newComment);
@@ -76,6 +98,7 @@ export function PostDetailsScreen({ postId }: { postId: number }) {
   }
 
   const { post, comments } = query.data;
+  const canMessageAuthor = !!post.authorId && post.authorId !== user?.id;
 
   const authorInitials = (post.authorName || "St").substring(0, 2).toUpperCase();
   const timeAgo = new Date(post.createdAt).toLocaleDateString();
@@ -125,6 +148,23 @@ export function PostDetailsScreen({ postId }: { postId: number }) {
                 <Feather name="message-square" size={18} color={colors.textSecondary} />
                 <Text style={styles.interactionBtnText}>{post.commentCount}</Text>
               </TouchableOpacity>
+              {canMessageAuthor ? (
+                <TouchableOpacity
+                  style={styles.interactionBtn}
+                  onPress={() => {
+                    if (!post.authorId) return;
+                    startConversationMutation.mutate(post.authorId);
+                  }}
+                  disabled={startConversationMutation.isPending}
+                >
+                  {startConversationMutation.isPending ? (
+                    <ActivityIndicator size="small" color={colors.textSecondary} />
+                  ) : (
+                    <Feather name="send" size={18} color={colors.textSecondary} />
+                  )}
+                  <Text style={styles.interactionBtnText}>Message</Text>
+                </TouchableOpacity>
+              ) : null}
             </View>
           </View>
         </View>
