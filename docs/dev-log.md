@@ -6325,7 +6325,7 @@ Sprint 2 - Production standards
 
 ## 2026-04-12
 
-### Сесия — Social S2: Ask Mentor + UI polish + bug fixes
+### Сесия 220 — Social S2: Ask Mentor + UI polish + bug fixes
 
 **Какво направихме:**
 
@@ -6453,7 +6453,7 @@ Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
 
 ## 2026-04-11
 
-### Сесия — Web UI polish (анимации)
+### Сесия 221 — Web UI polish (анимации)
 
 **Какво направихме:**
 - Проучихме page transitions с Framer Motion — опитахме, махнахме (App Router не поддържа exit анимации за server components)
@@ -6473,7 +6473,7 @@ Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
 ---
 ## 2026-04-13
 
-### Сесия 1 — Social S3: Real-time Messaging (имплементация)
+### Сесия 222 — Social S3: Real-time Messaging (имплементация)
 
 **Schema (migration `0008_messaging.sql`):**
 - `conversations`, `conversation_members`, `messages` — 3 таблици
@@ -6486,7 +6486,7 @@ Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
 
 ---
 
-### Сесия 2 — S3 Chat: Bug fixes + production тест
+### Сесия 223 — S3 Chat: Bug fixes + production тест
 
 **Критичен бъг (500 на GET /api/conversations):**
 - Оригиналният `DISTINCT ON` raw SQL чрез `db.execute` крашваше в production
@@ -6504,7 +6504,7 @@ Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
 
 ---
 
-### Сесия 3 — S3 Chat: Height fix + commit
+### Сесия 224 — S3 Chat: Height fix + commit
 
 **Chat container height fix:**
 - Проблем: `h-[calc(100dvh-5rem)]` hardcode-ваше navbar височината; при wrap на mobile линковете контейнерът overflow-ваше
@@ -6513,6 +6513,32 @@ Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
 - Файл: `apps/web/components/messages/chat-window.tsx`
 
 **Commit:** `feat: implement S3 real-time messaging` — всички S3 файлове
+
+### Сесия 225 — Messaging Premium UI Polish
+
+**Какво направихме — Inbox (messages-inbox.tsx):**
+- **Заглавие Messages** — вече ползва `font-shantell` + `bg-v1-gradient` (текстът е градиентен)
+- **Карти на разговорите** — добавен glass (white/80 backdrop-blur) + hover анимация (подскачане и сянка)
+- **Avatar** — специфичен градиент `from-brand-500 via-fuchsia-500 to-cyan-400`
+- **Стрелка (hint)** — оцветява се при hover на цялата карта
+- **Skeleton placeholders** — заменени с "glass" пулсиращи карти
+
+**Какво направихме — Chat window (chat-window.tsx):**
+- **Shell & Card** — по-лек фон (`bg-slate-50`) и ултра-стъкло за чат картата (`backdrop-blur-xl`)
+- **Header** — добавен Avatar на събеседника + `font-shantell bold` име
+- **Back бутон** — редизайн като стилно `rounded-lg` квадратче с hover състояние
+- **Собствени съобщения** — вече са с `bg-v1-gradient` (indigo→purple→cyan)
+- **Техните съобщения** — glass style (white/90 backdrop-blur)
+- **Input & Send** — `focus:ring-brand-400` и градиентен бутон с ховър анимация
+- **Empty state** — малка glass карта с емотикона 👋
+
+**Файлове:**
+- `apps/web/components/messages/messages-inbox.tsx`
+- `apps/web/components/messages/chat-window.tsx`
+
+**Typecheck:** `tsc --noEmit` → pass
+
+---
 
 **Следваща сесия:**
 1. Mobile фаза (Community Board + Mentor Inbox + Chat responsive)

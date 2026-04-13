@@ -46,7 +46,7 @@ function Avatar({
   }
   return (
     <div
-      className={`w-${size} h-${size} rounded-full flex items-center justify-center flex-shrink-0 bg-gradient-to-br from-brand-500 to-cyan-500 text-white font-semibold text-xs`}
+      className={`w-${size} h-${size} rounded-full flex items-center justify-center flex-shrink-0 bg-gradient-to-br from-brand-500 via-fuchsia-500 to-cyan-400 text-white font-bold text-xs`}
     >
       {initials}
     </div>
@@ -183,20 +183,23 @@ export function ChatWindow({ conversationId, currentUserId }: Props) {
   }
 
   return (
-    <div ref={shellRef} className="bg-slate-100 dark:bg-slate-950 flex flex-col px-4 py-3 overflow-hidden">
-      <div className="max-w-2xl w-full mx-auto flex flex-col flex-1 min-h-0 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+    <div ref={shellRef} className="bg-slate-50 dark:bg-slate-950 flex flex-col px-4 py-3 overflow-hidden">
+      <div className="max-w-2xl w-full mx-auto flex flex-col flex-1 min-h-0 bg-white/90 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-sm overflow-hidden">
       {/* Header */}
-      <div className="flex items-center gap-3 px-4 py-3 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex-shrink-0 rounded-t-2xl">
+      <div className="flex items-center gap-3 px-4 py-3 border-b border-slate-200/80 dark:border-slate-700/60 flex-shrink-0">
         <button
           onClick={() => router.back()}
-          className="text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
+          className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 dark:hover:text-slate-200 dark:hover:bg-slate-800 transition-colors flex-shrink-0"
           aria-label="Back"
         >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-        <span className="font-semibold text-slate-900 dark:text-white">
+        {otherUser && (
+          <Avatar name={otherUser.name} avatarUrl={otherUser.avatarUrl} size={8} />
+        )}
+        <span className="font-shantell font-bold text-slate-900 dark:text-white">
           {otherUser ? otherUser.name : "Chat"}
         </span>
       </div>
@@ -217,9 +220,11 @@ export function ChatWindow({ conversationId, currentUserId }: Props) {
               ))}
             </div>
           ) : messages.length === 0 ? (
-            <div className="text-center py-16 text-slate-400 dark:text-slate-500">
-              <p className="text-4xl mb-3">👋</p>
-              <p className="text-sm">Send the first message!</p>
+            <div className="text-center py-16">
+              <div className="w-14 h-14 rounded-2xl bg-white/80 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/60 shadow-sm flex items-center justify-center text-2xl mx-auto mb-3">
+                👋
+              </div>
+              <p className="text-sm text-slate-500 dark:text-slate-400">Say hello to {otherUser?.name ?? "them"}!</p>
             </div>
           ) : (
             messages.map((msg) => {
@@ -245,10 +250,10 @@ export function ChatWindow({ conversationId, currentUserId }: Props) {
                       </span>
                     )}
                     <div
-                      className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
+                      className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed shadow-sm ${
                         isOwn
-                          ? "bg-brand-600 text-white rounded-tr-sm"
-                          : "bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 rounded-tl-sm"
+                          ? "bg-v1-gradient text-white rounded-tr-sm"
+                          : "bg-white/90 dark:bg-slate-800/80 text-slate-900 dark:text-white border border-slate-200/80 dark:border-slate-700/60 rounded-tl-sm backdrop-blur-sm"
                       }`}
                     >
                       {msg.content}
@@ -266,21 +271,21 @@ export function ChatWindow({ conversationId, currentUserId }: Props) {
       </div>
 
       {/* Input */}
-      <div className="px-4 py-3 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex-shrink-0 rounded-b-2xl">
-        <div className="flex items-end gap-3">
+      <div className="px-4 py-3 border-t border-slate-200/80 dark:border-slate-700/60 flex-shrink-0">
+        <div className="flex items-end gap-2">
           <textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Type a message… (Enter to send)"
             rows={1}
-            className="flex-1 resize-none rounded-xl px-4 py-2.5 text-sm bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 border border-transparent focus:outline-none focus:border-brand-400 dark:focus:border-brand-500 transition-colors"
+            className="flex-1 resize-none rounded-xl px-4 py-2.5 text-sm bg-slate-100/80 dark:bg-slate-800/80 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 border border-slate-200/80 dark:border-slate-700/60 focus:outline-none focus:ring-2 focus:ring-brand-400 dark:focus:ring-brand-500 transition-shadow"
             style={{ minHeight: "42px", maxHeight: "120px" }}
           />
           <button
             onClick={sendMessage}
             disabled={!input.trim() || sending}
-            className="flex-shrink-0 w-10 h-10 rounded-xl bg-brand-600 hover:bg-brand-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+            className="flex-shrink-0 w-10 h-10 rounded-xl bg-v1-gradient disabled:opacity-40 disabled:cursor-not-allowed transition-all hover:-translate-y-0.5 hover:shadow-md flex items-center justify-center"
             aria-label="Send"
           >
             <svg
