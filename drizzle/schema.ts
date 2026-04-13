@@ -243,6 +243,7 @@ export const conversationMembers = pgTable(
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     joinedAt: timestamp("joined_at").notNull().defaultNow(),
+    lastReadAt: timestamp("last_read_at").notNull().defaultNow(),
   },
   (table) => [
     uniqueIndex("conversation_members_conv_user_idx").on(

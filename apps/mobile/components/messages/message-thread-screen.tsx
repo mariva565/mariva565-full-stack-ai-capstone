@@ -20,7 +20,6 @@ import { BrandedSpinner } from "../branded-spinner";
 import { RequestState } from "../request-state";
 import { makeMessagesStyles } from "./messages.styles";
 import { useMessageThread } from "./use-message-thread";
-import { markConversationRead } from "./messages-read-state";
 import type { ConversationMessage } from "./messages.types";
 
 function getInitials(name: string): string {
@@ -100,24 +99,6 @@ export function MessageThreadScreen({ conversationId }: { conversationId: number
     }, 50);
     return () => clearTimeout(timeoutId);
   }, [messages.length]);
-
-  useEffect(() => {
-    if (!Number.isInteger(conversationId) || conversationId <= 0) {
-      return;
-    }
-    if (!user?.id) {
-      return;
-    }
-
-    for (let index = messages.length - 1; index >= 0; index -= 1) {
-      const message = messages[index];
-      if (message.senderId === user.id) {
-        continue;
-      }
-      void markConversationRead(conversationId, message.createdAt);
-      return;
-    }
-  }, [conversationId, messages, user?.id]);
 
   async function handleSend() {
     const errorMessage = await sendMessage(input);

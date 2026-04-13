@@ -12,7 +12,7 @@
   - conversation thread РµРєСЂР°РЅ СЃ РёР·РїСЂР°С‰Р°РЅРµ/РїРѕР»СѓС‡Р°РІР°РЅРµ РЅР° СЃСЉРѕР±С‰РµРЅРёСЏ
   - entry points РѕС‚ Community/QR handoff РєСЉРј РєРѕРЅРєСЂРµС‚РµРЅ РїРѕС‚СЂРµР±РёС‚РµР»
   - consistency СЃ web messaging РїРѕРІРµРґРµРЅРёРµС‚Рѕ Рё auth guard-РёС‚Рµ
-- [ ] **QR в†’ Community DM flow** вЂ” РґР° СЂР°Р·С€РёСЂРёРј profile QR handoff-Р°: СЃР»РµРґ СЃРєР°РЅРёСЂР°РЅРµ РЅР° user link РґР° РёРјР° shortcut вЂћSend messageвЂњ РєСЉРј conversation СЃ С‚РѕР·Рё РїРѕС‚СЂРµР±РёС‚РµР» (reuse РЅР° messaging API Рё guard-РёС‚Рµ).
+- [x] **QR в†’ Community DM flow** вЂ” РґР° СЂР°Р·С€РёСЂРёРј profile QR handoff-Р°: СЃР»РµРґ СЃРєР°РЅРёСЂР°РЅРµ РЅР° user link РґР° РёРјР° shortcut вЂћSend messageвЂњ РєСЉРј conversation СЃ С‚РѕР·Рё РїРѕС‚СЂРµР±РёС‚РµР» (reuse РЅР° messaging API Рё guard-РёС‚Рµ).
 - [ ] **Community moderation workflow** вЂ” РґР° РґРµС„РёРЅРёСЂР°РјРµ Рё РёРјРїР»РµРјРµРЅС‚РёСЂР°РјРµ moderation СЂРµР¶РёРј (mentor/admin): pending/approved/hidden queue, UI Р·Р° review, Рё СЏСЃРЅРё РїСЂР°РІР° РєРѕР№ РјРѕР¶Рµ РґР° approve/hide posts.
 - [ ] **Screenshot attachments in posts** вЂ” РґР° РїСЂРµС†РµРЅРёРј upload Р°СЂС…РёС‚РµРєС‚СѓСЂР°С‚Р° Р·Р° РёР·РѕР±СЂР°Р¶РµРЅРёСЏ РІ Community posts/comments:
   - Option A: Cloudflare R2 (РїСЂРµРїРѕСЂСЉС‡РёС‚РµР»РЅРѕ Р·Р° production)
@@ -27,6 +27,95 @@
 ---
 
 ## 2026-04-13
+### Session 232 - Server-side unread state for messages (web + mobile)
+
+**Какво направихме:**
+- Added server-side unread cursor in messaging schema via `conversation_members.last_read_at`.
+- Updated conversations API to compute and return `hasUnread` + `unreadCount` from DB message timestamps and `last_read_at`.
+- Updated message thread API to mark conversation as read on `GET /api/conversations/[id]/messages` and to advance sender cursor on `POST`.
+- Switched web notifications/unread badge logic from localStorage read-state to server unread state from `/api/conversations`.
+- Removed mobile local unread MVP state (`AsyncStorage`) and now use API unread values end-to-end.
+
+**Файлове:**
+- `[MODIFY] drizzle/schema.ts`
+- `[NEW] drizzle/migrations/0009_conversation_last_read_at.sql`
+- `[MODIFY] apps/web/app/api/conversations/route.ts`
+- `[MODIFY] apps/web/app/api/conversations/[id]/messages/route.ts`
+- `[MODIFY] apps/web/components/messages/use-web-messages-notifications.ts`
+- `[MODIFY] apps/mobile/components/community/community-screen.tsx`
+- `[MODIFY] apps/mobile/components/messages/messages.types.ts`
+- `[MODIFY] apps/mobile/components/messages/message-thread-screen.tsx`
+- `[DELETE] apps/mobile/components/messages/messages-read-state.ts`
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- `npm.cmd run typecheck:web` ✅
+- `npm.cmd run typecheck:mobile` ✅
+
+**Решения:**
+- Replaced client-only unread tracking with a DB-backed source of truth so unread state stays consistent across devices.
+- Kept browser native notifications and in-app toast behavior, but now trigger logic is based on server unread deltas.
+
+### Session 231 - Browser native notifications for web messages (permission-based)
+
+**Какво направихме:**
+- Added permission-based browser native notifications for new incoming chat messages on desktop web.
+- Added `Enable Alerts` CTA in navbar when browser notification permission is still `default`.
+- Kept behavior user-friendly:
+  - if tab is active -> in-app toast
+  - if tab is not active and permission is granted -> native browser notification with click-to-open conversation
+- Reused existing web messaging polling/unread flow (no DB/API schema change required for this step).
+
+**Файлове:**
+- `[MODIFY] apps/web/components/navbar-client.tsx`
+- `[MODIFY] apps/web/components/messages/use-web-messages-notifications.ts`
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- `npm.cmd run typecheck:web` ✅
+
+**Решения:**
+- Implemented browser notifications as permission-gated progressive enhancement, keeping toast fallback for unsupported/denied states.
+### Session 230 - QR to DM handoff (mobile deep-link)
+
+**Какво направихме:**
+- Upgraded mobile QR profile handoff so scanning another user profile now opens (or creates) a direct conversation instead of only showing an informational toast.
+- Reused existing messaging API (`POST /api/conversations`) to preserve auth/guard behavior and avoid backend schema changes.
+- Kept self-profile QR behavior safe: scanning your own profile still returns to profile tab with info toast.
+
+**Файлове:**
+- `[MODIFY] apps/mobile/app/(tabs)/profile.tsx`
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- `npm.cmd run typecheck:mobile` ✅
+
+**Решения:**
+- Implemented QR->DM as an app-level handoff in the existing deep-link route chain (`studyhubv2://profile/{userId}` -> profile tab handoff -> messages thread), minimizing UI/route churn.
+### Session 229 - Web messages notifications (toast + navbar unread badge)
+
+**Какво направихме:**
+- Added web unread badge on the `Messages` nav link in the global navbar.
+- Added foreground in-app toast for newly received incoming messages (polling-based) so users get immediate feedback while browsing other pages.
+- Added client-side web read-state persistence (`localStorage`) and automatic mark-as-read when the user is on `/messages/[id]`.
+- Kept implementation DB/API-compatible (no schema migration), using existing `/api/conversations` payload.
+
+**Файлове:**
+- `[NEW] apps/web/components/messages/use-web-messages-notifications.ts`
+- `[MODIFY] apps/web/components/navbar-client.tsx`
+- `[MODIFY] apps/web/components/navbar.tsx`
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- `npm.cmd run typecheck:web` ✅
+
+**Решения:**
+- Executed the fast/high-impact step first: `Web toast + unread badge`.
+- Captured the next notifications roadmap requested by product:
+  - Inbox unread badge + foreground in-app alert (mobile)
+  - Full push notifications (foreground/background/killed app)
+  - Browser native notifications (permission-based)
+  - Mobile push/local notifications
 ### Session 228 - Mobile Community Inbox unread badge
 
 **Какво направихме:**
@@ -6800,6 +6889,9 @@ Commit: `feat: implement S2 Ask Mentor вЂ” mentor inbox + answer-status API`
 
 **РЎР»РµРґРІР°С‰Р° СЃРµСЃРёСЏ:**
 1. Mobile С„Р°Р·Р° (Community Board + Mentor Inbox + Chat responsive)
+
+
+
 
 
 

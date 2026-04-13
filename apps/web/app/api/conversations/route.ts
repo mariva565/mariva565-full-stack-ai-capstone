@@ -18,7 +18,10 @@ export async function GET(request: NextRequest) {
 
   // Find all conversation IDs I'm part of
   const myMemberships = await db
-    .select({ conversationId: conversationMembers.conversationId })
+    .select({
+      conversationId: conversationMembers.conversationId,
+      lastReadAt: conversationMembers.lastReadAt,
+    })
     .from(conversationMembers)
     .where(eq(conversationMembers.userId, userId));
 
@@ -27,6 +30,12 @@ export async function GET(request: NextRequest) {
   }
 
   const convIds = myMemberships.map((m) => m.conversationId);
+  const lastReadAtByConversation = new Map<number, Date | string | null>(
+    myMemberships.map((membership) => [
+      membership.conversationId,
+      membership.lastReadAt ?? null,
+    ])
+  );
 
   // For each conversation, get all members (to find the other person)
   const allMembers = await db
@@ -52,11 +61,38 @@ export async function GET(request: NextRequest) {
     .where(inArray(messages.conversationId, convIds))
     .orderBy(desc(messages.createdAt));
 
-  // Keep only the last message per conversation
-  const lastMessageMap = new Map<number, { content: string; senderId: number; createdAt: Date }>();
+  // Keep only the last message per conversation and compute unread counts.
+  const lastMessageMap = new Map<
+    number,
+    { content: string; senderId: number; createdAt: Date }
+  >();
+  const unreadCountMap = new Map<number, number>();
+
+  function getTimeMs(value: Date | string | null | undefined): number {
+    if (!value) return Number.NaN;
+    if (value instanceof Date) return value.getTime();
+    return Date.parse(value);
+  }
+
   for (const msg of allMessages) {
     if (!lastMessageMap.has(msg.conversationId)) {
       lastMessageMap.set(msg.conversationId, msg);
+    }
+
+    if (msg.senderId === userId) {
+      continue;
+    }
+
+    const readAtMs = getTimeMs(lastReadAtByConversation.get(msg.conversationId));
+    const messageAtMs = getTimeMs(msg.createdAt);
+    const isUnread =
+      Number.isNaN(readAtMs) ||
+      Number.isNaN(messageAtMs) ||
+      messageAtMs > readAtMs;
+
+    if (isUnread) {
+      const prev = unreadCountMap.get(msg.conversationId) ?? 0;
+      unreadCountMap.set(msg.conversationId, prev + 1);
     }
   }
 
@@ -64,6 +100,7 @@ export async function GET(request: NextRequest) {
     const members = allMembers.filter((m) => m.conversationId === convId);
     const other = members.find((m) => m.userId !== userId);
     const lastMsg = lastMessageMap.get(convId);
+    const unreadCount = unreadCountMap.get(convId) ?? 0;
     return {
       id: convId,
       other: other
@@ -72,6 +109,8 @@ export async function GET(request: NextRequest) {
       lastMessage: lastMsg
         ? { content: lastMsg.content, senderId: lastMsg.senderId, createdAt: lastMsg.createdAt }
         : null,
+      hasUnread: unreadCount > 0,
+      unreadCount,
     };
   });
 

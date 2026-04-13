@@ -14,6 +14,8 @@ export type ConversationListItem = {
   id: number;
   other: ConversationOtherUser | null;
   lastMessage: ConversationLastMessage | null;
+  hasUnread: boolean;
+  unreadCount: number;
 };
 
 export type ConversationMessage = {

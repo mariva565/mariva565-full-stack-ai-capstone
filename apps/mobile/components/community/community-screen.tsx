@@ -1,48 +1,29 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { View, Text, FlatList, RefreshControl, TouchableOpacity } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Feather } from "@expo/vector-icons";
-import { useFocusEffect, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { useTheme, useThemedStyles } from "../../lib/app-preferences";
-import { useAuth } from "../../lib/auth-context";
 import { makeCommunityStyles } from "./community.styles";
 import { useCommunityFeed } from "./use-community-feed";
 import { PostCard } from "./post-card";
 import { BrandedSpinner } from "../branded-spinner";
 import { useMessagesInbox } from "../messages/use-messages-inbox";
-import {
-  getUnreadConversationCount,
-  loadMessagesReadState,
-  type MessagesReadState,
-} from "../messages/messages-read-state";
 
 export function CommunityScreen() {
   const { colors } = useTheme();
   const styles = useThemedStyles(makeCommunityStyles);
   const router = useRouter();
-  const { user } = useAuth();
   const { posts, loading, refreshing, refresh, toggleLike } = useCommunityFeed();
   const { conversations } = useMessagesInbox();
-  const [messagesReadState, setMessagesReadState] = useState<MessagesReadState>(
-    {}
-  );
-
-  useFocusEffect(
-    useCallback(() => {
-      let active = true;
-      void loadMessagesReadState().then((state) => {
-        if (!active) return;
-        setMessagesReadState(state);
-      });
-      return () => {
-        active = false;
-      };
-    }, [])
-  );
 
   const unreadCount = useMemo(
-    () => getUnreadConversationCount(conversations, user?.id, messagesReadState),
-    [conversations, messagesReadState, user?.id]
+    () =>
+      conversations.reduce(
+        (total, conversation) => total + (conversation.unreadCount ?? 0),
+        0
+      ),
+    [conversations]
   );
   const inboxBadgeText = unreadCount > 99 ? "99+" : String(unreadCount);
 

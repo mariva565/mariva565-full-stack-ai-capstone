@@ -7,7 +7,7 @@ import {
 } from "../../../../../../../drizzle/schema";
 import { requireAuth } from "../../../../../lib/api-utils";
 import { pusherServer } from "../../../../../lib/pusher";
-import { and, eq, asc, inArray } from "drizzle-orm";
+import { and, eq, asc } from "drizzle-orm";
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -61,6 +61,17 @@ export async function GET(request: NextRequest, { params }: Params) {
       .where(eq(conversationMembers.conversationId, conversationId)),
   ]);
 
+  const lastMessageCreatedAt = rows.at(-1)?.createdAt ?? new Date();
+  await db
+    .update(conversationMembers)
+    .set({ lastReadAt: lastMessageCreatedAt })
+    .where(
+      and(
+        eq(conversationMembers.conversationId, conversationId),
+        eq(conversationMembers.userId, userId)
+      )
+    );
+
   const other = members.find((m) => m.userId !== userId) ?? null;
 
   return NextResponse.json({
@@ -93,6 +104,16 @@ export async function POST(request: NextRequest, { params }: Params) {
     .insert(messages)
     .values({ conversationId, senderId: auth.user.sub, content })
     .returning();
+
+  await db
+    .update(conversationMembers)
+    .set({ lastReadAt: msg.createdAt })
+    .where(
+      and(
+        eq(conversationMembers.conversationId, conversationId),
+        eq(conversationMembers.userId, auth.user.sub)
+      )
+    );
 
   // Fetch sender name for Pusher payload
   const [sender] = await db
