@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
@@ -7,6 +7,13 @@ import { getProfileInitials } from "@/lib/profile";
 import { type Post, type Comment, TYPE_LABELS, TYPE_COLORS, timeAgo } from "./post-types";
 import { CommentItem } from "./comment-item";
 import { ConfirmModal } from "../ui/confirm-modal";
+
+function getProfileHref(targetUserId: number, currentUserId: number) {
+  if (targetUserId === currentUserId) {
+    return "/profile";
+  }
+  return `/profile/${targetUserId}`;
+}
 
 export function PostDetails({ postId, currentUser }: {
   postId: number;
@@ -104,6 +111,7 @@ export function PostDetails({ postId, currentUser }: {
   const isAdmin  = currentUser.role === "admin";
   const initials = getProfileInitials(post.authorName);
   const showPendingBadge = post.status === "pending";
+  const authorProfileHref = getProfileHref(post.authorId, currentUser.id);
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
@@ -123,13 +131,22 @@ export function PostDetails({ postId, currentUser }: {
         {/* Author + meta */}
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-brand-500 via-fuchsia-500 to-cyan-400 text-xs font-black text-white overflow-hidden">
+            <Link
+              href={authorProfileHref}
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-brand-500 via-fuchsia-500 to-cyan-400 text-xs font-black text-white overflow-hidden transition hover:scale-105"
+              title={`Open ${post.authorName} profile`}
+            >
               {post.authorAvatarUrl ? (
                 <img src={post.authorAvatarUrl} alt={post.authorName} className="h-full w-full object-cover" />
               ) : initials}
-            </div>
+            </Link>
             <div>
-              <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">{post.authorName}</p>
+              <Link
+                href={authorProfileHref}
+                className="text-sm font-semibold text-slate-800 transition hover:text-brand-600 dark:text-slate-200 dark:hover:text-brand-400"
+              >
+                {post.authorName}
+              </Link>
               <p className="text-xs text-slate-400">{timeAgo(post.createdAt)}{post.courseTitle && ` · ${post.courseTitle}`}</p>
             </div>
             {!isAuthor && (
@@ -138,7 +155,7 @@ export function PostDetails({ postId, currentUser }: {
                 disabled={messaging}
                 className="ml-2 rounded-xl border border-brand-300 px-3 py-1 text-xs font-semibold text-brand-600 transition hover:bg-brand-50 disabled:opacity-50 dark:border-brand-700 dark:text-brand-400 dark:hover:bg-brand-900/20"
               >
-                {messaging ? "Opening…" : "Send message"}
+                {messaging ? "Opening..." : "Send message"}
               </button>
             )}
           </div>
@@ -172,7 +189,7 @@ export function PostDetails({ postId, currentUser }: {
               Pending review
             </span>
           ) : null}
-          {post.isPinned && <span className="text-xs font-bold text-brand-500">📌 Pinned</span>}
+          {post.isPinned && <span className="text-xs font-bold text-brand-500">Pinned</span>}
           {post.questionStatus && (
             <span className="rounded-full border border-amber-300 bg-amber-50 px-2.5 py-0.5 text-xs font-semibold text-amber-700 dark:border-amber-700 dark:bg-amber-900/20 dark:text-amber-300">
               {post.questionStatus}
@@ -246,6 +263,7 @@ export function PostDetails({ postId, currentUser }: {
             <CommentItem
               key={c.id}
               comment={c}
+              currentUserId={currentUser.id}
               canDelete={c.authorId === currentUser.id || isAdmin}
               onDelete={handleDeleteComment}
             />
@@ -268,3 +286,4 @@ export function PostDetails({ postId, currentUser }: {
     </div>
   );
 }
+

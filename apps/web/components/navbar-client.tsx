@@ -96,6 +96,7 @@ export function NavbarClient({ initialUser }: NavbarClientProps) {
   links.push({ href: "/messages", label: "Messages" });
   if (user?.role === "mentor" || user?.role === "admin") {
     links.push({ href: "/mentor-inbox", label: "Inbox" });
+    links.push({ href: "/moderation", label: "Moderation" });
   }
   if (user?.role === "admin") {
     links.push({ href: "/admin", label: "Admin" });

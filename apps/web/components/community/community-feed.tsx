@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
@@ -52,6 +52,13 @@ function shouldShowPendingBadge(post: Post, currentUserId: number) {
   return post.status === "pending" && post.authorId === currentUserId;
 }
 
+function getProfileHref(authorId: number, currentUserId: number) {
+  if (authorId === currentUserId) {
+    return "/profile";
+  }
+  return `/profile/${authorId}`;
+}
+
 function PostCard({ post, currentUserId, onLike }: {
   post: Post;
   currentUserId: number;
@@ -60,30 +67,40 @@ function PostCard({ post, currentUserId, onLike }: {
   const typeInfo = TYPE_LABELS[post.postType] ?? TYPE_LABELS.discussion;
   const initials = getProfileInitials(post.authorName);
   const showPendingBadge = shouldShowPendingBadge(post, currentUserId);
+  const authorProfileHref = getProfileHref(post.authorId, currentUserId);
 
   return (
     <div className={`group relative rounded-2xl border bg-white/80 p-5 shadow-sm backdrop-blur-sm transition-all hover:-translate-y-0.5 hover:shadow-md dark:bg-slate-900/60 dark:border-slate-700/60 ${post.isPinned ? "border-brand-300 dark:border-brand-700/60" : "border-slate-200/80"}`}>
       {post.isPinned && (
-        <span className="absolute right-4 top-4 text-xs font-bold text-brand-500 dark:text-brand-400">📌 Pinned</span>
+        <span className="absolute right-4 top-4 text-xs font-bold text-brand-500 dark:text-brand-400">Pinned</span>
       )}
 
       <div className="flex items-start gap-3">
         {/* Avatar */}
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-brand-500 via-fuchsia-500 to-cyan-400 text-xs font-black text-white shadow-sm overflow-hidden">
+        <Link
+          href={authorProfileHref}
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-brand-500 via-fuchsia-500 to-cyan-400 text-xs font-black text-white shadow-sm overflow-hidden transition hover:scale-105"
+          title={`Open ${post.authorName} profile`}
+        >
           {post.authorAvatarUrl ? (
             <img src={post.authorAvatarUrl} alt={post.authorName} className="h-full w-full object-cover" />
           ) : initials}
-        </div>
+        </Link>
 
         <div className="min-w-0 flex-1">
           {/* Meta row */}
           <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
-            <span className="font-semibold text-slate-700 dark:text-slate-300">{post.authorName}</span>
-            <span>·</span>
+            <Link
+              href={authorProfileHref}
+              className="font-semibold text-slate-700 transition hover:text-brand-600 dark:text-slate-300 dark:hover:text-brand-400"
+            >
+              {post.authorName}
+            </Link>
+            <span>|</span>
             <span>{timeAgo(post.createdAt)}</span>
             {post.courseTitle && (
               <>
-                <span>·</span>
+                <span>|</span>
                 <span className="rounded-full bg-slate-100 px-2 py-0.5 text-slate-600 dark:bg-slate-800 dark:text-slate-400">
                   {post.courseTitle}
                 </span>
@@ -274,7 +291,7 @@ export function CommunityFeed({ currentUser }: { currentUser: { id: number; role
           <svg className="h-10 w-10 text-slate-300 dark:text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
           </svg>
-          <p className="text-slate-500 dark:text-slate-400">No posts yet — be the first!</p>
+          <p className="text-slate-500 dark:text-slate-400">No posts yet - be the first!</p>
           <Link href="/community/new" className="text-sm font-semibold text-brand-600 hover:underline dark:text-brand-400">
             Create a post
           </Link>

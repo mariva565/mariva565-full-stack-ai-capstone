@@ -1,24 +1,43 @@
 "use client";
 
+import Link from "next/link";
 import { getProfileInitials } from "@/lib/profile";
 import { type Comment, timeAgo } from "./post-types";
 
-export function CommentItem({ comment, canDelete, onDelete }: {
+function getProfileHref(authorId: number, currentUserId: number) {
+  if (authorId === currentUserId) {
+    return "/profile";
+  }
+  return `/profile/${authorId}`;
+}
+
+export function CommentItem({ comment, currentUserId, canDelete, onDelete }: {
   comment: Comment;
+  currentUserId: number;
   canDelete: boolean;
   onDelete: (id: number) => void;
 }) {
   const initials = getProfileInitials(comment.authorName);
+  const authorProfileHref = getProfileHref(comment.authorId, currentUserId);
   return (
     <div className="flex gap-3">
-      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-brand-500 via-fuchsia-500 to-cyan-400 text-xs font-black text-white overflow-hidden">
+      <Link
+        href={authorProfileHref}
+        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-brand-500 via-fuchsia-500 to-cyan-400 text-xs font-black text-white overflow-hidden transition hover:scale-105"
+        title={`Open ${comment.authorName} profile`}
+      >
         {comment.authorAvatarUrl ? (
           <img src={comment.authorAvatarUrl} alt={comment.authorName} className="h-full w-full object-cover" />
         ) : initials}
-      </div>
+      </Link>
       <div className="flex-1">
         <div className="flex items-baseline gap-2">
-          <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{comment.authorName}</span>
+          <Link
+            href={authorProfileHref}
+            className="text-sm font-semibold text-slate-700 transition hover:text-brand-600 dark:text-slate-300 dark:hover:text-brand-400"
+          >
+            {comment.authorName}
+          </Link>
           <span className="text-xs text-slate-400">{timeAgo(comment.createdAt)}</span>
         </div>
         <p className="mt-0.5 text-sm text-slate-600 dark:text-slate-400 whitespace-pre-wrap">{comment.content}</p>

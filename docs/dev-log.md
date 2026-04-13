@@ -13,7 +13,7 @@
   - entry points РѕС‚ Community/QR handoff РєСЉРј РєРѕРЅРєСЂРµС‚РµРЅ РїРѕС‚СЂРµР±РёС‚РµР»
   - consistency СЃ web messaging РїРѕРІРµРґРµРЅРёРµС‚Рѕ Рё auth guard-РёС‚Рµ
 - [x] **QR в†’ Community DM flow** вЂ” РґР° СЂР°Р·С€РёСЂРёРј profile QR handoff-Р°: СЃР»РµРґ СЃРєР°РЅРёСЂР°РЅРµ РЅР° user link РґР° РёРјР° shortcut вЂћSend messageвЂњ РєСЉРј conversation СЃ С‚РѕР·Рё РїРѕС‚СЂРµР±РёС‚РµР» (reuse РЅР° messaging API Рё guard-РёС‚Рµ).
-- [ ] **Community moderation workflow** вЂ” MVP pre-moderation Рµ РІРЅРµРґСЂРµРЅР° (Session 235: `user -> pending`, mentor/admin approve/hide, course-scoped mentor rights). РћСЃС‚Р°РІР°: РґРѕРїСЉР»РЅРёС‚РµР»РЅРѕ UX polishing/queue ergonomics Рё (РїСЂРё РЅСѓР¶РґР°) dedicated mentor web moderation view.
+- [x] **Community moderation workflow** — внедрени са MVP pre-moderation, UX polish на queue flow и отделен mentor/admin moderation view (Session 235 + Session 237).
 - [ ] **Screenshot attachments in posts** вЂ” РґР° РїСЂРµС†РµРЅРёРј upload Р°СЂС…РёС‚РµРєС‚СѓСЂР°С‚Р° Р·Р° РёР·РѕР±СЂР°Р¶РµРЅРёСЏ РІ Community posts/comments:
   - Option A: Cloudflare R2 (РїСЂРµРїРѕСЂСЉС‡РёС‚РµР»РЅРѕ Р·Р° production)
   - Option B: base64/inline (СЃР°РјРѕ РІСЂРµРјРµРЅРЅРѕ, РЅРµ СЃРµ РїСЂРµРїРѕСЂСЉС‡РІР°)
@@ -23,7 +23,7 @@
 - [ ] **ConfirmModal** вЂ” `confirm()` РІ `post-details.tsx` Рё `posts-tab.tsx` С‚СЂСЏР±РІР° РґР° СЃРµ Р·Р°РјРµРЅРё СЃ styled modal (СЃРїСЂСЏРјРѕ РїСЂР°РІРёР»РѕС‚Рѕ "No native dialogs").
 - [x] **S3 Chat вЂ” build + С‚РµСЃС‚** вЂ” РўРµСЃС‚РІР°РЅРѕ СЃ РґРІР° Р°РєР°СѓРЅС‚Р°; Pusher real-time СЂР°Р±РѕС‚Рё.
 - [x] **S3 Chat вЂ” РІРёСЃРѕС‡РёРЅР°** вЂ” С„РёРєСЃРёСЂР°РЅРѕ: РґРёРЅР°РјРёС‡РЅРѕ РёР·РјРµСЂРІР°РЅРµ РЅР° navbar offset РІРјРµСЃС‚Рѕ hardcoded `5rem`.
-- [ ] **S3 Chat вЂ” "Send message" РѕС‚ РїСЂРѕС„РёР»** вЂ” Р·Р°СЃРµРіР° Р±СѓС‚РѕРЅСЉС‚ Рµ СЃР°РјРѕ РІ post details. РџСЂРё РЅСѓР¶РґР° РґР° СЃРµ РґРѕР±Р°РІРё Рё РІ `/profile` СЃС‚СЂР°РЅРёС†Р°С‚Р° РЅР° РґСЂСѓРі РїРѕС‚СЂРµР±РёС‚РµР».
+- [x] **S3 Chat — "Send message" от профил** — бутонът е добавен и в публичен профил `/profile/[id]` (не само в post details).
 
 ---
 
@@ -7025,8 +7025,66 @@ Commit: `feat: implement S2 Ask Mentor вЂ” mentor inbox + answer-status API`
 **РЎР»РµРґРІР°С‰Р° СЃРµСЃРёСЏ:**
 1. Mobile С„Р°Р·Р° (Community Board + Mentor Inbox + Chat responsive)
 
+### Session 238 - Desktop profile DM entry point from community authors
 
+**Какво направихме:**
+- Added author profile links across Community feed, post details, and comments.
+- Added public profile route `/profile/[id]` for viewing other users server-side.
+- Added `Send message` CTA on public profile card; creates/opens conversation via `POST /api/conversations` and routes to `/messages/{id}`.
+- Added in-app error toast handling for failed DM conversation creation.
+- Fixed mojibake text artifacts in touched community/profile UI strings (`Opening...`, `Pinned`, separators).
 
+**Файлове:**
+- `[NEW] apps/web/app/profile/[id]/page.tsx`
+- `[NEW] apps/web/components/profile/public-profile-view.tsx`
+- `[MODIFY] apps/web/components/community/community-feed.tsx`
+- `[MODIFY] apps/web/components/community/post-details.tsx`
+- `[MODIFY] apps/web/components/community/comment-item.tsx`
+- `[MODIFY] docs/dev-log.md`
 
+**Verification:**
+- `npm.cmd run typecheck:web` ✅
+- `npm.cmd run typecheck:mobile` ✅
 
+**Решения:**
+- Kept existing `/profile` as editable self-profile and introduced `/profile/[id]` strictly for read-only public profile view.
+- Reused existing conversations API (`POST /api/conversations`) to avoid backend contract changes and preserve `{ code, message }` error contract.
+
+### Session 237 - Desktop moderation ergonomics + dedicated mentor/admin queue view
+
+**Какво направихме:**
+- Implemented a dedicated desktop moderation page at `/moderation` for both `mentor` and `admin` roles, guarded server-side with redirect to `/forbidden` for unauthorized users.
+- Introduced a reusable moderation queue UI (`ModerationQueue`) with improved workflow ergonomics:
+  - status summary cards (`pending`, `approved`, `hidden`)
+  - fast status chips (`Pending/Approved/Hidden/All`)
+  - debounced search by title/content/author/course
+  - queue-focused ordering (`pending` first when no explicit status filter)
+  - inline moderation actions (`Approve`, `Hide`) with role-aware controls (`Pin`/`Delete` only for admin)
+  - pagination via `Load more`
+- Rewired Admin `Moderation` tab to use the same queue component in embedded mode, reducing duplicated logic between admin and mentor moderation surfaces.
+- Added direct navbar entry for mentors/admins to open the dedicated moderation queue (`/moderation`).
+- Extended moderation API ergonomics in `GET /api/admin/posts`:
+  - added `search` query param support
+  - added `statusCounts` payload for queue summary cards
+  - kept mentor course-scope restrictions intact.
+
+**Файлове:**
+- `[NEW] apps/web/app/moderation/page.tsx`
+- `[NEW] apps/web/components/moderation/moderation-queue.tsx`
+- `[NEW] apps/web/components/moderation/use-moderation-queue.ts`
+- `[NEW] apps/web/components/moderation/moderation-queue.constants.ts`
+- `[NEW] apps/web/components/moderation/moderation-queue.types.ts`
+- `[NEW] apps/web/components/moderation/moderation-queue.utils.ts`
+- `[MODIFY] apps/web/app/api/admin/posts/route.ts`
+- `[MODIFY] apps/web/components/admin/posts-tab.tsx`
+- `[MODIFY] apps/web/components/navbar-client.tsx`
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- `npm.cmd run typecheck:web` ✅
+- `npm.cmd run typecheck:mobile` ✅
+
+**Решения:**
+- Chose a dedicated `/moderation` route so mentors can moderate without entering admin-only dashboard context, while still reusing one shared queue implementation.
+- Kept destructive/pinning actions admin-only in UI as an explicit capability boundary aligned with backend authorization rules.
 
