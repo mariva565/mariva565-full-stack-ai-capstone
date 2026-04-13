@@ -3,11 +3,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Toast } from "./ui/toast";
+import { useWebMessagesNotifications } from "./messages/use-web-messages-notifications";
 
 import { getProfileInitials } from "@/lib/profile";
 import { ThemeToggle } from "./theme/theme-toggle";
 
 type NavbarUser = {
+  id: number;
   name: string;
   role: string;
   avatarUrl?: string | null;
@@ -51,6 +54,14 @@ function BrandMark() {
 export function NavbarClient({ initialUser }: NavbarClientProps) {
   const pathname = usePathname();
   const user = initialUser;
+  const {
+    unreadCount: messagesUnreadCount,
+    toastMessage,
+    closeToast,
+    notificationsSupported,
+    notificationPermission,
+    requestNotificationPermission,
+  } = useWebMessagesNotifications(user?.id, pathname);
 
   if (PUBLIC_PATHS.includes(pathname)) {
     return null;
@@ -110,15 +121,33 @@ export function NavbarClient({ initialUser }: NavbarClientProps) {
             <Link
               key={link.href}
               href={link.href}
-              className={`rounded-full px-3 py-1.5 text-sm font-medium transition ${
+              className={`relative rounded-full px-3 py-1.5 text-sm font-medium transition ${
                 isActive(link.href)
                   ? "bg-[linear-gradient(135deg,#6366f1_0%,#8b5cf6_55%,#06b6d4_100%)] text-white shadow-[0_12px_30px_rgba(99,102,241,0.22)]"
                   : "text-slate-600 hover:bg-white/70 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-900/60 dark:hover:text-white"
               }`}
             >
               {link.label}
+              {link.href === "/messages" && messagesUnreadCount > 0 ? (
+                <span className="absolute -right-1 -top-1 min-w-5 rounded-full border border-white bg-rose-500 px-1.5 text-center text-[10px] font-bold leading-4 text-white dark:border-slate-950">
+                  {messagesUnreadCount > 99 ? "99+" : messagesUnreadCount}
+                </span>
+              ) : null}
             </Link>
           ))}
+
+          {notificationsSupported && notificationPermission === "default" ? (
+            <button
+              type="button"
+              onClick={() => {
+                void requestNotificationPermission();
+              }}
+              className="rounded-full border border-sky-200 bg-sky-50 px-3 py-1.5 text-sm font-medium text-sky-700 transition hover:bg-sky-100 dark:border-sky-800/60 dark:bg-sky-900/25 dark:text-sky-300 dark:hover:bg-sky-900/35"
+              aria-label="Enable browser notifications for new messages"
+            >
+              Enable Alerts
+            </button>
+          ) : null}
 
           <ThemeToggle />
 
@@ -160,6 +189,9 @@ export function NavbarClient({ initialUser }: NavbarClientProps) {
           </div>
         </div>
       </nav>
+      {toastMessage ? (
+        <Toast message={toastMessage} tone="info" onClose={closeToast} />
+      ) : null}
     </header>
   );
 }

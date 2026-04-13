@@ -3,6 +3,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 
 import { ProfileTabScreen } from "../../components/profile-tab/profile-tab-screen";
 import { useProfileTab } from "../../components/profile-tab/use-profile-tab";
+import { apiFetch } from "../../lib/api";
 import { useToast } from "../../lib/toast-context";
 
 function normalizeParam(value: string | string[] | undefined): string {
@@ -63,11 +64,35 @@ export default function ProfileTabRoute() {
     const scannedUserId = Number(handoffUserId);
     if (scannedUserId === viewModel.profile.id) {
       showToast("Profile deep link opened successfully.", "info");
-    } else {
-      showToast(`Opened profile link for user #${scannedUserId}.`, "info");
+      router.replace("/(tabs)/profile");
+      return;
     }
 
-    router.replace("/(tabs)/profile");
+    let active = true;
+    const openDirectMessageFromQr = async () => {
+      try {
+        const response = await apiFetch<{ id: number }>("/api/conversations", {
+          method: "POST",
+          body: { userId: scannedUserId },
+        });
+        if (!active) {
+          return;
+        }
+        showToast("Conversation opened from QR profile link.", "success");
+        router.replace(`/messages/${response.id}` as never);
+      } catch {
+        if (!active) {
+          return;
+        }
+        showToast("Could not open conversation from this QR profile.", "error");
+        router.replace("/(tabs)/profile");
+      }
+    };
+
+    void openDirectMessageFromQr();
+    return () => {
+      active = false;
+    };
   }, [handoffUserId, viewModel.loading, viewModel.profile, showToast, router]);
 
   return <ProfileTabScreen viewModel={viewModel} />;

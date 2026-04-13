@@ -8,6 +8,7 @@ export async function Navbar() {
 
   const navbarUser = profileUser
     ? {
+        id: profileUser.id,
         name: profileUser.name,
         role: profileUser.role,
         avatarUrl: profileUser.avatarUrl,
