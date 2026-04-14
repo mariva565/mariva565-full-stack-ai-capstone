@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
+import { and, eq, inArray } from "drizzle-orm";
 import { db } from "../../../../../lib/db";
-import { posts, comments, users } from "../../../../../../../drizzle/schema";
+import { posts, comments, users, userPushTokens } from "../../../../../../../drizzle/schema";
 import { requireAuth } from "../../../../../lib/api-utils";
 import { logActivity } from "../../../../../lib/activity";
 import { canUserAccessPost } from "../../../../../lib/post-access";
-import { eq } from "drizzle-orm";
+import { sendExpoPushNotifications } from "../../../../../lib/expo-push";
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -59,6 +60,49 @@ export async function POST(request: NextRequest, { params }: Params) {
     .limit(1);
 
   await logActivity(auth.user.sub, "add_comment", comment.id, { postId });
+
+  // Fire-and-forget push to post author (skip if commenter is the author)
+  if (post.authorId !== auth.user.sub) {
+    void (async () => {
+      try {
+        const tokens = await db
+          .select({ token: userPushTokens.token })
+          .from(userPushTokens)
+          .where(
+            and(
+              eq(userPushTokens.userId, post.authorId),
+              eq(userPushTokens.isActive, true)
+            )
+          );
+
+        if (tokens.length === 0) return;
+
+        const commenterName = author?.name ?? "Someone";
+        const preview =
+          content.trim().length > 100
+            ? `${content.trim().slice(0, 97)}...`
+            : content.trim();
+
+        const { invalidTokens } = await sendExpoPushNotifications(
+          tokens.map((entry) => ({
+            token: entry.token,
+            title: `${commenterName} commented on your post`,
+            body: preview,
+            data: { type: "comment" as const, postId },
+          }))
+        );
+
+        if (invalidTokens.length > 0) {
+          await db
+            .update(userPushTokens)
+            .set({ isActive: false, updatedAt: new Date() })
+            .where(inArray(userPushTokens.token, invalidTokens));
+        }
+      } catch (err) {
+        console.error("Failed to send comment push notification", err);
+      }
+    })();
+  }
 
   return NextResponse.json(
     { comment: { ...comment, authorName: author?.name, authorAvatarUrl: author?.avatarUrl } },

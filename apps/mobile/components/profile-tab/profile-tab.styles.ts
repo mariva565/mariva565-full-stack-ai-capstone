@@ -90,6 +90,15 @@ export function makeProfileTabStyles(colors: AppColors) {
       alignItems: "center",
     },
     settingsBtnText: { fontSize: 15, fontWeight: "700", color: colors.violetText },
+    scanQrBtn: {
+      borderWidth: 1.5,
+      borderColor: colors.borderMuted,
+      backgroundColor: colors.surface,
+      borderRadius: 12,
+      paddingVertical: 12,
+      alignItems: "center",
+    },
+    scanQrBtnText: { fontSize: 15, fontWeight: "700", color: colors.textSecondary },
     logoutBtn: {
       borderWidth: 1.5,
       borderColor: colors.dangerBorder,

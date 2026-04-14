@@ -38,7 +38,6 @@ export function makeCommunityStyles(colors: AppColors) {
     },
     headerTitleGlyph: {
       fontSize: 28,
-      fontWeight: "800",
       fontFamily: RUBIK_FONT_FAMILY,
     },
     headerSubtitle: {
@@ -149,7 +148,6 @@ export function makeCommunityStyles(colors: AppColors) {
     cardTitle: {
       color: colors.textPrimary,
       fontSize: 18,
-      fontWeight: "700",
       fontFamily: RUBIK_FONT_FAMILY,
       marginBottom: 8,
       lineHeight: 24,

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { RefreshControl, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
@@ -8,6 +9,8 @@ import { RequestState } from "../request-state";
 import { ProfileTabSkeleton } from "./profile-tab-skeleton";
 import type { ProfileTabViewModel } from "./profile-tab.types";
 import { makeProfileTabStyles } from "./profile-tab.styles";
+import { ProfileQrCard } from "./profile-qr-card";
+import { QrScannerScreen } from "./qr-scanner-screen";
 
 type ProfileTabScreenProps = {
   viewModel: ProfileTabViewModel;
@@ -112,7 +115,11 @@ function ProfileActions({
   viewModel,
   styles,
   primaryActionGradient,
-}: ProfileTabScreenProps & Pick<ProfileTabRenderProps, "styles" | "primaryActionGradient">) {
+  onScanQr,
+}: ProfileTabScreenProps &
+  Pick<ProfileTabRenderProps, "styles" | "primaryActionGradient"> & {
+    onScanQr: () => void;
+  }) {
   return (
     <View style={styles.actions}>
       <TouchableOpacity
@@ -123,6 +130,16 @@ function ProfileActions({
         accessibilityHint="Opens mobile settings"
       >
         <Text style={styles.settingsBtnText}>Settings</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.scanQrBtn}
+        onPress={onScanQr}
+        accessibilityRole="button"
+        accessibilityLabel="Scan QR code"
+        accessibilityHint="Opens camera to scan another user's QR code and start a conversation"
+      >
+        <Text style={styles.scanQrBtnText}>Scan QR Code</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
@@ -185,6 +202,7 @@ export function ProfileTabScreen({ viewModel }: ProfileTabScreenProps) {
   const styles = useThemedStyles(makeProfileTabStyles);
   const heroGradient = [colors.brandDeep, colors.brandPrimary] as const;
   const primaryActionGradient = [colors.brandPrimary, colors.brandAccent] as const;
+  const [scannerOpen, setScannerOpen] = useState(false);
 
   if (viewModel.loading) {
     return <ProfileTabSkeleton />;
@@ -194,29 +212,38 @@ export function ProfileTabScreen({ viewModel }: ProfileTabScreenProps) {
   }
 
   return (
-    <ScrollView
-      style={styles.container}
-      refreshControl={
-        <RefreshControl
-          refreshing={viewModel.refreshing}
-          onRefresh={viewModel.refresh}
-          tintColor={colors.brandPrimary}
+    <>
+      <ScrollView
+        style={styles.container}
+        refreshControl={
+          <RefreshControl
+            refreshing={viewModel.refreshing}
+            onRefresh={viewModel.refresh}
+            tintColor={colors.brandPrimary}
+          />
+        }
+      >
+        <ProfileHero viewModel={viewModel} styles={styles} heroGradient={heroGradient} />
+        {offline ? (
+          <View style={styles.offlineBannerWrap}>
+            <NetworkBanner message="Showing last synced profile data until connection is restored." />
+          </View>
+        ) : null}
+        <ProfileInfoCard viewModel={viewModel} styles={styles} />
+        <ProfileQrCard userId={viewModel.profile.id} />
+        <ProfileActions
+          viewModel={viewModel}
+          styles={styles}
+          primaryActionGradient={primaryActionGradient}
+          onScanQr={() => setScannerOpen(true)}
         />
-      }
-    >
-      <ProfileHero viewModel={viewModel} styles={styles} heroGradient={heroGradient} />
-      {offline ? (
-        <View style={styles.offlineBannerWrap}>
-          <NetworkBanner message="Showing last synced profile data until connection is restored." />
-        </View>
-      ) : null}
-      <ProfileInfoCard viewModel={viewModel} styles={styles} />
-      <ProfileActions
-        viewModel={viewModel}
-        styles={styles}
-        primaryActionGradient={primaryActionGradient}
+        <View style={styles.bottomSpacer} />
+      </ScrollView>
+
+      <QrScannerScreen
+        visible={scannerOpen}
+        onClose={() => setScannerOpen(false)}
       />
-      <View style={styles.bottomSpacer} />
-    </ScrollView>
+    </>
   );
 }

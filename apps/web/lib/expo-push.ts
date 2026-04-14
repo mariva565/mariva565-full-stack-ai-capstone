@@ -1,7 +1,6 @@
-type ExpoPushData = {
-  type: "message";
-  conversationId: number;
-};
+type ExpoPushData =
+  | { type: "message"; conversationId: number }
+  | { type: "comment"; postId: number };
 
 type ExpoPushTarget = {
   token: string;

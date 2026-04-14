@@ -7236,3 +7236,56 @@ Commit: `feat: implement S2 Ask Mentor вЂ” mentor inbox + answer-status API`
 2. QR код (display + scanner) — ~150 реда, 3 пакета
 3. Push нотификации при коментар — Вариант A (~40 реда)
 
+## 2026-04-14
+### Session 244 — Community font fix + QR feature + push on comment
+
+**Какво направихме:**
+
+**1. Community hero title font fix:**
+- Root cause: `Animated.Text` with `fontFamily: "Rubik"` AND `fontWeight: "800"` breaks Android font rendering — Android tries to resolve a font variation named "Rubik 800" which doesn't exist in the registry. The ExtraBold weight is already baked into `Rubik_800ExtraBold.ttf`.
+- Fix: removed `fontWeight: "800"` from `glyph` style in `community-gradient-title.tsx`
+- Fix: removed `fontWeight: "800"` from `headerTitleGlyph` in `community.styles.ts`
+- Fix: removed `fontWeight: "700"` from `cardTitle` in `community.styles.ts` (was inconsistent — loaded ExtraBold, requested Bold)
+
+**2. QR код — display + scanner:**
+- `expo-camera` and `react-native-svg` were already in `apps/mobile/package.json` (added in an earlier session but not installed due to npm workspace arborist bug)
+- Added `react-native-qrcode-svg: "^6.3.15"` to `apps/mobile/package.json`
+- npm install of new packages encountered persistent npm 10.x arborist crash (`Cannot read properties of null (reading 'location')`) on all install attempts; root `npm install` was running at time of dev-log write — verify install before running mobile
+- NEW `apps/mobile/components/profile-tab/profile-qr-card.tsx`: shows user's own QR code using `react-native-qrcode-svg`; encodes `studyhub-handoff:<userId>` format
+- NEW `apps/mobile/components/profile-tab/qr-scanner-screen.tsx`: full-screen Modal scanner using `expo-camera` `CameraView`; parses `studyhub-handoff:<id>` QR; on scan routes to `/(tabs)/profile?handoffUserId=<id>` (uses existing handoff handler); handles camera permission
+- MODIFIED `profile-tab-screen.tsx`: added QR card below ProfileInfoCard; added "Scan QR Code" button in ProfileActions; scanner rendered as Modal (state in ProfileTabScreen)
+- MODIFIED `profile-tab.styles.ts`: added `scanQrBtn` + `scanQrBtnText` styles
+
+**3. Push при коментар (Вариант A):**
+- Extended `ExpoPushData` union type in `apps/web/lib/expo-push.ts` to support `{ type: "comment"; postId: number }`
+- Updated `apps/web/app/api/posts/[id]/comments/route.ts`: after comment insert, fire-and-forget push to post author's active tokens (skipped if commenter === author)
+- Updated `apps/mobile/lib/use-push-notifications.ts`:
+  - Renamed `MessageNotificationData` → `PushNotificationData` (added `postId?: unknown`)
+  - Extracted `parsePositiveInt` helper; `parseConversationId` is now an alias
+  - Foreground listener: shows in-app toast for `type: "comment"` notifications
+  - Tap handler + cold-start handler: navigates to `/community/<postId>` for `type: "comment"`
+
+**Файлове:**
+- `[MODIFY] apps/mobile/components/community/community-gradient-title.tsx` — remove fontWeight from glyph
+- `[MODIFY] apps/mobile/components/community/community.styles.ts` — remove fontWeight from headerTitleGlyph + cardTitle
+- `[MODIFY] apps/mobile/package.json` — added react-native-qrcode-svg
+- `[NEW] apps/mobile/components/profile-tab/profile-qr-card.tsx`
+- `[NEW] apps/mobile/components/profile-tab/qr-scanner-screen.tsx`
+- `[MODIFY] apps/mobile/components/profile-tab/profile-tab-screen.tsx` — QR card + scanner modal + scan button
+- `[MODIFY] apps/mobile/components/profile-tab/profile-tab.styles.ts` — scanQrBtn styles
+- `[MODIFY] apps/web/lib/expo-push.ts` — extended ExpoPushData union type
+- `[MODIFY] apps/web/app/api/posts/[id]/comments/route.ts` — fire-and-forget push on comment
+- `[MODIFY] apps/mobile/lib/use-push-notifications.ts` — comment type handling
+
+**Verification:**
+- Not run (explicit: no typecheck unless requested)
+
+**Решения:**
+- Font fix approach: remove `fontWeight` from Rubik-using styles rather than switch to MaskedView; the ExtraBold weight is in the TTF file and doesn't need `fontWeight: "800"`.
+- QR format: `studyhub-handoff:<userId>` — simple prefix+ID, parsed by regex in scanner; integrates seamlessly with existing `handoffUserId` deep-link handler in `profile.tsx`.
+- Push Вариант A: no new DB table; push only (no persistent inbox entry for comments); aligns with existing fire-and-forget DM push pattern.
+- npm install known issue: arborist crashes during diff with `react-native-qrcode-svg` install. **Workaround**: run `npm install` from monorepo root after this session. Packages are in package.json — install will work once arborist issue is bypassed.
+
+**npm install status:**
+- `npm install` completed successfully from monorepo root — all three packages now in `node_modules/` (root-hoisted). Ready to test in Expo Go.
+

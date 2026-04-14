@@ -81,6 +81,5 @@ const styles = StyleSheet.create({
   },
   glyph: {
     fontSize: 28,
-    fontWeight: "800",
   },
 });

@@ -44,12 +44,13 @@ if (Notifications) {
   });
 }
 
-type MessageNotificationData = {
+type PushNotificationData = {
   type?: unknown;
   conversationId?: unknown;
+  postId?: unknown;
 };
 
-function parseConversationId(value: unknown): number | null {
+function parsePositiveInt(value: unknown): number | null {
   if (typeof value === "number" && Number.isInteger(value) && value > 0) {
     return value;
   }
@@ -61,6 +62,9 @@ function parseConversationId(value: unknown): number | null {
   }
   return null;
 }
+
+/** @deprecated alias kept for readability at call sites */
+const parseConversationId = parsePositiveInt;
 
 function getActiveConversationId(pathname: string): number | null {
   const match = pathname.match(/^\/messages\/(\d+)$/);
@@ -101,32 +105,48 @@ export function usePushNotifications(): void {
 
     const foregroundSubscription =
       Notifications.addNotificationReceivedListener((notification) => {
-        const data = notification.request.content.data as MessageNotificationData;
+        const data = notification.request.content.data as PushNotificationData;
         const type = typeof data?.type === "string" ? data.type : "";
-        if (type !== "message") {
+
+        if (type === "message") {
+          const incomingConversationId = parseConversationId(data?.conversationId);
+          if (incomingConversationId && activeConversationId === incomingConversationId) {
+            return;
+          }
+          const title = notification.request.content.title ?? "New message";
+          const body = notification.request.content.body ?? "";
+          showToast(body ? `${title}: ${body}` : title, "info");
           return;
         }
-        const incomingConversationId = parseConversationId(data?.conversationId);
-        if (
-          incomingConversationId &&
-          activeConversationId === incomingConversationId
-        ) {
+
+        if (type === "comment") {
+          const title = notification.request.content.title ?? "New comment";
+          const body = notification.request.content.body ?? "";
+          showToast(body ? `${title}: ${body}` : title, "info");
           return;
         }
-        const title = notification.request.content.title ?? "New message";
-        const body = notification.request.content.body ?? "";
-        const toastMessage = body ? `${title}: ${body}` : title;
-        showToast(toastMessage, "info");
       });
 
     const subscription = Notifications.addNotificationResponseReceivedListener(
       (response) => {
         const data = response.notification.request.content
-          .data as MessageNotificationData;
+          .data as PushNotificationData;
         const type = typeof data?.type === "string" ? data.type : "";
-        const conversationId = parseConversationId(data?.conversationId);
-        if (type === "message" && conversationId) {
-          router.push(`/messages/${conversationId}` as never);
+
+        if (type === "message") {
+          const conversationId = parseConversationId(data?.conversationId);
+          if (conversationId) {
+            router.push(`/messages/${conversationId}` as never);
+          }
+          return;
+        }
+
+        if (type === "comment") {
+          const postId = parsePositiveInt(data?.postId);
+          if (postId) {
+            router.push(`/community/${postId}` as never);
+          }
+          return;
         }
       }
     );
@@ -134,11 +154,23 @@ export function usePushNotifications(): void {
     void Notifications.getLastNotificationResponseAsync().then((response) => {
       if (!response) return;
       const data = response.notification.request.content
-        .data as MessageNotificationData;
+        .data as PushNotificationData;
       const type = typeof data?.type === "string" ? data.type : "";
-      const conversationId = parseConversationId(data?.conversationId);
-      if (type === "message" && conversationId) {
-        router.push(`/messages/${conversationId}` as never);
+
+      if (type === "message") {
+        const conversationId = parseConversationId(data?.conversationId);
+        if (conversationId) {
+          router.push(`/messages/${conversationId}` as never);
+        }
+        return;
+      }
+
+      if (type === "comment") {
+        const postId = parsePositiveInt(data?.postId);
+        if (postId) {
+          router.push(`/community/${postId}` as never);
+        }
+        return;
       }
     });
 
