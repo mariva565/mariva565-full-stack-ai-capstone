@@ -30,6 +30,15 @@ type IncomingAlert = {
 };
 
 const MESSAGES_POLL_INTERVAL_MS = 15000;
+const COMMENTS_POLL_INTERVAL_MS = 20000;
+
+type CommentNotification = {
+  commentId: number;
+  postId: number;
+  postTitle: string;
+  authorName: string;
+  createdAt: string;
+};
 
 function getActiveConversationId(pathname: string): number | null {
   const match = pathname.match(/^\/messages\/(\d+)$/);
@@ -111,6 +120,7 @@ export function useWebMessagesNotifications(
     useState<NotificationPermission>("denied");
   const previousUnreadRef = useRef<Record<string, number>>({});
   const initializedRef = useRef(false);
+  const lastCommentCheckRef = useRef<string>(new Date().toISOString());
 
   // Sync notificationsSupported and notificationPermission after hydration.
   useEffect(() => {
@@ -226,6 +236,58 @@ export function useWebMessagesNotifications(
       window.clearInterval(intervalId);
     };
   }, [currentUserId, refreshConversations]);
+
+  const refreshCommentNotifications = useCallback(async () => {
+    if (!currentUserId) return;
+    const since = lastCommentCheckRef.current;
+    lastCommentCheckRef.current = new Date().toISOString();
+    try {
+      const response = await fetch(
+        `/api/notifications/comments?since=${encodeURIComponent(since)}`,
+        { cache: "no-store" }
+      );
+      if (!response.ok) return;
+      const data = (await response.json()) as CommentNotification[];
+      if (!data.length) return;
+
+      const latest = data[0];
+      const title = `New comment on "${latest.postTitle}"`;
+      const body = `${latest.authorName} commented on your post`;
+
+      const shownAsNative =
+        notificationsSupported &&
+        notificationPermission === "granted" &&
+        document.visibilityState !== "visible" &&
+        (() => {
+          const n = new window.Notification(title, {
+            body,
+            tag: `studyhub-comment-${latest.postId}`,
+          });
+          n.onclick = () => {
+            window.focus();
+            window.location.href = `/community/${latest.postId}`;
+            n.close();
+          };
+          return true;
+        })();
+
+      if (!shownAsNative) {
+        setToastMessage(`${title}: ${body}`);
+      }
+    } catch {
+      // Ignore polling errors silently.
+    }
+  }, [currentUserId, notificationsSupported, notificationPermission]);
+
+  useEffect(() => {
+    if (!currentUserId) return;
+    const intervalId = window.setInterval(() => {
+      void refreshCommentNotifications();
+    }, COMMENTS_POLL_INTERVAL_MS);
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, [currentUserId, refreshCommentNotifications]);
 
   const unreadCount = useMemo(
     () =>

@@ -7365,3 +7365,51 @@ Commit: `feat: implement S2 Ask Mentor вЂ” mentor inbox + answer-status API`
 - Коментар нотификация на десктоп (web browser notification) — ако има квота
 - ConfirmModal за `confirm()` в post-details.tsx и posts-tab.tsx (правило "No native dialogs")
 
+## 2026-04-14 (продължение)
+
+### Session 245 — Hydration fix + email in public profile + comment notifications
+
+**Какво направихме:**
+
+**1. Rebuild + moderation flow тест:**
+- `npm run build:web && npm run start:web` — rebuild за moderation fix от Session 244
+- Добавени 4 pending поста за тест на moderation (seed script `scripts/seed-pending-posts.mjs`)
+- Moderation flow потвърден: Admin Panel → Posts → клик → Approve/Hide бутони + Back to Admin ✅
+
+**2. Hydration error #418 fix:**
+- Root cause: `notificationsSupported` беше inline `const` (изчислявана при render) — на сървъра `false`, на клиента `true` → NavbarClient рендерира "Enable Alerts" бутон само на клиент → React #418 hydration crash
+- Втора причина: `notificationPermission` state initializer четеше `window.Notification.permission` на клиента, но сървърът рендерираше с `"denied"` → mismatch при `"default"` permission
+- Fix: `notificationsSupported` → `useState(false)` + `useEffect` синхронизация след хидрация
+- Fix: `notificationPermission` → `useState("denied")` (constant initial value, synced via existing effect)
+- Bonus fix: `formatMemberSince` добави `timeZone: "UTC"` за консистентност между сървър и клиент
+
+**3. Email в публичен профил:**
+- `ProfileUser.email` вече се показва в `public-profile-view.tsx` под името на потребителя
+
+**4. Web desktop comment notifications:**
+- Нов endpoint `GET /api/notifications/comments?since=<ISO>` — връща нови коментари на одобрени постове на текущия юзър, направени от друг юзър, след `since` timestamp
+- Разширен `use-web-messages-notifications.ts`: добавен `refreshCommentNotifications` callback + `useEffect` с 20s интервал (отделен от messages polling на 15s)
+- При нов коментар: browser notification (ако granted + tab не е visible) или toast fallback
+- Notification click → навигира към `/community/<postId>`
+
+**Файлове:**
+- `[MODIFY] apps/web/components/messages/use-web-messages-notifications.ts` — hydration fix + comment notifications polling
+- `[MODIFY] apps/web/lib/profile.ts` — timeZone: "UTC" в formatMemberSince
+- `[MODIFY] apps/web/components/profile/public-profile-view.tsx` — показва email
+- `[NEW] apps/web/app/api/notifications/comments/route.ts` — comment notifications endpoint
+- `[NEW] scripts/seed-pending-posts.mjs` — seed script за pending постове (dev/test)
+
+**Verification:**
+- `npm.cmd run typecheck:web` ✅
+- Build ✅ (exit code 0)
+
+**Решения:**
+- Comment notifications: poll-based (без Pusher/WebSocket) за консистентност с messaging notifications — same fire-and-forget pattern
+- `lastCommentCheckRef` се инициализира с `new Date().toISOString()` при mount → не се показват стари коментари при първо зареждане
+- `notificationsSupported` pattern: standard Next.js SSR practice — инициализирай с `false`, актуализирай в `useEffect`
+
+**Следващ чат — приоритети:**
+- ConfirmModal за `confirm()` в `post-details.tsx` и `posts-tab.tsx` (правило "No native dialogs") — вече има `ConfirmModal` компонент
+- Miniblog rich text editor (Tiptap) за Community posts — ако има квота
+- Тест на comment notifications с два акаунта
+
