@@ -79,7 +79,7 @@ export default function ProfileTabRoute() {
           return;
         }
         showToast("Conversation opened from QR profile link.", "success");
-        router.replace(`/messages/${response.id}` as never);
+        router.push(`/messages/${response.id}` as never);
       } catch {
         if (!active) {
           return;

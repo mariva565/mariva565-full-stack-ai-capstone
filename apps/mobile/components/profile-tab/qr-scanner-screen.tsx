@@ -8,7 +8,10 @@ type QrScannerScreenProps = {
   onClose: () => void;
 };
 
-const QR_PREFIX = "studyhub-handoff:";
+// Matches both formats:
+//   studyhubv2://profile/<id>   (web profile QR)
+//   studyhub-handoff:<id>       (legacy mobile format)
+const QR_PATTERN = /^(?:studyhubv2:\/\/profile\/|studyhub-handoff:)(\d+)$/;
 
 export function QrScannerScreen({ visible, onClose }: QrScannerScreenProps) {
   const router = useRouter();
@@ -24,10 +27,9 @@ export function QrScannerScreen({ visible, onClose }: QrScannerScreenProps) {
 
   const handleBarcodeScanned = ({ data }: { data: string }) => {
     if (scannedRef.current) return;
-    if (!data.startsWith(QR_PREFIX)) return;
-
-    const rawId = data.slice(QR_PREFIX.length);
-    if (!/^\d+$/.test(rawId)) return;
+    const match = QR_PATTERN.exec(data);
+    if (!match) return;
+    const rawId = match[1];
 
     scannedRef.current = true;
     onClose();

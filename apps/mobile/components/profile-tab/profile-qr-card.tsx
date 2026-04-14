@@ -56,7 +56,7 @@ export function ProfileQrCard({ userId }: ProfileQrCardProps) {
     <View style={styles.card}>
       <Text style={styles.title}>My QR Code</Text>
       <View style={styles.qrWrap}>
-        <QRCode value={`studyhub-handoff:${userId}`} size={160} />
+        <QRCode value={`studyhubv2://profile/${userId}`} size={160} />
       </View>
       <Text style={styles.subtitle}>
         Others can scan this to start a direct conversation with you

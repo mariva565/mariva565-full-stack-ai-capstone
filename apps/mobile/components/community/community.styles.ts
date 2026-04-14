@@ -1,7 +1,6 @@
 import { StyleSheet } from "react-native";
 import type { AppColors } from "../../lib/colors";
-
-const RUBIK_FONT_FAMILY = "Rubik";
+import { BRAND_FONT_FAMILY } from "../../lib/brand-font";
 
 export function makeCommunityStyles(colors: AppColors) {
   return StyleSheet.create({
@@ -38,7 +37,7 @@ export function makeCommunityStyles(colors: AppColors) {
     },
     headerTitleGlyph: {
       fontSize: 28,
-      fontFamily: RUBIK_FONT_FAMILY,
+      fontFamily: BRAND_FONT_FAMILY,
     },
     headerSubtitle: {
       fontSize: 15,
@@ -148,7 +147,7 @@ export function makeCommunityStyles(colors: AppColors) {
     cardTitle: {
       color: colors.textPrimary,
       fontSize: 18,
-      fontFamily: RUBIK_FONT_FAMILY,
+      fontFamily: BRAND_FONT_FAMILY,
       marginBottom: 8,
       lineHeight: 24,
     },
