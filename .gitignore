@@ -29,4 +29,5 @@ Thumbs.db
 
 # Claude Code local config
 .claude/settings.local.json
-apps/mobile/tsconfig.tsbuildinfo
+# TypeScript build cache
+*.tsbuildinfo
