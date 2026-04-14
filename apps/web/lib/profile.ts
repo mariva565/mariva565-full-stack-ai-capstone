@@ -34,6 +34,7 @@ export function formatMemberSince(createdAt: string): string {
     month: "short",
     day: "numeric",
     year: "numeric",
+    timeZone: "UTC",
   }).format(new Date(createdAt));
 }
 

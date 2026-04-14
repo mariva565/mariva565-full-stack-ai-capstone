@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { getProfileInitials } from "@/lib/profile";
 import { type Post, type Comment, TYPE_LABELS, TYPE_COLORS, timeAgo } from "./post-types";
 import { CommentItem } from "./comment-item";
@@ -20,6 +20,8 @@ export function PostDetails({ postId, currentUser }: {
   currentUser: { id: number; role: string };
 }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const fromAdmin = searchParams.get("from") === "admin";
   const [post, setPost]         = useState<Post | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading]   = useState(true);
@@ -89,6 +91,16 @@ export function PostDetails({ postId, currentUser }: {
     setComments((prev) => prev.filter((c) => c.id !== commentId));
   }
 
+  async function handleModerate(status: "approved" | "hidden") {
+    if (!post) return;
+    await fetch(`/api/admin/posts/${postId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status }),
+    });
+    router.push("/admin");
+  }
+
   if (loading) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 space-y-4">
@@ -107,8 +119,10 @@ export function PostDetails({ postId, currentUser }: {
     );
   }
 
-  const isAuthor = post.authorId === currentUser.id;
-  const isAdmin  = currentUser.role === "admin";
+  const isAuthor   = post.authorId === currentUser.id;
+  const isAdmin    = currentUser.role === "admin";
+  const isMentor   = currentUser.role === "mentor";
+  const canModerate = (isAdmin || isMentor) && post.status !== "approved";
   const initials = getProfileInitials(post.authorName);
   const showPendingBadge = post.status === "pending";
   const authorProfileHref = getProfileHref(post.authorId, currentUser.id);
@@ -116,15 +130,40 @@ export function PostDetails({ postId, currentUser }: {
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
       {/* Back */}
-      <button
-        onClick={() => router.back()}
-        className="mb-6 inline-flex items-center gap-2 text-sm text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition"
-      >
-        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-        </svg>
-        Back
-      </button>
+      <div className="mb-6 flex items-center justify-between">
+        <Link
+          href={fromAdmin ? "/admin" : "/community"}
+          className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition"
+        >
+          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+          </svg>
+          {fromAdmin ? "Back to Admin" : "Back"}
+        </Link>
+
+        {canModerate && (
+          <div className="flex items-center gap-2">
+            {post.status !== "approved" && (
+              <button
+                type="button"
+                onClick={() => void handleModerate("approved")}
+                className="rounded-lg bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-300"
+              >
+                ✓ Approve
+              </button>
+            )}
+            {post.status !== "hidden" && (
+              <button
+                type="button"
+                onClick={() => void handleModerate("hidden")}
+                className="rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
+              >
+                Hide
+              </button>
+            )}
+          </div>
+        )}
+      </div>
 
       {/* Post card */}
       <div className="rounded-2xl border border-slate-200/80 bg-white/80 p-6 shadow-sm backdrop-blur-sm dark:border-slate-700/60 dark:bg-slate-900/60">

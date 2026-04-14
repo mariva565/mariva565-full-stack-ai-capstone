@@ -7289,3 +7289,79 @@ Commit: `feat: implement S2 Ask Mentor вЂ” mentor inbox + answer-status API`
 **npm install status:**
 - `npm install` completed successfully from monorepo root — all three packages now in `node_modules/` (root-hoisted). Ready to test in Expo Go.
 
+
+### Session 244 (продължение) — Community font fix v2 + QR format унификация + GO_BACK fix
+
+**Какво направихме:**
+
+**1. Community шрифт — втори fix (ShantellSans800):**
+- След премахването на `fontWeight` Community заглавията изглеждаха счупени — Rubik се рендерира различно от ShantellSans800 (brand шрифта)
+- Решение: заменихме `RUBIK_FONT_FAMILY` с `BRAND_FONT_FAMILY` (`ShantellSans800`) навсякъде в `community.styles.ts`
+- Засегнати стилове: `headerTitleGlyph` (hero "Community" заглавие) и `cardTitle` (заглавия на постовете в feed-а)
+- Правило: `fontFamily: "ShantellSans800"` без `fontWeight` — теглото е вградено в TTF файла
+
+**Детайли на шрифта (за справка):**
+- Registration key: `ShantellSans800`
+- Font file: `apps/mobile/assets/fonts/ShantellSans_800ExtraBold.ttf`
+- Регистриран в `_layout.tsx` → `useFonts()`
+- Използване: само `fontFamily: "ShantellSans800"`, никога с `fontWeight`
+
+**2. QR формат унификация:**
+- Открихме, че уеб профилът вече генерира QR с формат `studyhubv2://profile/<userId>` (от `apps/web/lib/profile.ts` → `MOBILE_PROFILE_SCHEME`)
+- Мобилният скенер очакваше `studyhub-handoff:<userId>` → форматите не съвпадаха → сканирането на уеб QR не работеше
+- Fix в `qr-scanner-screen.tsx`: regex сега приема и двата формата: `studyhubv2://profile/<id>` и `studyhub-handoff:<id>`
+- Fix в `profile-qr-card.tsx`: мобилният QR сега кодира `studyhubv2://profile/<userId>` (съответства на уеб формата)
+- Резултат: уеб QR и мобилен QR са взаимозаменяеми — скенерът чете и двата
+
+**3. GO_BACK navigation fix:**
+- Бъг: след QR scan → разговор, бек бутонът не правеше нищо и хвърляше GO_BACK error
+- Root cause: `profile.tsx` ползваше `router.replace('/messages/123')` → заместваше текущия екран → нямаше история за GO_BACK
+- Fix: сменено на `router.push('/messages/123')` → навигацията се наслагва → бек бутонът се връща към Profile таба
+- Re-trigger guard: `processedHandoffRef` пази ID-то → профилът не re-процесва handoff при връщане назад
+
+**Файлове:**
+- `[MODIFY] apps/mobile/components/community/community.styles.ts` — RUBIK_FONT_FAMILY → BRAND_FONT_FAMILY
+- `[MODIFY] apps/mobile/components/profile-tab/qr-scanner-screen.tsx` — dual-format regex
+- `[MODIFY] apps/mobile/components/profile-tab/profile-qr-card.tsx` — studyhubv2://profile/ формат
+- `[MODIFY] apps/mobile/app/(tabs)/profile.tsx` — router.replace → router.push за QR handoff
+
+**Verification:**
+- Тествано: QR display ✅ | QR scanner (уеб QR) ✅ | DM отваряне ✅ | Back button ✅
+
+**Решения:**
+- QR формат: унифицирахме около съществуващия уеб формат `studyhubv2://profile/<id>` вместо да въвеждаме нов мобилен формат
+- WeChat-style flow: показваш своя QR на екрана → другият скенира → директен DM
+
+
+### Session 244 (продължение 2) — Moderation UX fix + web desktop notification тест
+
+**Какво направихме:**
+
+**1. Moderation post-details fix:**
+- Проблем: от Admin Panel → Posts таб → клик на пост заглавие отваря `/community/[id]` в нов таб (target="_blank"), но там няма модерационни бутони и Back бутонът не работи (нов таб = няма история)
+- Fix 1 — `moderation-queue.tsx`: линкът вече сочи `/community/${post.id}?from=admin`
+- Fix 2 — `post-details.tsx`:
+  - импорт на `useSearchParams`
+  - `fromAdmin = searchParams.get("from") === "admin"`
+  - Back бутон: ако `fromAdmin` → `<Link href="/admin">Back to Admin</Link>`, иначе → `/community`
+  - добавен `isMentor` и `canModerate = (isAdmin || isMentor) && post.status !== "approved"`
+  - нов `handleModerate(status)` — PUT `/api/admin/posts/:id` + redirect към `/admin`
+  - Approve + Hide бутони горе вдясно, видими само когато `canModerate`
+
+**2. Web desktop notification тест:**
+- DM нотификация на десктоп: ✅ работи (hook е в navbar — активен от всяка страница)
+- Коментар нотификация на десктоп: ❌ не е имплементирана — само мобилен push (Вариант A)
+
+**Файлове:**
+- `[MODIFY] apps/web/components/community/post-details.tsx` — back fix + moderation buttons
+- `[MODIFY] apps/web/components/moderation/moderation-queue.tsx` — ?from=admin param
+
+**Verification:**
+- Не е пуснат typecheck (rebuild трябва да се направи ръчно)
+
+**Следващ чат — приоритети:**
+- `npm run build:web && npm run start:web` — rebuild след moderation fix
+- Тест: Admin Panel → Posts → клик на пост → Approve/Hide бутони + Back to Admin
+- Коментар нотификация на десктоп (web browser notification) — ако има квота
+- ConfirmModal за `confirm()` в post-details.tsx и posts-tab.tsx (правило "No native dialogs")
+

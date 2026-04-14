@@ -101,19 +101,25 @@ export function useWebMessagesNotifications(
   currentUserId: number | undefined,
   pathname: string
 ) {
-  const notificationsSupported =
-    typeof window !== "undefined" && "Notification" in window;
+  // Start as false on both server and client to avoid hydration mismatch.
+  // Updated in useEffect after hydration.
+  const [notificationsSupported, setNotificationsSupported] = useState(false);
   const [conversations, setConversations] = useState<ConversationListItem[]>([]);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  // Initialize to "denied" on both server and client — synced via useEffect.
   const [notificationPermission, setNotificationPermission] =
-    useState<NotificationPermission>(() => {
-      if (typeof window === "undefined" || !("Notification" in window)) {
-        return "denied";
-      }
-      return window.Notification.permission;
-    });
+    useState<NotificationPermission>("denied");
   const previousUnreadRef = useRef<Record<string, number>>({});
   const initializedRef = useRef(false);
+
+  // Sync notificationsSupported and notificationPermission after hydration.
+  useEffect(() => {
+    const supported = typeof window !== "undefined" && "Notification" in window;
+    setNotificationsSupported(supported);
+    if (supported) {
+      setNotificationPermission(window.Notification.permission);
+    }
+  }, []);
 
   useEffect(() => {
     previousUnreadRef.current = {};
@@ -124,7 +130,6 @@ export function useWebMessagesNotifications(
 
   useEffect(() => {
     if (!notificationsSupported) {
-      setNotificationPermission("denied");
       return;
     }
 

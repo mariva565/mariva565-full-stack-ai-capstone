@@ -139,7 +139,7 @@ export function ModerationQueue({ role, embedded = false }: ModerationQueueProps
                       <span className="text-xs font-bold text-brand-500">📌</span>
                     ) : null}
                     <Link
-                      href={`/community/${post.id}`}
+                      href={`/community/${post.id}?from=admin`}
                       target="_blank"
                       className="line-clamp-1 text-sm font-semibold text-slate-800 hover:text-brand-600 dark:text-slate-100 dark:hover:text-brand-400"
                     >

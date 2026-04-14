@@ -136,7 +136,10 @@ export function PublicProfileView({ viewerId, profileUser }: PublicProfileViewPr
                 {roleLabel}
               </div>
 
-              <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">
+              <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+                {profileUser.email}
+              </p>
+              <p className="mt-1 text-sm text-slate-400 dark:text-slate-500">
                 Member since {memberSince}
               </p>
 
