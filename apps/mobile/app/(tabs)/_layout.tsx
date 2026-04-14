@@ -3,6 +3,8 @@ import { StyleSheet, Text as RNText, View, TouchableOpacity, Image } from "react
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AntDesign } from "@expo/vector-icons";
 import { COLORS } from "../../lib/colors";
+import { useMessagesInbox } from "../../components/messages/use-messages-inbox";
+import { useAuth } from "../../lib/auth-context";
 
 type TabIconProps = {
   name: "book" | "heart" | "team" | "user";
@@ -23,9 +25,17 @@ function TabIcon({ name, focused }: TabIconProps) {
   );
 }
 
+function useInboxUnreadCount(): number {
+  const { user } = useAuth();
+  const { conversations } = useMessagesInbox();
+  if (!user) return 0;
+  return conversations.reduce((sum, c) => sum + (c.unreadCount ?? 0), 0);
+}
+
 export default function TabsLayout() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const unreadCount = useInboxUnreadCount();
 
   return (
     <Tabs
@@ -87,6 +97,8 @@ export default function TabsLayout() {
           title: "Community",
           headerShown: false,
           tabBarIcon: ({ focused }) => <TabIcon name="team" focused={focused} />,
+          tabBarBadge: unreadCount > 0 ? (unreadCount > 99 ? "99+" : unreadCount) : undefined,
+          tabBarBadgeStyle: { backgroundColor: "#ef4444", fontSize: 10 },
         }}
       />
       <Tabs.Screen

@@ -2,23 +2,47 @@ import { useEffect, useRef } from "react";
 import { Platform } from "react-native";
 import { usePathname, useRouter } from "expo-router";
 import Constants from "expo-constants";
-import * as Notifications from "expo-notifications";
 import { useAuth } from "./auth-context";
 import { apiFetch } from "./api";
 import { captureTelemetryException } from "./telemetry";
 import { useToast } from "./toast-context";
 
-Notifications.setNotificationHandler({
-  // Foreground notifications are surfaced via in-app toast instead of
-  // an OS banner to avoid duplicated alerts while the app is already open.
-  handleNotification: async () => ({
-    shouldShowAlert: false,
-    shouldPlaySound: false,
-    shouldSetBadge: false,
-    shouldShowBanner: false,
-    shouldShowList: false,
-  }),
-});
+// Must be evaluated before any expo-notifications import to prevent
+// DevicePushTokenAutoRegistration.fx.js module-level side effects from
+// running in Expo Go (SDK 53+ removed remote push support from Expo Go).
+function isExpoGoRuntime(): boolean {
+  const appOwnership = Constants.appOwnership;
+  if (appOwnership === "expo") {
+    return true;
+  }
+  const executionEnvironment = (
+    Constants as unknown as { executionEnvironment?: unknown }
+  ).executionEnvironment;
+  return executionEnvironment === "storeClient";
+}
+
+const IS_EXPO_GO = isExpoGoRuntime();
+
+// Lazy require — never import expo-notifications in Expo Go.
+// A static `import * as Notifications` would execute module-level side
+// effects (DevicePushTokenAutoRegistration) before any runtime guard runs.
+type NotificationsModule = typeof import("expo-notifications");
+const Notifications: NotificationsModule | null = IS_EXPO_GO
+  ? null
+  : (require("expo-notifications") as NotificationsModule);
+
+if (Notifications) {
+  // Suppress OS banner while the app is foregrounded; we show an in-app toast instead.
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: false,
+      shouldPlaySound: false,
+      shouldSetBadge: false,
+      shouldShowBanner: false,
+      shouldShowList: false,
+    }),
+  });
+}
 
 type MessageNotificationData = {
   type?: unknown;
@@ -52,7 +76,6 @@ function getExpoProjectId(): string | null {
   if (fromEasConfig) {
     return fromEasConfig;
   }
-
   const fromExpoConfig =
     (
       Constants.expoConfig?.extra as
@@ -60,19 +83,6 @@ function getExpoProjectId(): string | null {
         | undefined
     )?.eas?.projectId ?? null;
   return fromExpoConfig;
-}
-
-function isExpoGoRuntime(): boolean {
-  const appOwnership = Constants.appOwnership;
-  if (appOwnership === "expo") {
-    return true;
-  }
-
-  const executionEnvironment = (
-    Constants as unknown as { executionEnvironment?: unknown }
-  ).executionEnvironment;
-
-  return executionEnvironment === "storeClient";
 }
 
 export function usePushNotifications(): void {
@@ -83,8 +93,9 @@ export function usePushNotifications(): void {
   const registeredRef = useRef<string | null>(null);
   const activeConversationId = getActiveConversationId(pathname);
 
+  // Foreground notification listener — skipped entirely in Expo Go.
   useEffect(() => {
-    if (isLoading || !user || isExpoGoRuntime()) {
+    if (IS_EXPO_GO || isLoading || !user || !Notifications) {
       return;
     }
 
@@ -102,7 +113,6 @@ export function usePushNotifications(): void {
         ) {
           return;
         }
-
         const title = notification.request.content.title ?? "New message";
         const body = notification.request.content.body ?? "";
         const toastMessage = body ? `${title}: ${body}` : title;
@@ -115,7 +125,6 @@ export function usePushNotifications(): void {
           .data as MessageNotificationData;
         const type = typeof data?.type === "string" ? data.type : "";
         const conversationId = parseConversationId(data?.conversationId);
-
         if (type === "message" && conversationId) {
           router.push(`/messages/${conversationId}` as never);
         }
@@ -123,10 +132,9 @@ export function usePushNotifications(): void {
     );
 
     void Notifications.getLastNotificationResponseAsync().then((response) => {
-      if (!response) {
-        return;
-      }
-      const data = response.notification.request.content.data as MessageNotificationData;
+      if (!response) return;
+      const data = response.notification.request.content
+        .data as MessageNotificationData;
       const type = typeof data?.type === "string" ? data.type : "";
       const conversationId = parseConversationId(data?.conversationId);
       if (type === "message" && conversationId) {
@@ -140,8 +148,9 @@ export function usePushNotifications(): void {
     };
   }, [activeConversationId, isLoading, router, showToast, user]);
 
+  // Push token registration — skipped entirely in Expo Go.
   useEffect(() => {
-    if (isLoading) {
+    if (IS_EXPO_GO || isLoading || !Notifications) {
       return;
     }
 
@@ -153,12 +162,6 @@ export function usePushNotifications(): void {
     let cancelled = false;
     const registerPushToken = async () => {
       try {
-        if (isExpoGoRuntime()) {
-          // Expo Go (SDK 53+) no longer supports remote push tokens.
-          // Keep this hook silent in Expo Go and register tokens only in dev build/standalone.
-          return;
-        }
-
         if (Platform.OS === "android") {
           await Notifications.setNotificationChannelAsync("messages", {
             name: "Messages",
@@ -189,19 +192,13 @@ export function usePushNotifications(): void {
           projectId,
         });
 
-        if (cancelled) {
-          return;
-        }
+        if (cancelled) return;
 
         const expoToken = tokenResult.data;
-        if (!expoToken) {
-          return;
-        }
+        if (!expoToken) return;
 
         const registrationSignature = `${user.id}:${expoToken}`;
-        if (registeredRef.current === registrationSignature) {
-          return;
-        }
+        if (registeredRef.current === registrationSignature) return;
 
         await apiFetch("/api/mobile/push-token", {
           method: "POST",
@@ -213,10 +210,7 @@ export function usePushNotifications(): void {
           cache: false,
         });
 
-        if (cancelled) {
-          return;
-        }
-
+        if (cancelled) return;
         registeredRef.current = registrationSignature;
       } catch (error) {
         captureTelemetryException(error, {

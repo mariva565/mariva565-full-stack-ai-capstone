@@ -83,6 +83,7 @@ function AuthGate() {
 function RootLayout() {
   const [brandFontLoaded] = useFonts({
     [BRAND_FONT_FAMILY]: BRAND_FONT_SOURCE,
+    Rubik: require("../assets/fonts/Rubik_800ExtraBold.ttf"),
   });
 
   useEffect(() => {

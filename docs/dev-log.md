@@ -7172,3 +7172,67 @@ Commit: `feat: implement S2 Ask Mentor вЂ” mentor inbox + answer-status API`
 **Решения:**
 - Kept the solution Windows-native (PowerShell) to match the current development environment and reduce manual terminal recovery steps.
 
+## 2026-04-14 (продължение)
+
+### Session 243 - Expo Go push fix (lazy require) + Rubik font + tab badge
+
+**Какво направихме:**
+- Fixed Expo Go push notification red error overlay permanently:
+  - Root cause: static `import * as Notifications from "expo-notifications"` causes `DevicePushTokenAutoRegistration.fx.js` to run at module load time — before any runtime guard
+  - Fix: replaced static import with lazy conditional `require()` — `expo-notifications` is never loaded in Expo Go, so the module-level side effect never runs
+  - Both `setNotificationHandler` and all listener registrations are now guarded by `IS_EXPO_GO` constant evaluated once at module init
+- Downloaded and loaded Rubik ExtraBold (800) font:
+  - Downloaded `Rubik_800ExtraBold.ttf` from Google Fonts CDN
+  - Added to `apps/mobile/assets/fonts/`
+  - Registered in `_layout.tsx` `useFonts()` alongside ShantellSans
+- Changed mobile API URL from dev (`:3000`) to prod (`:3002`) in `apps/mobile/.env`
+- Added `kill:node` root npm script (`taskkill //F //IM node.exe || true`) to quickly clean zombie Node processes on Windows
+- Added unread message badge on Community tab bar icon:
+  - `useInboxUnreadCount()` helper in `(tabs)/_layout.tsx` reuses `useMessagesInbox` (React Query cache — no extra API call)
+  - Badge visible from any tab, not only when inside Community screen
+  - Shows count up to 99, then "99+"
+
+**Файлове:**
+- `[MODIFY] apps/mobile/lib/use-push-notifications.ts` — lazy require, IS_EXPO_GO guard
+- `[NEW] apps/mobile/assets/fonts/Rubik_800ExtraBold.ttf`
+- `[MODIFY] apps/mobile/app/_layout.tsx` — Rubik added to useFonts
+- `[MODIFY] apps/mobile/.env` — API URL → port 3002
+- `[MODIFY] package.json` — added kill:node script
+- `[MODIFY] apps/mobile/app/(tabs)/_layout.tsx` — unread badge on Community tab
+
+**Verification:**
+- Not run (explicit request: no build/typecheck after fixes)
+
+**Решения:**
+- Lazy `require()` is the only reliable fix for Expo Go SDK 53+ push side effects — runtime guards are too late since module init runs before any hook.
+- Reused React Query cache for tab badge unread count to avoid extra polling.
+
+### Диагноза — неимплементирани функции (Codex)
+
+**QR код — само receiving end е имплементиран:**
+- ✅ Deep link handler в `apps/mobile/app/(tabs)/profile.tsx` — при `handoffUserId` параметър отваря/създава DM conversation
+- ❌ QR code генератор (показва QR на собствения профил)
+- ❌ QR code скенер (сканира QR на друг потребител)
+- ❌ Нужни пакети: `react-native-svg`, `react-native-qrcode-svg`, `expo-camera`
+- Всички три пакета работят в Expo Go
+
+**Нотификации при коментар — не са имплементирани:**
+- Push се изпраща само за DM (`type: "message"`)
+- Коментари на постове не генерират push/inbox нотификация
+- Вариант A (само push, ~30 мин): при нов коментар → push до автора → tap отваря поста
+- Вариант B (push + persistent inbox, ~2-3ч): нова `notifications` DB таблица + API + UI
+
+**Community hero title font регресия:**
+- Преди имплементацията на gradient ефекта (Session 234/239) заглавието "Community" в mobile hero е имало правилен шрифт
+- След като `CommunityGradientTitle` е въведен с `Animated.Text` + animated color, шрифтът се е наранил
+- `fontFamily: "Rubik"` е в `headerTitleGlyph` (подаден като `textStyle` prop) → прилага се на `Animated.Text`
+- Рубик файлът не е съществувал → `fontFamily` е бил игнориран → system bold е изглеждал добре
+- Сега Rubik е свален и зареден — `Animated.Text` може да рендерира по-различно от `Text`
+- Възможна причина: `Animated.Text` + `fontFamily` + `fontWeight: "800"` комбинацията счупва рендерирането на някои Android устройства
+- Следващата сесия: диагностицирай и оправи — евентуално замени `Animated.Text` с `MaskedView` + `LinearGradient` за gradient текст
+
+**Следваща сесия — приоритети:**
+1. Community hero title font fix
+2. QR код (display + scanner) — ~150 реда, 3 пакета
+3. Push нотификации при коментар — Вариант A (~40 реда)
+
