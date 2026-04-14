@@ -7149,3 +7149,26 @@ Commit: `feat: implement S2 Ask Mentor вЂ” mentor inbox + answer-status API`
 **Решения:**
 - Chose runtime detection (`appOwnership` / execution environment) instead of removing push hook globally, so physical-device push testing in development builds remains intact.
 
+### Session 242 - Local production startup hardening (auto port cleanup)
+
+**Какво направихме:**
+- Added a one-command local production runner that prevents repeated `EADDRINUSE` failures on port `3002`.
+- New script automatically:
+  - stops stale listener processes on port `3002`
+  - runs `build:web` (unless skipped)
+  - starts `start:web` on `http://localhost:3002`
+- Added root npm scripts:
+  - `npm run prod:web`
+  - `npm run prod:web:skip-build`
+
+**Файлове:**
+- `[NEW] scripts/run-local-prod.ps1`
+- `[MODIFY] package.json`
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- `npm.cmd run prod:web:skip-build` ✅ (server starts and reports `Ready` on port `3002`)
+
+**Решения:**
+- Kept the solution Windows-native (PowerShell) to match the current development environment and reduce manual terminal recovery steps.
+

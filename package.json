@@ -8,6 +8,8 @@
   ],
   "scripts": {
     "dev:web": "npm --workspace @studyhub/web run dev",
+    "prod:web": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/run-local-prod.ps1",
+    "prod:web:skip-build": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/run-local-prod.ps1 -SkipBuild",
     "build:web": "npm --workspace @studyhub/web run build",
     "start:web": "npm --workspace @studyhub/web run start -- --port 3002",
     "lint:web": "npm --workspace @studyhub/web run lint",
@@ -18,7 +20,8 @@
     "dev:mobile:usb": "npm --workspace @studyhub/mobile run dev:mobile:usb",
     "dev:mobile:android:usb": "npm --workspace @studyhub/mobile run android:usb",
     "typecheck:mobile": "npm --workspace @studyhub/mobile run typecheck",
-    "typecheck:shared": "npm --workspace @studyhub/shared run typecheck"
+    "typecheck:shared": "npm --workspace @studyhub/shared run typecheck",
+    "kill:node": "taskkill //F //IM node.exe || true"
   },
   "engines": {
     "node": ">=20"

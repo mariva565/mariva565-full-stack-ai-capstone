@@ -84,7 +84,7 @@ export function usePushNotifications(): void {
   const activeConversationId = getActiveConversationId(pathname);
 
   useEffect(() => {
-    if (isLoading || !user) {
+    if (isLoading || !user || isExpoGoRuntime()) {
       return;
     }
 
