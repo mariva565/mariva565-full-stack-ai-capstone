@@ -1,6 +1,8 @@
 import { StyleSheet } from "react-native";
 import type { AppColors } from "../../lib/colors";
 
+const RUBIK_FONT_FAMILY = "Rubik";
+
 export function makeCommunityStyles(colors: AppColors) {
   return StyleSheet.create({
     container: {
@@ -9,18 +11,19 @@ export function makeCommunityStyles(colors: AppColors) {
     },
     header: {
       paddingHorizontal: 20,
-      paddingTop: 60,
+      paddingTop: 72,
       paddingBottom: 20,
     },
     headerTopRow: {
-      flexDirection: "row",
-      alignItems: "flex-start",
-      justifyContent: "space-between",
+      flexDirection: "column",
+      alignItems: "stretch",
+      justifyContent: "flex-start",
       gap: 12,
     },
     headerTextWrap: {
       flex: 1,
       minWidth: 0,
+      marginTop: 4,
     },
     headerActions: {
       flexDirection: "row",
@@ -28,6 +31,7 @@ export function makeCommunityStyles(colors: AppColors) {
       justifyContent: "flex-end",
       flexWrap: "wrap",
       gap: 8,
+      alignSelf: "flex-end",
     },
     headerTitleWrap: {
       marginBottom: 8,
@@ -35,6 +39,7 @@ export function makeCommunityStyles(colors: AppColors) {
     headerTitleGlyph: {
       fontSize: 28,
       fontWeight: "800",
+      fontFamily: RUBIK_FONT_FAMILY,
     },
     headerSubtitle: {
       fontSize: 15,
@@ -145,6 +150,7 @@ export function makeCommunityStyles(colors: AppColors) {
       color: colors.textPrimary,
       fontSize: 18,
       fontWeight: "700",
+      fontFamily: RUBIK_FONT_FAMILY,
       marginBottom: 8,
       lineHeight: 24,
     },

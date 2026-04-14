@@ -32,14 +32,6 @@ export function CommunityScreen() {
     return (
       <LinearGradient colors={[colors.brandDeep, colors.brandPrimary]} style={styles.header}>
         <View style={styles.headerTopRow}>
-          <View style={styles.headerTextWrap}>
-            <CommunityGradientTitle
-              text="Community"
-              containerStyle={styles.headerTitleWrap}
-              textStyle={styles.headerTitleGlyph}
-            />
-            <Text style={styles.headerSubtitle}>Discuss, ask questions, and share notes with fellow students.</Text>
-          </View>
           <View style={styles.headerActions}>
             <TouchableOpacity
               onPress={() => router.push("/messages")}
@@ -71,6 +63,15 @@ export function CommunityScreen() {
               <Feather name="plus" size={16} color={colors.brandDeep} />
               <Text style={styles.newPostButtonText}>New Post</Text>
             </TouchableOpacity>
+          </View>
+
+          <View style={styles.headerTextWrap}>
+            <CommunityGradientTitle
+              text="Community"
+              containerStyle={styles.headerTitleWrap}
+              textStyle={styles.headerTitleGlyph}
+            />
+            <Text style={styles.headerSubtitle}>Discuss, ask questions, and share notes with fellow students.</Text>
           </View>
         </View>
       </LinearGradient>

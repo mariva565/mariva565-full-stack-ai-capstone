@@ -62,6 +62,19 @@ function getExpoProjectId(): string | null {
   return fromExpoConfig;
 }
 
+function isExpoGoRuntime(): boolean {
+  const appOwnership = Constants.appOwnership;
+  if (appOwnership === "expo") {
+    return true;
+  }
+
+  const executionEnvironment = (
+    Constants as unknown as { executionEnvironment?: unknown }
+  ).executionEnvironment;
+
+  return executionEnvironment === "storeClient";
+}
+
 export function usePushNotifications(): void {
   const { user, isLoading } = useAuth();
   const router = useRouter();
@@ -140,6 +153,12 @@ export function usePushNotifications(): void {
     let cancelled = false;
     const registerPushToken = async () => {
       try {
+        if (isExpoGoRuntime()) {
+          // Expo Go (SDK 53+) no longer supports remote push tokens.
+          // Keep this hook silent in Expo Go and register tokens only in dev build/standalone.
+          return;
+        }
+
         if (Platform.OS === "android") {
           await Notifications.setNotificationChannelAsync("messages", {
             name: "Messages",

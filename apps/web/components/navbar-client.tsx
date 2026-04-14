@@ -109,84 +109,90 @@ export function NavbarClient({ initialUser }: NavbarClientProps) {
 
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/80 backdrop-blur-xl dark:border-cyan-400/10 dark:bg-[linear-gradient(180deg,rgba(2,8,22,0.94)_0%,rgba(3,11,28,0.88)_100%)]">
-      <nav className="font-poppins mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
-        <Link href="/" className="group inline-flex items-center gap-3">
-          <BrandMark />
-          <span className="inline-block bg-[linear-gradient(135deg,#8b5cf6,#ec4899)] bg-[length:100%_100%] bg-no-repeat bg-clip-text pb-[0.16em] font-shantell text-[1.6rem] font-bold leading-[1.05] text-transparent [-webkit-text-fill-color:transparent] transition-all duration-300 group-hover:-translate-y-0.5 group-hover:scale-[1.02] dark:bg-[linear-gradient(135deg,#dccbff_0%,#c79dff_48%,#f4b4da_100%)]">
-            StudyHub
-          </span>
-        </Link>
+      <nav className="font-poppins mx-auto max-w-6xl px-4 py-3 sm:px-6 lg:px-8">
+        <div className="flex flex-col gap-2">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <Link href="/" className="group inline-flex items-center gap-3">
+              <BrandMark />
+              <span className="inline-block bg-[linear-gradient(135deg,#8b5cf6,#ec4899)] bg-[length:100%_100%] bg-no-repeat bg-clip-text pb-[0.16em] font-shantell text-[1.6rem] font-bold leading-[1.05] text-transparent [-webkit-text-fill-color:transparent] transition-all duration-300 group-hover:-translate-y-0.5 group-hover:scale-[1.02] dark:bg-[linear-gradient(135deg,#dccbff_0%,#c79dff_48%,#f4b4da_100%)]">
+                StudyHub
+              </span>
+            </Link>
 
-        <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-2">
-          {links.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={`relative rounded-full px-3 py-1.5 text-sm font-medium transition ${
-                isActive(link.href)
-                  ? "bg-[linear-gradient(135deg,#6366f1_0%,#8b5cf6_55%,#06b6d4_100%)] text-white shadow-[0_12px_30px_rgba(99,102,241,0.22)]"
-                  : "text-slate-600 hover:bg-white/70 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-900/60 dark:hover:text-white"
-              }`}
-            >
-              {link.label}
-              {link.href === "/messages" && messagesUnreadCount > 0 ? (
-                <span className="absolute -right-1 -top-1 min-w-5 rounded-full border border-white bg-rose-500 px-1.5 text-center text-[10px] font-bold leading-4 text-white dark:border-slate-950">
-                  {messagesUnreadCount > 99 ? "99+" : messagesUnreadCount}
-                </span>
+            <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-2">
+              {notificationsSupported && notificationPermission === "default" ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    void requestNotificationPermission();
+                  }}
+                  className="rounded-full border border-sky-200 bg-sky-50 px-3 py-1.5 text-sm font-medium text-sky-700 transition hover:bg-sky-100 dark:border-sky-800/60 dark:bg-sky-900/25 dark:text-sky-300 dark:hover:bg-sky-900/35"
+                  aria-label="Enable browser notifications for new messages"
+                >
+                  Enable Alerts
+                </button>
               ) : null}
-            </Link>
-          ))}
 
-          {notificationsSupported && notificationPermission === "default" ? (
-            <button
-              type="button"
-              onClick={() => {
-                void requestNotificationPermission();
-              }}
-              className="rounded-full border border-sky-200 bg-sky-50 px-3 py-1.5 text-sm font-medium text-sky-700 transition hover:bg-sky-100 dark:border-sky-800/60 dark:bg-sky-900/25 dark:text-sky-300 dark:hover:bg-sky-900/35"
-              aria-label="Enable browser notifications for new messages"
-            >
-              Enable Alerts
-            </button>
-          ) : null}
+              <ThemeToggle />
 
-          <ThemeToggle />
+              <div className="flex items-center gap-2 rounded-full border border-slate-200/80 bg-white/85 px-2 py-1.5 shadow-sm transition dark:border-cyan-400/10 dark:bg-slate-950/60">
+                <Link
+                  href="/profile"
+                  className="group flex min-w-0 items-center gap-3 rounded-full px-1 py-0.5 transition hover:-translate-y-0.5"
+                >
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-brand-500 via-fuchsia-500 to-cyan-400 text-xs font-black text-white shadow-[0_10px_25px_rgba(99,102,241,0.25)]">
+                    {user?.avatarUrl ? (
+                      <img
+                        src={user.avatarUrl}
+                        alt={user.name}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      userInitials
+                    )}
+                  </span>
 
-          <div className="flex items-center gap-2 rounded-full border border-slate-200/80 bg-white/85 px-2 py-1.5 shadow-sm transition dark:border-cyan-400/10 dark:bg-slate-950/60">
-            <Link
-              href="/profile"
-              className="group flex min-w-0 items-center gap-3 rounded-full px-1 py-0.5 transition hover:-translate-y-0.5"
-            >
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-brand-500 via-fuchsia-500 to-cyan-400 text-xs font-black text-white shadow-[0_10px_25px_rgba(99,102,241,0.25)]">
-                {user?.avatarUrl ? (
-                  <img
-                    src={user.avatarUrl}
-                    alt={user.name}
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  userInitials
-                )}
-              </span>
+                  <span className="hidden min-w-0 text-left sm:block">
+                    <span className="block truncate text-sm font-semibold leading-4 text-slate-800 group-hover:text-brand-700 dark:text-slate-100 dark:group-hover:text-cyan-200">
+                      {user?.name ?? "My Profile"}
+                    </span>
+                    <span className="mt-0.5 block truncate text-[0.76rem] leading-4 text-slate-500 dark:text-slate-400">
+                      {roleLabel}
+                    </span>
+                  </span>
+                </Link>
 
-              <span className="hidden min-w-0 text-left sm:block">
-                <span className="block truncate text-sm font-semibold leading-4 text-slate-800 group-hover:text-brand-700 dark:text-slate-100 dark:group-hover:text-cyan-200">
-                  {user?.name ?? "My Profile"}
-                </span>
-                <span className="mt-0.5 block truncate text-[0.76rem] leading-4 text-slate-500 dark:text-slate-400">
-                  {roleLabel}
-                </span>
-              </span>
-            </Link>
+                <button
+                  onClick={handleLogout}
+                  className="inline-flex h-10 w-14 shrink-0 items-center justify-center rounded-full bg-rose-50 text-rose-400 transition hover:-translate-y-0.5 hover:bg-rose-100 hover:text-rose-500 dark:bg-rose-500/10 dark:text-rose-300 dark:hover:bg-rose-500/15 dark:hover:text-rose-200"
+                  title="Logout"
+                  aria-label="Logout"
+                >
+                  <LogoutIcon />
+                </button>
+              </div>
+            </div>
+          </div>
 
-            <button
-              onClick={handleLogout}
-              className="inline-flex h-10 w-14 shrink-0 items-center justify-center rounded-full bg-rose-50 text-rose-400 transition hover:-translate-y-0.5 hover:bg-rose-100 hover:text-rose-500 dark:bg-rose-500/10 dark:text-rose-300 dark:hover:bg-rose-500/15 dark:hover:text-rose-200"
-              title="Logout"
-              aria-label="Logout"
-            >
-              <LogoutIcon />
-            </button>
+          <div className="flex flex-wrap items-center gap-2 lg:justify-end">
+            {links.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`relative rounded-full px-3 py-1.5 text-sm font-medium transition ${
+                  isActive(link.href)
+                    ? "bg-[linear-gradient(135deg,#6366f1_0%,#8b5cf6_55%,#06b6d4_100%)] text-white shadow-[0_12px_30px_rgba(99,102,241,0.22)]"
+                    : "text-slate-600 hover:bg-white/70 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-900/60 dark:hover:text-white"
+                }`}
+              >
+                {link.label}
+                {link.href === "/messages" && messagesUnreadCount > 0 ? (
+                  <span className="absolute -right-1 -top-1 min-w-5 rounded-full border border-white bg-rose-500 px-1.5 text-center text-[10px] font-bold leading-4 text-white dark:border-slate-950">
+                    {messagesUnreadCount > 99 ? "99+" : messagesUnreadCount}
+                  </span>
+                ) : null}
+              </Link>
+            ))}
           </div>
         </div>
       </nav>

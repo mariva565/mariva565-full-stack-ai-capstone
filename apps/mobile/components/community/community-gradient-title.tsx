@@ -21,10 +21,6 @@ const LIGHT_STOPS = ["#ffffff", "#67e8f9", "#a78bfa", "#ffffff"] as const;
 const DARK_STOPS = ["#f8fafc", "#93c5fd", "#c4b5fd", "#f8fafc"] as const;
 const TITLE_ANIMATION_DURATION_MS = 4000;
 
-function getColorStop(stops: readonly string[], index: number): string {
-  return stops[((index % stops.length) + stops.length) % stops.length];
-}
-
 export function CommunityGradientTitle({
   text,
   containerStyle,
@@ -38,7 +34,6 @@ export function CommunityGradientTitle({
     () => (resolvedTheme === "dark" ? DARK_STOPS : LIGHT_STOPS),
     [resolvedTheme]
   );
-  const characters = useMemo(() => Array.from(text), [text]);
 
   useEffect(() => {
     progress.stopAnimation();
@@ -63,30 +58,18 @@ export function CommunityGradientTitle({
     };
   }, [prefersReducedMotion, progress]);
 
+  const animatedColor = prefersReducedMotion
+    ? gradientStops[0]
+    : progress.interpolate({
+        inputRange: [0, 0.33, 0.66, 1],
+        outputRange: [gradientStops[0], gradientStops[1], gradientStops[2], gradientStops[3]],
+      });
+
   return (
     <View style={[styles.row, containerStyle]} accessibilityRole="header" accessible accessibilityLabel={text}>
-      {characters.map((char, index) => {
-        const color = prefersReducedMotion
-          ? getColorStop(gradientStops, index)
-          : progress.interpolate({
-              inputRange: [0, 0.5, 1],
-              outputRange: [
-                getColorStop(gradientStops, index),
-                getColorStop(gradientStops, index + 1),
-                getColorStop(gradientStops, index + 2),
-              ],
-            });
-
-        return (
-          <Animated.Text
-            key={`${char}-${index}`}
-            style={[styles.glyph, textStyle, { color }]}
-            accessible={false}
-          >
-            {char}
-          </Animated.Text>
-        );
-      })}
+      <Animated.Text style={[styles.glyph, textStyle, { color: animatedColor }]} accessible={false}>
+        {text}
+      </Animated.Text>
     </View>
   );
 }

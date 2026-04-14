@@ -7088,3 +7088,64 @@ Commit: `feat: implement S2 Ask Mentor вЂ” mentor inbox + answer-status API`
 - Chose a dedicated `/moderation` route so mentors can moderate without entering admin-only dashboard context, while still reusing one shared queue implementation.
 - Kept destructive/pinning actions admin-only in UI as an explicit capability boundary aligned with backend authorization rules.
 
+## 2026-04-14
+### Session 239 - Mobile Community hero spacing + Rubik typography alignment
+
+**Какво направихме:**
+- Fixed mobile Community hero overlap by moving action buttons above title/subtitle and switching header layout to stacked flow.
+- Nudged the hero lower so the title has more breathing room below the top edge/notch area.
+- Updated mobile Community title effect rendering to animate color on the full word (single text node), which preserves glyph spacing and avoids per-letter typography distortion.
+- Applied Rubik font family to:
+  - Community hero title (`Community`)
+  - Community post titles (feed cards and post details via shared `cardTitle` style)
+
+**Файлове:**
+- `[MODIFY] apps/mobile/components/community/community-screen.tsx`
+- `[MODIFY] apps/mobile/components/community/community.styles.ts`
+- `[MODIFY] apps/mobile/components/community/community-gradient-title.tsx`
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- Not run in this session by explicit request (`Не билдвай наново`): no `build`/`typecheck` executed after these edits.
+
+**Решения:**
+- Prioritized layout stability and readable typography over per-letter title animation complexity in mobile hero.
+
+### Session 240 - Desktop navbar row hierarchy fix (brand + controls on first row)
+
+**Какво направихме:**
+- Reworked authenticated desktop navbar into two stacked rows to keep high-priority controls visible on the first row.
+- First row now contains:
+  - brand (`StudyHub`)
+  - optional `Enable Alerts`
+  - dark-mode `ThemeToggle`
+  - profile pill + `Logout` action group
+- Navigation links are now rendered on a dedicated second row (`lg:justify-end`), preventing profile/logout/theme controls from wrapping to a third line when link count grows.
+
+**Файлове:**
+- `[MODIFY] apps/web/components/navbar-client.tsx`
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- Not run in this session by explicit request (`Не билдвай наново`): no `build`/`typecheck` executed after these edits.
+
+**Решения:**
+- Prioritized stable first-row placement for user/account controls over single-row compactness, because action discoverability is more important than keeping all nav elements on one line.
+
+### Session 241 - Expo Go push-token guard (SDK 53+ compatibility)
+
+**Какво направихме:**
+- Added runtime guard in mobile push hook to skip remote push-token registration when app runs inside Expo Go.
+- Prevented `expo-notifications` Expo Go warning/error path triggered by `getExpoPushTokenAsync` on SDK 53+.
+- Kept push registration behavior unchanged for development builds / standalone builds.
+
+**Файлове:**
+- `[MODIFY] apps/mobile/lib/use-push-notifications.ts`
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- Not run in this session (no build/typecheck executed).
+
+**Решения:**
+- Chose runtime detection (`appOwnership` / execution environment) instead of removing push hook globally, so physical-device push testing in development builds remains intact.
+
