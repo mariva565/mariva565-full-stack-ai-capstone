@@ -16,7 +16,9 @@ export async function POST(request: NextRequest) {
   }
 
   const formData = await request.formData();
-  const fileEntry = formData.get("file");
+  // TypeScript in this environment occasionally misses DOM FormData methods
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const fileEntry = (formData as any).get("file");
   if (!(fileEntry instanceof File)) {
     return NextResponse.json(
       { code: "MISSING_FILE", message: "Select an image file to upload." },

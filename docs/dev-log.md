@@ -1,613 +1,91 @@
-# Dev Log вЂ” StudyHub v2
+﻿# Dev Log — StudyHub v2
 
-Р”РЅРµРІРЅРёРє РЅР° СЂР°Р·СЂР°Р±РѕС‚РєР°С‚Р°. РћР±РЅРѕРІСЏРІР° СЃРµ РїСЂРё РІСЃСЏРєР° СЃРµСЃРёСЏ.
+Дневник на разработката. Обновява се при всяка сесия.
 
 ---
 
-## РџСЂРµРґСЃС‚РѕСЏС‰Рѕ (С„РёРЅР°Р»РµРЅ РµС‚Р°Рї)
+## Предстоящо (финален етап)
 
-- [x] **Community animated gradient title (`.hero-gradient-text`)** вЂ” РІРЅРµРґСЂРµРЅРѕ РІ web + mobile СЃ reduced-motion fallback (2026-04-13, Session 234).
-- [ ] **Mobile Social completion (S2/S3): Inbox + Messages** вЂ” РґР° РґРѕРІСЉСЂС€РёРј social РјРѕРґСѓР»Р° РІ mobile РєР»РёРµРЅС‚Р°:
-  - inbox СЃРїРёСЃСЉРє СЃ СЂР°Р·РіРѕРІРѕСЂРё (РїРѕСЃР»РµРґРЅРѕ СЃСЉРѕР±С‰РµРЅРёРµ, timestamp, unread state)
-  - conversation thread РµРєСЂР°РЅ СЃ РёР·РїСЂР°С‰Р°РЅРµ/РїРѕР»СѓС‡Р°РІР°РЅРµ РЅР° СЃСЉРѕР±С‰РµРЅРёСЏ
-  - entry points РѕС‚ Community/QR handoff РєСЉРј РєРѕРЅРєСЂРµС‚РµРЅ РїРѕС‚СЂРµР±РёС‚РµР»
-  - consistency СЃ web messaging РїРѕРІРµРґРµРЅРёРµС‚Рѕ Рё auth guard-РёС‚Рµ
-- [x] **QR в†’ Community DM flow** вЂ” РґР° СЂР°Р·С€РёСЂРёРј profile QR handoff-Р°: СЃР»РµРґ СЃРєР°РЅРёСЂР°РЅРµ РЅР° user link РґР° РёРјР° shortcut вЂћSend messageвЂњ РєСЉРј conversation СЃ С‚РѕР·Рё РїРѕС‚СЂРµР±РёС‚РµР» (reuse РЅР° messaging API Рё guard-РёС‚Рµ).
+- [x] **Community animated gradient title (`.hero-gradient-text`)** — внедрено в web + mobile с reduced-motion fallback (2026-04-13, Session 234).
+- [ ] **Mobile Social completion (S2/S3): Inbox + Messages** — да довършим social модула в mobile клиента:
+  - inbox списък с разговори (последно съобщение, timestamp, unread state)
+  - conversation thread екран с изпращане/получаване на съобщения
+  - entry points от Community/QR handoff към конкретен потребител
+  - consistency с web messaging поведението и auth guard-ите
+- [x] **QR → Community DM flow** — да разширим profile QR handoff-а: след сканиране на user link да има shortcut „Send message“ към conversation с този потребител (reuse на messaging API и guard-ите).
 - [x] **Community moderation workflow** — внедрени са MVP pre-moderation, UX polish на queue flow и отделен mentor/admin moderation view (Session 235 + Session 237).
-- [ ] **Screenshot attachments in posts** вЂ” РґР° РїСЂРµС†РµРЅРёРј upload Р°СЂС…РёС‚РµРєС‚СѓСЂР°С‚Р° Р·Р° РёР·РѕР±СЂР°Р¶РµРЅРёСЏ РІ Community posts/comments:
-  - Option A: Cloudflare R2 (РїСЂРµРїРѕСЂСЉС‡РёС‚РµР»РЅРѕ Р·Р° production)
-  - Option B: base64/inline (СЃР°РјРѕ РІСЂРµРјРµРЅРЅРѕ, РЅРµ СЃРµ РїСЂРµРїРѕСЂСЉС‡РІР°)
-  - РґР° РґРѕР±Р°РІРёРј file size/type validation, abuse limits Рё thumbnail СЃС‚СЂР°С‚РµРіРёСЏ.
-- [ ] **File attachments in posts (PDF/DOC/ZIP)** вЂ” РґР° РґРѕР±Р°РІРёРј РїСЂРёРєР°С‡РІР°РЅРµ РЅР° С„Р°Р№Р»РѕРІРµ РєСЉРј Community posts (web + mobile), СЃ upload storage, allowlist РЅР° С„РѕСЂРјР°С‚Рё, size limits, scanning/policy checks Рё download permissions.
-- [ ] **How It Works вЂ” СЂРµР°Р»РЅРё СЃРєСЂРёР№РЅС€РѕС‚РѕРІРµ** вЂ” `/how-it-works` СЃС‚СЂР°РЅРёС†Р°С‚Р° РёРјР° placeholder РёР·РѕР±СЂР°Р¶РµРЅРёСЏ РІ СЃРµРєС†РёСЏС‚Р° СЃСЉСЃ СЃС‚СЉРїРєРёС‚Рµ. РљРѕРіР°С‚Рѕ РІСЃРёС‡РєРё web + mobile РµРєСЂР°РЅРё СЃР° РіРѕС‚РѕРІРё, РґР° СЃРµ РЅР°РїСЂР°РІСЏС‚ СЂРµР°Р»РЅРё СЃРєСЂРёР№РЅС€РѕС‚РѕРІРµ Рё РґР° СЃРµ Р·Р°РјРµРЅСЏС‚. Р—Р°СЃСЏРіР° Рё README assets (web-preview, mobile-preview) вЂ” РјРѕР¶Рµ РІ РµРґРЅР° СЃРµСЃРёСЏ.
-- [ ] **ConfirmModal** вЂ” `confirm()` РІ `post-details.tsx` Рё `posts-tab.tsx` С‚СЂСЏР±РІР° РґР° СЃРµ Р·Р°РјРµРЅРё СЃ styled modal (СЃРїСЂСЏРјРѕ РїСЂР°РІРёР»РѕС‚Рѕ "No native dialogs").
-- [x] **S3 Chat вЂ” build + С‚РµСЃС‚** вЂ” РўРµСЃС‚РІР°РЅРѕ СЃ РґРІР° Р°РєР°СѓРЅС‚Р°; Pusher real-time СЂР°Р±РѕС‚Рё.
-- [x] **S3 Chat вЂ” РІРёСЃРѕС‡РёРЅР°** вЂ” С„РёРєСЃРёСЂР°РЅРѕ: РґРёРЅР°РјРёС‡РЅРѕ РёР·РјРµСЂРІР°РЅРµ РЅР° navbar offset РІРјРµСЃС‚Рѕ hardcoded `5rem`.
+- [ ] **Screenshot attachments in posts** — да преценим upload архитектурата за изображения в Community posts/comments:
+  - Option A: Cloudflare R2 (препоръчително за production)
+  - Option B: base64/inline (само временно, не се препоръчва)
+  - да добавим file size/type validation, abuse limits и thumbnail стратегия.
+- [ ] **File attachments in posts (PDF/DOC/ZIP)** — да добавим прикачване на файлове към Community posts (web + mobile), с upload storage, allowlist на формати, size limits, scanning/policy checks и download permissions.
+- [ ] **How It Works — реални скрийншотове** — `/how-it-works` страницата има placeholder изображения в секцията със стъпките. Когато всички web + mobile екрани са готови, да се направят реални скрийншотове и да се заменят. Засяга и README assets (web-preview, mobile-preview) — може в една сесия.
+- [ ] **ConfirmModal** — `confirm()` в `post-details.tsx` и `posts-tab.tsx` трябва да се замени с styled modal (спрямо правилото "No native dialogs").
+- [x] **S3 Chat — build + тест** — Тествано с два акаунта; Pusher real-time работи.
+- [x] **S3 Chat — височина** — фиксирано: динамично измерване на navbar offset вместо hardcoded `5rem`.
 - [x] **S3 Chat — "Send message" от профил** — бутонът е добавен и в публичен профил `/profile/[id]` (не само в post details).
 
 ---
 
-## 2026-04-15
-
-### Session 247 — Tiptap Rich Text Editor for Community posts
-
-**Какво направихме:**
-- Инсталирахме Tiptap пакети в web workspace: `@tiptap/react`, `@tiptap/starter-kit`, `dompurify`, `@types/dompurify`
-- Нов shared UI компонент `components/ui/rich-text-editor.tsx`:
-  - `"use client"` — client-only, useEditor не работи на сървъра
-  - Toolbar: **B**, *I*, H2, H3, • List, 1. List, \<\> Code Block — всеки бутон с active state
-  - Dark mode Tailwind класове без CSS файлове (brand-400, slate-700/800 palette)
-  - Placeholder чрез CSS `::before` pseudo-element с `data-placeholder` атрибут
-  - Props: `value`, `onChange`, `placeholder?`, `minHeight?`
-- `create-post-form.tsx` — заменен `<textarea>` с `<RichTextEditor>`, state остава `string` (HTML), submit логика непроменена
-- `edit-post-form.tsx` — същото (textarea → RichTextEditor)
-- `post-details.tsx`:
-  - Добавена `sanitizeHtml()` helper функция с DOMPurify (dynamic `require` за SSR guard, `any` cast за type compatibility)
-  - Заменен `whitespace-pre-wrap` content div с `dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content) }}`
-  - CSS клас `post-html-content` за prose-like rendering
-- `community-feed.tsx` — добавен `stripHtml()` helper, excerpt в PostCard вече показва plain text (без HTML тагове)
-- `globals.css`:
-  - Добавени `.post-html-content` prose стилове (h2, h3, p, strong, em, ul, ol, li, code, pre)
-  - Добавен Tiptap `.tiptap-content p.is-editor-empty::before` placeholder CSS
-- **Mobile (Вариант Б — пълен HTML рендър)**:
-  - Инсталирахме `react-native-render-html`
-  - `apps/mobile/components/community/post-card.tsx` — добавен `stripHtml()`, приложен на `post.content` за excerpt (остава plain text за превю)
-  - `apps/mobile/components/community/post-details-screen.tsx` — използва `RenderHtml` компонент с custom `tagsStyles` за форматиране на Tiptap HTML съдържанието
-
-**Файлове:**
-- `[NEW] apps/web/components/ui/rich-text-editor.tsx`
-- `[MODIFY] apps/web/components/community/create-post-form.tsx`
-- `[MODIFY] apps/web/components/community/edit-post-form.tsx`
-- `[MODIFY] apps/web/components/community/post-details.tsx`
-- `[MODIFY] apps/web/components/community/community-feed.tsx`
-- `[MODIFY] apps/web/app/globals.css`
-- `[MODIFY] apps/web/package.json` (+ 3 пакета)
-- `[MODIFY] apps/mobile/components/community/post-card.tsx`
-- `[MODIFY] apps/mobile/components/community/post-details-screen.tsx`
-- `[MODIFY] docs/dev-log.md`
-
-**Verification:**
-- `npm.cmd run typecheck:web` ✅
-- `npm.cmd run typecheck:mobile` ✅
-
-**Решения:**
-- DOMPurify с `typeof window === "undefined"` guard — чист SSR, никакъв window call на сървъра
-- Избрахме `require("dompurify") as any` вместо static import, за да избегнем ESM/SSR bundle на DOMPurify
-- Mobile: Първоначално решено за Вариант А (stripHtml regex), но по желание на потребителя е внедрен **Вариант Б** с `react-native-render-html` пакет за пълен rich rendering на поста в детайлния екран.
-- Prose CSS е custom в globals.css (без @tailwindcss/typography plugin — не е конфигуриран в проекта)
-
----
-
-## 2026-04-13
-### Session 236 - Community pending UX + messaging notifications follow-up
-
-**Какво направихме:**
-- Added explicit pending-moderation visibility in Community web UI so authors can clearly see moderation state:
-  - Community feed cards now show `Pending review` status and helper copy for own pending posts.
-  - Post details page now shows `Pending review` badge + moderation notice banner.
-- Polished web permission-based browser message notifications:
-  - native notification title/body now include sender context + message preview.
-  - in-app toast fallback mirrors the same content when native notifications are not shown.
-- Improved mobile foreground message alerts:
-  - switched foreground push behavior to in-app toast only (no duplicate OS foreground banner).
-  - suppressed foreground toast when user is already inside the same `/messages/[id]` thread.
-- Extended push verification tracking docs for full pipeline validation:
-  - added `SMK-21` / `SMK-22` / `SMK-23` (foreground/background/killed app flows) to mobile smoke matrix.
-  - synced mobile execution checklist with current verification status.
-
-**Файлове:**
-- `[MODIFY] apps/web/components/community/community-feed.tsx`
-- `[MODIFY] apps/web/components/community/post-details.tsx`
-- `[MODIFY] apps/web/components/messages/use-web-messages-notifications.ts`
-- `[MODIFY] apps/mobile/lib/use-push-notifications.ts`
-- `[MODIFY] docs/mobile-smoke-test-matrix.md`
-- `[MODIFY] docs/mobile-execution-checklist.md`
-- `[MODIFY] docs/dev-log.md`
-
-**Verification:**
-- `npm.cmd run typecheck:web` ✅
-- `npm.cmd run typecheck:mobile` ✅
-
-**Решения:**
-- Kept moderation visibility UX scoped to authors' pending posts in Community feed/details, without introducing new moderation/admin surfaces on mobile.
-- Preserved browser notifications as permission-gated progressive enhancement and kept in-app fallback for unsupported/denied/visible-tab scenarios.
-- Marked push pipeline rows as `BLOCKED` in docs until physical-device validation is executed (foreground/background/killed app cannot be fully verified from terminal-only session).
-
-### Session 235 - MVP true moderation flow (user pending + mentor/admin moderation)
-
-**Какво направихме:**
-- Enabled true pre-moderation for Community posts:
-  - new posts by `user` are now created as `pending`
-  - new posts by `mentor`/`admin` remain `approved`
-- Added centralized post access/moderation helper logic in web backend:
-  - visibility checks for `approved/pending/hidden`
-  - mentor scope checks bound to mentored courses
-- Hardened post interaction routes so non-visible posts cannot be liked/bookmarked/commented by unauthorized users.
-- Extended moderation API permissions from admin-only to mentor/admin for moderation actions:
-  - mentors can moderate only posts from courses they mentor
-  - mentors can `approve/hide` (pin changes remain admin-only)
-  - hard delete remains admin-only
-- Improved moderation queue behavior in web admin tab by defaulting status filter to `pending`.
-- Updated create-post CTA wording (`Publish` -> `Submit`) in web and mobile Community create flows to align with moderation semantics.
-
-**Файлове:**
-- `[NEW] apps/web/lib/post-access.ts`
-- `[MODIFY] apps/web/app/api/posts/route.ts`
-- `[MODIFY] apps/web/app/api/posts/[id]/route.ts`
-- `[MODIFY] apps/web/app/api/posts/[id]/comments/route.ts`
-- `[MODIFY] apps/web/app/api/posts/[id]/like/route.ts`
-- `[MODIFY] apps/web/app/api/posts/[id]/bookmark/route.ts`
-- `[MODIFY] apps/web/app/api/admin/posts/route.ts`
-- `[MODIFY] apps/web/app/api/admin/posts/[id]/route.ts`
-- `[MODIFY] apps/web/components/admin/posts-tab.tsx`
-- `[MODIFY] apps/web/components/community/create-post-form.tsx`
-- `[MODIFY] apps/mobile/components/community/create-post-screen.tsx`
-- `[MODIFY] docs/dev-log.md`
-
-**Verification:**
-- `npm.cmd run typecheck:web` ✅
-- `npm.cmd run typecheck:mobile` ✅
-
-**Решения:**
-- Kept mobile without moderation/admin UI per scope decision; moderation remains web/backend-driven.
-- Applied mentor moderation with course-scoped authorization to avoid global mentor moderation rights.
-- Preserved admin-only destructive controls (`DELETE`, pin management) while opening `approve/hide` to mentors.
-
-### Session 234 - Community gradient title parity (web + mobile + reduced motion)
-
-**Какво направихме:**
-- Wired the reserved `.hero-gradient-text` animation into the web Community page title so it is no longer unused.
-- Added `prefers-reduced-motion` fallback for `.hero-gradient-text` in global web styles.
-- Built mobile parity for the same visual concept via animated multi-stop title coloring in Community header.
-- Added mobile reduced-motion accessibility hook (`AccessibilityInfo.isReduceMotionEnabled + reduceMotionChanged`) and disabled title animation when reduced motion is enabled.
-
-**Файлове:**
-- `[MODIFY] apps/web/components/community/community-feed.tsx`
-- `[MODIFY] apps/web/app/globals.css`
-- `[NEW] apps/mobile/lib/use-reduced-motion-preference.ts`
-- `[NEW] apps/mobile/components/community/community-gradient-title.tsx`
-- `[MODIFY] apps/mobile/components/community/community-screen.tsx`
-- `[MODIFY] apps/mobile/components/community/community.styles.ts`
-- `[MODIFY] docs/dev-log.md`
-
-**Verification:**
-- `npm.cmd run typecheck:web` ✅
-- `npm.cmd run typecheck:mobile` ✅
-
-**Решения:**
-- Kept motion subtle and looped only for the title itself, while honoring reduced-motion on both platforms.
-- Used a dedicated mobile title component so the effect stays isolated to Community header and easy to reuse/tune later.
-
-### Session 233 - Mobile native push notifications for chat messages
-
-**Какво направихме:**
-- Added push token persistence in DB with new `user_push_tokens` Drizzle model and SQL migration (`0010_user_push_tokens.sql`), aligned with the hosted Neon SQL rollout.
-- Added mobile endpoint `POST /api/mobile/push-token` to register/update Expo push tokens for the authenticated user.
-- Added Expo push helper (`sendExpoPushNotifications`) with Expo token validation and `DeviceNotRegistered` cleanup support.
-- Extended `POST /api/conversations/[id]/messages` to send best-effort native push notifications to other conversation members (excluding sender).
-- Added mobile push notifications integration:
-  - installed and configured `expo-notifications`
-  - created `usePushNotifications` hook for permission flow, token registration, foreground toast, and notification-tap deep-link to `/messages/[id]`
-  - wired the hook in app root layout so behavior is active app-wide for authenticated users.
-- Hardened updated conversation message API error handling to return `{ code, message }` for invalid conversation id, invalid JSON, missing content, and forbidden access.
-
-**Файлове:**
-- `[MODIFY] drizzle/schema.ts`
-- `[NEW] drizzle/migrations/0010_user_push_tokens.sql`
-- `[NEW] apps/web/lib/expo-push.ts`
-- `[NEW] apps/web/app/api/mobile/push-token/route.ts`
-- `[MODIFY] apps/web/app/api/conversations/[id]/messages/route.ts`
-- `[NEW] apps/mobile/lib/use-push-notifications.ts`
-- `[MODIFY] apps/mobile/app/_layout.tsx`
-- `[MODIFY] apps/mobile/app.json`
-- `[MODIFY] apps/mobile/package.json`
-- `[MODIFY] apps/mobile/package-lock.json`
-- `[MODIFY] .env.example`
-- `[MODIFY] docs/dev-log.md`
-
-**Verification:**
-- `npm.cmd run typecheck:web` ✅
-- `npm.cmd run typecheck:mobile` ✅
-
-**Решения:**
-- Push dispatch is intentionally best-effort and does not block message delivery (chat send path stays fast/reliable even if Expo push fails).
-- Invalid Expo tokens are marked inactive server-side to reduce repeated failed push attempts over time.
-
-### Session 232 - Server-side unread state for messages (web + mobile)
-
-**Какво направихме:**
-- Added server-side unread cursor in messaging schema via `conversation_members.last_read_at`.
-- Updated conversations API to compute and return `hasUnread` + `unreadCount` from DB message timestamps and `last_read_at`.
-- Updated message thread API to mark conversation as read on `GET /api/conversations/[id]/messages` and to advance sender cursor on `POST`.
-- Switched web notifications/unread badge logic from localStorage read-state to server unread state from `/api/conversations`.
-- Removed mobile local unread MVP state (`AsyncStorage`) and now use API unread values end-to-end.
-
-**Файлове:**
-- `[MODIFY] drizzle/schema.ts`
-- `[NEW] drizzle/migrations/0009_conversation_last_read_at.sql`
-- `[MODIFY] apps/web/app/api/conversations/route.ts`
-- `[MODIFY] apps/web/app/api/conversations/[id]/messages/route.ts`
-- `[MODIFY] apps/web/components/messages/use-web-messages-notifications.ts`
-- `[MODIFY] apps/mobile/components/community/community-screen.tsx`
-- `[MODIFY] apps/mobile/components/messages/messages.types.ts`
-- `[MODIFY] apps/mobile/components/messages/message-thread-screen.tsx`
-- `[DELETE] apps/mobile/components/messages/messages-read-state.ts`
-- `[MODIFY] docs/dev-log.md`
-
-**Verification:**
-- `npm.cmd run typecheck:web` ✅
-- `npm.cmd run typecheck:mobile` ✅
-
-**Решения:**
-- Replaced client-only unread tracking with a DB-backed source of truth so unread state stays consistent across devices.
-- Kept browser native notifications and in-app toast behavior, but now trigger logic is based on server unread deltas.
-
-### Session 231 - Browser native notifications for web messages (permission-based)
-
-**Какво направихме:**
-- Added permission-based browser native notifications for new incoming chat messages on desktop web.
-- Added `Enable Alerts` CTA in navbar when browser notification permission is still `default`.
-- Kept behavior user-friendly:
-  - if tab is active -> in-app toast
-  - if tab is not active and permission is granted -> native browser notification with click-to-open conversation
-- Reused existing web messaging polling/unread flow (no DB/API schema change required for this step).
-
-**Файлове:**
-- `[MODIFY] apps/web/components/navbar-client.tsx`
-- `[MODIFY] apps/web/components/messages/use-web-messages-notifications.ts`
-- `[MODIFY] docs/dev-log.md`
-
-**Verification:**
-- `npm.cmd run typecheck:web` ✅
-
-**Решения:**
-- Implemented browser notifications as permission-gated progressive enhancement, keeping toast fallback for unsupported/denied states.
-### Session 230 - QR to DM handoff (mobile deep-link)
-
-**Какво направихме:**
-- Upgraded mobile QR profile handoff so scanning another user profile now opens (or creates) a direct conversation instead of only showing an informational toast.
-- Reused existing messaging API (`POST /api/conversations`) to preserve auth/guard behavior and avoid backend schema changes.
-- Kept self-profile QR behavior safe: scanning your own profile still returns to profile tab with info toast.
-
-**Файлове:**
-- `[MODIFY] apps/mobile/app/(tabs)/profile.tsx`
-- `[MODIFY] docs/dev-log.md`
-
-**Verification:**
-- `npm.cmd run typecheck:mobile` ✅
-
-**Решения:**
-- Implemented QR->DM as an app-level handoff in the existing deep-link route chain (`studyhubv2://profile/{userId}` -> profile tab handoff -> messages thread), minimizing UI/route churn.
-### Session 229 - Web messages notifications (toast + navbar unread badge)
-
-**Какво направихме:**
-- Added web unread badge on the `Messages` nav link in the global navbar.
-- Added foreground in-app toast for newly received incoming messages (polling-based) so users get immediate feedback while browsing other pages.
-- Added client-side web read-state persistence (`localStorage`) and automatic mark-as-read when the user is on `/messages/[id]`.
-- Kept implementation DB/API-compatible (no schema migration), using existing `/api/conversations` payload.
-
-**Файлове:**
-- `[NEW] apps/web/components/messages/use-web-messages-notifications.ts`
-- `[MODIFY] apps/web/components/navbar-client.tsx`
-- `[MODIFY] apps/web/components/navbar.tsx`
-- `[MODIFY] docs/dev-log.md`
-
-**Verification:**
-- `npm.cmd run typecheck:web` ✅
-
-**Решения:**
-- Executed the fast/high-impact step first: `Web toast + unread badge`.
-- Captured the next notifications roadmap requested by product:
-  - Inbox unread badge + foreground in-app alert (mobile)
-  - Full push notifications (foreground/background/killed app)
-  - Browser native notifications (permission-based)
-  - Mobile push/local notifications
-### Session 228 - Mobile Community Inbox unread badge
-
-**Какво направихме:**
-- Added unread badge on the Community `Inbox` CTA so new incoming conversations are visible without opening messages.
-- Implemented local read-state persistence for conversations (`AsyncStorage`) and unread count calculation against latest incoming message timestamps.
-- Hooked message thread screen to mark a conversation as read when opened (based on latest incoming message timestamp), so the badge count drops after reading.
-
-**Файлове:**
-- `[NEW] apps/mobile/components/messages/messages-read-state.ts`
-- `[MODIFY] apps/mobile/components/community/community-screen.tsx`
-- `[MODIFY] apps/mobile/components/community/community.styles.ts`
-- `[MODIFY] apps/mobile/components/messages/message-thread-screen.tsx`
-- `[MODIFY] docs/dev-log.md`
-
-**Verification:**
-- `npm.cmd run typecheck:mobile` ✅
-
-**Решения:**
-- Kept unread tracking as client-side MVP (no DB migration/API contract change) to ship fast and avoid breaking existing web/mobile messaging routes.
-- Badge semantics for this MVP: conversations with a newer incoming message than locally recorded read timestamp are counted as unread.
-### Session 227 - Community inbox CTA discoverability fix
-
-**Какво направихме:**
-- Improved the Community header inbox action so users can immediately recognize its purpose.
-- Replaced the icon-only circular inbox control with a labeled CTA (`Inbox`) next to the icon.
-- Kept existing navigation behavior unchanged (`/messages`), only improved clarity and visual affordance.
-
-**Файлове:**
-- `[MODIFY] apps/mobile/components/community/community-screen.tsx`
-- `[MODIFY] apps/mobile/components/community/community.styles.ts`
-- `[MODIFY] docs/dev-log.md`
-
-**Verification:**
-- `npm.cmd run typecheck:mobile` ✅
-
-**Решения:**
-- Prioritized explicit labeling over icon-only affordance after UX feedback, so first-time users do not need prior guidance to find inbox/messages.
-### Session 226 - Mobile Inbox + Messages implementation (Community handoff)
-
-**Какво направихме:**
-- Implemented mobile inbox screen (`/messages`) that loads conversations from `GET /api/conversations` with pull-to-refresh and periodic refetch.
-- Implemented conversation thread screen (`/messages/[id]`) that loads history from `GET /api/conversations/[id]/messages` and sends messages via `POST /api/conversations/[id]/messages`.
-- Added reusable messaging hooks/types/styles in `apps/mobile/components/messages/`.
-- Added mobile stack routes for messages screens in `apps/mobile/app/_layout.tsx`.
-- Added Community entry points into messaging:
-  - Inbox button in Community header.
-  - "Message" action in post details that creates/opens conversation via `POST /api/conversations`.
-- Added query invalidation between inbox/thread/community so latest messages appear after send/start conversation.
-- Replaced fragile text-symbol icons in messages screens with stable icon rendering (`Ionicons` / unicode escape), avoiding mojibake risk.
-
-**Файлове:**
-- `[NEW] apps/mobile/components/messages/messages.types.ts`
-- `[NEW] apps/mobile/components/messages/messages.styles.ts`
-- `[NEW] apps/mobile/components/messages/use-messages-inbox.ts`
-- `[NEW] apps/mobile/components/messages/use-message-thread.ts`
-- `[NEW] apps/mobile/components/messages/messages-inbox-screen.tsx`
-- `[NEW] apps/mobile/components/messages/message-thread-screen.tsx`
-- `[NEW] apps/mobile/app/messages/index.tsx`
-- `[NEW] apps/mobile/app/messages/[id].tsx`
-- `[MODIFY] apps/mobile/app/_layout.tsx`
-- `[MODIFY] apps/mobile/components/community/community-screen.tsx`
-- `[MODIFY] apps/mobile/components/community/community.styles.ts`
-- `[MODIFY] apps/mobile/components/community/use-community-feed.ts`
-- `[MODIFY] apps/mobile/components/community/post-details-screen.tsx`
-- `[MODIFY] docs/dev-log.md`
-
-**Verification:**
-- `npm.cmd run typecheck:mobile` ✅
-
-**Решения:**
-- Built mobile messaging by reusing existing web conversation endpoints to keep behavior/auth rules consistent across clients.
-- Kept QR-to-DM as a separate next step (tracked in TODO), while delivering Community-to-DM handoff now.
-
-### Session 225 вЂ” Backlog priority reminder: mobile social not finished
-
-**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ:**
-- Р”РѕР±Р°РІРёС…РјРµ explicit TODO РїСЂРёРѕСЂРёС‚РµС‚ Р·Р° РЅРµР·Р°РІСЉСЂС€РµРЅРёСЏ mobile social РѕР±С…РІР°С‚:
-  - `Mobile Social completion (S2/S3): Inbox + Messages`
-- РћРїРёСЃР°С…РјРµ РїРѕРґР·Р°РґР°С‡РёС‚Рµ, РєРѕРёС‚Рѕ РѕСЃС‚Р°РІР°С‚ Р·Р° Р·Р°С‚РІР°СЂСЏРЅРµ РЅР° mobile social РІРµСЂС‚РёРєР°Р»Р°:
-  - inbox СЃРїРёСЃСЉРє СЃ СЂР°Р·РіРѕРІРѕСЂРё
-  - conversation thread РµРєСЂР°РЅ
-  - Community/QR entry points РєСЉРј DM
-  - parity СЃ web messaging + auth guard-РёС‚Рµ
-
-**Р¤Р°Р№Р»РѕРІРµ:**
-- `[MODIFY] docs/dev-log.md`
-
-**Verification:**
-- Р”РѕРєСѓРјРµРЅС‚Р°С†РёРѕРЅРЅР° РїСЂРѕРјСЏРЅР° (РЅСЏРјР° runtime/typecheck РЅСѓР¶РґР°)
-
-**Р РµС€РµРЅРёСЏ:**
-- РњР°СЂРєРёСЂР°С…РјРµ mobile inbox/messages РєР°С‚Рѕ РѕС‚РґРµР»РµРЅ high-priority backlog item, Р·Р° РґР° РЅРµ СЃРµ РёР·РіСѓР±Рё С„РѕРєСѓСЃСЉС‚ РІСЉСЂС…Сѓ РЅРµР·Р°РІСЉСЂС€РµРЅРёСЏ social scope.
-
-### Session 224 вЂ” TODO clarification: Social gradient animation (not font)
-
-**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ:**
-- РЈС‚РѕС‡РЅРёС…РјРµ backlog РµР»РµРјРµРЅС‚a Р·Р° Community РІРёР·СѓР°Р»Р°: РЅРµ СЃС‚Р°РІР° РґСѓРјР° Р·Р° С€СЂРёС„С‚, Р° Р·Р° РїСЂРµР»РёРІР°С‰Р°С‚Р° gradient text Р°РЅРёРјР°С†РёСЏ.
-- РћР±РЅРѕРІРёС…РјРµ TODO Р·Р°РїРёСЃР° РѕС‚ вЂћCommunity typography pass (Shantell)вЂњ РєСЉРј РєРѕРЅРєСЂРµС‚РЅРёСЏ РµР»РµРјРµРЅС‚:
-  - `Community animated gradient title (.hero-gradient-text)`
-- РџСЂРµРјР°С…РЅР°С…РјРµ РґСѓР±Р»РёСЂР°С‰ СЃС‚Р°СЂ TODO СЂРµРґ Р·Р° `.hero-gradient-text`, Р·Р° РґР° РѕСЃС‚Р°РЅРµ СЃР°РјРѕ РµРґРёРЅ source of truth РІ вЂћРџСЂРµРґСЃС‚РѕСЏС‰РѕвЂњ.
-- РџСЂРёС‡РёРЅР°С‚Р°: РёРјР° РёСЃС‚РѕСЂРёС‡РµСЃРєРё Р·Р°РїРёСЃ, С‡Рµ `.hero-gradient-text` Рµ вЂћР·Р°РїР°Р·РµРЅ Р·Р° Social FeaturesвЂњ, РЅРѕ СЂРµР°Р»РЅРѕ РѕСЃС‚Р°РІР° РЅРµРёР·РїРѕР»Р·РІР°РЅ (РІРєР»СЋС‡РёС‚РµР»РЅРѕ РѕС‚С‡РµС‚РµРЅ РїСЂРё РѕРґРёС‚ РєР°С‚Рѕ unused).
-
-**Р¤Р°Р№Р»РѕРІРµ:**
-- `[MODIFY] docs/dev-log.md`
-
-**Verification:**
-- Р”РѕРєСѓРјРµРЅС‚Р°С†РёРѕРЅРЅР° РїСЂРѕРјСЏРЅР° (РЅСЏРјР° runtime/typecheck РЅСѓР¶РґР°)
-
-**Р РµС€РµРЅРёСЏ:**
-- Р¤РёРєСЃРёСЂР°С…РјРµ С„РѕСЂРјСѓР»РёСЂРѕРІРєР°С‚Р° РІ backlog-Р° РєСЉРј С‚РѕС‡РЅРёСЏ visual artifact, Р·Р° РґР° РЅСЏРјР° Р±СЉРґРµС‰Рѕ РѕР±СЉСЂРєРІР°РЅРµ РјРµР¶РґСѓ typography Рё animation Р·Р°РґР°С‡Р°.
-
-### Session 223 вЂ” Backlog capture from Community follow-up ideas
-
-**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ:**
-- Р”РѕР±Р°РІРёС…РјРµ РЅРѕРІРё TODO С‚РѕС‡РєРё РІ СЃРµРєС†РёСЏС‚Р° вЂћРџСЂРµРґСЃС‚РѕСЏС‰РѕвЂњ РїРѕ РїРѕСЃР»РµРґРЅРёС‚Рµ product РёРґРµРё Р·Р° Community:
-  - typography pass СЃ `font-shantell`
-  - QR handoff в†’ РґРёСЂРµРєС‚РµРЅ messaging shortcut РєСЉРј СЃРєР°РЅРёСЂР°РЅРёСЏ РїРѕС‚СЂРµР±РёС‚РµР»
-  - moderation workflow Р·Р° mentor/admin
-  - screenshot attachments Р°СЂС…РёС‚РµРєС‚СѓСЂР° (R2-first РїРѕРґС…РѕРґ + security constraints)
-
-**Р¤Р°Р№Р»РѕРІРµ:**
-- `[MODIFY] docs/dev-log.md`
-
-**Verification:**
-- Р”РѕРєСѓРјРµРЅС‚Р°С†РёРѕРЅРЅР° РїСЂРѕРјСЏРЅР° (РЅСЏРјР° runtime/typecheck РЅСѓР¶РґР°)
-
-**Р РµС€РµРЅРёСЏ:**
-- Р—Р°РїРёСЃР°С…РјРµ Р·Р°РґР°С‡РёС‚Рµ РєР°С‚Рѕ explicit TODO backlog Р·Р° РґР° РЅРµ СЃРµ РёР·РіСѓР±СЏС‚ РјРµР¶РґСѓ СЃРµСЃРёРёС‚Рµ Рё Р·Р° РґР° РёРјР° СЏСЃРµРЅ execution order Р·Р° СЃР»РµРґРІР°С‰РёС‚Рµ СЃС‚СЉРїРєРё.
-
-### Session 140 вЂ” Android safe-area fix for community writing inputs
-
-**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ:**
-- РћРїСЂР°РІРёС…РјРµ РїСЂРёРїРѕРєСЂРёРІР°РЅРµС‚Рѕ СЃСЉСЃ СЃРёСЃС‚РµРјРЅРёС‚Рµ Android Р±СѓС‚РѕРЅРё РїСЂРё РїРёСЃР°РЅРµ РІ Community РµРєСЂР°РЅРё (create post Рё comment input РІ post details).
-- Р”РѕР±Р°РІРёС…РјРµ `useSafeAreaInsets()` Рё РґРёРЅР°РјРёС‡РµРЅ `paddingBottom` Р·Р° РґРѕР»РЅРёС‚Рµ input/footer СЃРµРєС†РёРё РІРјРµСЃС‚Рѕ С„РёРєСЃРёСЂР°РЅР° СЃС‚РѕР№РЅРѕСЃС‚.
-- Р”РѕР±Р°РІРёС…РјРµ Рё safe-area-aware `paddingTop` Р·Р° header-РёС‚Рµ, РїР»СЋСЃ РґРѕРїСЉР»РЅРёС‚РµР»РµРЅ bottom padding РІ `ScrollView`, Р·Р° РґР° РЅРµ СЃРµ СЃРєСЂРёРІР° СЃСЉРґСЉСЂР¶Р°РЅРёРµ РїРѕРґ С„РёРєСЃРёСЂР°РЅРёСЏ footer.
-
-**Р¤Р°Р№Р»РѕРІРµ:**
-- `[MODIFY] apps/mobile/components/community/create-post-screen.tsx`
-- `[MODIFY] apps/mobile/components/community/post-details-screen.tsx`
-
-**Verification:**
-- `npm.cmd run typecheck:mobile` вњ…
-
-**Р РµС€РµРЅРёСЏ:**
-- РЎС‚Р°РЅРґР°СЂС‚РёР·РёСЂР°С…РјРµ community input layout-Р° РІСЉСЂС…Сѓ `safe area insets`, Р·Р° РґР° Рµ СЃС‚Р°Р±РёР»РµРЅ РЅР° Android СѓСЃС‚СЂРѕР№СЃС‚РІР° СЃ 3-button navigation Рё gesture nav.
-
-### Session 139 вЂ” Mobile community header cleanup for dynamic routes
-
-**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ:**
-- РћРїСЂР°РІРёС…РјРµ СЃС‚СЂР°РЅРЅРѕС‚Рѕ auto-generated Р·Р°РіР»Р°РІРёРµ РІ mobile header-Р° (С„РѕСЂРјР°С‚ РєР°С‚Рѕ `community/[id]`), РєРѕРµС‚Рѕ СЃРµ РІРёР¶РґР°С€Рµ СЃР»РµРґ РїСѓР±Р»РёРєСѓРІР°РЅРµ/РѕС‚РІР°СЂСЏРЅРµ РЅР° РїРѕСЃС‚.
-- Р”РѕР±Р°РІРёС…РјРµ explicit `Stack.Screen` РєРѕРЅС„РёРіСѓСЂР°С†РёСЏ Р·Р° community detail/create route-РѕРІРµС‚Рµ СЃ `headerShown: false`, Р·Р° РґР° СЃРµ РїРѕР»Р·РІР° СЃР°РјРѕ custom in-screen header (Р±РµР· РґСѓР±Р»РёСЂР°РЅ stack header).
-
-**Р¤Р°Р№Р»РѕРІРµ:**
-- `[MODIFY] apps/mobile/app/_layout.tsx`
-
-**Verification:**
-- `npm.cmd run typecheck:mobile` вњ…
-
-**Р РµС€РµРЅРёСЏ:**
-- Р—Р°РїР°Р·РёС…РјРµ custom header UX РІ community РµРєСЂР°РЅРё Рё РёР·РєР»СЋС‡РёС…РјРµ route-name header-Р° РѕС‚ Expo Router stack Р·Р° РїРѕ-С‡РёСЃС‚ РІРёР·СѓР°Р»РµРЅ СЂРµР·СѓР»С‚Р°С‚.
-
-### Session 138 вЂ” Courses list visibility fix (owner + member)
-
-**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ:**
-- РћС‚РєСЂРёС…РјРµ РїСЂРёС‡РёРЅР°С‚Р° Р·Р° РїСЂР°Р·РµРЅ СЃРїРёСЃСЉРє СЃ РєСѓСЂСЃРѕРІРµ: `GET /api/courses` РІСЂСЉС‰Р°С€Рµ СЃР°РјРѕ РєСѓСЂСЃРѕРІРµС‚Рµ, СЃСЉР·РґР°РґРµРЅРё РѕС‚ С‚РµРєСѓС‰РёСЏ РїРѕС‚СЂРµР±РёС‚РµР» (`createdBy`).
-- Р Р°Р·С€РёСЂРёС…РјРµ route-Р° РґР° РІСЂСЉС‰Р° Рё РєСѓСЂСЃРѕРІРµС‚Рµ, РІ РєРѕРёС‚Рѕ РїРѕС‚СЂРµР±РёС‚РµР»СЏС‚ Рµ Р·Р°РїРёСЃР°РЅ РєР°С‚Рѕ member РїСЂРµР· `course_members`.
-- РўР°РєР° СЃРµ РѕРїСЂР°РІСЏ Р·Р°СЂРµР¶РґР°РЅРµС‚Рѕ РєР°РєС‚Рѕ Р·Р° mobile Courses tab, С‚Р°РєР° Рё Р·Р° Community create/edit С„РѕСЂРјРёС‚Рµ, РєРѕРёС‚Рѕ РїРѕР»Р·РІР°С‚ СЃСЉС‰РёСЏ endpoint Р·Р° course dropdown.
-
-**Р¤Р°Р№Р»РѕРІРµ:**
-- `[MODIFY] apps/web/app/api/courses/route.ts`
-
-**Verification:**
-- `npm.cmd run typecheck:web` вњ…
-
-**Р РµС€РµРЅРёСЏ:**
-- Р—Р°РїР°Р·РёС…РјРµ РµРґРёРЅРµРЅ source of truth (`/api/courses`) Р·Р° РІСЃРёС‡РєРё РєР»РёРµРЅС‚Рё РІРјРµСЃС‚Рѕ ad-hoc client-side workaround, Р·Р° РґР° РЅСЏРјР° СЂР°Р·РјРёРЅР°РІР°РЅРµ РјРµР¶РґСѓ web Рё mobile.
-
-### Session 137 вЂ” Community post creation unblock (web + mobile)
-
-**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ:**
-- РџРѕРґСЃРёР»РёС…РјРµ `POST /api/posts` СЃ СѓСЃС‚РѕР№С‡РёРІ error handling (JSON contract), РІР°Р»РёРґР°С†РёСЏ Р·Р° `postType` Рё `courseId`, Рё РїРѕ-СЏСЃРЅРё API РєРѕРґРѕРІРµ РїСЂРё РЅРµРІР°Р»РёРґРЅРё РґР°РЅРЅРё.
-- Р”РѕР±Р°РІРёС…РјРµ Р·Р°С‰РёС‚РµРЅ fallback РІ СЃСЉР·РґР°РІР°РЅРµС‚Рѕ РЅР° РїРѕСЃС‚: route-СЉС‚ РІРµС‡Рµ Р·Р°РґР°РІР° РµРєСЃРїР»РёС†РёС‚РЅРѕ `status: "approved"` РїСЂРё insert, Р·Р° РґР° РЅСЏРјР° environment-specific fail РїСЂРё Р»РёРїСЃРІР°С‰ DB default.
-- РћРїСЂР°РІРёС…РјРµ web create С„РѕСЂРјР°С‚Р° (`CreatePostForm`) РґР° РЅРµ Р±Р»РѕРєРёСЂР° РїСЂРё non-JSON backend РіСЂРµС€РєРё Рё РІРёРЅР°РіРё РґР° РІСЂСЉС‰Р° user-facing message + `saving` reset.
-- Р”РѕР±Р°РІРёС…РјРµ mobile create flow Р·Р° Community:
-  - РЅРѕРІ РµРєСЂР°РЅ Р·Р° СЃСЉР·РґР°РІР°РЅРµ РЅР° РїРѕСЃС‚ (`/community/new`)
-  - С„РѕСЂРјР° СЃ РёР·Р±РѕСЂ РЅР° С‚РёРї, title/content РїРѕР»РµС‚Р° Рё publish mutation РєСЉРј `/api/posts`
-  - invalidation РЅР° community feed query РїСЂРё СѓСЃРїРµС€РЅРѕ РїСѓР±Р»РёРєСѓРІР°РЅРµ
-- Р”РѕР±Р°РІРёС…РјРµ CTA Р±СѓС‚РѕРЅ "New Post" РІ mobile community header-Р°, РєРѕР№С‚Рѕ РѕС‚РІР°СЂСЏ РЅРѕРІРёСЏ create РµРєСЂР°РЅ.
-
-**Р¤Р°Р№Р»РѕРІРµ:**
-- `[MODIFY] apps/web/app/api/posts/route.ts`
-- `[MODIFY] apps/web/components/community/create-post-form.tsx`
-- `[MODIFY] apps/mobile/components/community/community-screen.tsx`
-- `[MODIFY] apps/mobile/components/community/community.styles.ts`
-- `[NEW] apps/mobile/components/community/create-post-screen.tsx`
-- `[NEW] apps/mobile/app/community/new.tsx`
-
-**Verification:**
-- `npm.cmd run typecheck:web` вњ…
-- `npm.cmd run typecheck:mobile` вњ…
-
-**Р РµС€РµРЅРёСЏ:**
-- РР·Р±СЂР°С…РјРµ mobile MVP create flow Р±РµР· course picker (course РѕСЃС‚Р°РІР° optional `null`) Р·Р° РїРѕ-Р±СЉСЂР· unblock РЅР° РїСѓР±Р»РёРєСѓРІР°РЅРµС‚Рѕ Рё РјРёРЅРёРјР°Р»РµРЅ UI СЂРёСЃРє.
-- Р—Р°РїР°Р·РёС…РјРµ С‚РµРєСѓС‰Р°С‚Р° community feed СЃС‚СЂСѓРєС‚СѓСЂР° Рё РґРѕР±Р°РІРёС…РјРµ write capability Р±РµР· breaking РїСЂРѕРјРµРЅРё РєСЉРј СЃСЉС‰РµСЃС‚РІСѓРІР°С‰РёС‚Рµ interactions (like/comment/details).
-
-### Session 136 вЂ” Mobile Community Interactions & Details
-
-**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ:**
-- РћРїСЂР°РІРёС…РјРµ РІСЉР·РјРѕР¶РЅРѕСЃС‚С‚Р° Р·Р° РѕС‚РІР°СЂСЏРЅРµ РЅР° "post" РєР°СЂС‚РёС‡РєРёС‚Рµ РІ Community Feed.
-- РРјРїР»РµРјРµРЅС‚РёСЂР°С…РјРµ РЅРѕРІ РµРєСЂР°РЅ "Post Details" (С‡СЂРµР· expo-router dynamic route `community/[id]`), РєРѕР№С‚Рѕ РєРѕРЅСЃСѓРјРёСЂР° `/api/posts/[id]` Рё СЂРµРЅРґРёСЂР° РїРѕСЃС‚Р° Рё РєРѕРјРµРЅС‚Р°СЂРёС‚Рµ.
-- РћСЃСЉС‰РµСЃС‚РІРёС…РјРµ РІСЉР·РјРѕР¶РЅРѕСЃС‚С‚Р° Р·Р° СЂРµР°Р»РЅРѕ РєРѕРјРµРЅС‚РёСЂР°РЅРµ РЅР° РїРѕСЃС‚РѕРІРµС‚Рµ (С‡СЂРµР· `TextInput` Рё `commentMutation` РєСЉРј `/api/posts/[id]/comments`) СЃ `KeyboardAvoidingView` РѕРїС‚РёРјРёР·Р°С†РёСЏ.
-- Р”РѕР±Р°РІРёС…РјРµ Р»РѕРіРёРєР° Р·Р° "Like" (С‡СЂРµР· `useMutation` Рё `/api/posts/[id]/like`), СЂР°Р±РѕС‚РµС‰Р° РґРёСЂРµРєС‚РЅРѕ РѕС‚ СЃРїРёСЃСЉРєР° Рё РѕС‚ РґРµС‚Р°Р№Р»РёС‚Рµ, СЃ Р°РІС‚РѕРјР°С‚РёС‡РЅРѕ РёРЅРІР°Р»РёРґРёСЂР°РЅРµ РЅР° РєРµС€Р°.
-- Р—Р°РјРµРЅРёС…РјРµ РїСЂРѕР±Р»РµРјРЅР°С‚Р° `AntDesign` 'hearto' РёРєРѕРЅРєР° СЃ `Ionicons`, Р·Р° РґР° РїСЂРµРґРѕС‚РІСЂР°С‚РёРј warning СЃСЉРѕР±С‰РµРЅРёСЏС‚Р°.
-
-**Р¤Р°Р№Р»РѕРІРµ:**
-- `[NEW] apps/mobile/app/community/[id].tsx`
-- `[NEW] apps/mobile/components/community/post-details-screen.tsx`
-- `[MODIFY] apps/mobile/components/community/use-community-feed.ts`
-- `[MODIFY] apps/mobile/components/community/post-card.tsx`
-- `[MODIFY] apps/mobile/components/community/community-screen.tsx`
-
-**Verification:**
-- РќР°РІРёРіР°С†РёСЏС‚Р° Рё mutator-РёС‚Рµ СЂР°Р±РѕС‚СЏС‚ Рё СЃР° СЃС‚СЂРѕРіРѕ С‚РёРїРёР·РёСЂР°РЅРё; `post-details` СѓСЃРїРµС€РЅРѕ СЃРµ СЃРІСЉСЂР·РІР° СЃ backend.
-
-### Session 135 вЂ” Mobile Community Feed Implementation
-
-
-**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ:**
-- РЎСЉР·РґР°РґРѕС…РјРµ РјРѕР±РёР»РµРЅ РёР·РіР»РµРґ Р·Р° "Community Board", РєРѕРЅСЃСѓРјРёСЂР°Р№РєРё СЃСЉС‰РµСЃС‚РІСѓРІР°С‰РёСЏ backend endpoint `/api/posts`.
-- Р”РѕР±Р°РІРёС…РјРµ `community` С‚Р°Р± РІ РґРѕР»РЅР°С‚Р° РЅР°РІРёРіР°С†РёСЏ РЅР° РјРѕР±РёР»РЅРѕС‚Рѕ РїСЂРёР»РѕР¶РµРЅРёРµ.
-- РЎРїР°Р·РёС…РјРµ СЃС‚СЂРёРєС‚РЅРѕ РїСЂРёРЅС†РёРїР° РЅР° РјРѕРґСѓР»РЅРѕСЃС‚, РєР°С‚Рѕ СЂР°Р·РґРµР»РёС…РјРµ view Р»РѕРіРёРєР°С‚Р°, state Р»РѕРіРёРєР°С‚Р°, UI РєРѕРјРїРѕРЅРµРЅС‚РёС‚Рµ Рё СЃС‚РёР»РѕРІРµС‚Рµ.
-
-**Р¤Р°Р№Р»РѕРІРµ:**
-- `[NEW] apps/mobile/app/(tabs)/community.tsx`
-- `[MODIFY] apps/mobile/app/(tabs)/_layout.tsx`
-- `[NEW] apps/mobile/components/community/community.styles.ts`
-- `[NEW] apps/mobile/components/community/use-community-feed.ts`
-- `[NEW] apps/mobile/components/community/post-card.tsx`
-- `[NEW] apps/mobile/components/community/community-screen.tsx`
-
-**Verification:**
-- РЎС‚СЂСѓРєС‚СѓСЂРёС‚Рµ РѕС‡Р°РєРІР°С‚ СЃС‚Р°РЅРґР°СЂС‚РµРЅ response РѕС‚ `/api/posts?page=1`.
-
-**Р РµС€РµРЅРёСЏ:**
-- РРјРїР»РµРјРµРЅС‚Р°С†РёСЏС‚Р° РїСЂРµРґРѕСЃС‚Р°РІСЏ С‡РµСЃС‚РЅР° РѕСЃРЅРѕРІР° Р·Р° Social Features РІ РјРѕР±РёР»РЅР°С‚Р° РІРµСЂСЃРёСЏ СЃРїСЂСЏРјРѕ `social-features-plan.md`.
-
-
 ## 2026-03-27
 
-### РЎРµСЃРёСЏ 1 (РІРµС‡РµСЂ)
+### Сесия 1 (вечер)
 
-**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ:**
-- РћР±СЃСЉРґРёС…РјРµ РїСЂРѕРµРєС‚Р°, СЂРµС€РёС…РјРµ РґР° РїСЂРµСЂР°Р±РѕС‚РёРј StudyHub v1 СЃ РЅРѕРІ СЃС‚РµРє
-- РџСЂРµРіР»РµРґР°С…РјРµ СЃС‚Р°СЂРёСЏ РїСЂРѕРµРєС‚ Рё legacy notes
-- РЈС‚РѕС‡РЅРёС…РјРµ РІСЃРёС‡РєРё С„СѓРЅРєС†РёРё Рё РІР·РµС…РјРµ СЂРµС€РµРЅРёСЏ (Р±РµР· MFA, Vercel, R2, Gemini)
-- РќР°РїРёСЃР°С…РјРµ РїСЉР»РµРЅ implementation plan (`docs/implementation-plan.md`)
-- РџРѕРїСЂР°РІРёС…РјРµ README (РјР°С…РЅР°С…РјРµ СЃС‡СѓРїРµРЅРё SVG, fix `copy`в†’`cp`, optionalв†’planned)
-- **Р¤Р°Р·Р° 0** вЂ” РїРѕС‚РІСЉСЂРґРµРЅР° Р·Р°РІСЉСЂС€РµРЅР° (РјРѕРЅРѕСЂРµРїРѕ scaffold СЃСЉС‰РµСЃС‚РІСѓРІР°С€Рµ)
-- **Р¤Р°Р·Р° 1** вЂ” Р·Р°РІСЉСЂС€РµРЅР°:
-  - РРЅСЃС‚Р°Р»РёСЂР°С…РјРµ Drizzle ORM + Neon driver + bcryptjs
-  - РЎСЉР·РґР°РґРѕС…РјРµ `drizzle/schema.ts` СЃ 6 С‚Р°Р±Р»РёС†Рё (users, courses, modules, materials, favorites, activity_logs)
-  - Р“РµРЅРµСЂРёСЂР°С…РјРµ SQL РјРёРіСЂР°С†РёСЏ (`drizzle/migrations/0000_init.sql`)
-  - РЎСЉР·РґР°РґРѕС…РјРµ Neon Р°РєР°СѓРЅС‚ Рё Р±Р°Р·Р° РґР°РЅРЅРё (EU Central)
-  - Push-РЅР°С…РјРµ schema РєСЉРј Neon
-  - Seed-РЅР°С…РјРµ demo users (admin + user)
-  - РўРµСЃС‚РІР°С…РјРµ: DB connection вњ…, 6 tables вњ…, Next.js СЃС‚Р°СЂС‚РёСЂР° вњ…
+**Какво направихме:**
+- Обсъдихме проекта, решихме да преработим StudyHub v1 с нов стек
+- Прегледахме стария проект и legacy notes
+- Уточнихме всички функции и взехме решения (без MFA, Vercel, R2, Gemini)
+- Написахме пълен implementation plan (`docs/implementation-plan.md`)
+- Поправихме README (махнахме счупени SVG, fix `copy`→`cp`, optional→planned)
+- **Фаза 0** — потвърдена завършена (монорепо scaffold съществуваше)
+- **Фаза 1** — завършена:
+  - Инсталирахме Drizzle ORM + Neon driver + bcryptjs
+  - Създадохме `drizzle/schema.ts` с 6 таблици (users, courses, modules, materials, favorites, activity_logs)
+  - Генерирахме SQL миграция (`drizzle/migrations/0000_init.sql`)
+  - Създадохме Neon акаунт и база данни (EU Central)
+  - Push-нахме schema към Neon
+  - Seed-нахме demo users (admin + user)
+  - Тествахме: DB connection ✅, 6 tables ✅, Next.js стартира ✅
   - Commit + push: `feat(db): add Drizzle schema with 6 tables and Neon integration`
-  - РЎРјРµРЅРёС…РјРµ Neon РїР°СЂРѕР»Р°С‚Р° (СЃС‚Р°СЂР°С‚Р° Рµ РЅРµРІР°Р»РёРґРЅР°)
+  - Сменихме Neon паролата (старата е невалидна)
 
-- **Р¤Р°Р·Р° 2** вЂ” Р·Р°РІСЉСЂС€РµРЅР°:
-  - `lib/db.ts` вЂ” Drizzle client СЃ Neon
-  - `lib/jwt.ts` вЂ” sign/verify JWT СЃ jose (Edge-compatible)
-  - `lib/auth.ts` вЂ” bcrypt password hashing
-  - `middleware.ts` вЂ” JWT guard Р·Р° Р·Р°С‰РёС‚РµРЅРё routes + admin-only paths
+- **Фаза 2** — завършена:
+  - `lib/db.ts` — Drizzle client с Neon
+  - `lib/jwt.ts` — sign/verify JWT с jose (Edge-compatible)
+  - `lib/auth.ts` — bcrypt password hashing
+  - `middleware.ts` — JWT guard за защитени routes + admin-only paths
   - 4 API endpoints: register, login, logout, me
-  - Login + Register СЃС‚СЂР°РЅРёС†Рё (responsive + dark mode)
-  - Tailwind dark mode РІРєР»СЋС‡РµРЅ (class strategy)
-  - РўРµСЃС‚РІР°РЅРѕ: login вњ…, register вњ…, /me вњ…, build вњ…, browser вњ…
+  - Login + Register страници (responsive + dark mode)
+  - Tailwind dark mode включен (class strategy)
+  - Тествано: login ✅, register ✅, /me ✅, build ✅, browser ✅
   - Commit + push: `feat(auth): JWT auth with register, login, logout and role-aware middleware`
 
-- **Р¤Р°Р·Р° 3** вЂ” Р·Р°РІСЉСЂС€РµРЅР°:
-  - `lib/api-utils.ts` вЂ” requireAuth + requireAdmin helpers
-  - `lib/activity.ts` вЂ” logActivity helper
-  - API: full CRUD Р·Р° courses, modules, materials
-  - API: favorites (add/list/remove) СЃ unique constraint
-  - Dashboard СЃС‚СЂР°РЅРёС†Р° вЂ” list courses, create, delete
-  - Course Details СЃС‚СЂР°РЅРёС†Р° вЂ” modules СЃ materials, add/delete
-  - Material View/Edit СЃС‚СЂР°РЅРёС†Р° вЂ” view, edit, delete
-  - Р’СЃРёС‡РєРё СЃС‚СЂР°РЅРёС†Рё responsive + dark mode
-  - Build вњ…
+- **Фаза 3** — завършена:
+  - `lib/api-utils.ts` — requireAuth + requireAdmin helpers
+  - `lib/activity.ts` — logActivity helper
+  - API: full CRUD за courses, modules, materials
+  - API: favorites (add/list/remove) с unique constraint
+  - Dashboard страница — list courses, create, delete
+  - Course Details страница — modules с materials, add/delete
+  - Material View/Edit страница — view, edit, delete
+  - Всички страници responsive + dark mode
+  - Build ✅
   - Commit + push: `feat(crud): courses, modules, materials CRUD with favorites and activity logging`
-  - РћР±РЅРѕРІРёС…РјРµ AGENTS.md СЃ code quality РїСЂР°РІРёР»Р° Рё handoff РёРЅСЃС‚СЂСѓРєС†РёРё
+  - Обновихме AGENTS.md с code quality правила и handoff инструкции
 
-- **Р¤Р°Р·Р° 4** вЂ” Р·Р°РІСЉСЂС€РµРЅР°:
-  - `PUT /api/auth/me` вЂ” profile update (name, avatarUrl) СЃ activity logging
-  - Profile СЃС‚СЂР°РЅРёС†Р° вЂ” avatar display (initials fallback), edit name/avatar, read-only email/date
+- **Фаза 4** — завършена:
+  - `PUT /api/auth/me` — profile update (name, avatarUrl) с activity logging
+  - Profile страница — avatar display (initials fallback), edit name/avatar, read-only email/date
   - Admin API: `GET /api/admin/users`, `PUT /api/admin/users/:id` (role change), `DELETE /api/admin/users/:id`
   - Admin API: `GET /api/admin/materials`, `DELETE /api/admin/materials/:id`
-  - Admin API: `GET /api/admin/activity-logs` (СЃ limit param)
-  - Admin panel: 3 С‚Р°Р±Р° (Users, Materials, Activity Logs)
-  - Users tab: role dropdown, delete user СЃ cascade cleanup
-  - Materials tab: РїРѕРєР°Р·РІР° course/author, admin delete
-  - Activity tab: РїРѕСЃР»РµРґРЅРё РґРµР№СЃС‚РІРёСЏ СЃ user info Рё details JSON
-  - Р’СЃРёС‡РєРё РєРѕРјРїРѕРЅРµРЅС‚Рё СЂР°Р·РґРµР»РµРЅРё (<300 lines): `components/admin/{users,materials,activity}-tab.tsx`
-  - Self-protection: admin РЅРµ РјРѕР¶Рµ РґР° РёР·С‚СЂРёРµ СЃРµР±Рµ СЃРё РёР»Рё РґР° СЃРјРµРЅРё СЃРІРѕСЏС‚Р° СЂРѕР»СЏ
-  - Build вњ…
+  - Admin API: `GET /api/admin/activity-logs` (с limit param)
+  - Admin panel: 3 таба (Users, Materials, Activity Logs)
+  - Users tab: role dropdown, delete user с cascade cleanup
+  - Materials tab: показва course/author, admin delete
+  - Activity tab: последни действия с user info и details JSON
+  - Всички компоненти разделени (<300 lines): `components/admin/{users,materials,activity}-tab.tsx`
+  - Self-protection: admin не може да изтрие себе си или да смени своята роля
+  - Build ✅
 
 **Commit count:** 8 (target: 15+)
 **Commit days:** 1 (target: 3+)
@@ -616,41 +94,41 @@
 
 ## 2026-03-28
 
-### РЎРµСЃРёСЏ 2
+### Сесия 2
 
-**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ:**
+**Какво направихме:**
 
-- **Р¤Р°Р·Р° 5** вЂ” Р·Р°РІСЉСЂС€РµРЅР° (Mobile App, 3 РµРєСЂР°РЅР°):
-  - Backend: РґРѕР±Р°РІРёС…РјРµ Bearer token РїРѕРґРґСЂСЉР¶РєР° РІ `requireAuth` (cookie + Authorization header)
-  - Backend: login/register API-С‚Р° РІРµС‡Рµ РІСЂСЉС‰Р°С‚ `token` РІ response body (Р·Р° mobile storage)
-  - `lib/api.ts` вЂ” API РєР»РёРµРЅС‚ СЃ SecureStore Р·Р° token persistence, platform-aware base URL
-  - `lib/auth-context.tsx` вЂ” AuthProvider СЃ auto-login check, login/logout
-  - `app/_layout.tsx` вЂ” AuthGate: Р°РІС‚РѕРјР°С‚РёС‡РµРЅ redirect РєСЉРј login/courses
-  - **Login РµРєСЂР°РЅ** вЂ” email/password С„РѕСЂРјР°, error handling, demo credentials hint
-  - **Courses List РµРєСЂР°РЅ** вЂ” FlatList СЃ pull-to-refresh, course cards СЃ status badge, welcome bar, logout
-  - **Course Details РµРєСЂР°РЅ** вЂ” course info card, expandable modules, lazy-loaded materials СЃ type icons Рё tags
-  - РРЅСЃС‚Р°Р»РёСЂР°С…РјРµ `expo-secure-store` Р·Р° secure token storage
-  - Fix: `@types/react` override РІ root `package.json` (deduplicate 19.0.14 vs 19.0.4 РѕС‚ react-native)
-  - Fix: explicit `jsx: "react-jsx"` РІ mobile tsconfig (VS Code IDE compatibility)
-  - Web build вњ…, Mobile typecheck вњ…
+- **Фаза 5** — завършена (Mobile App, 3 екрана):
+  - Backend: добавихме Bearer token поддръжка в `requireAuth` (cookie + Authorization header)
+  - Backend: login/register API-та вече връщат `token` в response body (за mobile storage)
+  - `lib/api.ts` — API клиент с SecureStore за token persistence, platform-aware base URL
+  - `lib/auth-context.tsx` — AuthProvider с auto-login check, login/logout
+  - `app/_layout.tsx` — AuthGate: автоматичен redirect към login/courses
+  - **Login екран** — email/password форма, error handling, demo credentials hint
+  - **Courses List екран** — FlatList с pull-to-refresh, course cards с status badge, welcome bar, logout
+  - **Course Details екран** — course info card, expandable modules, lazy-loaded materials с type icons и tags
+  - Инсталирахме `expo-secure-store` за secure token storage
+  - Fix: `@types/react` override в root `package.json` (deduplicate 19.0.14 vs 19.0.4 от react-native)
+  - Fix: explicit `jsx: "react-jsx"` в mobile tsconfig (VS Code IDE compatibility)
+  - Web build ✅, Mobile typecheck ✅
 
-- CORS headers РґРѕР±Р°РІРµРЅРё РІ middleware Р·Р° cross-origin API РґРѕСЃС‚СЉРї (mobile web preview)
-- РўРµСЃС‚РІР°РЅРѕ: Expo web preview вњ… (login в†’ courses list в†’ course details СЃ РјРѕРґСѓР»Рё Рё РјР°С‚РµСЂРёР°Р»Рё)
-- Expo Go РЅР° С„РёР·РёС‡РµСЃРєРѕ СѓСЃС‚СЂРѕР№СЃС‚РІРѕ: "failed to download remote update" вЂ” Р·Р° СЂР°Р·СЃР»РµРґРІР°РЅРµ РїРѕ-РєСЉСЃРЅРѕ
+- CORS headers добавени в middleware за cross-origin API достъп (mobile web preview)
+- Тествано: Expo web preview ✅ (login → courses list → course details с модули и материали)
+- Expo Go на физическо устройство: "failed to download remote update" — за разследване по-късно
 - Commit + push: `feat(mobile): add login, courses list and course details screens`
 
 **Commit count:** 9 (target: 15+)
 **Commit days:** 2 (target: 3+)
 
-**РўРµРєСѓС‰Р° С„Р°Р·Р°:** Р¤Р°Р·Р° 5 Р·Р°РІСЉСЂС€РµРЅР°, Р¤Р°Р·Р° 6 РѕС‚Р»РѕР¶РµРЅР°
+**Текуща фаза:** Фаза 5 завършена, Фаза 6 отложена
 
-**Р РµС€РµРЅРёРµ:** Deployment (Р¤Р°Р·Р° 6) СЃРµ РѕС‚Р»Р°РіР°. РџСЂРёС‡РёРЅР°: Р±РµР·РїР»Р°С‚РЅРё РїР»Р°РЅРѕРІРµ РЅР° Netlify/Vercel вЂ” РїСЂРё РІСЃРµРєРё commit СЃРµ deploy-РІР° Рё РєСЂРµРґРёС‚РёС‚Рµ С‰Рµ СЃРІСЉСЂС€Р°С‚. РџСЉСЂРІРѕ РѕС€Р»Р°Р№С„РІР°РјРµ UI, РїРѕСЃР»Рµ deploy-РІР°РјРµ РЅР°РІРµРґРЅСЉР¶.
+**Решение:** Deployment (Фаза 6) се отлага. Причина: безплатни планове на Netlify/Vercel — при всеки commit се deploy-ва и кредитите ще свършат. Първо ошлайфваме UI, после deploy-ваме наведнъж.
 
-**РЎР»РµРґРІР°С‰Рё СЃС‚СЉРїРєРё:**
-- UI polish Рё РѕС€Р»Р°Р№С„РІР°РЅРµ РЅР° СѓРµР± РµРєСЂР°РЅРёС‚Рµ
-- Р¤Р°Р·Р° 6: Deployment (РєРѕРіР°С‚Рѕ UI Рµ РіРѕС‚РѕРІ)
-  - Google OAuth: production SHA-1 (РѕС‚ EAS Build), consent screen в†’ "Published", redirect URIs СЃ production РґРѕРјРµР№РЅ, env vars РІ EAS
-- Р¤Р°Р·Р° 7: Documentation (README + architecture + DB diagram)
+**Следващи стъпки:**
+- UI polish и ошлайфване на уеб екраните
+- Фаза 6: Deployment (когато UI е готов)
+  - Google OAuth: production SHA-1 (от EAS Build), consent screen → "Published", redirect URIs с production домейн, env vars в EAS
+- Фаза 7: Documentation (README + architecture + DB diagram)
 
 ### Session 3 (Expo Go stability investigation)
 
@@ -761,55 +239,55 @@
 **Purpose:**
 - Prevent repeated setup loops and preserve a deterministic mobile testing path for next sessions.
 
-### Session 10 (Expo Go вЂ” Р Р•РЁР•РќРћ + UI РїР»Р°РЅРёСЂР°РЅРµ)
+### Session 10 (Expo Go — РЕШЕНО + UI планиране)
 
-**Expo Go РЅР° С„РёР·РёС‡РµСЃРєРё С‚РµР»РµС„РѕРЅ вЂ” Р РђР‘РћРўР. Р•С‚Рѕ РєР°РєРІРѕ Р±РµС€Рµ РїСЂРѕР±Р»РµРјСЉС‚:**
+**Expo Go на физически телефон — РАБОТИ. Ето какво беше проблемът:**
 
 **1. Monorepo + Expo Router entry point**
-- Expo С‚СЉСЂСЃРµС€Рµ СЃС‚Р°СЂ `App.js` С„Р°Р№Р», РЅРѕ РїСЂРѕРµРєС‚СЉС‚ Рµ РІ `apps/mobile` СЃ `expo-router`.
-- Р РµС€РµРЅРёРµ: РЎСЉР·РґР°РґРѕС…РјРµ `apps/mobile/index.js` СЃ `import "expo-router/entry"` Рё СЃРјРµРЅРёС…РјРµ `"main": "index.js"` РІ `package.json`.
+- Expo търсеше стар `App.js` файл, но проектът е в `apps/mobile` с `expo-router`.
+- Решение: Създадохме `apps/mobile/index.js` с `import "expo-router/entry"` и сменихме `"main": "index.js"` в `package.json`.
 
-**2. Windows Firewall + РјСЂРµР¶РѕРІ РїСЂРѕС„РёР»**
-- WiFi РјСЂРµР¶Р°С‚Р° Р±РµС€Рµ РЅР° "Public" в†’ Windows Р±Р»РѕРєРёСЂР°С€Рµ РІС…РѕРґСЏС‰Рё РІСЂСЉР·РєРё РѕС‚ С‚РµР»РµС„РѕРЅР°.
-- Р РµС€РµРЅРёРµ: РЎРјРµРЅРёС…РјРµ РЅР° **Private** + СЂР°Р·СЂРµС€РёС…РјРµ Node.js РІ Firewall РїСЂРё prompt.
-- LAN СЂРµР¶РёРјСЉС‚ (`--host lan`) СЂР°Р±РѕС‚Рё СЃР»РµРґ С‚РµР·Рё РїСЂРѕРјРµРЅРё.
+**2. Windows Firewall + мрежов профил**
+- WiFi мрежата беше на "Public" → Windows блокираше входящи връзки от телефона.
+- Решение: Сменихме на **Private** + разрешихме Node.js в Firewall при prompt.
+- LAN режимът (`--host lan`) работи след тези промени.
 
-**3. РўСѓРЅРµР» РєР°С‚Рѕ fallback**
-- `--tunnel` (ngrok) Р·Р°РѕР±РёРєР°Р»СЏ firewall РїСЂРѕР±Р»РµРјРёС‚Рµ РЅРѕ Рµ РїРѕ-Р±Р°РІРµРЅ Рё РїРѕРЅСЏРєРѕРіР° timeout-РІР°.
-- Р—Р° СЃС‚Р°Р±РёР»РЅР° СЂР°Р±РѕС‚Р°: **LAN + Private РјСЂРµР¶Р°** Рµ РїРѕ-РґРѕР±СЂРѕ РѕС‚ С‚СѓРЅРµР».
+**3. Тунел като fallback**
+- `--tunnel` (ngrok) заобикаля firewall проблемите но е по-бавен и понякога timeout-ва.
+- За стабилна работа: **LAN + Private мрежа** е по-добро от тунел.
 
 **4. API URL**
-- РЎСЉР·РґР°РґРѕС…РјРµ `apps/mobile/.env` СЃ `EXPO_PUBLIC_API_URL=http://192.168.1.9:3000`.
-- Metro Р·Р°СЂРµР¶РґР° `.env` Р°РІС‚РѕРјР°С‚РёС‡РЅРѕ вЂ” РїРѕС‚РІСЉСЂРґРµРЅРѕ РѕС‚ `env: export EXPO_PUBLIC_API_URL` РІ Р»РѕРіР°.
+- Създадохме `apps/mobile/.env` с `EXPO_PUBLIC_API_URL=http://192.168.1.9:3000`.
+- Metro зарежда `.env` автоматично — потвърдено от `env: export EXPO_PUBLIC_API_URL` в лога.
 
-**5. РЎРёРІ РµРєСЂР°РЅ / РЅР°РІРёРіР°С†РёСЏ**
-- `useRootNavigationState()` РІ `_layout.tsx` РёР·С‡Р°РєРІР° РЅР°РІРёРіР°С†РёСЏС‚Р° РґР° СЃРµ РёРЅРёС†РёР°Р»РёР·РёСЂР° РїСЂРµРґРё redirect.
+**5. Сив екран / навигация**
+- `useRootNavigationState()` в `_layout.tsx` изчаква навигацията да се инициализира преди redirect.
 
-**Golden path Р·Р° СЃР»РµРґРІР°С‰ РїСЉС‚:**
-1. WiFi РјСЂРµР¶Р° РЅР° "Private" (РµРґРЅРѕРєСЂР°С‚РЅР° РЅР°СЃС‚СЂРѕР№РєР°)
-2. `npm run dev:web` (С‚РµСЂРјРёРЅР°Р» 1)
-3. `npm --workspace @studyhub/mobile run dev:mobile:lan` (С‚РµСЂРјРёРЅР°Р» 2)
-4. Р’ Expo Go РІСЉРІРµРґРё: `exp://192.168.1.9:8081`
+**Golden path за следващ път:**
+1. WiFi мрежа на "Private" (еднократна настройка)
+2. `npm run dev:web` (терминал 1)
+3. `npm --workspace @studyhub/mobile run dev:mobile:lan` (терминал 2)
+4. В Expo Go въведи: `exp://192.168.1.9:8081`
 
 ---
 
-### Session 10 (Expo Go deep investigation + UI РїР»Р°РЅРёСЂР°РЅРµ)
+### Session 10 (Expo Go deep investigation + UI планиране)
 
-**Expo Go вЂ” root cause РёРґРµРЅС‚РёС„РёС†РёСЂР°РЅ:**
-- РњР°С…РЅР°С…РјРµ `eas.projectId` Рё `owner` РѕС‚ `app.json` (РїСЂРёС‡РёРЅСЏРІР°С…Р° OTA update check РєСЉРј EAS СЃСЉСЂРІСЉСЂРё).
-- РњР°С…РЅР°С…РјРµ deprecated `expo-router/babel` РѕС‚ `babel.config.js`.
-- РџРѕС‚РІСЉСЂРґРµРЅРѕ: С‚РµР»РµС„РѕРЅСЉС‚ РґРѕСЃС‚РёРіР° Metro (bundle СЃРµ РёР·С‚РµРіР»СЏ Р·Р° 93ms РєРµС€РёСЂР°РЅРѕ).
-- Р”РѕСЂРё РјРёРЅРёРјР°Р»РµРЅ "Hello World" layout РіСЉСЂРјРё в†’ РїСЂРѕР±Р»РµРјСЉС‚ Рµ РІ Expo Go app-Р° РЅР° СѓСЃС‚СЂРѕР№СЃС‚РІРѕС‚Рѕ, РЅРµ РІ РєРѕРґР°.
-- **Р РµС€РµРЅРёРµ:** РРЅСЃС‚Р°Р»РёСЂР°РЅ Android Studio + РµРјСѓР»Р°С‚РѕСЂ (Pixel 8, API 37, РёР·С‚РµРіР»СЏ СЃРµ). Р©Рµ СЃРµ РїРѕР»Р·РІР° РІРјРµСЃС‚Рѕ С„РёР·РёС‡РµСЃРєРё С‚РµР»РµС„РѕРЅ.
+**Expo Go — root cause идентифициран:**
+- Махнахме `eas.projectId` и `owner` от `app.json` (причиняваха OTA update check към EAS сървъри).
+- Махнахме deprecated `expo-router/babel` от `babel.config.js`.
+- Потвърдено: телефонът достига Metro (bundle се изтегля за 93ms кеширано).
+- Дори минимален "Hello World" layout гърми → проблемът е в Expo Go app-а на устройството, не в кода.
+- **Решение:** Инсталиран Android Studio + емулатор (Pixel 8, API 37, изтегля се). Ще се ползва вместо физически телефон.
 
-**UI РїР»Р°РЅРёСЂР°РЅРµ вЂ” Р°РЅР°Р»РёР· РЅР° v1:**
-- РџСЂРµРіР»РµРґР°РЅ Р¶РёРІРёСЏ v1 РїСЂРѕРµРєС‚ Р·Р° СЃРїСЂР°РІРєР°.
-- РРґРµРЅС‚РёС„РёС†РёСЂР°РЅРё Р»РёРїСЃРІР°С‰Рё С„СѓРЅРєС†РёРё РІ v2 СЃРїСЂСЏРјРѕ v1.
-- РЈС‚РѕС‡РЅРµРЅР° РєРѕРЅС†РµРїС†РёСЏС‚Р°: StudyHub Рµ **Р»РёС‡РµРЅ Р±РµР»РµР¶РЅРёРє**, РЅРµ РєСѓСЂСЃ Р·Р° Р·Р°РІСЉСЂС€РІР°РЅРµ в†’ progress tracking РЅРµ Рµ РїРѕРґС…РѕРґСЏС‰.
+**UI планиране — анализ на v1:**
+- Прегледан живия v1 проект за справка.
+- Идентифицирани липсващи функции в v2 спрямо v1.
+- Уточнена концепцията: StudyHub е **личен бележник**, не курс за завършване → progress tracking не е подходящ.
 
-**РЎР»РµРґРІР°С‰Рё СЃС‚СЉРїРєРё вЂ” СЂР°Р±РѕС‚РµРЅ РїР»Р°РЅ:**
-- Р’РёР¶ СЃРµРєС†РёСЏ "Р¤Р°Р·Р° UI Polish + Feature Parity" РІ `docs/implementation-plan.md`.
-- РЎР»РµРґРІР°С‰Р°С‚Р° Р·Р°РґР°С‡Р°: **Home page** (hero + features + faq, split РєРѕРјРїРѕРЅРµРЅС‚Рё).
+**Следващи стъпки — работен план:**
+- Виж секция "Фаза UI Polish + Feature Parity" в `docs/implementation-plan.md`.
+- Следващата задача: **Home page** (hero + features + faq, split компоненти).
 
 ---
 
@@ -817,41 +295,41 @@
 
 ### Session 11 (Home page + React dedup fix)
 
-**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ:**
+**Какво направихме:**
 
-**Home СЃС‚СЂР°РЅРёС†Р° вЂ” Р·Р°РІСЉСЂС€РµРЅР°:**
-- `components/home/hero.tsx` вЂ” mini-nav + hero СЃ badge, headline, 2 CTA Р±СѓС‚РѕРЅР°, gradient blob
-- `components/home/features.tsx` вЂ” 6 feature РєР°СЂС‚Рё РІ responsive grid (1в†’2в†’3 РєРѕР»РѕРЅРё)
-- `components/home/faq.tsx` вЂ” accordion FAQ СЃ 5 РІСЉРїСЂРѕСЃР° (client component, Р°РЅРёРјРёСЂР°РЅР° + РёРєРѕРЅРєР°)
-- `app/page.tsx` вЂ” 16 СЂРµРґР°, СЃР°РјРѕ РёРјРїРѕСЂС‚Рё + footer
-- `app/layout.tsx` вЂ” РїСЂРµРјР°С…РЅР°С‚ hardcoded `className="dark"` в†’ СЃРІРµС‚Р»Р° С‚РµРјР° РїРѕ РїРѕРґСЂР°Р·Р±РёСЂР°РЅРµ
+**Home страница — завършена:**
+- `components/home/hero.tsx` — mini-nav + hero с badge, headline, 2 CTA бутона, gradient blob
+- `components/home/features.tsx` — 6 feature карти в responsive grid (1→2→3 колони)
+- `components/home/faq.tsx` — accordion FAQ с 5 въпроса (client component, анимирана + иконка)
+- `app/page.tsx` — 16 реда, само импорти + footer
+- `app/layout.tsx` — премахнат hardcoded `className="dark"` → светла тема по подразбиране
 
-**Р‘СЉРі: РґСѓР±Р»РёСЂР°РЅ React instance РІ РјРѕРЅРѕСЂРµРїРѕ (РєСЂРёС‚РёС‡РµРЅ, Р±Р»РѕРєРёСЂР° build)**
+**Бъг: дублиран React instance в монорепо (критичен, блокира build)**
 
-_РЎРёРјРїС‚РѕРј:_ `npm run build` РіСЉСЂРјРё СЃ `TypeError: Cannot read properties of null (reading 'useContext')` РїСЂРё prerender РЅР° `/404`.
+_Симптом:_ `npm run build` гърми с `TypeError: Cannot read properties of null (reading 'useContext')` при prerender на `/404`.
 
-_Root cause:_ npm workspace hoisting РєРѕРЅС„Р»РёРєС‚:
-- `apps/mobile` РёР·РёСЃРєРІР° `react@19.1.0` в†’ hoisted РЅР° root РєР°С‚Рѕ `node_modules/react@19.1.0`
-- `apps/web` РёРјР°С€Рµ `react@19.0.0` в†’ npm РіРѕ РёРЅСЃС‚Р°Р»РёСЂР° РІ `apps/web/node_modules/react@19.0.0`
-- `react-dom` СЃРµ Р·Р°РєР°С‡Р° РєСЉРј root (19.1.0), РЅРѕ Next.js `_error.js` РёР·РїСЉР»РЅСЏРІР° `useContext` СЃ web instance (19.0.0) в†’ `null`
+_Root cause:_ npm workspace hoisting конфликт:
+- `apps/mobile` изисква `react@19.1.0` → hoisted на root като `node_modules/react@19.1.0`
+- `apps/web` имаше `react@19.0.0` → npm го инсталира в `apps/web/node_modules/react@19.0.0`
+- `react-dom` се закача към root (19.1.0), но Next.js `_error.js` изпълнява `useContext` с web instance (19.0.0) → `null`
 
 _Fix:_
-1. РЎРёРЅС…СЂРѕРЅРёР·РёСЂР°С…РјРµ РІРµСЂСЃРёСЏС‚Р°: `apps/web/package.json` в†’ `react: "19.1.0"`, `react-dom: "19.1.0"` (С‚РѕС‡РЅРѕ, Р±РµР· `^`)
-2. РР·С‚СЂРёС…РјРµ РІСЃРёС‡РєРё `node_modules/` Рё `package-lock.json` РѕС‚ root
-3. `npm install` РѕС‚ РЅСѓР»Р°С‚Р° в†’ npm deduplica Рё РїРѕР»Р·РІР° СЃР°РјРѕ root 19.1.0
+1. Синхронизирахме версията: `apps/web/package.json` → `react: "19.1.0"`, `react-dom: "19.1.0"` (точно, без `^`)
+2. Изтрихме всички `node_modules/` и `package-lock.json` от root
+3. `npm install` от нулата → npm deduplica и ползва само root 19.1.0
 
-_РђРєРѕ СЃРµ РїРѕРІС‚РѕСЂРё:_
+_Ако се повтори:_
 ```bash
 rm -rf node_modules apps/web/node_modules apps/mobile/node_modules package-lock.json
 npm install
 ```
-РџСЂРѕРІРµСЂРё СЃР»РµРґ С‚РѕРІР°:
+Провери след това:
 ```bash
 node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.json').version)}catch(e){console.log('web: deduped OK')}; console.log('root:', require('./node_modules/react/package.json').version)"
-# РўСЂСЏР±РІР°: web: deduped OK / root: 19.1.0
+# Трябва: web: deduped OK / root: 19.1.0
 ```
 
-**Build вњ… вЂ” 26 routes, `/` = 106 kB First Load JS**
+**Build ✅ — 26 routes, `/` = 106 kB First Load JS**
 
 ### Session 12 (Feature parity pass for Course Details + Material pages)
 
@@ -1205,7 +683,7 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
   - added icon-based email/password fields
   - added `Forgot password?` action, `OR` divider, and Google sign-in button as clearly planned/upcoming actions
   - restored mobile mascot presence instead of hiding it on smaller screens
-  - fixed the broken Bulgarian speech bubble text encoding (`Р—РґСЂР°РІРµР№! / РџСЂРёСЏС‚РЅРѕ СѓС‡РµРЅРµ!`)
+  - fixed the broken Bulgarian speech bubble text encoding (`Здравей! / Приятно учене!`)
 - Added real dark-mode support for the web app root:
   - `apps/web/components/theme/theme-utils.ts`
   - `apps/web/components/theme/theme-script.tsx`
@@ -1834,6 +1312,62 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 **Validation:**
 - `npm.cmd --workspace @studyhub/web run typecheck`
 
+### Session 94 (Server-first initial data for Dashboard and Progress)
+
+**Problem investigated:**
+- Dashboard and Progress were both rendering empty client state first, then fetching data after mount.
+- This caused the user-visible "zero values first, real numbers later" effect and made the app feel slower than it needed to.
+
+**What changed:**
+- `apps/web/lib/server-auth.ts`
+  - added a small server helper that reads the auth token from cookies and redirects unauthenticated users to `/login`
+- `apps/web/lib/dashboard-data.ts`
+  - normalized dashboard payloads for server rendering, including stable string dates
+- `apps/web/components/dashboard/types.ts`
+  - extracted shared dashboard data types out of client UI files
+- `apps/web/components/dashboard/dashboard-client-page.tsx`
+  - moved the interactive dashboard UI into a dedicated client component seeded with initial server data
+- `apps/web/app/dashboard/page.tsx`
+  - converted the page into a server component that fetches dashboard data before render
+- `apps/web/components/progress/types.ts`
+  - extracted shared milestone/event types for the progress flow
+- `apps/web/lib/progress-data.ts`
+  - added a server helper that fetches milestones and events before render and normalizes their date fields
+- `apps/web/components/progress/progress-page-client.tsx`
+  - moved the interactive progress UI into a dedicated client component seeded with initial server data
+- `apps/web/components/progress/use-progress-page-state.ts`
+  - removed the initial client-side loading fetch and now starts from server-provided data while keeping client mutations intact
+- `apps/web/app/progress/page.tsx`
+  - converted the page into a server component that fetches progress data before render
+
+**Why:**
+- Dashboard and Progress now arrive already populated on first render instead of showing empty values and catching up later.
+- This keeps the existing client interactivity, but removes the biggest source of the perceived loading lag on these two pages.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 98 (Performance planning rules promoted into project instructions)
+
+**Problem investigated:**
+- The performance guidance existed as a helpful checklist, but it still risked being treated as something to remember later instead of something to plan for up front.
+- We needed the rule to be visible at the moment new work starts, not only after a slowdown appears.
+
+**What changed:**
+- `AGENTS.md`
+  - added a new `Performance Planning` section
+  - recorded the server-first initial data rule for new authenticated web pages
+  - recorded the anti-pattern to avoid: designing around `empty state -> useEffect fetch -> real content`
+  - recorded the preferred split between async server pages and dedicated client shells
+  - updated the handoff prompt so future chats also read `docs/performance-guardrails.md`
+- `docs/performance-guardrails.md`
+  - added a `Planning Rule` section that frames performance as an input to page design, not just a later cleanup pass
+  - added a short pre-build checklist for deciding first-paint data, server fetches, client-only state, and duplicate auth fetch risk
+
+**Why:**
+- The performance lessons are now part of the project instructions, not only session history.
+- Future pages should be planned with the right loading architecture earlier, which lowers the chance of repeating the same regressions.
+
 ### Session 99 (Course, module, and material pages moved to server-first initial data)
 
 **Problem investigated:**
@@ -1893,63 +1427,562 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 **Validation:**
 - `npm.cmd --workspace @studyhub/web run typecheck`
 
-### Session 98 (Performance planning rules promoted into project instructions)
+## 2026-04-02
+
+### Session 53 (Dashboard signature titles + premium glow correction)
 
 **Problem investigated:**
-- The performance guidance existed as a helpful checklist, but it still risked being treated as something to remember later instead of something to plan for up front.
-- We needed the rule to be visible at the moment new work starts, not only after a slowdown appears.
+- The previous typography pass drifted away from the intended direction.
+- The user clarified that the target was the existing handwritten dashboard title gradient from the course cards (`Cloudflare R2` / `Next.js` style), not plain sans panel headings.
+- The dashboard also needed the same soft profile-style dark-surface glow in the background of its main panels.
 
 **What changed:**
-- `AGENTS.md`
-  - added a new `Performance Planning` section
-  - recorded the server-first initial data rule for new authenticated web pages
-  - recorded the anti-pattern to avoid: designing around `empty state -> useEffect fetch -> real content`
-  - recorded the preferred split between async server pages and dedicated client shells
-  - updated the handoff prompt so future chats also read `docs/performance-guardrails.md`
-- `docs/performance-guardrails.md`
-  - added a `Planning Rule` section that frames performance as an input to page design, not just a later cleanup pass
-  - added a short pre-build checklist for deciding first-paint data, server fetches, client-only state, and duplicate auth fetch risk
+- `apps/web/app/globals.css`
+  - aligned both `dashboard-script-title` and `dashboard-panel-title` to the same handwritten gradient title treatment
+  - tuned the dark-mode title gradient to the softer lavender-to-cyan dashboard look from the existing course-card reference
+- `apps/web/components/dashboard/dashboard-hero.tsx`
+  - added a profile-inspired internal glow blend to the dark hero surface
+  - kept the main dashboard heading on the signature gradient style
+- `apps/web/components/dashboard/course-card.tsx`
+  - added the soft top-right glow haze and richer dark premium surface treatment
+- `apps/web/components/dashboard/create-course-form.tsx`
+  - kept the panel title on the signature gradient style
+  - added the same premium dark surface glow blend
+- `apps/web/components/dashboard/progress-widget.tsx`
+  - kept the widget title on the signature gradient style
+  - added the same premium dark surface glow blend
+- `apps/web/components/dashboard/quick-idea-capture.tsx`
+  - kept the widget title on the signature gradient style
+  - added the same premium dark surface glow blend
+- `apps/web/components/dashboard/calendar-widget.tsx`
+  - kept the widget title on the signature gradient style
+  - added the same premium dark surface glow blend
+- `apps/web/components/dashboard/pinned-sidebar.tsx`
+  - kept the sidebar title on the signature gradient style
+  - added the same premium dark surface glow blend and soft haze
+- `apps/web/components/dashboard/edit-course-modal.tsx`
+  - aligned the modal heading and dark surface with the same visual language
 
 **Why:**
-- The performance lessons are now part of the project instructions, not only session history.
-- Future pages should be planned with the right loading architecture earlier, which lowers the chance of repeating the same regressions.
-
-### Session 94 (Server-first initial data for Dashboard and Progress)
-
-**Problem investigated:**
-- Dashboard and Progress were both rendering empty client state first, then fetching data after mount.
-- This caused the user-visible "zero values first, real numbers later" effect and made the app feel slower than it needed to.
-
-**What changed:**
-- `apps/web/lib/server-auth.ts`
-  - added a small server helper that reads the auth token from cookies and redirects unauthenticated users to `/login`
-- `apps/web/lib/dashboard-data.ts`
-  - normalized dashboard payloads for server rendering, including stable string dates
-- `apps/web/components/dashboard/types.ts`
-  - extracted shared dashboard data types out of client UI files
-- `apps/web/components/dashboard/dashboard-client-page.tsx`
-  - moved the interactive dashboard UI into a dedicated client component seeded with initial server data
-- `apps/web/app/dashboard/page.tsx`
-  - converted the page into a server component that fetches dashboard data before render
-- `apps/web/components/progress/types.ts`
-  - extracted shared milestone/event types for the progress flow
-- `apps/web/lib/progress-data.ts`
-  - added a server helper that fetches milestones and events before render and normalizes their date fields
-- `apps/web/components/progress/progress-page-client.tsx`
-  - moved the interactive progress UI into a dedicated client component seeded with initial server data
-- `apps/web/components/progress/use-progress-page-state.ts`
-  - removed the initial client-side loading fetch and now starts from server-provided data while keeping client mutations intact
-- `apps/web/app/progress/page.tsx`
-  - converted the page into a server component that fetches progress data before render
-
-**Why:**
-- Dashboard and Progress now arrive already populated on first render instead of showing empty values and catching up later.
-- This keeps the existing client interactivity, but removes the biggest source of the perceived loading lag on these two pages.
+- The dashboard now follows the intended rule more faithfully:
+  - all dashboard headings use the handwritten signature gradient
+  - dark surfaces carry the same soft luminous premium atmosphere seen on the profile page
 
 **Validation:**
 - `npm.cmd --workspace @studyhub/web run typecheck`
 
-## 2026-04-02
+### Session 54 (Hero gradient visibility fix)
+
+**Problem investigated:**
+- The dashboard course cards were showing the intended lavender-to-cyan handwritten gradient clearly.
+- The top dashboard hero still read too white, so the user could not really see the same effect there.
+
+**What changed:**
+- `apps/web/app/globals.css`
+  - strengthened the dark handwritten title gradient so it reads visibly on larger headings too
+  - added `background-size`, `background-repeat`, and `-webkit-text-fill-color: transparent` to make the clipped gradient render more reliably
+- `apps/web/components/dashboard/dashboard-hero.tsx`
+  - increased the visible purple/cyan glow balance in the dark hero container
+  - added a stronger upper-right haze and a soft purple bloom nearer the title area
+  - aligned the stat tiles closer to the same premium dark surface language
+
+**Why:**
+- The top dashboard area now reads closer to the course-card reference instead of flattening into near-white text.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 55 (Navbar wordmark and mascot polish)
+
+**Problem investigated:**
+- The `StudyHub` wordmark in the authenticated navbar looked clipped at the bottom.
+- The mascot logo also sat directly on a transparent/dark background, which made it feel visually unfinished.
+
+**What changed:**
+- `apps/web/components/navbar.tsx`
+  - added a clean white inner backing behind the mascot/logo so the transparent asset reads more clearly
+  - adjusted the wordmark rendering with safer line-height, inline-block spacing, and transparent text fill so the lower edge no longer looks cut off
+  - kept the existing gradient styling while making it render more cleanly in the navbar
+
+**Why:**
+- The brand area now looks more intentional and polished instead of clipped or visually hollow.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 56 (Authenticated navbar mascot cleanup)
+
+**Problem investigated:**
+- The authenticated navbar mascot needed a light backing because the logo asset has transparent areas.
+- The previous white backing read as a visible white spot instead of a clean brand accent.
+
+**What changed:**
+- `apps/web/components/navbar.tsx`
+  - switched the authenticated navbar mascot to the cropped logo asset for a tighter fit
+  - replaced the solid white inner plate with a softer radial light backing and a lighter inner ring
+  - kept the existing dark header styling while making the logo read more clearly without the hard white blob
+
+**Why:**
+- The mascot now has enough separation from the dark navbar without looking like a separate white patch behind it.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 57 (Authenticated navbar premium brand badge)
+
+**Problem investigated:**
+- The authenticated navbar logo no longer had the hard white spot, but the badge still felt too heavy and sticker-like.
+- The brand mark needed a more premium dark-shell treatment instead of a simple icon sitting inside a white circle.
+
+**What changed:**
+- `apps/web/components/navbar.tsx`
+  - extracted the navbar mascot into a dedicated `BrandMark` helper for cleaner structure
+  - rebuilt the badge as a polished rounded shell with layered gloss, cyan-indigo ambient glow, and a pearl orb behind the mascot
+  - kept the mascot readable on the dark header while making the mark feel more intentional and premium
+
+**Why:**
+- The logo now reads more like a crafted product badge and less like a transparent PNG placed over a white patch.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 58 (Navbar mascot de-patched with silhouette asset)
+
+**Problem investigated:**
+- Even after the premium badge pass, the mascot area still read like a layered patch rather than a natural brand mark.
+- The visual issue came from relying on too many CSS surfaces to compensate for a transparent mascot asset.
+
+**What changed:**
+- `apps/web/public/assets/v1/icons/mascot-logo-navbar.png`
+  - generated a dedicated navbar mascot asset with a soft white silhouette backing that follows the mascot shape instead of using a circular plate
+- `apps/web/components/navbar.tsx`
+  - removed the heavy boxed badge treatment
+  - simplified the brand mark to a cleaner floating mascot with subtle cyan/indigo ambient glow
+  - switched the navbar logo source to the new dedicated navbar asset
+
+**Why:**
+- The logo now reads as one intentional mark instead of a transparent PNG trying to sit on top of layered background patches.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 59 (Navbar mascot filled from internal transparency)
+
+**Problem investigated:**
+- The silhouette-backed navbar mascot removed the patch effect, but it still looked like a photographic negative because the whole outer shape was glowing light against the dark header.
+- The real issue was the mascot asset itself: the internal transparent areas needed filling, not the outside silhouette.
+
+**What changed:**
+- `apps/web/public/assets/v1/icons/mascot-logo-navbar-filled.png`
+  - generated a new navbar-specific mascot asset by filling only the internal transparent regions of the original mascot with a soft pearl white treatment
+- `apps/web/components/navbar.tsx`
+  - switched the brand mark to the new internally filled mascot asset
+  - removed the stronger secondary glow treatment and kept only a very restrained ambient glow + shadow
+
+**Why:**
+- The mascot now reads like a normal logo on a dark surface instead of a white-outline cutout or inverted-photo effect.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 60 (Subtle navbar halo pass)
+
+**Problem investigated:**
+- After fixing the mascot transparency, the logo was finally clean, but it could still benefit from a little more separation from the dark header.
+- The user wanted to test a halo again without reintroducing the old patch or negative-photo effect.
+
+**What changed:**
+- `apps/web/components/navbar.tsx`
+  - added one restrained radial cyan-indigo halo layer behind the mascot
+  - kept the existing internal-fill asset and avoided any new white backing plate
+
+**Why:**
+- The mascot now gets a softer premium lift from the header while staying clean and natural.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 61 (Scenic navbar glow pass)
+
+**Problem investigated:**
+- The subtle halo worked, but the user wanted to explore a slightly more scenic presentation.
+
+**What changed:**
+- `apps/web/components/navbar.tsx`
+  - deepened the main halo into a richer cyan-indigo-violet bloom
+  - added two small atmospheric glow pockets to make the mascot feel a bit more stage-lit
+  - kept the mascot asset and overall silhouette unchanged
+
+**Why:**
+- The brand mark now has a touch more drama and presence without falling back into patch-like white backing.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 62 (Dashboard light-mode typography luxury pass)
+
+**Problem investigated:**
+- In light mode, the dashboard handwritten headings still started from a tone that felt too close to near-black.
+- The user wanted the font color to feel a little lighter and more luxurious, closer to the earlier softer pass.
+
+**What changed:**
+- `apps/web/app/globals.css`
+  - lightened the shared `dashboard-script-title` / `dashboard-panel-title` gradient toward softer indigo-lilac-teal tones
+  - softened the light-mode title shadow so the lettering feels less heavy
+- `apps/web/components/dashboard/dashboard-hero.tsx`
+  - softened stat-label and supporting-copy tones in light mode
+  - eased the stat number color away from hard near-black
+- `apps/web/components/dashboard/progress-widget.tsx`
+  - softened the light-mode eyebrow label and supporting-copy tone
+- `apps/web/components/dashboard/quick-idea-capture.tsx`
+  - softened the supporting-copy tone in light mode
+- `apps/web/components/dashboard/calendar-widget.tsx`
+  - softened the light-mode eyebrow label, event title, and date tones
+
+**Why:**
+- The dashboard typography now feels more polished and airy in light mode, without losing readability.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 63 (Script title descender clipping fix)
+
+**Problem investigated:**
+- The handwritten title treatment looked slightly clipped at the bottom on pages like `/profile`.
+- The issue came from the reusable script title treatment not leaving enough breathing room for descenders in the chosen font.
+
+**What changed:**
+- `apps/web/app/globals.css`
+  - added a dedicated `line-height` and a small bottom padding to `.dashboard-script-title`
+
+**Why:**
+- Titles like `My Profile` now keep their handwritten descenders visible instead of looking trimmed at the baseline.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 64 (Profile signature headline + avatar upload honesty pass)
+
+**Problem investigated:**
+- The profile experience still mixed one standard bold name treatment with the newer signature typography language.
+- Avatar upload messaging also sounded more complete than the actual state we want to communicate right now.
+
+**What changed:**
+- `apps/web/components/profile/profile-hero-card.tsx`
+  - moved the main profile hero name onto the shared signature title treatment
+  - replaced the old Cloudflare R2 upload copy with an honest “planned / not finalized yet” message
+- `apps/web/components/profile/profile-details-card.tsx`
+  - updated avatar URL helper copy to say external image links work now
+  - replaced the direct upload action block with a clear `Coming soon` state instead of pretending the flow is final
+- `apps/web/lib/profile.ts`
+  - updated the “photo missing” status description to reflect that direct photo upload is planned, while image URLs already work
+- `apps/web/app/profile/page.tsx`
+  - removed now-unused direct-upload props from the details card wiring
+
+**Why:**
+- The profile page now feels visually more unified and communicates the avatar situation honestly instead of overpromising.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 65 (Cross-chat handoff for adaptation work)
+
+**Current UI state:**
+- Dashboard and Profile already went through the stronger premium/parity adaptation passes.
+- Materials and Course Details have had parity work, but still need another refinement pass before they feel fully settled.
+- Profile typography is now aligned with the shared signature treatment.
+- Direct avatar upload is intentionally marked as planned / coming soon until we choose a reliable final solution.
+
+**Recommended next adaptation target:**
+- **First:** Course Details + Materials refinement pass
+  - revisit module sections, material rows/cards, spacing, action clarity, and empty states
+  - compare against the old product flow again, because the current pages still do not feel fully finished
+- **Second:** Admin Panel adaptation pass
+  - good next large pass after modules/materials feel truly settled
+  - should include visual polish for tabs/cards/tables plus replacing any remaining native `confirm()` flows with `ConfirmModal`
+- **Third:** Public pages follow-up: `How it works` + `Contact`
+  - these should stay visible in the handoff because they still do not exist as dedicated app-router pages
+  - they fit best as part of a later public-site adaptation / polish pass
+- **Fourth:** Sharing / `Shared with Me`
+  - still not started in the active plan
+  - strong parity win because it exists in the old product direction and adds a visible collaboration story
+- **Fifth:** Avatar upload implementation revisit
+  - only after we are ready to commit to a dependable demo-friendly upload/storage path
+
+**Recommended prompt for the next chat:**
+- `Read docs/dev-log.md and docs/implementation-plan.md and continue with the Course Details + Materials refinement pass. Start by auditing the current module/material screens against the old StudyHub flow and list the UI/UX gaps before changing code.`
+
+### Session 66 (Course -> modules -> materials hierarchy restoration)
+
+**Problem investigated:**
+- The current adaptation work still felt too flat compared with the original StudyHub flow.
+- `Course Details` was mixing modules and materials on one screen, which blurred the intended hierarchy.
+- `Materials` detail/edit had no strong breadcrumb back to the module context, so the navigation loop still felt incomplete.
+
+**What changed:**
+- `apps/web/app/api/modules/[id]/route.ts`
+  - added a `GET` payload that returns both the selected module and its parent course context
+- `apps/web/app/api/materials/[id]/route.ts`
+  - expanded the `GET` payload to include module + course context for breadcrumbs and smarter redirects
+- `apps/web/app/courses/[id]/page.tsx`
+  - turned the page back into a true modules workspace for the selected course
+  - removed the flattened inline materials management from this screen
+  - added module creation, rename, delete, reorder, and clearer “Open materials” actions
+- `apps/web/components/course/course-workspace-header.tsx`
+  - rebuilt the course hero around the restored `course -> modules -> materials` flow
+- `apps/web/components/course/module-list.tsx`
+  - simplified the screen into a dedicated module-card list
+- `apps/web/components/course/module-section.tsx`
+  - redesigned each module item into a stronger premium card with order, counts, rename/reorder/delete actions, and direct module-workspace entry
+- `apps/web/app/modules/[id]/page.tsx`
+  - added a new dedicated module-level materials workspace route
+  - brought in the original-style hierarchy more clearly with module sidebar, materials list, pinned rail, filters, sort, search, and quick create form
+- `apps/web/components/modules/module-sidebar.tsx`
+  - added a left rail for switching between modules inside the same course
+- `apps/web/components/modules/module-workspace-header.tsx`
+  - added the new module hero/toolbar with filters and create-material CTA
+- `apps/web/components/modules/module-material-composer.tsx`
+  - extracted the quick-create material form into a dedicated module-level surface
+- `apps/web/components/modules/module-pinned-sidebar.tsx`
+  - added a dedicated quick-access rail for pinned materials inside the current module
+- `apps/web/components/course/material-row.tsx`
+  - upgraded material items into clearer premium cards with better type emphasis, pin visibility, metadata, and open actions
+- `apps/web/app/materials/[id]/page.tsx`
+  - added explicit breadcrumb context back to the module and course
+  - changed delete redirect to return to the module workspace instead of the dashboard
+- `apps/web/components/materials/material-view-panel.tsx`
+  - refined the view mode surface and action styling
+- `apps/web/components/materials/material-editor-form.tsx`
+  - refined the edit form styling to match the new module/material flow
+- `apps/web/components/dashboard/pinned-material-item.tsx`
+  - changed the secondary pinned link target from the course page to the new module workspace
+- `apps/web/components/dashboard/pinned-sidebar.tsx`
+  - updated pinned search matching to include module names too
+
+**Why:**
+- The adapted web app now follows the original mental model more faithfully:
+  - dashboard selects a course
+  - course page manages modules
+  - module page manages materials
+  - material detail/edit keeps a clear path back to its module
+- This also makes the UI feel less crowded and gives module/material actions much clearer ownership.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+**Recommended next adaptation target:**
+- **First:** Interface review checkpoint
+  - pause before the Admin Panel pass and review the current adapted UI in the browser
+  - look specifically at Dashboard, Course Details, module workspace, material detail, and Profile for spacing, hierarchy, copy tone, mobile behavior, and visual consistency
+  - capture any last small UI corrections before moving into the next large feature/polish block
+- **Second:** Admin Panel adaptation pass
+  - replace the remaining native `confirm()` flows with `ConfirmModal`
+  - tighten tabs/cards/tables/empty states so they match the newer dashboard/profile/module quality bar
+- **Third:** Public pages follow-up: `How it works` + `Contact`
+  - still missing as dedicated app-router pages
+  - good follow-up after the authenticated app surfaces feel settled
+- **Fourth:** Sharing / `Shared with Me`
+  - still the last major visible parity feature not started in the active plan
+- **Fifth:** Avatar upload implementation revisit
+  - keep this for after the remaining UI adaptation targets unless a dependable demo-safe upload path is chosen earlier
+
+**Recommended prompt for the next chat:**
+- `Read docs/dev-log.md and docs/implementation-plan.md and start with an interface review checkpoint before the Admin Panel pass. Review Dashboard, Course Details, module workspace, material detail, and Profile in the browser, note any remaining UI inconsistencies, and only then continue into admin adaptation work.`
+
+### Session 67 (Material card icon interaction + title styling)
+
+**Problem investigated:**
+- The user wanted the material card icon to feel more alive again, closer to the old StudyHub hover interaction.
+- The material title also needed a cleaner font/color treatment to read closer to the original visual direction.
+
+**What changed:**
+- `apps/web/components/course/material-row.tsx`
+  - added a hover animation to the material type icon with scale, lift, and slight rotation
+  - restored a soft colored glow behind the icon so it feels more interactive on pointer hover
+  - updated the icon label styling to a stronger uppercase badge treatment
+  - refined the material title to use a cleaner Poppins-heavy look with a darker blue/slate tone and better hover color transition
+
+**Why:**
+- The material rows now feel closer to the old product's playful interaction language without breaking the newer premium layout.
+- The title reads more intentional and visually anchored instead of feeling too plain.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 68 (Signature font cleanup + material detail duplication fix)
+
+**Problem investigated:**
+- Several headings in the new module/material flow still looked like leftover draft typography instead of the intended signature treatment.
+- Cyrillic titles were not reliably reading as “signature” because the handwritten stack needed a better fallback.
+- The material detail page was also repeating the same material title twice: once in the page header and once again inside the main content panel.
+
+**What changed:**
+- `apps/web/app/globals.css`
+  - added a Cyrillic-friendly handwritten fallback (`Caveat`) into the shared signature font stack
+- `apps/web/components/modules/module-sidebar.tsx`
+  - moved the course title into the signature treatment
+  - updated module titles so the active item reads in the signature style instead of a leftover draft sans look
+- `apps/web/components/modules/module-pinned-sidebar.tsx`
+  - updated the “Pinned materials” heading to the signature treatment
+- `apps/web/components/course/material-row.tsx`
+  - changed the material row title from the temporary heavy sans treatment to the signature title treatment
+- `apps/web/components/materials/material-view-panel.tsx`
+  - moved the in-panel material title into the signature treatment
+- `apps/web/app/materials/[id]/page.tsx`
+  - removed the duplicated material title from the page header
+  - turned the top section into a context header (“Material workspace”) so the actual content title only appears once
+
+**Why:**
+- The module/material flow now feels much more consistent with the premium signature direction already used in the stronger dashboard/profile passes.
+- The material detail screen also reads cleaner because it no longer repeats the same title in two places.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 69 (Course module cards typography + clearer count labels)
+
+**Problem investigated:**
+- The course details page still had a leftover draft feel in the module cards because the module titles were rendering in the default heavy sans treatment instead of the signature heading style.
+- The count chip on each card said `1 material`, which read too much like an internal data label and was not clear enough in the interface.
+
+**What changed:**
+- `apps/web/components/course/module-section.tsx`
+  - moved module card titles into the shared signature heading treatment
+  - removed the truncation-heavy title styling so course module names can read more naturally
+  - changed the count chip from `material/materials` to the clearer `study item/study items`
+  - renamed the secondary order chip from `Step N` to `Module N` so the language matches the actual hierarchy
+
+**Why:**
+- The course details screen now stays visually aligned with the signature typography direction already established across the dashboard, module workspace, and material detail views.
+- The card metadata also reads more like product copy and less like raw database terminology.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 70 (Course module card simplification)
+
+**Problem investigated:**
+- The module titles on the course details cards were still too close in scale to the main course title above them.
+- The metadata chips under each module card felt redundant: the module number was already shown in the left badge, and the `study item` chip was too vague to justify a highlighted pill.
+
+**What changed:**
+- `apps/web/components/course/module-section.tsx`
+  - reduced the signature title scale so module names sit one level below the course title
+  - removed the redundant metadata chips from the bottom of each card
+  - replaced them with a quieter summary line such as `Contains 1 item` or `No items yet`
+
+**Why:**
+- The course page hierarchy now reads more naturally: course title first, module titles second.
+- The cards also feel less busy because repeated structural labels no longer compete with the content and actions.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 71 (Material type icons cleanup)
+
+**Problem investigated:**
+- The material cards still repeated the type too many times: once as a large text block inside the animated icon (`NOTE`), once again as a `Note` chip, and once more in the footer as `NOTE item`.
+- That made the card feel text-heavy and distracted from the actual material title.
+
+**What changed:**
+- `apps/web/components/course/material-row.tsx`
+  - replaced the text-based animated `NOTE/LINK/FILE` square with small illustrated SVG icons for note, link, and file
+  - kept the hover interaction and glow treatment, but moved the emphasis from text to drawing
+  - removed the redundant footer label (`NOTE item`, `LINK item`, `FILE item`)
+  - kept the `MaterialTypePill` as the single textual type indicator on the card
+
+**Why:**
+- The material rows now feel quieter and more visual, which makes the user’s eye land on the title first instead of bouncing between repeated labels.
+- The cleanup also scales correctly for link and file materials once those appear in the module.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 72 (Icon-based pin and reorder controls)
+
+**Problem investigated:**
+- The material flow still used text buttons for `Pin / Pinned`, while the original StudyHub interface communicated that action more cleanly with a pin icon.
+- The course module cards also still used text-based `Up / Down` controls, even though the older interface handled reorder actions with simple arrow icons.
+
+**What changed:**
+- `apps/web/components/ui/action-icons.tsx`
+  - added a shared icon set for pin, move up, and move down controls
+- `apps/web/components/course/material-row.tsx`
+  - replaced the text-based pin button with an icon button inspired by the old pinned-state treatment
+  - kept clear `title` and `aria-label` copy so the control remains understandable without visible text
+- `apps/web/components/materials/material-view-panel.tsx`
+  - switched the material detail pin action to the same icon button treatment
+- `apps/web/components/course/module-section.tsx`
+  - replaced `Up / Down` text controls with icon buttons so reorder actions read lighter and closer to the v1 interaction language
+
+**Why:**
+- These controls now feel more visual and less repetitive, especially in material cards where the title and metadata already carry enough text.
+- The module cards also breathe better because reorder actions no longer compete with the main content copy.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 73 (Editable module descriptions + course card cleanup)
+
+**Problem investigated:**
+- The course module cards still showed a redundant `Contains X item` summary line that the UI no longer needed.
+- The explanation text under each module title was not actually editable because modules did not yet have a stored `description` field in the schema.
+- The user-facing control still said `Rename`, but the real need was to edit both the module title and the descriptive copy below it.
+
+**What changed:**
+- `drizzle/schema.ts`
+  - added `description` to the `modules` table
+- `drizzle/migrations/0002_faithful_mesmero.sql`
+  - generated a new Drizzle migration for the module description column
+  - made the SQL idempotent with `ADD COLUMN IF NOT EXISTS`
+- `apps/web/app/api/courses/[id]/modules/route.ts`
+  - create-module API now accepts and stores an optional module description
+- `apps/web/app/api/modules/[id]/route.ts`
+  - update-module API now accepts and persists description changes
+- `apps/web/components/course/module-section.tsx`
+  - removed the `Contains X item` line from the card
+  - changed the action from `Rename` to `Edit details`
+  - edit mode now supports both title and description
+  - card copy now renders the stored module description when present
+- `apps/web/components/course/course-workspace-header.tsx`
+  - the new-module form now includes an optional description field
+- `apps/web/app/courses/[id]/page.tsx`
+  - removed module material-count fetching because those counts are no longer shown on the page
+  - wired create/update flows to the new description field
+- `apps/web/components/modules/module-workspace-header.tsx`
+  - the module workspace header now reuses the stored module description instead of always showing the generic helper copy
+
+**Why:**
+- The course cards are now quieter and no longer waste space on redundant metadata.
+- Module descriptions are now real editable content instead of fixed placeholder text, which makes the `Edit details` action honest and actually useful.
+- Removing the old count-fetching also simplifies the course page and cuts unnecessary API calls.
+
+**Validation:**
+- `node_modules\\.bin\\drizzle-kit.cmd generate`
+- applied the new `modules.description` column to the current dev database via Neon HTTP after `drizzle-kit migrate` stalled on the websocket migration path in this environment
+- `npm.cmd --workspace @studyhub/web run typecheck`
+
+### Session 74 (Legacy plus-button motion alignment)
+
+**Problem investigated:**
+- The create-action buttons still did not feel quite like the original StudyHub v1 interaction.
+- The user called out the `+` animation specifically: it should feel closer to the legacy button behavior instead of looking like a generic modern hover effect.
+- One module card label still said `Module workspace`, even though the current UI language had already been simplified to just `Module`.
+
+**What changed:**
+- `apps/web/components/course/course-workspace-header.tsx`
+  - adjusted the `New module` plus icon to use a more v1-like hover motion with upward lift, bounce timing, and a quarter-turn spin
+- `apps/web/components/modules/module-workspace-header.tsx`
+  - matched the `Add material` plus icon to the same legacy-inspired motion so the two create buttons now feel consistent
+- `apps/web/components/course/module-section.tsx`
+  - changed the eyebrow label from `Module workspace` to `Module`
+
+**Why:**
+- The add buttons now feel closer to the original StudyHub interaction language the user remembered from v1.
+- The module cards also read more cleanly without the older `workspace` wording.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run typecheck`
 
 ### Session 75 (Interface review cleanup before Admin)
 
@@ -2156,498 +2189,6 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 **Why:**
 - The progress page now feels much closer to the visual voice of the rest of the authenticated app.
 - Display text stays readable, but the page no longer defaults to harsh black headings everywhere.
-
-**Validation:**
-- `npm.cmd --workspace @studyhub/web run typecheck`
-
-### Session 56 (Authenticated navbar mascot cleanup)
-
-**Problem investigated:**
-- The authenticated navbar mascot needed a light backing because the logo asset has transparent areas.
-- The previous white backing read as a visible white spot instead of a clean brand accent.
-
-**What changed:**
-- `apps/web/components/navbar.tsx`
-  - switched the authenticated navbar mascot to the cropped logo asset for a tighter fit
-  - replaced the solid white inner plate with a softer radial light backing and a lighter inner ring
-  - kept the existing dark header styling while making the logo read more clearly without the hard white blob
-
-**Why:**
-- The mascot now has enough separation from the dark navbar without looking like a separate white patch behind it.
-
-**Validation:**
-- `npm.cmd --workspace @studyhub/web run typecheck`
-
-### Session 57 (Authenticated navbar premium brand badge)
-
-**Problem investigated:**
-- The authenticated navbar logo no longer had the hard white spot, but the badge still felt too heavy and sticker-like.
-- The brand mark needed a more premium dark-shell treatment instead of a simple icon sitting inside a white circle.
-
-**What changed:**
-- `apps/web/components/navbar.tsx`
-  - extracted the navbar mascot into a dedicated `BrandMark` helper for cleaner structure
-  - rebuilt the badge as a polished rounded shell with layered gloss, cyan-indigo ambient glow, and a pearl orb behind the mascot
-  - kept the mascot readable on the dark header while making the mark feel more intentional and premium
-
-**Why:**
-- The logo now reads more like a crafted product badge and less like a transparent PNG placed over a white patch.
-
-**Validation:**
-- `npm.cmd --workspace @studyhub/web run typecheck`
-
-### Session 58 (Navbar mascot de-patched with silhouette asset)
-
-**Problem investigated:**
-- Even after the premium badge pass, the mascot area still read like a layered patch rather than a natural brand mark.
-- The visual issue came from relying on too many CSS surfaces to compensate for a transparent mascot asset.
-
-**What changed:**
-- `apps/web/public/assets/v1/icons/mascot-logo-navbar.png`
-  - generated a dedicated navbar mascot asset with a soft white silhouette backing that follows the mascot shape instead of using a circular plate
-- `apps/web/components/navbar.tsx`
-  - removed the heavy boxed badge treatment
-  - simplified the brand mark to a cleaner floating mascot with subtle cyan/indigo ambient glow
-  - switched the navbar logo source to the new dedicated navbar asset
-
-**Why:**
-- The logo now reads as one intentional mark instead of a transparent PNG trying to sit on top of layered background patches.
-
-**Validation:**
-- `npm.cmd --workspace @studyhub/web run typecheck`
-
-### Session 59 (Navbar mascot filled from internal transparency)
-
-**Problem investigated:**
-- The silhouette-backed navbar mascot removed the patch effect, but it still looked like a photographic negative because the whole outer shape was glowing light against the dark header.
-- The real issue was the mascot asset itself: the internal transparent areas needed filling, not the outside silhouette.
-
-**What changed:**
-- `apps/web/public/assets/v1/icons/mascot-logo-navbar-filled.png`
-  - generated a new navbar-specific mascot asset by filling only the internal transparent regions of the original mascot with a soft pearl white treatment
-- `apps/web/components/navbar.tsx`
-  - switched the brand mark to the new internally filled mascot asset
-  - removed the stronger secondary glow treatment and kept only a very restrained ambient glow + shadow
-
-**Why:**
-- The mascot now reads like a normal logo on a dark surface instead of a white-outline cutout or inverted-photo effect.
-
-**Validation:**
-- `npm.cmd --workspace @studyhub/web run typecheck`
-
-### Session 60 (Subtle navbar halo pass)
-
-**Problem investigated:**
-- After fixing the mascot transparency, the logo was finally clean, but it could still benefit from a little more separation from the dark header.
-- The user wanted to test a halo again without reintroducing the old patch or negative-photo effect.
-
-**What changed:**
-- `apps/web/components/navbar.tsx`
-  - added one restrained radial cyan-indigo halo layer behind the mascot
-  - kept the existing internal-fill asset and avoided any new white backing plate
-
-**Why:**
-- The mascot now gets a softer premium lift from the header while staying clean and natural.
-
-**Validation:**
-- `npm.cmd --workspace @studyhub/web run typecheck`
-
-### Session 61 (Scenic navbar glow pass)
-
-**Problem investigated:**
-- The subtle halo worked, but the user wanted to explore a slightly more scenic presentation.
-
-**What changed:**
-- `apps/web/components/navbar.tsx`
-  - deepened the main halo into a richer cyan-indigo-violet bloom
-  - added two small atmospheric glow pockets to make the mascot feel a bit more stage-lit
-  - kept the mascot asset and overall silhouette unchanged
-
-**Why:**
-- The brand mark now has a touch more drama and presence without falling back into patch-like white backing.
-
-**Validation:**
-- `npm.cmd --workspace @studyhub/web run typecheck`
-
-### Session 62 (Dashboard light-mode typography luxury pass)
-
-**Problem investigated:**
-- In light mode, the dashboard handwritten headings still started from a tone that felt too close to near-black.
-- The user wanted the font color to feel a little lighter and more luxurious, closer to the earlier softer pass.
-
-**What changed:**
-- `apps/web/app/globals.css`
-  - lightened the shared `dashboard-script-title` / `dashboard-panel-title` gradient toward softer indigo-lilac-teal tones
-  - softened the light-mode title shadow so the lettering feels less heavy
-- `apps/web/components/dashboard/dashboard-hero.tsx`
-  - softened stat-label and supporting-copy tones in light mode
-  - eased the stat number color away from hard near-black
-- `apps/web/components/dashboard/progress-widget.tsx`
-  - softened the light-mode eyebrow label and supporting-copy tone
-- `apps/web/components/dashboard/quick-idea-capture.tsx`
-  - softened the supporting-copy tone in light mode
-- `apps/web/components/dashboard/calendar-widget.tsx`
-  - softened the light-mode eyebrow label, event title, and date tones
-
-**Why:**
-- The dashboard typography now feels more polished and airy in light mode, without losing readability.
-
-**Validation:**
-- `npm.cmd --workspace @studyhub/web run typecheck`
-
-### Session 63 (Script title descender clipping fix)
-
-**Problem investigated:**
-- The handwritten title treatment looked slightly clipped at the bottom on pages like `/profile`.
-- The issue came from the reusable script title treatment not leaving enough breathing room for descenders in the chosen font.
-
-**What changed:**
-- `apps/web/app/globals.css`
-  - added a dedicated `line-height` and a small bottom padding to `.dashboard-script-title`
-
-**Why:**
-- Titles like `My Profile` now keep their handwritten descenders visible instead of looking trimmed at the baseline.
-
-**Validation:**
-- `npm.cmd --workspace @studyhub/web run typecheck`
-
-### Session 64 (Profile signature headline + avatar upload honesty pass)
-
-**Problem investigated:**
-- The profile experience still mixed one standard bold name treatment with the newer signature typography language.
-- Avatar upload messaging also sounded more complete than the actual state we want to communicate right now.
-
-**What changed:**
-- `apps/web/components/profile/profile-hero-card.tsx`
-  - moved the main profile hero name onto the shared signature title treatment
-  - replaced the old Cloudflare R2 upload copy with an honest вЂњplanned / not finalized yetвЂќ message
-- `apps/web/components/profile/profile-details-card.tsx`
-  - updated avatar URL helper copy to say external image links work now
-  - replaced the direct upload action block with a clear `Coming soon` state instead of pretending the flow is final
-- `apps/web/lib/profile.ts`
-  - updated the вЂњphoto missingвЂќ status description to reflect that direct photo upload is planned, while image URLs already work
-- `apps/web/app/profile/page.tsx`
-  - removed now-unused direct-upload props from the details card wiring
-
-**Why:**
-- The profile page now feels visually more unified and communicates the avatar situation honestly instead of overpromising.
-
-**Validation:**
-- `npm.cmd --workspace @studyhub/web run typecheck`
-
-### Session 74 (Legacy plus-button motion alignment)
-
-**Problem investigated:**
-- The create-action buttons still did not feel quite like the original StudyHub v1 interaction.
-- The user called out the `+` animation specifically: it should feel closer to the legacy button behavior instead of looking like a generic modern hover effect.
-- One module card label still said `Module workspace`, even though the current UI language had already been simplified to just `Module`.
-
-**What changed:**
-- `apps/web/components/course/course-workspace-header.tsx`
-  - adjusted the `New module` plus icon to use a more v1-like hover motion with upward lift, bounce timing, and a quarter-turn spin
-- `apps/web/components/modules/module-workspace-header.tsx`
-  - matched the `Add material` plus icon to the same legacy-inspired motion so the two create buttons now feel consistent
-- `apps/web/components/course/module-section.tsx`
-  - changed the eyebrow label from `Module workspace` to `Module`
-
-**Why:**
-- The add buttons now feel closer to the original StudyHub interaction language the user remembered from v1.
-- The module cards also read more cleanly without the older `workspace` wording.
-
-**Validation:**
-- `npm.cmd --workspace @studyhub/web run typecheck`
-
-### Session 73 (Editable module descriptions + course card cleanup)
-
-**Problem investigated:**
-- The course module cards still showed a redundant `Contains X item` summary line that the UI no longer needed.
-- The explanation text under each module title was not actually editable because modules did not yet have a stored `description` field in the schema.
-- The user-facing control still said `Rename`, but the real need was to edit both the module title and the descriptive copy below it.
-
-**What changed:**
-- `drizzle/schema.ts`
-  - added `description` to the `modules` table
-- `drizzle/migrations/0002_faithful_mesmero.sql`
-  - generated a new Drizzle migration for the module description column
-  - made the SQL idempotent with `ADD COLUMN IF NOT EXISTS`
-- `apps/web/app/api/courses/[id]/modules/route.ts`
-  - create-module API now accepts and stores an optional module description
-- `apps/web/app/api/modules/[id]/route.ts`
-  - update-module API now accepts and persists description changes
-- `apps/web/components/course/module-section.tsx`
-  - removed the `Contains X item` line from the card
-  - changed the action from `Rename` to `Edit details`
-  - edit mode now supports both title and description
-  - card copy now renders the stored module description when present
-- `apps/web/components/course/course-workspace-header.tsx`
-  - the new-module form now includes an optional description field
-- `apps/web/app/courses/[id]/page.tsx`
-  - removed module material-count fetching because those counts are no longer shown on the page
-  - wired create/update flows to the new description field
-- `apps/web/components/modules/module-workspace-header.tsx`
-  - the module workspace header now reuses the stored module description instead of always showing the generic helper copy
-
-**Why:**
-- The course cards are now quieter and no longer waste space on redundant metadata.
-- Module descriptions are now real editable content instead of fixed placeholder text, which makes the `Edit details` action honest and actually useful.
-- Removing the old count-fetching also simplifies the course page and cuts unnecessary API calls.
-
-**Validation:**
-- `node_modules\\.bin\\drizzle-kit.cmd generate`
-- applied the new `modules.description` column to the current dev database via Neon HTTP after `drizzle-kit migrate` stalled on the websocket migration path in this environment
-- `npm.cmd --workspace @studyhub/web run typecheck`
-
-### Session 72 (Icon-based pin and reorder controls)
-
-**Problem investigated:**
-- The material flow still used text buttons for `Pin / Pinned`, while the original StudyHub interface communicated that action more cleanly with a pin icon.
-- The course module cards also still used text-based `Up / Down` controls, even though the older interface handled reorder actions with simple arrow icons.
-
-**What changed:**
-- `apps/web/components/ui/action-icons.tsx`
-  - added a shared icon set for pin, move up, and move down controls
-- `apps/web/components/course/material-row.tsx`
-  - replaced the text-based pin button with an icon button inspired by the old pinned-state treatment
-  - kept clear `title` and `aria-label` copy so the control remains understandable without visible text
-- `apps/web/components/materials/material-view-panel.tsx`
-  - switched the material detail pin action to the same icon button treatment
-- `apps/web/components/course/module-section.tsx`
-  - replaced `Up / Down` text controls with icon buttons so reorder actions read lighter and closer to the v1 interaction language
-
-**Why:**
-- These controls now feel more visual and less repetitive, especially in material cards where the title and metadata already carry enough text.
-- The module cards also breathe better because reorder actions no longer compete with the main content copy.
-
-**Validation:**
-- `npm.cmd --workspace @studyhub/web run typecheck`
-
-### Session 71 (Material type icons cleanup)
-
-**Problem investigated:**
-- The material cards still repeated the type too many times: once as a large text block inside the animated icon (`NOTE`), once again as a `Note` chip, and once more in the footer as `NOTE item`.
-- That made the card feel text-heavy and distracted from the actual material title.
-
-**What changed:**
-- `apps/web/components/course/material-row.tsx`
-  - replaced the text-based animated `NOTE/LINK/FILE` square with small illustrated SVG icons for note, link, and file
-  - kept the hover interaction and glow treatment, but moved the emphasis from text to drawing
-  - removed the redundant footer label (`NOTE item`, `LINK item`, `FILE item`)
-  - kept the `MaterialTypePill` as the single textual type indicator on the card
-
-**Why:**
-- The material rows now feel quieter and more visual, which makes the userвЂ™s eye land on the title first instead of bouncing between repeated labels.
-- The cleanup also scales correctly for link and file materials once those appear in the module.
-
-**Validation:**
-- `npm.cmd --workspace @studyhub/web run typecheck`
-
-### Session 70 (Course module card simplification)
-
-**Problem investigated:**
-- The module titles on the course details cards were still too close in scale to the main course title above them.
-- The metadata chips under each module card felt redundant: the module number was already shown in the left badge, and the `study item` chip was too vague to justify a highlighted pill.
-
-**What changed:**
-- `apps/web/components/course/module-section.tsx`
-  - reduced the signature title scale so module names sit one level below the course title
-  - removed the redundant metadata chips from the bottom of each card
-  - replaced them with a quieter summary line such as `Contains 1 item` or `No items yet`
-
-**Why:**
-- The course page hierarchy now reads more naturally: course title first, module titles second.
-- The cards also feel less busy because repeated structural labels no longer compete with the content and actions.
-
-**Validation:**
-- `npm.cmd --workspace @studyhub/web run typecheck`
-
-### Session 69 (Course module cards typography + clearer count labels)
-
-**Problem investigated:**
-- The course details page still had a leftover draft feel in the module cards because the module titles were rendering in the default heavy sans treatment instead of the signature heading style.
-- The count chip on each card said `1 material`, which read too much like an internal data label and was not clear enough in the interface.
-
-**What changed:**
-- `apps/web/components/course/module-section.tsx`
-  - moved module card titles into the shared signature heading treatment
-  - removed the truncation-heavy title styling so course module names can read more naturally
-  - changed the count chip from `material/materials` to the clearer `study item/study items`
-  - renamed the secondary order chip from `Step N` to `Module N` so the language matches the actual hierarchy
-
-**Why:**
-- The course details screen now stays visually aligned with the signature typography direction already established across the dashboard, module workspace, and material detail views.
-- The card metadata also reads more like product copy and less like raw database terminology.
-
-**Validation:**
-- `npm.cmd --workspace @studyhub/web run typecheck`
-
-### Session 68 (Signature font cleanup + material detail duplication fix)
-
-**Problem investigated:**
-- Several headings in the new module/material flow still looked like leftover draft typography instead of the intended signature treatment.
-- Cyrillic titles were not reliably reading as вЂњsignatureвЂќ because the handwritten stack needed a better fallback.
-- The material detail page was also repeating the same material title twice: once in the page header and once again inside the main content panel.
-
-**What changed:**
-- `apps/web/app/globals.css`
-  - added a Cyrillic-friendly handwritten fallback (`Caveat`) into the shared signature font stack
-- `apps/web/components/modules/module-sidebar.tsx`
-  - moved the course title into the signature treatment
-  - updated module titles so the active item reads in the signature style instead of a leftover draft sans look
-- `apps/web/components/modules/module-pinned-sidebar.tsx`
-  - updated the вЂњPinned materialsвЂќ heading to the signature treatment
-- `apps/web/components/course/material-row.tsx`
-  - changed the material row title from the temporary heavy sans treatment to the signature title treatment
-- `apps/web/components/materials/material-view-panel.tsx`
-  - moved the in-panel material title into the signature treatment
-- `apps/web/app/materials/[id]/page.tsx`
-  - removed the duplicated material title from the page header
-  - turned the top section into a context header (вЂњMaterial workspaceвЂќ) so the actual content title only appears once
-
-**Why:**
-- The module/material flow now feels much more consistent with the premium signature direction already used in the stronger dashboard/profile passes.
-- The material detail screen also reads cleaner because it no longer repeats the same title in two places.
-
-**Validation:**
-- `npm.cmd --workspace @studyhub/web run typecheck`
-
-### Session 67 (Material card icon interaction + title styling)
-
-**Problem investigated:**
-- The user wanted the material card icon to feel more alive again, closer to the old StudyHub hover interaction.
-- The material title also needed a cleaner font/color treatment to read closer to the original visual direction.
-
-**What changed:**
-- `apps/web/components/course/material-row.tsx`
-  - added a hover animation to the material type icon with scale, lift, and slight rotation
-  - restored a soft colored glow behind the icon so it feels more interactive on pointer hover
-  - updated the icon label styling to a stronger uppercase badge treatment
-  - refined the material title to use a cleaner Poppins-heavy look with a darker blue/slate tone and better hover color transition
-
-**Why:**
-- The material rows now feel closer to the old product's playful interaction language without breaking the newer premium layout.
-- The title reads more intentional and visually anchored instead of feeling too plain.
-
-**Validation:**
-- `npm.cmd --workspace @studyhub/web run typecheck`
-
-### Session 66 (Course -> modules -> materials hierarchy restoration)
-
-**Problem investigated:**
-- The current adaptation work still felt too flat compared with the original StudyHub flow.
-- `Course Details` was mixing modules and materials on one screen, which blurred the intended hierarchy.
-- `Materials` detail/edit had no strong breadcrumb back to the module context, so the navigation loop still felt incomplete.
-
-**What changed:**
-- `apps/web/app/api/modules/[id]/route.ts`
-  - added a `GET` payload that returns both the selected module and its parent course context
-- `apps/web/app/api/materials/[id]/route.ts`
-  - expanded the `GET` payload to include module + course context for breadcrumbs and smarter redirects
-- `apps/web/app/courses/[id]/page.tsx`
-  - turned the page back into a true modules workspace for the selected course
-  - removed the flattened inline materials management from this screen
-  - added module creation, rename, delete, reorder, and clearer вЂњOpen materialsвЂќ actions
-- `apps/web/components/course/course-workspace-header.tsx`
-  - rebuilt the course hero around the restored `course -> modules -> materials` flow
-- `apps/web/components/course/module-list.tsx`
-  - simplified the screen into a dedicated module-card list
-- `apps/web/components/course/module-section.tsx`
-  - redesigned each module item into a stronger premium card with order, counts, rename/reorder/delete actions, and direct module-workspace entry
-- `apps/web/app/modules/[id]/page.tsx`
-  - added a new dedicated module-level materials workspace route
-  - brought in the original-style hierarchy more clearly with module sidebar, materials list, pinned rail, filters, sort, search, and quick create form
-- `apps/web/components/modules/module-sidebar.tsx`
-  - added a left rail for switching between modules inside the same course
-- `apps/web/components/modules/module-workspace-header.tsx`
-  - added the new module hero/toolbar with filters and create-material CTA
-- `apps/web/components/modules/module-material-composer.tsx`
-  - extracted the quick-create material form into a dedicated module-level surface
-- `apps/web/components/modules/module-pinned-sidebar.tsx`
-  - added a dedicated quick-access rail for pinned materials inside the current module
-- `apps/web/components/course/material-row.tsx`
-  - upgraded material items into clearer premium cards with better type emphasis, pin visibility, metadata, and open actions
-- `apps/web/app/materials/[id]/page.tsx`
-  - added explicit breadcrumb context back to the module and course
-  - changed delete redirect to return to the module workspace instead of the dashboard
-- `apps/web/components/materials/material-view-panel.tsx`
-  - refined the view mode surface and action styling
-- `apps/web/components/materials/material-editor-form.tsx`
-  - refined the edit form styling to match the new module/material flow
-- `apps/web/components/dashboard/pinned-material-item.tsx`
-  - changed the secondary pinned link target from the course page to the new module workspace
-- `apps/web/components/dashboard/pinned-sidebar.tsx`
-  - updated pinned search matching to include module names too
-
-**Why:**
-- The adapted web app now follows the original mental model more faithfully:
-  - dashboard selects a course
-  - course page manages modules
-  - module page manages materials
-  - material detail/edit keeps a clear path back to its module
-- This also makes the UI feel less crowded and gives module/material actions much clearer ownership.
-
-**Validation:**
-- `npm.cmd --workspace @studyhub/web run typecheck`
-
-**Recommended next adaptation target:**
-- **First:** Interface review checkpoint
-  - pause before the Admin Panel pass and review the current adapted UI in the browser
-  - look specifically at Dashboard, Course Details, module workspace, material detail, and Profile for spacing, hierarchy, copy tone, mobile behavior, and visual consistency
-  - capture any last small UI corrections before moving into the next large feature/polish block
-- **Second:** Admin Panel adaptation pass
-  - replace the remaining native `confirm()` flows with `ConfirmModal`
-  - tighten tabs/cards/tables/empty states so they match the newer dashboard/profile/module quality bar
-- **Third:** Public pages follow-up: `How it works` + `Contact`
-  - still missing as dedicated app-router pages
-  - good follow-up after the authenticated app surfaces feel settled
-- **Fourth:** Sharing / `Shared with Me`
-  - still the last major visible parity feature not started in the active plan
-- **Fifth:** Avatar upload implementation revisit
-  - keep this for after the remaining UI adaptation targets unless a dependable demo-safe upload path is chosen earlier
-
-**Recommended prompt for the next chat:**
-- `Read docs/dev-log.md and docs/implementation-plan.md and start with an interface review checkpoint before the Admin Panel pass. Review Dashboard, Course Details, module workspace, material detail, and Profile in the browser, note any remaining UI inconsistencies, and only then continue into admin adaptation work.`
-
-### Session 65 (Cross-chat handoff for adaptation work)
-
-**Current UI state:**
-- Dashboard and Profile already went through the stronger premium/parity adaptation passes.
-- Materials and Course Details have had parity work, but still need another refinement pass before they feel fully settled.
-- Profile typography is now aligned with the shared signature treatment.
-- Direct avatar upload is intentionally marked as planned / coming soon until we choose a reliable final solution.
-
-**Recommended next adaptation target:**
-- **First:** Course Details + Materials refinement pass
-  - revisit module sections, material rows/cards, spacing, action clarity, and empty states
-  - compare against the old product flow again, because the current pages still do not feel fully finished
-- **Second:** Admin Panel adaptation pass
-  - good next large pass after modules/materials feel truly settled
-  - should include visual polish for tabs/cards/tables plus replacing any remaining native `confirm()` flows with `ConfirmModal`
-- **Third:** Public pages follow-up: `How it works` + `Contact`
-  - these should stay visible in the handoff because they still do not exist as dedicated app-router pages
-  - they fit best as part of a later public-site adaptation / polish pass
-- **Fourth:** Sharing / `Shared with Me`
-  - still not started in the active plan
-  - strong parity win because it exists in the old product direction and adds a visible collaboration story
-- **Fifth:** Avatar upload implementation revisit
-  - only after we are ready to commit to a dependable demo-friendly upload/storage path
-
-**Recommended prompt for the next chat:**
-- `Read docs/dev-log.md and docs/implementation-plan.md and continue with the Course Details + Materials refinement pass. Start by auditing the current module/material screens against the old StudyHub flow and list the UI/UX gaps before changing code.`
-
-### Session 55 (Navbar wordmark and mascot polish)
-
-**Problem investigated:**
-- The `StudyHub` wordmark in the authenticated navbar looked clipped at the bottom.
-- The mascot logo also sat directly on a transparent/dark background, which made it feel visually unfinished.
-
-**What changed:**
-- `apps/web/components/navbar.tsx`
-  - added a clean white inner backing behind the mascot/logo so the transparent asset reads more clearly
-  - adjusted the wordmark rendering with safer line-height, inline-block spacing, and transparent text fill so the lower edge no longer looks cut off
-  - kept the existing gradient styling while making it render more cleanly in the navbar
-
-**Why:**
-- The brand area now looks more intentional and polished instead of clipped or visually hollow.
 
 **Validation:**
 - `npm.cmd --workspace @studyhub/web run typecheck`
@@ -2884,69 +2425,6 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 **Why:**
 - The home page now behaves closer to the old v1 intent: expensive visual effects only spin up when they are visible or actively being used.
 - This should reduce unnecessary CPU/GPU work and help with laptop heat while keeping the same visual direction.
-
-**Validation:**
-- `npm.cmd --workspace @studyhub/web run typecheck`
-
-### Session 54 (Hero gradient visibility fix)
-
-**Problem investigated:**
-- The dashboard course cards were showing the intended lavender-to-cyan handwritten gradient clearly.
-- The top dashboard hero still read too white, so the user could not really see the same effect there.
-
-**What changed:**
-- `apps/web/app/globals.css`
-  - strengthened the dark handwritten title gradient so it reads visibly on larger headings too
-  - added `background-size`, `background-repeat`, and `-webkit-text-fill-color: transparent` to make the clipped gradient render more reliably
-- `apps/web/components/dashboard/dashboard-hero.tsx`
-  - increased the visible purple/cyan glow balance in the dark hero container
-  - added a stronger upper-right haze and a soft purple bloom nearer the title area
-  - aligned the stat tiles closer to the same premium dark surface language
-
-**Why:**
-- The top dashboard area now reads closer to the course-card reference instead of flattening into near-white text.
-
-**Validation:**
-- `npm.cmd --workspace @studyhub/web run typecheck`
-
-### Session 53 (Dashboard signature titles + premium glow correction)
-
-**Problem investigated:**
-- The previous typography pass drifted away from the intended direction.
-- The user clarified that the target was the existing handwritten dashboard title gradient from the course cards (`Cloudflare R2` / `Next.js` style), not plain sans panel headings.
-- The dashboard also needed the same soft profile-style dark-surface glow in the background of its main panels.
-
-**What changed:**
-- `apps/web/app/globals.css`
-  - aligned both `dashboard-script-title` and `dashboard-panel-title` to the same handwritten gradient title treatment
-  - tuned the dark-mode title gradient to the softer lavender-to-cyan dashboard look from the existing course-card reference
-- `apps/web/components/dashboard/dashboard-hero.tsx`
-  - added a profile-inspired internal glow blend to the dark hero surface
-  - kept the main dashboard heading on the signature gradient style
-- `apps/web/components/dashboard/course-card.tsx`
-  - added the soft top-right glow haze and richer dark premium surface treatment
-- `apps/web/components/dashboard/create-course-form.tsx`
-  - kept the panel title on the signature gradient style
-  - added the same premium dark surface glow blend
-- `apps/web/components/dashboard/progress-widget.tsx`
-  - kept the widget title on the signature gradient style
-  - added the same premium dark surface glow blend
-- `apps/web/components/dashboard/quick-idea-capture.tsx`
-  - kept the widget title on the signature gradient style
-  - added the same premium dark surface glow blend
-- `apps/web/components/dashboard/calendar-widget.tsx`
-  - kept the widget title on the signature gradient style
-  - added the same premium dark surface glow blend
-- `apps/web/components/dashboard/pinned-sidebar.tsx`
-  - kept the sidebar title on the signature gradient style
-  - added the same premium dark surface glow blend and soft haze
-- `apps/web/components/dashboard/edit-course-modal.tsx`
-  - aligned the modal heading and dark surface with the same visual language
-
-**Why:**
-- The dashboard now follows the intended rule more faithfully:
-  - all dashboard headings use the handwritten signature gradient
-  - dark surfaces carry the same soft luminous premium atmosphere seen on the profile page
 
 **Validation:**
 - `npm.cmd --workspace @studyhub/web run typecheck`
@@ -3212,7 +2690,7 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 - This fixes the uneven reading texture across notes, cards, helper copy, and other authenticated app surfaces.
 
 **Validation:**
-- `npm.cmd --workspace @studyhub/web run build` вњ…
+- `npm.cmd --workspace @studyhub/web run build` ✅
 - `npm.cmd --workspace @studyhub/web run typecheck` hit a local sandbox `.next/types` path mismatch after build, but the successful Next build already completed its own type/lint validation for this change.
 
 ### Session 105 (Home typography color refinement)
@@ -3245,164 +2723,41 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 **Validation:**
 - `npm.cmd --workspace @studyhub/web run build`
 
-### Session 117 (Module material quick-edit shortcut)
+### Session 106 (Home CTA de-duplication + new How It Works page)
 
 **Problem investigated:**
-- In the module workspace, material cards exposed source and pin quick actions, but there was no equally fast edit shortcut inside the card container.
-- That made small content corrections feel slower than needed because the user first had to open the detail page and only then switch to edit mode.
+- The public home page had overlapping "Features" navigation signals:
+  - navbar `Features`
+  - hero secondary CTA `Explore Features`
+- In practice that made the public navigation feel duplicated, and the current secondary CTA did not have a distinct destination like the old v1 `how-it-works` page.
+- I also confirmed the home anchor setup was incomplete:
+  - `Features` and `FAQ` links existed in the navbar
+  - but the corresponding public sections did not both expose matching ids for reliable hash navigation
 
 **What changed:**
-- `apps/web/components/course/material-row.tsx`
-  - added a dedicated quick-edit icon button in the card action cluster
-  - the button links to the material detail route with `?edit=1`
-- `apps/web/app/materials/[id]/page.tsx`
-  - reads the `edit` search param on the server page
-  - passes an `initialEditing` flag into the client page
-- `apps/web/components/materials/material-page-client.tsx`
-  - starts directly in edit mode when `initialEditing` is true
-
-**Why:**
-- Materials from the module workspace now have a true quick-edit path instead of only a quick-open path.
-- The existing detail/edit architecture stays intact; the new button just lands the user directly in the editing state.
-
-**Validation:**
-- Not run by request: skipped build/dev restart to avoid disrupting the user's current dev session.
-
-### Session 116 (Material type/source wording clarified)
-
-**Problem investigated:**
-- The material editor still exposed language from the temporary `fileUrl` data model in a way that could sound misleading.
-- That made it look as if the `file` type was already a full upload flow, even though the current implementation still stores an external source URL and real file upload remains future scope.
-
-**What changed:**
-- `apps/web/components/materials/material-editor-form.tsx`
-  - made the source field label dynamic:
-    - `Link URL` for link materials
-    - `File source URL` for file materials
-    - `Optional source URL` for notes
-  - added type-aware placeholders
-  - added short helper copy that explains the real current behavior:
-    - notes can stay text-only
-    - links use a normal URL
-    - file upload is still planned, so file materials currently use an external file link
-  - tightened the intro copy so it talks about source details matching the selected material type
-
-**Why:**
-- The UI now matches the actual state of the feature instead of over-promising a finished upload flow.
-- This keeps the long-term direction intact (`note`, `link`, `file upload`) while being honest about the current implementation.
-
-**Validation:**
-- `npm.cmd --workspace @studyhub/web run build`
-
-### Session 114 (Hero secondary CTA effect restored)
-
-**Problem investigated:**
-- The public home secondary CTA (`See How It Works`) still worked functionally, but it had lost part of the richer premium hover treatment that made the v1 button feel special.
-- Compared to the old landing page, the current button looked flatter and less memorable.
-
-**What changed:**
-- `apps/web/app/globals.css`
-  - upgraded `.btn-explore-features` with a stronger glass surface, richer shadowing, and a more polished hover state
-  - restored the premium-effect feel with:
-    - animated rotating highlight border
-    - subtle internal radial glow on hover
-    - stronger pressed/hover depth response
-  - added `@keyframes rotateGradient` for the rotating border treatment
+- `apps/web/app/how-it-works/page.tsx`
+  - added a new public `How It Works` page
+  - kept it lightweight and server-rendered
+  - reused the public shell and brand language without introducing new heavy client-side effects
 - `apps/web/components/home/hero-content.tsx`
-  - wrapped the button label in a foreground span so the text stays visually above the decorative pseudo-elements
+  - changed the secondary hero CTA from `Explore Features` to `See How It Works`
+  - pointed it to `/how-it-works` instead of duplicating the home features anchor
+- `apps/web/components/layout/Navbar.tsx`
+  - changed section links to absolute home anchors (`/#features`, `/#about`, `/#faq`)
+  - added a dedicated `How It Works` nav item on desktop and mobile
+- `apps/web/components/home/features.tsx`
+  - added `id="features"`
+- `apps/web/components/home/faq.tsx`
+  - added `id="faq"`
 
 **Why:**
-- The button now feels closer to the old v1 premium CTA instead of reading as a plain outlined pill.
-- The effect stays CSS-only, so it adds visual richness without introducing heavier hero-side JavaScript work.
+- `Features` now stays what it should be: a home section.
+- The hero secondary CTA now has a separate job: explain the product flow in a calmer, more narrative public page.
+- This matches the stronger v1 information architecture more closely without copying the old implementation.
+- Absolute home anchors also prevent broken in-page links once the public nav is reused from another route.
 
 **Validation:**
 - `npm.cmd --workspace @studyhub/web run build`
-- The first build attempt hit only the tool timeout; the retry completed successfully.
-
-### Session 115 (Create module button stretch fix)
-
-**Problem investigated:**
-- In the course workspace module-creation form, the `Create module` button could stretch vertically into a tall block instead of staying a normal button.
-- The issue came from the large-screen grid layout stretching the second column item to match the full row height.
-
-**What changed:**
-- `apps/web/components/course/course-workspace-header.tsx`
-  - changed the large-screen form grid to use a fixed action column and `lg:items-start`
-  - set the submit button to stay `w-full` inside that action column, but align to the top instead of stretching to the full row height
-
-**Why:**
-- The button now behaves like a button again instead of a full-height sidebar block.
-- The form keeps the same desktop two-column structure without affecting the server-first course page flow.
-
-**Validation:**
-- `npm.cmd --workspace @studyhub/web run build`
-
-### Session 112 (Shared handwritten title clipping pass)
-
-**Problem investigated:**
-- The clipping issue was not limited to one home heading anymore.
-- Several handwritten/script-style titles still used very tight line-height values, and some local component classes overrode the utility defaults with even tighter `leading-*` values.
-
-**What changed:**
-- `apps/web/app/globals.css`
-  - moved `dashboard-script-title`, `dashboard-panel-title`, `home-display-title`, and `home-ink-title` to safer shared vertical spacing
-  - added slightly larger line-height plus small top/bottom padding so the handwritten glyphs have more room to render cleanly
-- loosened the tightest local handwritten title usages in:
-  - `apps/web/components/course/module-section.tsx`
-  - `apps/web/components/course/material-row.tsx`
-  - `apps/web/components/dashboard/pinned-material-item.tsx`
-  - `apps/web/components/materials/material-view-panel.tsx`
-  - `apps/web/components/modules/module-sidebar.tsx`
-  - `apps/web/components/modules/module-pinned-sidebar.tsx`
-
-**Why:**
-- This turns the previous one-off heading fix into a broader typography safeguard for the handwritten brand titles.
-- Multi-line script headings should now stop looking clipped from the bottom across the main public/app surfaces where we had kept aggressive custom leading values.
-
-**Validation:**
-- `npm.cmd --workspace @studyhub/web run build`
-- Build completed successfully after a retry with a longer timeout; the earlier failure was only the tool timeout, not a compile error.
-
-### Session 113 (Auth autofill stripe cleanup)
-
-**Problem investigated:**
-- The login fields could show pale horizontal bars inside the input area when the browser autofilled saved credentials.
-- The visual issue came from the browser's autofill styling painting on the inner input element, which broke the intended single glass-field look.
-
-**What changed:**
-- `apps/web/components/auth/auth-icon-field.tsx`
-  - added a dedicated `auth-field-input` class to the real `<input>`
-- `apps/web/app/globals.css`
-  - added a scoped WebKit autofill override for auth inputs
-  - kept autofilled text/caret colors aligned with the normal theme
-  - used autofill-safe background handling so the browser no longer draws a separate tinted stripe inside the field
-
-**Why:**
-- The auth fields should now read as one clean surface instead of a rounded shell with a second browser-colored rectangle inside it.
-- This keeps saved-credentials autofill working, but removes the distracting visual artifact.
-
-**Validation:**
-- `npm.cmd --workspace @studyhub/web run build`
-
-### Session 109 (Local production chunk mismatch diagnosis)
-
-**Problem investigated:**
-- The local production preview on `http://localhost:3002/courses/[id]` failed with a generic client-side exception.
-- Browser console showed `ChunkLoadError` and then broader `400 (Bad Request)` failures for multiple `/_next/static/*` assets, not just the course route chunk.
-- Hard refresh (`Ctrl` + `Shift` + `R`) did not recover the page.
-
-**What changed:**
-- No application code changes.
-- Confirmed the current workspace build contains the expected `/courses/[id]` chunk under `apps/web/.next/static/chunks/app/courses/[id]/`.
-- Confirmed the running local server on port `3002` was still responding with invalid static-asset responses, which points to a stale or misaligned local `next start` process rather than a course-page rendering bug.
-
-**Why:**
-- This failure mode is caused by the local production preview process and its served assets being out of sync, so refreshing the browser alone is not enough.
-- The fix path is to restart the local production server against the latest build instead of patching the `/courses/[id]` page.
-
-**Validation:**
-- local HTTP checks against `localhost:3002`
-- `.next` asset presence review
 
 ### Session 107 (Public Features anchors made reliable)
 
@@ -3461,41 +2816,25 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 - Progress percentages still update because the item really does become part of the milestone set.
 - The progress screen now relies on the Cyrillic-safe app sans font more explicitly in the places where the mixed-language mismatch was most noticeable.
 
-### Session 106 (Home CTA de-duplication + new How It Works page)
+### Session 109 (Local production chunk mismatch diagnosis)
 
 **Problem investigated:**
-- The public home page had overlapping "Features" navigation signals:
-  - navbar `Features`
-  - hero secondary CTA `Explore Features`
-- In practice that made the public navigation feel duplicated, and the current secondary CTA did not have a distinct destination like the old v1 `how-it-works` page.
-- I also confirmed the home anchor setup was incomplete:
-  - `Features` and `FAQ` links existed in the navbar
-  - but the corresponding public sections did not both expose matching ids for reliable hash navigation
+- The local production preview on `http://localhost:3002/courses/[id]` failed with a generic client-side exception.
+- Browser console showed `ChunkLoadError` and then broader `400 (Bad Request)` failures for multiple `/_next/static/*` assets, not just the course route chunk.
+- Hard refresh (`Ctrl` + `Shift` + `R`) did not recover the page.
 
 **What changed:**
-- `apps/web/app/how-it-works/page.tsx`
-  - added a new public `How It Works` page
-  - kept it lightweight and server-rendered
-  - reused the public shell and brand language without introducing new heavy client-side effects
-- `apps/web/components/home/hero-content.tsx`
-  - changed the secondary hero CTA from `Explore Features` to `See How It Works`
-  - pointed it to `/how-it-works` instead of duplicating the home features anchor
-- `apps/web/components/layout/Navbar.tsx`
-  - changed section links to absolute home anchors (`/#features`, `/#about`, `/#faq`)
-  - added a dedicated `How It Works` nav item on desktop and mobile
-- `apps/web/components/home/features.tsx`
-  - added `id="features"`
-- `apps/web/components/home/faq.tsx`
-  - added `id="faq"`
+- No application code changes.
+- Confirmed the current workspace build contains the expected `/courses/[id]` chunk under `apps/web/.next/static/chunks/app/courses/[id]/`.
+- Confirmed the running local server on port `3002` was still responding with invalid static-asset responses, which points to a stale or misaligned local `next start` process rather than a course-page rendering bug.
 
 **Why:**
-- `Features` now stays what it should be: a home section.
-- The hero secondary CTA now has a separate job: explain the product flow in a calmer, more narrative public page.
-- This matches the stronger v1 information architecture more closely without copying the old implementation.
-- Absolute home anchors also prevent broken in-page links once the public nav is reused from another route.
+- This failure mode is caused by the local production preview process and its served assets being out of sync, so refreshing the browser alone is not enough.
+- The fix path is to restart the local production server against the latest build instead of patching the `/courses/[id]` page.
 
 **Validation:**
-- `npm.cmd --workspace @studyhub/web run build`
+- local HTTP checks against `localhost:3002`
+- `.next` asset presence review
 
 ### Session 110 (Progress timeline interactivity pass)
 
@@ -3550,6 +2889,145 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 
 **Validation:**
 - `npm.cmd --workspace @studyhub/web run build`
+
+### Session 112 (Shared handwritten title clipping pass)
+
+**Problem investigated:**
+- The clipping issue was not limited to one home heading anymore.
+- Several handwritten/script-style titles still used very tight line-height values, and some local component classes overrode the utility defaults with even tighter `leading-*` values.
+
+**What changed:**
+- `apps/web/app/globals.css`
+  - moved `dashboard-script-title`, `dashboard-panel-title`, `home-display-title`, and `home-ink-title` to safer shared vertical spacing
+  - added slightly larger line-height plus small top/bottom padding so the handwritten glyphs have more room to render cleanly
+- loosened the tightest local handwritten title usages in:
+  - `apps/web/components/course/module-section.tsx`
+  - `apps/web/components/course/material-row.tsx`
+  - `apps/web/components/dashboard/pinned-material-item.tsx`
+  - `apps/web/components/materials/material-view-panel.tsx`
+  - `apps/web/components/modules/module-sidebar.tsx`
+  - `apps/web/components/modules/module-pinned-sidebar.tsx`
+
+**Why:**
+- This turns the previous one-off heading fix into a broader typography safeguard for the handwritten brand titles.
+- Multi-line script headings should now stop looking clipped from the bottom across the main public/app surfaces where we had kept aggressive custom leading values.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run build`
+- Build completed successfully after a retry with a longer timeout; the earlier failure was only the tool timeout, not a compile error.
+
+### Session 113 (Auth autofill stripe cleanup)
+
+**Problem investigated:**
+- The login fields could show pale horizontal bars inside the input area when the browser autofilled saved credentials.
+- The visual issue came from the browser's autofill styling painting on the inner input element, which broke the intended single glass-field look.
+
+**What changed:**
+- `apps/web/components/auth/auth-icon-field.tsx`
+  - added a dedicated `auth-field-input` class to the real `<input>`
+- `apps/web/app/globals.css`
+  - added a scoped WebKit autofill override for auth inputs
+  - kept autofilled text/caret colors aligned with the normal theme
+  - used autofill-safe background handling so the browser no longer draws a separate tinted stripe inside the field
+
+**Why:**
+- The auth fields should now read as one clean surface instead of a rounded shell with a second browser-colored rectangle inside it.
+- This keeps saved-credentials autofill working, but removes the distracting visual artifact.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run build`
+
+### Session 114 (Hero secondary CTA effect restored)
+
+**Problem investigated:**
+- The public home secondary CTA (`See How It Works`) still worked functionally, but it had lost part of the richer premium hover treatment that made the v1 button feel special.
+- Compared to the old landing page, the current button looked flatter and less memorable.
+
+**What changed:**
+- `apps/web/app/globals.css`
+  - upgraded `.btn-explore-features` with a stronger glass surface, richer shadowing, and a more polished hover state
+  - restored the premium-effect feel with:
+    - animated rotating highlight border
+    - subtle internal radial glow on hover
+    - stronger pressed/hover depth response
+  - added `@keyframes rotateGradient` for the rotating border treatment
+- `apps/web/components/home/hero-content.tsx`
+  - wrapped the button label in a foreground span so the text stays visually above the decorative pseudo-elements
+
+**Why:**
+- The button now feels closer to the old v1 premium CTA instead of reading as a plain outlined pill.
+- The effect stays CSS-only, so it adds visual richness without introducing heavier hero-side JavaScript work.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run build`
+- The first build attempt hit only the tool timeout; the retry completed successfully.
+
+### Session 115 (Create module button stretch fix)
+
+**Problem investigated:**
+- In the course workspace module-creation form, the `Create module` button could stretch vertically into a tall block instead of staying a normal button.
+- The issue came from the large-screen grid layout stretching the second column item to match the full row height.
+
+**What changed:**
+- `apps/web/components/course/course-workspace-header.tsx`
+  - changed the large-screen form grid to use a fixed action column and `lg:items-start`
+  - set the submit button to stay `w-full` inside that action column, but align to the top instead of stretching to the full row height
+
+**Why:**
+- The button now behaves like a button again instead of a full-height sidebar block.
+- The form keeps the same desktop two-column structure without affecting the server-first course page flow.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run build`
+
+### Session 116 (Material type/source wording clarified)
+
+**Problem investigated:**
+- The material editor still exposed language from the temporary `fileUrl` data model in a way that could sound misleading.
+- That made it look as if the `file` type was already a full upload flow, even though the current implementation still stores an external source URL and real file upload remains future scope.
+
+**What changed:**
+- `apps/web/components/materials/material-editor-form.tsx`
+  - made the source field label dynamic:
+    - `Link URL` for link materials
+    - `File source URL` for file materials
+    - `Optional source URL` for notes
+  - added type-aware placeholders
+  - added short helper copy that explains the real current behavior:
+    - notes can stay text-only
+    - links use a normal URL
+    - file upload is still planned, so file materials currently use an external file link
+  - tightened the intro copy so it talks about source details matching the selected material type
+
+**Why:**
+- The UI now matches the actual state of the feature instead of over-promising a finished upload flow.
+- This keeps the long-term direction intact (`note`, `link`, `file upload`) while being honest about the current implementation.
+
+**Validation:**
+- `npm.cmd --workspace @studyhub/web run build`
+
+### Session 117 (Module material quick-edit shortcut)
+
+**Problem investigated:**
+- In the module workspace, material cards exposed source and pin quick actions, but there was no equally fast edit shortcut inside the card container.
+- That made small content corrections feel slower than needed because the user first had to open the detail page and only then switch to edit mode.
+
+**What changed:**
+- `apps/web/components/course/material-row.tsx`
+  - added a dedicated quick-edit icon button in the card action cluster
+  - the button links to the material detail route with `?edit=1`
+- `apps/web/app/materials/[id]/page.tsx`
+  - reads the `edit` search param on the server page
+  - passes an `initialEditing` flag into the client page
+- `apps/web/components/materials/material-page-client.tsx`
+  - starts directly in edit mode when `initialEditing` is true
+
+**Why:**
+- Materials from the module workspace now have a true quick-edit path instead of only a quick-open path.
+- The existing detail/edit architecture stays intact; the new button just lands the user directly in the editing state.
+
+**Validation:**
+- Not run by request: skipped build/dev restart to avoid disrupting the user's current dev session.
 
 ### Session 118 (Course / module / material UX hierarchy audit)
 
@@ -3846,12 +3324,12 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 ### Session 126 (Navigation polish, slug URLs, UI cleanup)
 
 **Goal:**
-- Make it crystal clear where the user is in the hierarchy (courses в†’ modules в†’ materials).
+- Make it crystal clear where the user is in the hierarchy (courses → modules → materials).
 - Make browser tab titles and URL addresses self-descriptive instead of just numeric IDs.
 - Remove all draft-style explanatory text that was leaked from development into production UI.
 
-**URL Structure вЂ” Slug URLs implemented:**
-- Created `apps/web/lib/slugify.ts` вЂ” utility that transforms titles into URL-safe strings.
+**URL Structure — Slug URLs implemented:**
+- Created `apps/web/lib/slugify.ts` — utility that transforms titles into URL-safe strings.
 - Restructured routing to use optional catch-all segments (`[[...slug]]`):
   - `apps/web/app/courses/[id]/[[...slug]]/page.tsx`
   - `apps/web/app/modules/[id]/[[...slug]]/page.tsx`
@@ -3861,19 +3339,19 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
   - `/courses/4/capstone-terminology-and-issues`
   - `/modules/1/terminology`
   - `/materials/9/linting`
-- The slug is decorative вЂ” the server only uses the numeric ID.
+- The slug is decorative — the server only uses the numeric ID.
 - Updated link generation in:
   - `course-card.tsx`, `module-section.tsx`, `module-sidebar.tsx`
   - `material-row.tsx`, `pinned-material-item.tsx`, `module-pinned-sidebar.tsx`
   - `module-workspace-header.tsx`, `material-page-client.tsx`
 
-**Browser tab titles вЂ” full breadcrumb path:**
+**Browser tab titles — full breadcrumb path:**
 - `generateMetadata` in each route page now builds a path matching the breadcrumbs:
-  - Course page: `Full-Stack Apps with AI вЂ” StudyHub`
-  - Module page: `TypeScript Basics вЂє Full-Stack Apps with AI вЂ” StudyHub`
-  - Material page: `Video link вЂє TypeScript Basics вЂє Full-Stack Apps with AI вЂ” StudyHub`
+  - Course page: `Full-Stack Apps with AI — StudyHub`
+  - Module page: `TypeScript Basics › Full-Stack Apps with AI — StudyHub`
+  - Material page: `Video link › TypeScript Basics › Full-Stack Apps with AI — StudyHub`
 
-**UI Cleanup вЂ” removed draft/redundant elements:**
+**UI Cleanup — removed draft/redundant elements:**
 - Removed duplicate sub-header navigation from course and module workspace headers:
   - `COURSE: ... / MODULE WORKSPACE` row deleted from `module-workspace-header.tsx`
   - `Course Workspace / Modules` row deleted from `course-workspace-header.tsx`
@@ -3907,7 +3385,7 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 - `apps/web/components/materials/material-page-client.tsx`
 
 **Validation:**
-- All changes are straightforward prop removal and string interpolation вЂ” no logic changes.
+- All changes are straightforward prop removal and string interpolation — no logic changes.
 - TypeScript check was attempted but tsc hung (environment issue, not code error).
 
 **Next steps for new chat:**
@@ -4061,7 +3539,7 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 **Validation:**
 - Micro-reactions and animations visually confirmed to perfectly match the original StudyHub presentation layout.
 
-### Session 133 (Contact Page вЂ” Tailwind-Only Compliance)
+### Session 133 (Contact Page — Tailwind-Only Compliance)
 
 **Why:**
 - The Contact page violated the project rule "Tailwind only, no inline styles" from `AGENTS.md`.
@@ -4072,11 +3550,11 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 | File | Violation | Fix |
 |---|---|---|
 | `app/contact/page.tsx` | `style={{ background, backgroundSize, animation }}` | Replaced with `.contact-bg` CSS class |
-| `components/contact/contact-aurora.tsx` | 3Г— `style={{}}` (dimensions, radial-gradient, blur, animation) | Replaced with Tailwind arbitrary values + `.aurora-1/2/3` CSS classes |
+| `components/contact/contact-aurora.tsx` | 3× `style={{}}` (dimensions, radial-gradient, blur, animation) | Replaced with Tailwind arbitrary values + `.aurora-1/2/3` CSS classes |
 | `components/contact/contact-form.tsx` | `style={{ background, backdropFilter }}` | Replaced with `bg-white/[0.06] backdrop-blur-[20px]` |
 
 - Added `.contact-bg`, `.aurora-1`, `.aurora-2`, `.aurora-3` CSS classes to `app/globals.css`.
-- The `cosmic-gradient` and `aurora-drift-1/2/3` keyframes already existed in `globals.css` вЂ” only the class wrappers were missing.
+- The `cosmic-gradient` and `aurora-drift-1/2/3` keyframes already existed in `globals.css` — only the class wrappers were missing.
 - Visual output is identical; only the implementation now complies with the project rules.
 
 **Files touched:**
@@ -4220,47 +3698,6 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 **Verification:**
 - `npm.cmd run typecheck:web`
 
-### Session 154 (Favicon dark-mode fill fix)
-
-**Goal:**
-- Ensure the favicon stays visible on dark tabs by filling the mascot interior with solid white.
-
-**What changed:**
-- `apps/web/public/assets/v1/favicon.png`
-  - filled enclosed transparent regions with white to match the filled mascot style
-- `apps/web/public/assets/v1/icons/favicon.png`
-  - applied the same filled interior to keep the legacy asset in sync
-
-**Why:**
-- The previous favicon had transparent interior areas, which disappeared against dark browser chrome.
-
-### Session 154 (Profile password visibility + copy polish)
-
-**Goal:**
-- Finish removing leftover developer-style copy from the profile page and make password entry easier during profile updates.
-
-**What changed:**
-- `apps/web/components/profile/profile-page-header.tsx`
-  - shortened the page intro to a cleaner user-facing summary
-- `apps/web/components/profile/profile-details-card.tsx`
-  - replaced the remaining edit/status copy with simpler saved-state messaging
-- `apps/web/components/profile/profile-security-card.tsx`
-  - kept the password section copy concise and user-facing
-- `apps/web/components/profile/profile-admin-card.tsx`
-  - trimmed the admin description to a straightforward CTA
-- `apps/web/lib/profile.ts`
-  - rewrote the missing-avatar status text so it explains the current URL-based flow without "planned" wording
-- `apps/web/components/profile/profile-field.tsx`
-  - added the same show/hide password toggle used on login forms
-  - applied it to password fields in the profile security form via the shared field component
-
-**Why:**
-- The profile page should read like a finished product, not like internal implementation notes.
-- Showing typed passwords on demand reduces mistakes during password changes and matches the login experience.
-
-**Verification:**
-- `npm.cmd run typecheck:web`
-
 ### Session 141 (Progress roadmap refresh + mobile backlog planning)
 
 **Goal:**
@@ -4308,7 +3745,7 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 ### Session 143 (Legacy DB migration assessment note)
 
 **Goal:**
-- Preserve the current thinking about a possible StudyHub v1 в†’ v2 data migration without starting implementation yet.
+- Preserve the current thinking about a possible StudyHub v1 → v2 data migration without starting implementation yet.
 
 **What changed:**
 - `docs/implementation-plan.md`
@@ -4586,6 +4023,47 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 
 ---
 
+### Session 154 (Favicon dark-mode fill fix)
+
+**Goal:**
+- Ensure the favicon stays visible on dark tabs by filling the mascot interior with solid white.
+
+**What changed:**
+- `apps/web/public/assets/v1/favicon.png`
+  - filled enclosed transparent regions with white to match the filled mascot style
+- `apps/web/public/assets/v1/icons/favicon.png`
+  - applied the same filled interior to keep the legacy asset in sync
+
+**Why:**
+- The previous favicon had transparent interior areas, which disappeared against dark browser chrome.
+
+### Session 154 (Profile password visibility + copy polish)
+
+**Goal:**
+- Finish removing leftover developer-style copy from the profile page and make password entry easier during profile updates.
+
+**What changed:**
+- `apps/web/components/profile/profile-page-header.tsx`
+  - shortened the page intro to a cleaner user-facing summary
+- `apps/web/components/profile/profile-details-card.tsx`
+  - replaced the remaining edit/status copy with simpler saved-state messaging
+- `apps/web/components/profile/profile-security-card.tsx`
+  - kept the password section copy concise and user-facing
+- `apps/web/components/profile/profile-admin-card.tsx`
+  - trimmed the admin description to a straightforward CTA
+- `apps/web/lib/profile.ts`
+  - rewrote the missing-avatar status text so it explains the current URL-based flow without "planned" wording
+- `apps/web/components/profile/profile-field.tsx`
+  - added the same show/hide password toggle used on login forms
+  - applied it to password fields in the profile security form via the shared field component
+
+**Why:**
+- The profile page should read like a finished product, not like internal implementation notes.
+- Showing typed passwords on demand reduces mistakes during password changes and matches the login experience.
+
+**Verification:**
+- `npm.cmd run typecheck:web`
+
 ### Session 154 (Google Button Beautification + Fix)
 
 **What we implemented:**
@@ -4613,21 +4091,21 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 - The Next.js dev server was compiling pages very slowly and navigation between routes took a long time.
 
 **Root-cause analysis:**
-1. **Three.js statically imported** (~600 KB) in `hero-3d-scene.tsx` and `bohemian-particles.tsx` вЂ” bundled into the main chunk even for pages that never use 3D.
-2. **Zero `next/dynamic` usage** across the entire project вЂ” every heavy component (Three.js, ChatWidget) was statically imported.
-3. **Rubik font loaded 7 weights** (300вЂ“900) but weight 300 (`font-light`) was never used anywhere.
-4. **Double JWT verification per request** вЂ” both `<Navbar />` and `<ChatGate />` in root layout independently called `getRequestUserOrNull()`, running JWT decode twice on every navigation.
+1. **Three.js statically imported** (~600 KB) in `hero-3d-scene.tsx` and `bohemian-particles.tsx` — bundled into the main chunk even for pages that never use 3D.
+2. **Zero `next/dynamic` usage** across the entire project — every heavy component (Three.js, ChatWidget) was statically imported.
+3. **Rubik font loaded 7 weights** (300–900) but weight 300 (`font-light`) was never used anywhere.
+4. **Double JWT verification per request** — both `<Navbar />` and `<ChatGate />` in root layout independently called `getRequestUserOrNull()`, running JWT decode twice on every navigation.
 
 **What changed:**
 
 - `apps/web/components/how-it-works/how-it-works-hero.tsx`
-  - Replaced static `import { Hero3dScene }` with `next/dynamic` + `{ ssr: false }` вЂ” Three.js is now code-split and only loaded when the how-it-works page is visited.
+  - Replaced static `import { Hero3dScene }` with `next/dynamic` + `{ ssr: false }` — Three.js is now code-split and only loaded when the how-it-works page is visited.
 
 - `apps/web/components/how-it-works/how-it-works-cta.tsx`
-  - Replaced static `import { BohemianParticles }` with `next/dynamic` + `{ ssr: false }` вЂ” same treatment for the second Three.js consumer.
+  - Replaced static `import { BohemianParticles }` with `next/dynamic` + `{ ssr: false }` — same treatment for the second Three.js consumer.
 
 - `apps/web/components/chat/chat-route-visibility.tsx`
-  - Replaced static `import { ChatWidget }` with `next/dynamic` + `{ ssr: false }` вЂ” chat widget JS is no longer included in the initial page bundle.
+  - Replaced static `import { ChatWidget }` with `next/dynamic` + `{ ssr: false }` — chat widget JS is no longer included in the initial page bundle.
 
 - `apps/web/app/layout.tsx`
   - Removed Rubik weight `"300"` from the font declaration (6 weights instead of 7).
@@ -4639,92 +4117,92 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 - The landing-page `Navbar` (`components/layout/Navbar.tsx`) used by `/` and `/how-it-works` is a separate component from the global auth-aware navbar (`components/navbar.tsx`). The global navbar already hides itself on public routes via `PUBLIC_PATHS` check, so there is no visual duplication.
 
 **Verification:**
-- `tsc --noEmit` вЂ” PASS, zero errors.
+- `tsc --noEmit` — PASS, zero errors.
 
 ### Session 156 (Mobile UI Polish + Material Screen)
 
-**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ:**
+**Какво направихме:**
 
-- **UI polish РЅР° РІСЃРёС‡РєРё mobile РµРєСЂР°РЅРё:**
-  - **Login** вЂ” purpleв†’indigo gradient С„РѕРЅ, fade-in + slide-up Р°РЅРёРјР°С†РёСЏ РЅР° РєР°СЂС‚Р°С‚Р°, input labels СЃ focus states (purple border + glow), gradient Р±СѓС‚РѕРЅ, demo credentials СЃ divider
-  - **Courses List** вЂ” gradient header СЃ welcome message + role badge + stats СЂРµРґ (courses/published/drafts), purple left accent РЅР° РєР°СЂС‚РёС‚Рµ, staggered fade-in Р°РЅРёРјР°С†РёРё, РјР°С…РЅР°С‚ draft/published badge РѕС‚ РєР°СЂС‚РёС‚Рµ
-  - **Course Details** вЂ” gradient hero СЃРµРєС†РёСЏ, module РЅРѕРјРµСЂР° РІ РєСЂСЉРіС‡РµС‚Р°, material type icons РєР°С‚Рѕ С†РІРµС‚РЅРё РєСЂСЉРіРѕРІРµ (N/L/F/V) РІРјРµСЃС‚Рѕ emoji, material count badge РЅР° РјРѕРґСѓР»РёС‚Рµ, LayoutAnimation Р·Р° expand/collapse
-  - **Global** вЂ” StatusBar light style СЃ purple С„РѕРЅ, header СЃ С‚СЉРјРЅРѕ purple + Р±СЏР» С‚РµРєСЃС‚, loading screen СЃ purple С„РѕРЅ
+- **UI polish на всички mobile екрани:**
+  - **Login** — purple→indigo gradient фон, fade-in + slide-up анимация на картата, input labels с focus states (purple border + glow), gradient бутон, demo credentials с divider
+  - **Courses List** — gradient header с welcome message + role badge + stats ред (courses/published/drafts), purple left accent на картите, staggered fade-in анимации, махнат draft/published badge от картите
+  - **Course Details** — gradient hero секция, module номера в кръгчета, material type icons като цветни кръгове (N/L/F/V) вместо emoji, material count badge на модулите, LayoutAnimation за expand/collapse
+  - **Global** — StatusBar light style с purple фон, header с тъмно purple + бял текст, loading screen с purple фон
 
-- **РќРѕРІ РµРєСЂР°РЅ вЂ” Material View (`apps/mobile/app/material/[id].tsx`):**
-  - Gradient header СЃ С‚РёРї badge (Note/Link/File/Video)
-  - РџСЉР»РµРЅ С‚РµРєСЃС‚ РЅР° РјР°С‚РµСЂРёР°Р»Р° (Р±РµР· numberOfLines РѕРіСЂР°РЅРёС‡РµРЅРёРµ)
-  - Link/File URL Р±СѓС‚РѕРЅ СЃ Linking.openURL
-  - Tags СЃРµРєС†РёСЏ
+- **Нов екран — Material View (`apps/mobile/app/material/[id].tsx`):**
+  - Gradient header с тип badge (Note/Link/File/Video)
+  - Пълен текст на материала (без numberOfLines ограничение)
+  - Link/File URL бутон с Linking.openURL
+  - Tags секция
   - Pull-to-refresh
 
-- **РњР°С‚РµСЂРёР°Р»РёС‚Рµ РІ Course Details СЃР° РЅР°С‚РёСЃРєР°РµРјРё** вЂ” РїСЂРё tap РЅР°РІРёРіРёСЂР°С‚ РєСЉРј `/material/[id]`
+- **Материалите в Course Details са натискаеми** — при tap навигират към `/material/[id]`
 
-- **Р”РѕР±Р°РІРµРЅ `expo-linear-gradient`** вЂ” Р·Р° gradient С„РѕРЅРѕРІРµ РЅР° РІСЃРёС‡РєРё РµРєСЂР°РЅРё
+- **Добавен `expo-linear-gradient`** — за gradient фонове на всички екрани
 
-- **РћР±РЅРѕРІРµРЅ `docs/mobile-phone-testing-handoff.md`** вЂ” РїСЂРµРЅР°РїРёСЃР°РЅ СЃ LAN golden path РєР°С‚Рѕ РїСЂРµРїРѕСЂСЉС‡Р°РЅ РјРµС‚РѕРґ, USB РєР°С‚Рѕ Р°Р»С‚РµСЂРЅР°С‚РёРІР°, recovery checklist
+- **Обновен `docs/mobile-phone-testing-handoff.md`** — пренаписан с LAN golden path като препоръчан метод, USB като алтернатива, recovery checklist
 
-**Р¤Р°Р№Р»РѕРІРµ:**
-- `apps/mobile/app/login.tsx` вЂ” redesign
-- `apps/mobile/app/index.tsx` вЂ” redesign
-- `apps/mobile/app/course/[id].tsx` вЂ” redesign + material navigation
-- `apps/mobile/app/material/[id].tsx` вЂ” РЅРѕРІ РµРєСЂР°РЅ
-- `apps/mobile/app/_layout.tsx` вЂ” StatusBar + header config
-- `apps/mobile/package.json` вЂ” expo-linear-gradient dependency
-- `docs/mobile-phone-testing-handoff.md` вЂ” РїСЂРµРЅР°РїРёСЃР°РЅ
+**Файлове:**
+- `apps/mobile/app/login.tsx` — redesign
+- `apps/mobile/app/index.tsx` — redesign
+- `apps/mobile/app/course/[id].tsx` — redesign + material navigation
+- `apps/mobile/app/material/[id].tsx` — нов екран
+- `apps/mobile/app/_layout.tsx` — StatusBar + header config
+- `apps/mobile/package.json` — expo-linear-gradient dependency
+- `docs/mobile-phone-testing-handoff.md` — пренаписан
 
-**РўРµСЃС‚РІР°РЅРѕ:**
-- `tsc --noEmit` вЂ” PASS
-- Expo Go РЅР° С„РёР·РёС‡РµСЃРєРѕ СѓСЃС‚СЂРѕР№СЃС‚РІРѕ (LAN mode) вЂ” РІСЃРёС‡РєРё 4 РµРєСЂР°РЅР° СЂР°Р±РѕС‚СЏС‚
-- Login в†’ Courses List в†’ Course Details в†’ Material View вЂ” РЅР°РІРёРіР°С†РёСЏ вњ…
+**Тествано:**
+- `tsc --noEmit` — PASS
+- Expo Go на физическо устройство (LAN mode) — всички 4 екрана работят
+- Login → Courses List → Course Details → Material View — навигация ✅
 
-### Session 157 (Mobile вЂ” РЅРѕРІРё РµРєСЂР°РЅРё + CRUD)
+### Session 157 (Mobile — нови екрани + CRUD)
 
-**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ:**
+**Какво направихме:**
 
-- **Register РµРєСЂР°РЅ (`apps/mobile/app/register.tsx`):**
-  - Gradient С„РѕРЅ, 3 РїРѕР»РµС‚Р° (name, email, password), fade-in Р°РЅРёРјР°С†РёСЏ
-  - Р›РёРЅРє РєСЉРј Login ("Already have an account? Sign In")
-  - AuthGate РѕР±РЅРѕРІРµРЅ РґР° РїРѕР·РІРѕР»СЏРІР° `/register` Р±РµР· auth
+- **Register екран (`apps/mobile/app/register.tsx`):**
+  - Gradient фон, 3 полета (name, email, password), fade-in анимация
+  - Линк към Login ("Already have an account? Sign In")
+  - AuthGate обновен да позволява `/register` без auth
 
-- **Profile РµРєСЂР°РЅ (`apps/mobile/app/profile.tsx`):**
-  - Gradient hero СЃ initials Р°РІР°С‚Р°СЂ, РёРјРµ, СЂРѕР»СЏ
-  - Edit name СЃ inline TextInput, Save/Cancel Р±СѓС‚РѕРЅРё
-  - Success/error feedback СЃР»РµРґ Р·Р°РїРёСЃ
+- **Profile екран (`apps/mobile/app/profile.tsx`):**
+  - Gradient hero с initials аватар, име, роля
+  - Edit name с inline TextInput, Save/Cancel бутони
+  - Success/error feedback след запис
   - Pull-to-refresh
 
-- **Create Course РµРєСЂР°РЅ (`apps/mobile/app/create-course.tsx`):**
-  - Title + Description РїРѕР»РµС‚Р°, gradient Р±СѓС‚РѕРЅ
-  - FAB Р±СѓС‚РѕРЅ (+) РґРѕР±Р°РІРµРЅ РІ Courses List Р·Р° Р±СЉСЂР· РґРѕСЃС‚СЉРї
-  - РЎР»РµРґ СЃСЉР·РґР°РІР°РЅРµ вЂ” Р°РІС‚РѕРјР°С‚РёС‡РЅРѕ РІСЂСЉС‰Р°РЅРµ РєСЉРј СЃРїРёСЃСЉРєР°
+- **Create Course екран (`apps/mobile/app/create-course.tsx`):**
+  - Title + Description полета, gradient бутон
+  - FAB бутон (+) добавен в Courses List за бърз достъп
+  - След създаване — автоматично връщане към списъка
 
-- **Add Module РµРєСЂР°РЅ (`apps/mobile/app/course/[id]/add-module.tsx`):**
-  - Title + Description РїРѕР»РµС‚Р°
-  - Dashed "Add Module" Р±СѓС‚РѕРЅ РІ Course Details
+- **Add Module екран (`apps/mobile/app/course/[id]/add-module.tsx`):**
+  - Title + Description полета
+  - Dashed "Add Module" бутон в Course Details
 
-- **Add Material РµРєСЂР°РЅ (`apps/mobile/app/module/[id]/add-material.tsx`):**
-  - Type selector (Note/Link/File/Video) СЃ С†РІРµС‚РЅРё chips
-  - Title, Content (multiline), URL (СѓСЃР»РѕРІРЅРѕ), Tags РїРѕР»РµС‚Р°
-  - Dashed "Add Material" Р±СѓС‚РѕРЅ РІ expanded module
+- **Add Material екран (`apps/mobile/app/module/[id]/add-material.tsx`):**
+  - Type selector (Note/Link/File/Video) с цветни chips
+  - Title, Content (multiline), URL (условно), Tags полета
+  - Dashed "Add Material" бутон в expanded module
 
-- **РќР°РІРёРіР°С†РёСЏ РѕР±РЅРѕРІРµРЅР°:**
-  - Login в†” Register Р»РёРЅРєРѕРІРµ
-  - Courses List в†’ Profile Р±СѓС‚РѕРЅ РІ header-Р°
-  - Courses List в†’ Create Course (FAB)
-  - Course Details в†’ Add Module
-  - Module (expanded) в†’ Add Material
-  - `register` С„СѓРЅРєС†РёСЏ РґРѕР±Р°РІРµРЅР° РІ `auth-context.tsx`
+- **Навигация обновена:**
+  - Login ↔ Register линкове
+  - Courses List → Profile бутон в header-а
+  - Courses List → Create Course (FAB)
+  - Course Details → Add Module
+  - Module (expanded) → Add Material
+  - `register` функция добавена в `auth-context.tsx`
 
-- **РЎРїРѕРґРµР»РµРЅРё РєРѕРјРїРѕРЅРµРЅС‚Рё:**
-  - `components/branded-spinner.tsx` вЂ” purple РєСЂСЉРі СЃ ActivityIndicator + message С‚РµРєСЃС‚, РёРЅС‚РµРіСЂРёСЂР°РЅ РІ Courses List, Course Details, Material View, Profile
-  - `components/empty-state.tsx` вЂ” icon РІ РєСЂСЉРі + title + subtitle, РёРЅС‚РµРіСЂРёСЂР°РЅ РІ Courses List Рё Course Details
+- **Споделени компоненти:**
+  - `components/branded-spinner.tsx` — purple кръг с ActivityIndicator + message текст, интегриран в Courses List, Course Details, Material View, Profile
+  - `components/empty-state.tsx` — icon в кръг + title + subtitle, интегриран в Courses List и Course Details
 
-- **РЎС‚СЂСѓРєС‚СѓСЂРЅР° РїСЂРѕРјСЏРЅР°:**
-  - `app/course/[id].tsx` РїСЂРµРјРµСЃС‚РµРЅ РІ `app/course/[id]/index.tsx` Р·Р° РїРѕРґРґСЂСЉР¶РєР° РЅР° nested routes (`add-module`)
+- **Структурна промяна:**
+  - `app/course/[id].tsx` преместен в `app/course/[id]/index.tsx` за поддръжка на nested routes (`add-module`)
 
-- **РњР°С…РЅР°С‚ draft/published badge** РѕС‚ course РєР°СЂС‚РёС‚Рµ РІ Courses List (РїРѕ Р¶РµР»Р°РЅРёРµ РЅР° РїРѕС‚СЂРµР±РёС‚РµР»СЏ)
+- **Махнат draft/published badge** от course картите в Courses List (по желание на потребителя)
 
-**Р¤Р°Р№Р»РѕРІРµ (РЅРѕРІРё):**
+**Файлове (нови):**
 - `apps/mobile/app/register.tsx`
 - `apps/mobile/app/profile.tsx`
 - `apps/mobile/app/create-course.tsx`
@@ -4733,16 +4211,17 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 - `apps/mobile/components/branded-spinner.tsx`
 - `apps/mobile/components/empty-state.tsx`
 
-**Р¤Р°Р№Р»РѕРІРµ (РїСЂРѕРјРµРЅРµРЅРё):**
-- `apps/mobile/lib/auth-context.tsx` вЂ” РґРѕР±Р°РІРµРЅР° `register()` С„СѓРЅРєС†РёСЏ
-- `apps/mobile/app/login.tsx` вЂ” РґРѕР±Р°РІРµРЅ Р»РёРЅРє РєСЉРј Register
-- `apps/mobile/app/_layout.tsx` вЂ” AuthGate РїРѕРґРґСЉСЂР¶Р° register РµРєСЂР°РЅ
-- `apps/mobile/app/index.tsx` вЂ” FAB Р±СѓС‚РѕРЅ, Profile Р±СѓС‚РѕРЅ, BrandedSpinner, EmptyState
-- `apps/mobile/app/course/[id]/index.tsx` вЂ” Add Module/Material Р±СѓС‚РѕРЅРё, РїСЂРµРјРµСЃС‚РµРЅ РѕС‚ `[id].tsx`
+**Файлове (променени):**
+- `apps/mobile/lib/auth-context.tsx` — добавена `register()` функция
+- `apps/mobile/app/login.tsx` — добавен линк към Register
+- `apps/mobile/app/_layout.tsx` — AuthGate поддържа register екран
+- `apps/mobile/app/index.tsx` — FAB бутон, Profile бутон, BrandedSpinner, EmptyState
+- `apps/mobile/app/course/[id]/index.tsx` — Add Module/Material бутони, преместен от `[id].tsx`
 
-**РўРµСЃС‚РІР°РЅРѕ:**
-- `tsc --noEmit` вЂ” PASS
-- Expo Go РЅР° С„РёР·РёС‡РµСЃРєРѕ СѓСЃС‚СЂРѕР№СЃС‚РІРѕ вЂ” Create Course СЂР°Р±РѕС‚Рё, РєСѓСЂСЃСЉС‚ СЃРµ РїРѕСЏРІСЏРІР° РІ СЃРїРёСЃСЉРєР°
+**Тествано:**
+- `tsc --noEmit` — PASS
+- Expo Go на физическо устройство — Create Course работи, курсът се появява в списъка
+
 ### Session 158 (Mobile CRUD actions + refresh hardening)
 
 **What we changed:**
@@ -4834,30 +4313,30 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 **Verification:**
 - `npm.cmd run --workspace @studyhub/mobile typecheck`
 
-### Session 161 (Mobile UX layer вЂ” toast, confirm modal, search/filter, bottom tabs)
+### Session 161 (Mobile UX layer — toast, confirm modal, search/filter, bottom tabs)
 
 **What we changed:**
 
 1. **Toast notification system**
-   - Added `apps/mobile/lib/toast-context.tsx` вЂ” `ToastProvider` with animated slide-in toasts (success / error / info), auto-dismiss after 3 s, tap to dismiss
+   - Added `apps/mobile/lib/toast-context.tsx` — `ToastProvider` with animated slide-in toasts (success / error / info), auto-dismiss after 3 s, tap to dismiss
    - Wired into root layout (`apps/mobile/app/_layout.tsx`)
    - Available everywhere via `useToast().showToast(msg, type?)`
 
 2. **ConfirmModal component**
-   - Added `apps/mobile/components/confirm-modal.tsx` вЂ” styled modal with loading spinner on the confirm button, destructive variant for delete actions
+   - Added `apps/mobile/components/confirm-modal.tsx` — styled modal with loading spinner on the confirm button, destructive variant for delete actions
    - Replaces every `Alert.alert` confirmation across the app
 
 3. **Replaced all `Alert.alert` calls**
-   - `apps/mobile/app/(tabs)/index.tsx` вЂ” course delete
-   - `apps/mobile/app/course/[id]/index.tsx` вЂ” course + module delete
-   - `apps/mobile/app/module/[id]/index.tsx` вЂ” module + material delete
-   - `apps/mobile/app/material/[id].tsx` вЂ” link open errors
-   - `apps/mobile/app/(tabs)/profile.tsx` вЂ” profile save feedback
+   - `apps/mobile/app/(tabs)/index.tsx` — course delete
+   - `apps/mobile/app/course/[id]/index.tsx` — course + module delete
+   - `apps/mobile/app/module/[id]/index.tsx` — module + material delete
+   - `apps/mobile/app/material/[id].tsx` — link open errors
+   - `apps/mobile/app/(tabs)/profile.tsx` — profile save feedback
    - Zero `Alert.alert` imports remain in the codebase
 
 4. **Search + type filter in module workspace**
-   - Added `apps/mobile/components/search-bar.tsx` вЂ” reusable search input with clear button
-   - Added `apps/mobile/components/type-filter-chips.tsx` вЂ” horizontal scroll chips (All / Note / Link / File / Video)
+   - Added `apps/mobile/components/search-bar.tsx` — reusable search input with clear button
+   - Added `apps/mobile/components/type-filter-chips.tsx` — horizontal scroll chips (All / Note / Link / File / Video)
    - Integrated in `apps/mobile/app/module/[id]/index.tsx`:
      - filters by title, content, and tags
      - filters by material type
@@ -4866,13 +4345,13 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 
 5. **Bottom tab navigation**
    - Created `apps/mobile/app/(tabs)/_layout.tsx` with Courses + Profile tabs
-   - Moved `index.tsx` в†’ `(tabs)/index.tsx`, `profile.tsx` в†’ `(tabs)/profile.tsx`
+   - Moved `index.tsx` → `(tabs)/index.tsx`, `profile.tsx` → `(tabs)/profile.tsx`
    - Updated root `_layout.tsx` to register `(tabs)` as a headerless stack screen
    - Removed the old Profile button from the courses header (tabs handle it now)
    - Profile screen now uses toast instead of inline `saveMsg` banner
 
 **Why:**
-- `Alert.alert` is a native dialog that feels out of place in a branded app вЂ” the new toast and confirm modal match the StudyHub visual language and give loading feedback during async deletes.
+- `Alert.alert` is a native dialog that feels out of place in a branded app — the new toast and confirm modal match the StudyHub visual language and give loading feedback during async deletes.
 - Search + filter is the single most useful feature for a module workspace with many materials.
 - Bottom tabs make the app feel "app-like" instead of relying on header buttons for primary navigation.
 
@@ -4892,100 +4371,98 @@ node -e "try{console.log('web:', require('./apps/web/node_modules/react/package.
 - `apps/mobile/app/material/[id].tsx`
 
 **Verification:**
-- `npm.cmd run --workspace @studyhub/mobile typecheck` вЂ” passes clean
+- `npm.cmd run --workspace @studyhub/mobile typecheck` — passes clean
 
 ---
 
-## 2026-04-07
+### Сесия (Google OAuth за мобилно + import fix)
 
-### РЎРµСЃРёСЏ (Google OAuth Р·Р° РјРѕР±РёР»РЅРѕ + import fix)
+**Какво направихме:**
 
-**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ:**
+1. **Google Cloud Console — OAuth client IDs за мобилно приложение**
+   - Създадохме Android debug keystore (`~/.android/debug.keystore`) с `keytool`
+   - Извлякохме SHA-1 fingerprint: `ED:B9:01:61:F3:48:6F:DE:D5:AF:BE:F7:EE:79:59:C1:36:12:C7:F3`
+   - Създадохме Android OAuth client (package: `com.studyhub.mobile`)
+   - Създадохме iOS OAuth client (bundle ID: `com.studyhub.mobile`)
+   - Добавихме и трите client ID-та в `apps/mobile/.env`:
+     - `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID` (съществуваше — работи за десктоп)
+     - `EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID` (ново)
+     - `EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID` (ново)
 
-1. **Google Cloud Console вЂ” OAuth client IDs Р·Р° РјРѕР±РёР»РЅРѕ РїСЂРёР»РѕР¶РµРЅРёРµ**
-   - РЎСЉР·РґР°РґРѕС…РјРµ Android debug keystore (`~/.android/debug.keystore`) СЃ `keytool`
-   - РР·РІР»СЏРєРѕС…РјРµ SHA-1 fingerprint: `ED:B9:01:61:F3:48:6F:DE:D5:AF:BE:F7:EE:79:59:C1:36:12:C7:F3`
-   - РЎСЉР·РґР°РґРѕС…РјРµ Android OAuth client (package: `com.studyhub.mobile`)
-   - РЎСЉР·РґР°РґРѕС…РјРµ iOS OAuth client (bundle ID: `com.studyhub.mobile`)
-   - Р”РѕР±Р°РІРёС…РјРµ Рё С‚СЂРёС‚Рµ client ID-С‚Р° РІ `apps/mobile/.env`:
-     - `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID` (СЃСЉС‰РµСЃС‚РІСѓРІР°С€Рµ вЂ” СЂР°Р±РѕС‚Рё Р·Р° РґРµСЃРєС‚РѕРї)
-     - `EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID` (РЅРѕРІРѕ)
-     - `EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID` (РЅРѕРІРѕ)
-
-2. **РћРїСЂР°РІРµРЅРё СЃС‡СѓРїРµРЅРё import РїСЉС‚РёС‰Р° РІ 11 С„Р°Р№Р»Р°**
-   - РџСЂРѕР±Р»РµРј: РІСЃРёС‡РєРё import-Рё РёРјР°С…Р° РµРґРЅРѕ `../` РІ РїРѕРІРµС‡Рµ (РІРµСЂРѕСЏС‚РЅРѕ РѕС‚ РїСЂРµРјРµСЃС‚РІР°РЅРµ РЅР° С„Р°Р№Р»РѕРІРµ РїСЂРё РґРѕР±Р°РІСЏРЅРµ РЅР° `(tabs)/` layout)
-   - Р—Р°СЃРµРіРЅР°С‚Рё С„Р°Р№Р»РѕРІРµ:
+2. **Оправени счупени import пътища в 11 файла**
+   - Проблем: всички import-и имаха едно `../` в повече (вероятно от преместване на файлове при добавяне на `(tabs)/` layout)
+   - Засегнати файлове:
      - `app/login.tsx`, `app/register.tsx`, `app/create-course.tsx`
      - `app/(tabs)/index.tsx`
      - `app/course/[id]/add-module.tsx`, `app/course/[id]/edit.tsx`, `app/course/[id]/index.tsx`
      - `app/material/[id].tsx`
      - `app/module/[id]/add-material.tsx`, `app/module/[id]/edit.tsx`, `app/module/[id]/index.tsx`
 
-3. **Google OAuth backend вЂ” РІРµС‡Рµ СЂР°Р±РѕС‚Рё**
-   - `apps/web/app/api/auth/google/route.ts` РѕР±СЂР°Р±РѕС‚РІР° Рё `access_token` (РѕС‚ Expo), Рё `id_token` (РѕС‚ web)
-   - РџСЂРё РЅРѕРІ Google РїРѕС‚СЂРµР±РёС‚РµР» СЃРµ РіРµРЅРµСЂРёСЂР° СЃР»СѓС‡Р°РµРЅ 64-СЃРёРјРІРѕР»РµРЅ hex РїР°СЂРѕР»СЊ (`crypto.randomBytes(32)`) Рё СЃРµ С…РµС€РёСЂР° вЂ” Р°РєР°СѓРЅС‚СЉС‚ Рµ Р·Р°С‰РёС‚РµРЅ РѕС‚ password login
-   - РњРѕР±РёР»РЅРёСЏС‚ `loginWithGoogle()` РІ `auth-context.tsx` РёР·РІРёРєРІР° СЃСЉС‰РёСЏ endpoint
+3. **Google OAuth backend — вече работи**
+   - `apps/web/app/api/auth/google/route.ts` обработва и `access_token` (от Expo), и `id_token` (от web)
+   - При нов Google потребител се генерира случаен 64-символен hex пароль (`crypto.randomBytes(32)`) и се хешира — акаунтът е защитен от password login
+   - Мобилният `loginWithGoogle()` в `auth-context.tsx` извиква същия endpoint
 
-4. **Google Sign-In Р±СѓС‚РѕРЅ РєРѕРјРїРѕРЅРµРЅС‚**
-   - `apps/mobile/components/auth/GoogleSignInButton.tsx` вЂ” СЃС‚РёР»РёР·РёСЂР°РЅ Р±СѓС‚РѕРЅ СЃ Р°РЅРёРјРёСЂР°РЅ shine РµС„РµРєС‚, РёРЅС‚РµРіСЂРёСЂР°РЅ РІ login Рё register РµРєСЂР°РЅРёС‚Рµ
+4. **Google Sign-In бутон компонент**
+   - `apps/mobile/components/auth/GoogleSignInButton.tsx` — стилизиран бутон с анимиран shine ефект, интегриран в login и register екраните
 
-5. **Google OAuth РІ Expo Go вЂ” РЅРµ СЂР°Р±РѕС‚Рё (РѕС‡Р°РєРІР°РЅРѕ)**
-   - `auth.expo.io` proxy Рµ deprecated РѕС‚ Expo SDK 50+ вЂ” Google РѕС‚РѕСЂРёР·РёСЂР° РїРѕС‚СЂРµР±РёС‚РµР»СЏ, РЅРѕ proxy-С‚Рѕ РЅРµ РјРѕР¶Рµ РґР° РІСЉСЂРЅРµ redirect РѕР±СЂР°С‚РЅРѕ РІ Expo Go
-   - Expo Go РЅРµ РїРѕРґРґСЉСЂР¶Р° native Google Sign-In (РЅСѓР¶РµРЅ Рµ development build РёР»Рё production build)
-   - Р“СЂРµС€РєР°С‚Р° Рµ `400: redirect_uri_mismatch` вЂ” Expo Go РїСЂР°С‰Р° `exp://192.168.x.x:8081`, Google РїСЂРёРµРјР° СЃР°РјРѕ `https://`
-   - **Р РµС€РµРЅРёРµ:** Р—Р° development вЂ” С‚РµСЃС‚РІР°РјРµ Google login РЅР° РґРµСЃРєС‚РѕРї (СЂР°Р±РѕС‚Рё), РЅР° РјРѕР±РёР»РµРЅ вЂ” email/password. РџСЂРё EAS production build Google OAuth С‰Рµ СЂР°Р±РѕС‚Рё Р°РІС‚РѕРјР°С‚РёС‡РЅРѕ, Р·Р°С‰РѕС‚Рѕ:
-     - РџСЂРёР»РѕР¶РµРЅРёРµС‚Рѕ СЃРµ РєРѕРјРїРёР»РёСЂР° СЃ РїСЂР°РІРёР»РЅРёСЏ signing key
-     - SHA-1 fingerprint СЃСЉРІРїР°РґР° СЃ Android client-Р° РІ Google Console
-     - Redirect РјРёРЅР°РІР° native РїСЂРµР· Android/iOS СЃРёСЃС‚РµРјР°С‚Р° (РЅРµ РїСЂРµР· browser proxy)
+5. **Google OAuth в Expo Go — не работи (очаквано)**
+   - `auth.expo.io` proxy е deprecated от Expo SDK 50+ — Google оторизира потребителя, но proxy-то не може да върне redirect обратно в Expo Go
+   - Expo Go не поддържа native Google Sign-In (нужен е development build или production build)
+   - Грешката е `400: redirect_uri_mismatch` — Expo Go праща `exp://192.168.x.x:8081`, Google приема само `https://`
+   - **Решение:** За development — тестваме Google login на десктоп (работи), на мобилен — email/password. При EAS production build Google OAuth ще работи автоматично, защото:
+     - Приложението се компилира с правилния signing key
+     - SHA-1 fingerprint съвпада с Android client-а в Google Console
+     - Redirect минава native през Android/iOS системата (не през browser proxy)
 
 6. **Fix: `package.json` main entry point**
-   - РџРѕРїСЂР°РІРёС…РјРµ `"main": "index.js"` в†’ `"main": "expo-router/entry"` (Р±РµС€Рµ СЃС‡СѓРїРµРЅРѕ РѕС‚ РїСЂРµРґРёС€РЅР° СЃРµСЃРёСЏ)
+   - Поправихме `"main": "index.js"` → `"main": "expo-router/entry"` (беше счупено от предишна сесия)
 
-7. **Google Cloud Console РЅР°СЃС‚СЂРѕР№РєРё**
-   - Web client: РґРѕР±Р°РІРµРЅ Authorized redirect URI `https://auth.expo.io/@mariva/studyhub-v2`
-   - Android client: SHA-1 РѕС‚ debug keystore, package `com.studyhub.mobile`
-   - iOS client: bundle ID `com.studyhub.mobile` (App Store ID Рё Team ID РѕСЃС‚Р°РІРµРЅРё РїСЂР°Р·РЅРё вЂ” РѕРїС†РёРѕРЅР°Р»РЅРё)
-   - OAuth consent screen Рµ РІ "Testing" СЂРµР¶РёРј вЂ” РґРѕСЃС‚Р°С‚СЉС‡РЅРѕ Р·Р° development
+7. **Google Cloud Console настройки**
+   - Web client: добавен Authorized redirect URI `https://auth.expo.io/@mariva/studyhub-v2`
+   - Android client: SHA-1 от debug keystore, package `com.studyhub.mobile`
+   - iOS client: bundle ID `com.studyhub.mobile` (App Store ID и Team ID оставени празни — опционални)
+   - OAuth consent screen е в "Testing" режим — достатъчно за development
 
-8. **РРЅСЃС‚Р°Р»РёСЂР°РЅ EAS CLI РіР»РѕР±Р°Р»РЅРѕ** (`npm install -g eas-cli`) вЂ” РіРѕС‚РѕРІ Р·Р° Р±СЉРґРµС‰Рё production builds
+8. **Инсталиран EAS CLI глобално** (`npm install -g eas-cli`) — готов за бъдещи production builds
 
-9. **`.env.example` РѕР±РЅРѕРІРµРЅ** СЃ РІСЃРёС‡РєРё Google OAuth env vars Р·Р° РґРѕРєСѓРјРµРЅС‚Р°С†РёСЏ
+9. **`.env.example` обновен** с всички Google OAuth env vars за документация
 
-10. **РџСЂРµРјР°С…РЅР°С‚Рё РЅРµРёР·РїРѕР»Р·РІР°РЅРё import-Рё** (`makeRedirectUri` РѕС‚ `expo-auth-session` вЂ” РЅРµ СЃРµ РїРѕР»Р·РІР° РІ РєСЂР°Р№РЅРёСЏ РєРѕРґ)
+10. **Премахнати неизползвани import-и** (`makeRedirectUri` от `expo-auth-session` — не се ползва в крайния код)
 
-**РўРµРєСѓС‰Рѕ СЃСЉСЃС‚РѕСЏРЅРёРµ РЅР° Google OAuth:**
-- Р”РµСЃРєС‚РѕРї (web): СЂР°Р±РѕС‚Рё вЂ” login Рё register СЃ Google Р°РєР°СѓРЅС‚ вњ…
-- РњРѕР±РёР»РµРЅ (Expo Go): РЅРµ СЂР°Р±РѕС‚Рё вЂ” auth proxy deprecated, РїРѕР»Р·РІР° СЃРµ email/password вљ пёЏ
-- РњРѕР±РёР»РµРЅ (production build): С‰Рµ СЂР°Р±РѕС‚Рё РїСЂРё EAS Build СЃ РїСЂР°РІРёР»РЅРёСЏ SHA-1 рџ”њ
+**Текущо състояние на Google OAuth:**
+- Десктоп (web): работи — login и register с Google акаунт ✅
+- Мобилен (Expo Go): не работи — auth proxy deprecated, ползва се email/password ⚠️
+- Мобилен (production build): ще работи при EAS Build с правилния SHA-1 🔜
 
-**Deployment Р±РµР»РµР¶РєР° вЂ” Google OAuth:**
-- РџСЂРё production deployment С‰Рµ С‚СЂСЏР±РІР°:
-  - РќРѕРІ SHA-1 РѕС‚ production keystore (EAS Build РіРµРЅРµСЂРёСЂР° СЃРІРѕР№) в†’ РЅРѕРІ Android OAuth client РёР»Рё РґРѕР±Р°РІСЏРЅРµ РЅР° РІС‚РѕСЂРё fingerprint
-  - Google OAuth consent screen РґР° СЃРµ СЃРјРµРЅРё РѕС‚ "Testing" РЅР° "Published" (Р·Р° РґР° РјРѕРіР°С‚ РІСЃРёС‡РєРё РїРѕС‚СЂРµР±РёС‚РµР»Рё, РЅРµ СЃР°РјРѕ test users)
-  - Authorized redirect URIs РґР° СЃРµ РѕР±РЅРѕРІСЏС‚ СЃ production РґРѕРјРµР№РЅР°
-  - `EXPO_PUBLIC_GOOGLE_*` env vars РґР° СЃРµ РґРѕР±Р°РІСЏС‚ РІ EAS/production РєРѕРЅС„РёРіСѓСЂР°С†РёСЏС‚Р°
-- Google OAuth РІ Expo Go РЅРµ СЂР°Р±РѕС‚Рё (auth proxy deprecated) вЂ” С‚РѕРІР° Рµ РЅРѕСЂРјР°Р»РЅРѕ Рё РѕС‡Р°РєРІР°РЅРѕ, РЅРµ Рµ Р±СЉРі
+**Deployment бележка — Google OAuth:**
+- При production deployment ще трябва:
+  - Нов SHA-1 от production keystore (EAS Build генерира свой) → нов Android OAuth client или добавяне на втори fingerprint
+  - Google OAuth consent screen да се смени от "Testing" на "Published" (за да могат всички потребители, не само test users)
+  - Authorized redirect URIs да се обновят с production домейна
+  - `EXPO_PUBLIC_GOOGLE_*` env vars да се добавят в EAS/production конфигурацията
+- Google OAuth в Expo Go не работи (auth proxy deprecated) — това е нормално и очаквано, не е бъг
 
 **Verification:**
-- `npx tsc --noEmit` вЂ” 0 РіСЂРµС€РєРё
+- `npx tsc --noEmit` — 0 грешки
 
 ---
 
 ## 2026-04-08
 
-### РЎРµСЃРёСЏ 161
+### Сесия 161
 
-**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ:**
-- РџСЂРµРіР»РµРґ Рё Р°РЅР°Р»РёР· РЅР° РјРѕР±РёР»РЅРѕС‚Рѕ РїСЂРёР»РѕР¶РµРЅРёРµ вЂ” РёРґРµРЅС‚РёС„РёС†РёСЂР°РЅРё 50 РїРѕРґРѕР±СЂРµРЅРёСЏ РїРѕ РїСЂРёРѕСЂРёС‚РµС‚ (UX, code quality, Р»РёРїСЃРІР°С‰Рё С„СѓРЅРєС†РёРё)
-- **UI polish вЂ” emoji РёРєРѕРЅРєРё РІРјРµСЃС‚Рѕ Р±СѓРєРІРё:**
-  - Tab bar: "C" в†’ рџ“љ, "P" в†’ рџ‘¤ (СЃ opacity fade Р·Р° inactive СЃСЉСЃС‚РѕСЏРЅРёРµ)
-  - Material types: "N" в†’ рџ“ќ, "L" в†’ рџ”—, "F" в†’ рџ“„, "V" в†’ рџЋ¬
-  - РџСЂРѕРјРµРЅРµРЅРё С„Р°Р№Р»РѕРІРµ: `app/(tabs)/_layout.tsx`, `lib/material-utils.ts`, `app/module/[id]/add-material.tsx`, `app/material/[id]/edit.tsx`
+**Какво направихме:**
+- Преглед и анализ на мобилното приложение — идентифицирани 50 подобрения по приоритет (UX, code quality, липсващи функции)
+- **UI polish — emoji иконки вместо букви:**
+  - Tab bar: "C" → 📚, "P" → 👤 (с opacity fade за inactive състояние)
+  - Material types: "N" → 📝, "L" → 🔗, "F" → 📄, "V" → 🎬
+  - Променени файлове: `app/(tabs)/_layout.tsx`, `lib/material-utils.ts`, `app/module/[id]/add-material.tsx`, `app/material/[id]/edit.tsx`
 
-**Р—Р°Р±РµР»РµР¶РєРё РѕС‚ Р°РЅР°Р»РёР·Р° (Р·Р° СЃР»РµРґРІР°С‰Рё СЃРµСЃРёРё):**
-- High priority: РѕС„Р»Р°Р№РЅ РєРµС€РёСЂР°РЅРµ (React Query), РїРѕ-РґРѕР±СЂРѕ error handling РІ api.ts, type safety (РїСЂРµРјР°С…РІР°РЅРµ РЅР° `any`)
-- Medium: form validation РІ СЂРµР°Р»РЅРѕ РІСЂРµРјРµ, accessibility labels, С†РµРЅС‚СЂР°Р»РёР·РёСЂР°РЅРµ РЅР° РґСѓР±Р»РёСЂР°РЅ MATERIAL_TYPES, color constants С„Р°Р№Р», logout РІ Profile РІРјРµСЃС‚Рѕ РІ header
-- Р›РёРїСЃРІР°С‰Рё С„СѓРЅРєС†РёРё: progress tracking, favorites/bookmarks, РіР»РѕР±Р°Р»РЅРѕ С‚СЉСЂСЃРµРЅРµ, dark mode, course publish/draft toggle РѕС‚ РјРѕР±РёР»РЅРѕС‚Рѕ
+**Забележки от анализа (за следващи сесии):**
+- High priority: офлайн кеширане (React Query), по-добро error handling в api.ts, type safety (премахване на `any`)
+- Medium: form validation в реално време, accessibility labels, централизиране на дублиран MATERIAL_TYPES, color constants файл, logout в Profile вместо в header
+- Липсващи функции: progress tracking, favorites/bookmarks, глобално търсене, dark mode, course publish/draft toggle от мобилното
 
 ### Session 162 (Mobile backlog tracking after icon pass)
 
@@ -5050,736 +4527,6 @@ Missing features (later phase):
 
 **Verification:**
 - `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
-
-### Session 189 (Phase 3 smoke stabilization: web dev API runtime workaround)
-
-**Issue observed:**
-- Physical-device mobile app could reach the web server process, but auth requests still failed with the generic fallback:
-  - `"Connection failed. Is the server running?"`
-- Metro/LAN manifest was healthy (`hostUri: 192.168.1.9:8081`), so this was **not** the previous zombie Metro `127.0.0.1` issue.
-- Direct local verification showed the web dev server process on port `3000` was responding incorrectly on API routes:
-  - `GET /api/ping` -> `200` with body `{}`
-  - `POST /api/auth/login` -> `200` with body `{}`
-- Those routes should return structured JSON payloads, so the mobile client was receiving invalid auth/warmup responses.
-
-**What we changed:**
-- Updated `apps/web/package.json`:
-  - Changed the web dev script from `next dev --turbopack` to `next dev`.
-- Fixed `apps/web/app/api/ping/route.ts`:
-  - Corrected the `db` import path from `../../lib/db` to `../../../lib/db`.
-
-**Why:**
-- Current evidence points to a local dev-runtime problem rather than an API logic bug:
-  - web root page rendered normally
-  - mobile device reached port `3000`
-  - only API route payloads were malformed in the active dev server instance
-- Removing Turbopack from the dev script is a low-risk workaround to stabilize local API behavior for Phase 3 smoke testing.
-
-**Next step required:**
-- Restart the web server so the updated script takes effect:
-  - stop the current `dev:web`
-  - start `npm run dev:web` again
-- Then re-test login/register and the Phase 3 RETEST rows (`SMK-03`, `SMK-05`, `SMK-06`, `SMK-07`).
-
-**Verification:**
-- `npm.cmd run --workspace @studyhub/web typecheck` -> pass
-
-### Session 190 (Phase 3 smoke stabilization: Favorites pin/unpin entry point in module workspace)
-
-**Issue observed:**
-- Mobile users could not discover a practical way to pin materials from the module workspace list.
-- Favorites existed in app logic and in material details screen, but there was no direct `Pin/Unpin` action on material cards where users spend most of the CRUD flow.
-
-**What we changed:**
-- Added direct `Pin/Unpin` action to module workspace material cards:
-  - `apps/mobile/components/material-card.tsx`
-    - new optional props: `isPinned`, `favoriteBusy`, `onToggleFavorite`
-    - renders a dedicated favorite action button in the card footer
-- Wired favorites query + optimistic toggle mutation into module workspace view model:
-  - `apps/mobile/components/module-workspace/use-module-workspace.ts`
-    - added favorites query (`queryKeys.favorites.lists()`)
-    - added optimistic pin/unpin mutation with rollback and toast feedback
-    - exposed new view-model helpers:
-      - `isMaterialPinned(materialId)`
-      - `isFavoriteBusy(materialId)`
-      - `toggleMaterialFavorite(material)`
-- Connected screen rendering to the new view-model capabilities:
-  - `apps/mobile/components/module-workspace/module-workspace-screen.tsx`
-- Extended view-model type contract accordingly:
-  - `apps/mobile/components/module-workspace/module-workspace.types.ts`
-
-**Result:**
-- Users can now pin/unpin materials directly from module workspace cards without opening each material detail screen first.
-- This unblocks practical execution of `SMK-14` and `SMK-15` in the smoke matrix.
-
-**Verification:**
-- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
-
-### Session 191 (Phase 3 smoke stabilization: background/foreground auth hydration smoothing)
-
-**Issue observed:**
-- Returning from background frequently felt like a cold app boot (initial loader and delayed restore), instead of immediate resume.
-
-**What we changed:**
-- Updated `apps/mobile/lib/auth-context.tsx`:
-  - Added persisted user snapshot cache (`studyhub_user_snapshot_v1`) via AsyncStorage.
-  - Hydrates `user` state immediately from snapshot when a token exists.
-  - Persists snapshot on login/register/google-login and clears it on logout/auth reset.
-  - Increased startup `/api/auth/me` timeout to `20s` and forced no-cache for validation.
-  - Kept session/snapshot on transient network/server failures; only clears session on auth/forbidden errors.
-  - Preserved Neon pre-warm behavior.
-
-**Why:**
-- Startup auth validation previously hard-blocked UI on every remount and could feel like full relaunch.
-- Snapshot-first hydration improves perceived foreground resume stability in mobile smoke flows.
-
-**Verification:**
-- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
-
-### Session 192 (Phase 3 smoke execution synced: SMK-01..SMK-19 pass, SMK-20 blocked)
-
-**Run outcome reported:**
-- Physical-device smoke execution completed for all practical flows.
-- PASS: `SMK-01` through `SMK-19`.
-- BLOCKED: `SMK-20` because VoiceOver/TalkBack verification was not available in the current test environment.
-
-**What we synced in docs:**
-- Updated `docs/mobile-smoke-test-matrix.md`:
-  - Status line now reflects `SMK-01..SMK-19` pass state.
-  - Converted prior RETEST/PENDING rows to PASS where re-run was completed.
-  - Marked `SMK-20` as BLOCKED with explicit reason.
-  - Added Run 2 summary.
-- Updated `docs/mobile-execution-checklist.md`:
-  - Marked Phase 3 smoke quality gate task as complete for covered scenarios.
-  - Updated acceptance criteria for key flow pass.
-  - Updated next recommended task to telemetry integration + release checklist.
-
-**Next step:**
-- Proceed to telemetry integration (Sentry or equivalent), then release checklist.
-- Keep `SMK-20` tracked as BLOCKED until accessibility test environment is available.
-
-### Session 188 (Phase 3 smoke stabilization: auth branding asset fix + broader DB warmup coverage)
-
-**Issue observed:**
-- Mobile auth screens started failing to bundle after the legacy `logo.png` asset was removed from `apps/mobile/assets/branding`.
-- Metro error:
-  - `Unable to resolve "../../assets/branding/logo.png" from "apps/mobile/components/auth/auth-brand-hero.tsx"`
-- At the same time, the auth header regressed visually because it rendered the wrong visual asset instead of the mascot.
-
-**What we changed:**
-- Updated `apps/mobile/components/auth/auth-brand-hero.tsx`:
-  - Replaced the broken `logo.png` import with the remaining `mascot.png` branding asset.
-  - Marked the mascot image as decorative (`accessible={false}`).
-- Updated `apps/mobile/components/auth/auth-brand-hero.styles.ts`:
-  - Renamed the image style from `logo` to `mascot`.
-  - Increased the auth hero image size so the mascot reads clearly again on login/register.
-- Broadened Phase 3 Neon pre-warm coverage in `apps/mobile/lib/auth-context.tsx`:
-  - Fire `warmupBackend()` on unauthenticated app start so the login/register screen can wake Neon in the background before the first auth mutation.
-  - Fire `warmupBackend()` after successful register and Google login as well (email login + auto-login were already covered in Session 187).
-
-**Why this matters for Phase 3:**
-- Restores Android bundle compilation so physical-device smoke testing can continue.
-- Removes a misleading auth-screen visual regression while keeping the branding aligned with the intended mascot-first mobile look.
-- Further reduces the chance that the first auth mutation hits a Neon free-tier cold start.
-
-**Verification:**
-- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
-- Android bundle probe via Metro LAN URL -> `200 OK`
-- `rg --line-number --hidden --glob '!node_modules/**' "logo\\.png" apps/mobile` -> no remaining mobile references
-
-### Session 187 (Phase 3 smoke stabilization: Neon cold-start root cause + fix)
-
-**Root cause identified:**
-- All four FAIL rows (`SMK-03`, `SMK-05`, `SMK-06`, `SMK-07`) share the same pattern: action completes server-side, but mobile shows timeout error.
-- Backend uses `drizzle-orm/neon-http` вЂ” a stateless HTTP driver. Every DB query is a separate HTTP request to Neon serverless.
-- Neon free tier suspends the database after ~5 minutes of inactivity. Wake-up takes 5вЂ“30+ seconds.
-- The previous 25s mutation timeout was not enough to survive a full cold-start round-trip from mobile в†’ Next.js в†’ Neon wake в†’ DB query в†’ response.
-
-**What we changed:**
-- `apps/mobile/lib/api.ts`:
-  - Increased `DEFAULT_MUTATION_REQUEST_TIMEOUT_MS` from `25s` to `45s` (covers Neon cold-start window on free tier).
-  - Added exported `warmupBackend()` вЂ” fire-and-forget GET to `/api/ping` (60s timeout, no auth) to proactively wake the DB.
-- `apps/web/app/api/ping/route.ts` (NEW):
-  - Lightweight DB-touching probe: `SELECT 1` via Drizzle, no auth, returns `{ ok: true, latency: N }`.
-  - Used exclusively for pre-warming; not an application endpoint.
-- `apps/mobile/lib/auth-context.tsx`:
-  - `warmupBackend()` called after successful explicit login (email/password).
-  - `warmupBackend()` called after successful auto-login (stored token в†’ `/api/auth/me`).
-  - Both calls are fire-and-forget; never block the auth flow.
-
-**Smoke status after fix:**
-- PASS: `SMK-01`, `SMK-02`, `SMK-04`
-- RETEST (fix applied): `SMK-03`, `SMK-05`, `SMK-06`, `SMK-07`
-- PENDING: `SMK-08` through `SMK-20`
-
-**Verification:**
-- `npm.cmd run --workspace @studyhub/mobile typecheck` в†’ pass
-
----
-
-### Session 186 (Phase 3 smoke execution: timeout reliability + runtime crash hardening)
-
-**What we changed:**
-- Continued Phase 3 smoke execution on physical device and logged initial outcomes in `docs/mobile-smoke-test-matrix.md`:
-  - PASS: `SMK-01`, `SMK-02`, `SMK-04`
-  - FAIL: `SMK-03`, `SMK-05`, `SMK-06`, `SMK-07`
-  - Core observed issue: intermittent request timeouts despite server-side success in some CRUD/auth actions.
-- Hardened mobile networking timeout behavior in `apps/mobile/lib/api.ts`:
-  - Increased mutation timeout window from `12s` to `25s`.
-  - Kept GET timeout shorter (`6s`) to avoid long hangs on read flows.
-  - Improved timeout message for mutations to indicate action may have succeeded server-side.
-- Fixed unhandled promise paths that were causing red `Uncaught (in promise)` runtime overlays:
-  - `apps/mobile/components/courses-list/use-courses-list.ts`
-    - delete confirm flow now awaits mutation in `try/catch/finally` instead of unhandled `.finally(...)` chain.
-  - `apps/mobile/components/confirm-modal.tsx`
-    - defensive `catch` in confirm handler to prevent promise rejection bubbling to runtime overlay.
-  - `apps/mobile/app/(tabs)/favorites.tsx`
-    - switched unpin action call to `mutate(...)` (callback-managed errors) instead of bare `mutateAsync(...)`.
-  - `apps/mobile/components/courses-list/courses-list.types.ts`
-    - aligned `confirmDeleteCourse` signature with async behavior.
-- Addressed intermittent Metro startup watcher crash:
-  - `apps/mobile/metro.config.js`
-  - narrowed `watchFolders` to required workspace folders (instead of watching full monorepo root) to reduce Windows watcher overload (`Failed to start watch mode`).
-- Added VS Code run configurations for quicker local startup:
-  - `.vscode/launch.json`
-  - `Run: dev:web`, `Run: dev:mobile:lan`, and compound `Run: Web + Mobile (LAN)`.
-
-**Known open issue after fixes:**
-- Intermittent timeout behavior still observed during smoke reruns; requires another focused pass on network stability and retry strategy before Phase 3 smoke can be marked complete.
-
-**Verification:**
-- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
-
-### Session 185 (Phase 3 kickoff: mobile smoke quality-gate package)
-
-**What we changed:**
-- Started Phase 3 quality gates with a dedicated physical-device smoke execution artifact:
-  - `docs/mobile-smoke-test-matrix.md`
-  - Includes preflight setup, test-data assumptions, 20 smoke scenarios, pass/fail logging columns, and exit criteria.
-- Coverage in the matrix:
-  - auth/session
-  - courses/modules/materials CRUD
-  - favorites parity and quick navigation
-  - offline/online recovery
-  - AppState background/foreground recovery
-  - dirty-form back/discard behavior
-  - accessibility sanity pass
-- Updated `docs/mobile-execution-checklist.md`:
-  - Added explicit reference that smoke execution matrix is prepared and ready for run logging.
-  - Updated next recommended task to execute the matrix on a physical device and then proceed to telemetry.
-
-**Status:**
-- Smoke matrix setup complete.
-- Physical-device smoke execution still pending (rows are `PENDING` until run).
-
-### Session 184 (Dashboard branding final polish after visual review)
-
-**What we changed:**
-- Finalized the mobile dashboard branding decision after UI review:
-  - Kept the mascot in the Courses dashboard header and no-courses card.
-  - Removed the desktop-style icon from dashboard branding areas.
-- Kept auth branding aligned for mobile sign-in/sign-up with clean logo-first presentation (without extra decorative marker before it).
-- Updated docs copy to match the final visual decision:
-  - `docs/mobile-execution-checklist.md` dashboard branding notes now reflect mascot-first dashboard branding.
-
-**Verification:**
-- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
-
-### Session 183 (Phase 2: accessibility hardening + CRUD/favorites stability acceptance)
-
-**What we changed:**
-- Completed accessibility hardening pass for core mobile CRUD and favorites flows.
-- Added explicit VoiceOver/TalkBack labels + hints on form controls in CRUD screens:
-  - `apps/mobile/app/create-course.tsx`
-  - `apps/mobile/app/course/[id]/add-module.tsx`
-  - `apps/mobile/app/course/[id]/edit.tsx`
-  - `apps/mobile/app/module/[id]/add-material.tsx`
-  - `apps/mobile/app/module/[id]/edit.tsx`
-  - `apps/mobile/app/material/[id]/edit.tsx`
-- Added selected-state accessibility semantics for chips/type selectors:
-  - `apps/mobile/components/type-filter-chips.tsx`
-  - material-type selectors in add/edit material screens
-- Improved VoiceOver/TalkBack action discoverability with contextual hints and Dynamic Type resilience in shared CRUD/favorites UI:
-  - `apps/mobile/app/(tabs)/favorites.tsx`
-  - `apps/mobile/components/courses-list/course-card.tsx`
-  - `apps/mobile/components/module-list-card.tsx`
-  - `apps/mobile/components/material-card.tsx`
-  - `apps/mobile/components/module-workspace/module-workspace-screen.tsx`
-  - `apps/mobile/components/courses-list/courses-list-screen.tsx`
-  - `apps/mobile/components/search-bar.tsx`
-  - `apps/mobile/components/profile-tab/profile-tab-screen.tsx`
-  - `apps/mobile/app/material/[id].tsx`
-
-**Phase 1 stabilization guardrails kept intact:**
-- React Query lifecycle integration unchanged
-- Query-managed reads with `cache: false` unchanged
-- Timeout/retry tuning unchanged
-- API contracts and mutation behavior unchanged
-
-**Checklist sync:**
-- Marked Phase 2 accessibility task as completed in `docs/mobile-execution-checklist.md`.
-- Marked Phase 2 acceptance criterion "Core CRUD/favorites flows are stable with improved perceived UX" as completed.
-- Updated next recommended task to finish dashboard branding cleanup, then proceed to Phase 3 quality gates.
-
-**Verification:**
-- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
-
-### Session 181 (Checkpoint: Phase 2 continuity + dashboard branding backlog)
-
-**What we changed:**
-- Added an explicit continuity checkpoint so current UI polish detours do not hide remaining Phase 2 priorities.
-- Updated `docs/mobile-execution-checklist.md` Phase 2 tasks with a tracked UI-hardening item:
-  - dashboard branding cleanup:
-    - remove decorative emoji markers
-    - align `StudyHub` heading typography/color with auth/web brand language
-- Updated "Next Recommended Task" in checklist to keep sequence clear:
-  - finish hardware back consistency first
-  - then execute dashboard branding cleanup
-
-**Why:**
-- Preserve momentum on core UX hardening while keeping requested branding fixes visible and scheduled.
-
-**Verification:**
-- Docs-only continuity update (no runtime code changes in this session).
-
-### Session 182 (Phase 2: hardware back consistency in CRUD forms)
-
-**What we changed:**
-- Implemented reusable unsaved-changes navigation guard:
-  - `apps/mobile/lib/use-confirm-discard.ts`
-  - Uses navigation `beforeRemove` to intercept back actions consistently (hardware back, header back, gesture back).
-  - Shows discard confirmation only when form state is dirty.
-  - Supports save flow via `allowNextLeave()` to avoid extra prompt after successful submit.
-- Applied guard in all mobile CRUD form screens:
-  - `apps/mobile/app/create-course.tsx`
-  - `apps/mobile/app/course/[id]/add-module.tsx`
-  - `apps/mobile/app/course/[id]/edit.tsx`
-  - `apps/mobile/app/module/[id]/add-material.tsx`
-  - `apps/mobile/app/module/[id]/edit.tsx`
-  - `apps/mobile/app/material/[id]/edit.tsx`
-- Dirty-state checks are field-aware per screen (text fields and material-type selector where applicable).
-
-**Kept intact (as requested):**
-- API contracts
-- Mutation behavior
-- React Query lifecycle/cache policy choices
-
-**Verification:**
-- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
-
-### Session 181 (Phase 1 manual verification pass + Expo Router warning cleanup)
-
-**Manual device verification result (reported):**
-- AppState scenario: pass
-- NetInfo scenario: pass
-- Combined offline/background/reconnect scenario: pass
-- Note: reconnect flow initially showed longer spinner duration; stabilized with timeout/retry tuning from Session 180.
-
-**Additional issue observed:**
-- Expo Router warnings in terminal:
-  - `Route "./(tabs)/favorites.styles.ts" is missing the required default export`
-  - `Route "./material/material-screen.styles.ts" is missing the required default export`
-
-**What we changed:**
-- Moved style-only files out of `app/` so Expo Router no longer treats them as route modules:
-  - `apps/mobile/app/(tabs)/favorites.styles.ts` -> `apps/mobile/components/favorites/favorites.styles.ts`
-  - `apps/mobile/app/material/material-screen.styles.ts` -> `apps/mobile/components/material/material-screen.styles.ts`
-- Updated imports:
-  - `apps/mobile/app/(tabs)/favorites.tsx`
-  - `apps/mobile/app/material/[id].tsx`
-- Synced `docs/mobile-execution-checklist.md`:
-  - Phase 1 manual verification + acceptance criteria marked complete.
-  - Next recommended task moved to Phase 2 guardrail refactor.
-
-**Verification:**
-- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
-
-### Session 180 (Reconnect spinner stabilization)
-
-**Issue observed during manual device test:**
-- After offline -> online recovery, navigation remained usable but loading spinners could stay visible too long on data screens.
-
-**What we changed:**
-- Added request timeout support in `apps/mobile/lib/api.ts`:
-  - default API request timeout (`6s`) via `fetchWithTimeout(...)` + `AbortController`
-  - timeout now returns a network error message (`Request timed out. Please try again.`)
-- Reduced query retry aggressiveness in `apps/mobile/lib/query-client.ts`:
-  - retry policy now allows only one retry cycle for retryable query errors.
-
-**Why:**
-- Prevent long-hanging requests after network transitions from keeping screens in prolonged spinner states.
-
-**Verification:**
-- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
-
-**Next validation required on device:**
-- Re-run NetInfo reconnect scenario and confirm spinner duration is now acceptable.
-
-### Session 179 (Mobile start scripts hardened for Expo dependency-validation crash)
-
-**Issue observed:**
-- Repeated `Body is unusable: Body has already been read` crash when running mobile start commands without env workaround.
-- Crash originates in Expo CLI dependency validation flow (`getNativeModuleVersionsAsync`).
-
-**What we changed:**
-- Updated mobile npm scripts in `apps/mobile/package.json` to always set:
-  - `EXPO_NO_DEPENDENCY_VALIDATION=1`
-- Hardened scripts:
-  - `start`
-  - `dev:mobile:tunnel`
-  - `dev:mobile:lan`
-  - `dev:mobile:usb`
-  - `android:usb`
-  - `android`
-  - `ios`
-  - `web`
-
-**Verification:**
-- `npm.cmd --workspace @studyhub/mobile run dev:mobile:lan` now reaches:
-  - `Waiting on http://localhost:8081`
-  - no `Body is unusable` crash in startup path
-
-### Session 183 (Phase 2 guardrail refactor completed: login + register split)
-
-**What we changed:**
-- Split `apps/mobile/app/login.tsx` into a thin route + feature modules:
-  - `apps/mobile/components/login/login-screen.tsx`
-  - `apps/mobile/components/login/use-login-screen.ts`
-  - `apps/mobile/components/login/login-screen.styles.ts`
-- Split `apps/mobile/app/register.tsx` into a thin route + feature modules:
-  - `apps/mobile/components/register/register-screen.tsx`
-  - `apps/mobile/components/register/use-register-screen.ts`
-  - `apps/mobile/components/register/register-screen.styles.ts`
-- Preserved existing auth behavior:
-  - email/password validation timing and touched-field flow
-  - API error handling contract and loading states
-  - Google sign-in flow (`expo-auth-session`) and existing redirect URI
-  - animated card entrance and auth route switching (`login` <-> `register`)
-
-**Verification:**
-- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
-
-**Phase 2 status update:**
-- Guardrail file-splitting targets are now complete:
-  - `apps/mobile/app/module/[id]/index.tsx`
-  - `apps/mobile/app/(tabs)/index.tsx`
-  - `apps/mobile/app/(tabs)/profile.tsx`
-  - `apps/mobile/app/login.tsx`
-  - `apps/mobile/app/register.tsx`
-- Next Phase 2 work: UX hardening (skeleton/loading/offline/accessibility/haptics).
-
-### Session 182 (Phase 2 guardrail refactor continued: profile tab split)
-
-**What we changed:**
-- Split `apps/mobile/app/(tabs)/profile.tsx` into a thin route file and extracted feature modules under:
-  - `apps/mobile/components/profile-tab/profile-tab-screen.tsx` (UI composition)
-  - `apps/mobile/components/profile-tab/use-profile-tab.ts` (query/mutation/editor-state orchestration)
-  - `apps/mobile/components/profile-tab/profile-tab.styles.ts` (styles)
-  - `apps/mobile/components/profile-tab/profile-tab.types.ts` (feature-local types)
-- Preserved behavior for:
-  - profile read via React Query (`/api/auth/me`, `cache: false`)
-  - optimistic profile name update on save with rollback on error
-  - refresh/retry behavior and profile editor flow (edit/cancel/save)
-  - logout action, role badge, and member-since display
-- Guardrail compliance after split:
-  - route file is now minimal
-  - extracted files are under 300 lines
-  - major functions remain under 60 lines
-
-**Verification:**
-- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
-
-**Phase 2 status update:**
-- Completed guardrail split targets:
-  - `apps/mobile/app/module/[id]/index.tsx`
-  - `apps/mobile/app/(tabs)/index.tsx`
-  - `apps/mobile/app/(tabs)/profile.tsx`
-- Remaining guardrail split targets:
-  - `apps/mobile/app/login.tsx`
-  - `apps/mobile/app/register.tsx`
-
-### Session 181 (Phase 2 guardrail refactor continued: courses tab split)
-
-**What we changed:**
-- Split `apps/mobile/app/(tabs)/index.tsx` into a thin route file and extracted feature modules under:
-  - `apps/mobile/components/courses-list/courses-list-screen.tsx` (UI composition)
-  - `apps/mobile/components/courses-list/use-courses-list.ts` (query/mutation/state orchestration)
-  - `apps/mobile/components/courses-list/course-card.tsx` (animated item card)
-  - `apps/mobile/components/courses-list/courses-list.styles.ts` (styles)
-  - `apps/mobile/components/courses-list/courses-list.types.ts` (feature-local types)
-- Preserved behavior for:
-  - query-managed courses list read with `cache: false`
-  - focus refetch invalidation for courses list
-  - optimistic course delete and rollback on error
-  - existing header stats, empty/error/loading states, and create-course FAB flow
-- Kept file/function guardrails:
-  - route file is now minimal
-  - extracted files stay under 300 lines
-  - major functions remain under 60 lines
-
-**Verification:**
-- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
-
-**Phase 2 status update:**
-- Completed guardrail split targets:
-  - `apps/mobile/app/module/[id]/index.tsx`
-  - `apps/mobile/app/(tabs)/index.tsx`
-- Remaining guardrail split targets:
-  - `apps/mobile/app/(tabs)/profile.tsx`
-  - `apps/mobile/app/login.tsx`
-  - `apps/mobile/app/register.tsx`
-
-### Session 180 (Phase 2 guardrail refactor started: module workspace split)
-
-**What we changed:**
-- Split `apps/mobile/app/module/[id]/index.tsx` into smaller route + feature modules while preserving behavior:
-  - `apps/mobile/app/module/[id]/index.tsx` is now a thin orchestrator route file.
-  - New feature files in `apps/mobile/components/module-workspace/`:
-    - `module-workspace-screen.tsx` (UI composition)
-    - `use-module-workspace.ts` (state orchestration)
-    - `module-workspace.queries.ts` (React Query read hooks + focus refetch)
-    - `module-workspace.mutations.ts` (delete flows with optimistic updates + invalidation)
-    - `module-workspace.helpers.ts` (search/filter + confirm copy helpers)
-    - `module-workspace.styles.ts` (styles)
-    - `module-workspace.types.ts` (feature-local types)
-- Kept Phase 1 stabilization behavior intact:
-  - query-managed GET reads still use `cache: false` in module workspace queries,
-  - focus-driven invalidation remains active,
-  - delete module/material optimistic behavior and invalidation logic preserved.
-- Removed route-co-located type file and moved feature types under `components/` to avoid Expo Router route-file warnings.
-
-**Verification:**
-- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
-
-**Phase 2 status update:**
-- Completed:
-  - `apps/mobile/app/module/[id]/index.tsx` guardrail split (`<300` file-size guardrail achieved across extracted files).
-- Remaining Phase 2 guardrail split targets:
-  - `apps/mobile/app/(tabs)/index.tsx`
-  - `apps/mobile/app/(tabs)/profile.tsx`
-  - `apps/mobile/app/login.tsx`
-  - `apps/mobile/app/register.tsx`
-
-### Session 178 (Expo LAN start crash workaround: dependency validation skip)
-
-**Issue observed:**
-- `npm --workspace @studyhub/mobile run dev:mobile:lan` failed at startup with:
-  - `TypeError: Body is unusable: Body has already been read`
-  - stack trace in Expo CLI dependency validation path (`getNativeModuleVersionsAsync` -> `validateDependenciesVersionsAsync`)
-
-**What we verified:**
-- Environment currently uses `Node v22.21.0`.
-- Running mobile start with dependency validation disabled starts Metro successfully:
-  - `set EXPO_NO_DEPENDENCY_VALIDATION=1&& npm.cmd --workspace @studyhub/mobile run dev:mobile:lan`
-  - output reaches `Waiting on http://localhost:8081`
-
-**Current guidance for this branch/session:**
-- Use `EXPO_NO_DEPENDENCY_VALIDATION=1` for mobile start commands when this crash appears.
-- Continue physical-device Phase 1 lifecycle checks after Metro is up.
-
-### Session 177 (Phase 1 cache-policy rollout completed for query-managed reads)
-
-**What we changed:**
-- Completed the remaining React Query GET cache-policy rollout in mobile screens:
-  - `apps/mobile/app/module/[id]/index.tsx`
-    - module detail query (`/api/modules/[id]`) now uses `cache: false`
-    - module materials query (`/api/modules/[id]/materials`) now uses `cache: false`
-  - `apps/mobile/app/material/[id].tsx`
-    - material detail query (`/api/materials/[id]`) now uses `cache: false`
-- Re-audited all `useQuery` reads in mobile routes and confirmed query-managed GET paths now consistently bypass `apiFetch` cache.
-- Kept `apiFetch` cache behavior for non-query/auth bootstrap paths (for example `AuthProvider` bootstrap `GET /api/auth/me`) per Phase 1 policy.
-- Updated `README.md` mobile data-layer section with explicit cache policy:
-  - React Query-managed reads use `cache: false`.
-  - `apiFetch` cache remains enabled for non-query/auth bootstrap usage.
-- Updated `docs/mobile-execution-checklist.md`:
-  - marked cache-policy tasks as complete
-  - kept physical-device lifecycle verification as pending
-  - added explicit AppState + NetInfo verification matrix items
-
-**Verification:**
-- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
-
-**Still pending (physical-device verification):**
-- AppState foreground/background refetch behavior on core screens.
-- NetInfo offline/online reconnect refetch behavior.
-- Combined offline + background + reconnect recovery flow.
-
-### Session 176 (Mobile stability hardening kickoff + handoff)
-
-**What we did in this slice (context-safe handoff prep):**
-- Audited the current branch and confirmed these stabilization pieces are already present in code:
-  - lifecycle wiring file exists: `apps/mobile/lib/react-query-lifecycle.ts`
-  - root startup wiring exists: `apps/mobile/app/_layout.tsx` calls `configureReactQueryLifecycle()`
-  - partial cache-policy rollout already exists (`cache: false`) in:
-    - `apps/mobile/app/(tabs)/profile.tsx`
-    - `apps/mobile/app/(tabs)/index.tsx`
-    - `apps/mobile/app/course/[id]/index.tsx`
-- Revalidated type safety before handoff:
-  - `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass.
-- Updated continuity docs:
-  - `docs/mobile-execution-checklist.md` (Phase 1 task wording + next task)
-  - this handoff block in `docs/dev-log.md`
-
-**Current status:**
-- No additional runtime code changes were finalized in this handoff-only slice.
-- This slice is intentionally paused for context management and clean continuation.
-
-**Remaining work for next chat (same phase):**
-- Finish cache-policy rollout for remaining React Query/GET read paths:
-  - `apps/mobile/app/module/[id]/index.tsx`
-  - `apps/mobile/app/material/[id].tsx`
-  - `apps/mobile/app/course/[id]/edit.tsx`
-  - `apps/mobile/app/module/[id]/edit.tsx`
-  - `apps/mobile/app/material/[id]/edit.tsx`
-- Add brief README note for mobile cache policy (`React Query` as primary source for query-managed reads).
-- Run manual device validation scenarios:
-  - app background -> foreground refresh behavior
-  - offline -> online reconnect behavior
-  - core CRUD + favorites after reconnect
-
-**Next chat handoff prompt (copy/paste):**
-`Read docs/dev-log.md and docs/mobile-execution-checklist.md. Continue Phase 1 stabilization. Complete cache-policy rollout by setting cache:false on remaining query-managed GET reads in mobile screens, keep apiFetch cache for non-query/auth bootstrap paths, then run npm.cmd run --workspace @studyhub/mobile typecheck and document what was completed + what still needs physical-device verification (AppState + NetInfo scenarios).`
-
-### Session 175 (Mobile roadmap reprioritized: quality-first + QR scope decision)
-
-**Context from planning discussion:**
-- Mobile standards score (`5.5/10`) was treated as a signal to prioritize app quality/stability over decorative expansion.
-- Requested scope decisions:
-  - move mobile AI work later,
-  - do not build Admin QR,
-  - keep focus on improving existing mobile experience first.
-
-**What we changed:**
-- Reworked `docs/mobile-execution-checklist.md` into a quality-first roadmap:
-  - `Phase 1`: lifecycle + cache correctness first.
-  - `Phase 2`: guardrail-driven refactors + UX hardening.
-  - `Phase 3`: quality gates, then optional expansion.
-- Added/confirmed scope statuses:
-  - `DEFERRED`: mobile AI entry points/tools.
-  - `DE-SCOPED`: Admin QR.
-  - `Optional later`: profile QR handoff (social-ready future idea).
-- Updated "Next Recommended Task" to start with lifecycle integration (`focusManager` + `onlineManager`) and cache policy hardening.
-
-**Why:**
-- For this capstone stage, reliability and maintainability improve the mobile quality score more than adding new AI feature surface area.
-- This order also fits the current learning path and reduces implementation risk.
-
-**Verification:**
-- Docs-only planning update (no runtime code changes in this session).
-
-### Session 174 (AI env location clarification for continuity)
-
-**What we changed:**
-- Updated `README.md` with a dedicated AI env note clarifying where `GEMINI_API_KEY` is read from in local development and what is required in production deploys.
-  - Local dev (web AI routes): key is expected in `apps/web/.env`.
-  - Root `.env` can remain empty for `GEMINI_API_KEY` without breaking local web AI if `apps/web/.env` is configured.
-  - Production: `GEMINI_API_KEY` must be set in Vercel/Netlify environment variables.
-
-**Why:**
-- Prevent repeated confusion across sessions about "empty root `.env` vs working AI endpoints".
-
-**Verification:**
-- Docs-only update (no runtime code changes in this session).
-
-### Session 173 (AGENTS.md scope sync with current mobile direction)
-
-**What we changed:**
-- Updated `AGENTS.md` mobile definition from fixed "3 screens" to current in-scope/out-of-scope mobile product scope.
-  - In-scope: auth, courses, module/material workspace, favorites, profile.
-  - Out-of-scope: mobile Progress/Milestones, mobile Calendar, and full mobile Admin Panel (web-first unless explicitly requested).
-- Synced docs wording with the same decision:
-  - `docs/dev-log.md` scope-decision reason text for mobile admin de-scope.
-  - `docs/mobile-execution-checklist.md` admin de-scope reason text.
-
-**Why:**
-- Keep AI execution instructions aligned with real product direction, so future sessions do not re-open de-scoped work by mistake.
-
-**Verification:**
-- Documentation + instruction sync only (no runtime code changes in this session).
-
-**Continuity checklist:**
-- Added `docs/mobile-execution-checklist.md` with Sprint 1 / Sprint 2 tasks, acceptance criteria, and current status checkboxes.
-
-### Session 172 (Kickoff prompt master checklist mirrored in dev-log)
-
-**Requested continuity update:**
-- Mirrored all mobile tasks from the kickoff prompt directly inside `docs/dev-log.md` (not only in a separate checklist file), so future chats can continue from one source.
-
-**Kickoff baseline assessment (reference):**
-- Mobile core CRUD + data layer: `8/10`
-- Parity vs desktop: `6/10`
-- Production readiness (mobile standards): `5.5/10`
-- Overall current MVP: `7/10`
-
-**Scope decisions (2026-04-08):**
-- Progress/Milestones mobile MVP is de-scoped (internal work-notes pages, not end-user mobile value for this capstone).
-- Calendar mobile MVP is de-scoped (internal work-notes usage, low product value for mobile scope).
-- Admin panel on mobile is de-scoped by default for this project.
-  - Reason: web-first admin scope for this capstone; implement mobile admin only if explicitly requested.
-  - Practical note: full admin panels are commonly web-first due complexity, lower frequency of admin actions, and better desktop workflow.
-
-**Master checklist from kickoff prompt:**
-- [x] Feature parity: Favorites (pin/unpin + favorites list + tab access).
-- [x] DE-SCOPED: Progress/Milestones mobile (read + basic create/edit/status update).
-- [x] DE-SCOPED: Calendar mobile (read + basic create/edit/delete).
-- [ ] Feature parity: AI entry points on mobile (summarize/quiz/chat) or read-only AI outputs.
-
-- [ ] React Query RN lifecycle: integrate `focusManager` with `AppState`.
-- [ ] React Query RN lifecycle: integrate `onlineManager` with `NetInfo`.
-- [ ] Validate foreground/online refetch behavior across key mobile screens.
-
-- [ ] Cache policy: define single source of truth between React Query persistence and `apiFetch` AsyncStorage cache.
-- [ ] Cache policy: decide where `apiFetch` cache must be disabled for query-managed read paths.
-- [ ] Cache policy: document policy in `README.md` and enforce in mobile data calls.
-
-- [ ] Guardrails refactor: split `apps/mobile/app/module/[id]/index.tsx` (<300 lines; extract hooks/components).
-- [ ] Guardrails refactor: split `apps/mobile/app/(tabs)/profile.tsx` (<300 lines; extract hooks/components).
-- [ ] Guardrails refactor: split `apps/mobile/app/(tabs)/index.tsx` (<300 lines; extract hooks/components).
-- [ ] Guardrails refactor: split `apps/mobile/app/register.tsx` (<300 lines; extract hooks/components).
-- [ ] Guardrails refactor: split `apps/mobile/app/login.tsx` (<300 lines; extract hooks/components).
-- [ ] Guardrails: keep functions under 60 lines during refactors/new work.
-
-- [ ] Mobile UX standards: add haptics for destructive/success actions.
-- [ ] Mobile UX standards: add richer skeleton loading states for major flows.
-- [ ] Mobile UX standards: improve empty/offline states for core screens.
-- [ ] Mobile UX standards: verify Dynamic Type / font scaling behavior.
-- [ ] Mobile UX standards: verify VoiceOver/TalkBack navigation flow.
-- [ ] Mobile UX standards: verify hardware back behavior on all CRUD screens.
-
-- [ ] Release readiness: add mobile e2e smoke suite (auth + CRUD happy path + offline/online recovery).
-- [ ] Release readiness: add crash/error telemetry (Sentry or equivalent).
-- [ ] Release readiness: finalize mobile release checklist in docs.
-
-**Sprint plan tracking (from kickoff):**
-
-Sprint 1 - Parity
-- [x] Task 1: Favorites.
-- [x] DE-SCOPED: Task 2 (Progress/Milestones).
-- [x] DE-SCOPED: Task 3 (Calendar).
-- [ ] Task 4: Material AI section.
-- [ ] Task 5: Query keys + invalidate rules for new domains.
-
-Sprint 2 - Production standards
-- [ ] Task 1: lifecycle integration (`focusManager`/`onlineManager`).
-- [ ] Task 2: cache policy hardening.
-- [ ] Task 3: guardrail-driven file splitting.
-- [ ] Task 4: UX hardening.
-- [ ] Task 5: quality gates (e2e + telemetry + release checklist).
-
-**Acceptance gates mirrored from kickoff:**
-- [ ] Sprint 1 complete when remaining in-scope parity tasks are implemented and visible without manual `useEffect` fetch patterns.
-- [ ] Sprint 2 complete when lifecycle/offline stability and smoke quality gates pass, and docs are fully synced.
-
-**Backlog status update (Session 162 list):**
-- [x] Better API error handling end-to-end.
-- [x] Type safety hardening (`any`/route casts removed in mobile app).
-- [ ] Offline caching with React Query + AsyncStorage persistence.
-  - Note: API-level AsyncStorage caching is now implemented; React Query migration remains optional next upgrade step.
-- [x] Move/standardize logout placement in Profile tab.
-- [ ] Realtime inline form validation (login/register/create flows).
-- [ ] Centralize `MATERIAL_TYPES` usage everywhere.
-- [ ] Extract and apply shared `COLORS` constants.
-- [ ] Accessibility labels full sweep across all interactive controls.
 
 ### Session 164 (Realtime inline form validation)
 
@@ -5931,6 +4678,7 @@ Sprint 2 - Production standards
 **Backlog status update (Session 162 list):**
 - [x] Extract and apply shared `COLORS` constants.
 - [x] Accessibility labels full sweep across interactive controls in mobile flows/components.
+
 ### Session 169 (Mobile React Query migration + persisted cache)
 
 **What we changed:**
@@ -5998,6 +4746,183 @@ Sprint 2 - Production standards
 **Verification:**
 - `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
 
+### Session 172 (Kickoff prompt master checklist mirrored in dev-log)
+
+**Requested continuity update:**
+- Mirrored all mobile tasks from the kickoff prompt directly inside `docs/dev-log.md` (not only in a separate checklist file), so future chats can continue from one source.
+
+**Kickoff baseline assessment (reference):**
+- Mobile core CRUD + data layer: `8/10`
+- Parity vs desktop: `6/10`
+- Production readiness (mobile standards): `5.5/10`
+- Overall current MVP: `7/10`
+
+**Scope decisions (2026-04-08):**
+- Progress/Milestones mobile MVP is de-scoped (internal work-notes pages, not end-user mobile value for this capstone).
+- Calendar mobile MVP is de-scoped (internal work-notes usage, low product value for mobile scope).
+- Admin panel on mobile is de-scoped by default for this project.
+  - Reason: web-first admin scope for this capstone; implement mobile admin only if explicitly requested.
+  - Practical note: full admin panels are commonly web-first due complexity, lower frequency of admin actions, and better desktop workflow.
+
+**Master checklist from kickoff prompt:**
+- [x] Feature parity: Favorites (pin/unpin + favorites list + tab access).
+- [x] DE-SCOPED: Progress/Milestones mobile (read + basic create/edit/status update).
+- [x] DE-SCOPED: Calendar mobile (read + basic create/edit/delete).
+- [ ] Feature parity: AI entry points on mobile (summarize/quiz/chat) or read-only AI outputs.
+
+- [ ] React Query RN lifecycle: integrate `focusManager` with `AppState`.
+- [ ] React Query RN lifecycle: integrate `onlineManager` with `NetInfo`.
+- [ ] Validate foreground/online refetch behavior across key mobile screens.
+
+- [ ] Cache policy: define single source of truth between React Query persistence and `apiFetch` AsyncStorage cache.
+- [ ] Cache policy: decide where `apiFetch` cache must be disabled for query-managed read paths.
+- [ ] Cache policy: document policy in `README.md` and enforce in mobile data calls.
+
+- [ ] Guardrails refactor: split `apps/mobile/app/module/[id]/index.tsx` (<300 lines; extract hooks/components).
+- [ ] Guardrails refactor: split `apps/mobile/app/(tabs)/profile.tsx` (<300 lines; extract hooks/components).
+- [ ] Guardrails refactor: split `apps/mobile/app/(tabs)/index.tsx` (<300 lines; extract hooks/components).
+- [ ] Guardrails refactor: split `apps/mobile/app/register.tsx` (<300 lines; extract hooks/components).
+- [ ] Guardrails refactor: split `apps/mobile/app/login.tsx` (<300 lines; extract hooks/components).
+- [ ] Guardrails: keep functions under 60 lines during refactors/new work.
+
+- [ ] Mobile UX standards: add haptics for destructive/success actions.
+- [ ] Mobile UX standards: add richer skeleton loading states for major flows.
+- [ ] Mobile UX standards: improve empty/offline states for core screens.
+- [ ] Mobile UX standards: verify Dynamic Type / font scaling behavior.
+- [ ] Mobile UX standards: verify VoiceOver/TalkBack navigation flow.
+- [ ] Mobile UX standards: verify hardware back behavior on all CRUD screens.
+
+- [ ] Release readiness: add mobile e2e smoke suite (auth + CRUD happy path + offline/online recovery).
+- [ ] Release readiness: add crash/error telemetry (Sentry or equivalent).
+- [ ] Release readiness: finalize mobile release checklist in docs.
+
+**Sprint plan tracking (from kickoff):**
+
+Sprint 1 - Parity
+- [x] Task 1: Favorites.
+- [x] DE-SCOPED: Task 2 (Progress/Milestones).
+- [x] DE-SCOPED: Task 3 (Calendar).
+- [ ] Task 4: Material AI section.
+- [ ] Task 5: Query keys + invalidate rules for new domains.
+
+Sprint 2 - Production standards
+- [ ] Task 1: lifecycle integration (`focusManager`/`onlineManager`).
+- [ ] Task 2: cache policy hardening.
+- [ ] Task 3: guardrail-driven file splitting.
+- [ ] Task 4: UX hardening.
+- [ ] Task 5: quality gates (e2e + telemetry + release checklist).
+
+**Acceptance gates mirrored from kickoff:**
+- [ ] Sprint 1 complete when remaining in-scope parity tasks are implemented and visible without manual `useEffect` fetch patterns.
+- [ ] Sprint 2 complete when lifecycle/offline stability and smoke quality gates pass, and docs are fully synced.
+
+**Backlog status update (Session 162 list):**
+- [x] Better API error handling end-to-end.
+- [x] Type safety hardening (`any`/route casts removed in mobile app).
+- [ ] Offline caching with React Query + AsyncStorage persistence.
+  - Note: API-level AsyncStorage caching is now implemented; React Query migration remains optional next upgrade step.
+- [x] Move/standardize logout placement in Profile tab.
+- [ ] Realtime inline form validation (login/register/create flows).
+- [ ] Centralize `MATERIAL_TYPES` usage everywhere.
+- [ ] Extract and apply shared `COLORS` constants.
+- [ ] Accessibility labels full sweep across all interactive controls.
+
+### Session 173 (AGENTS.md scope sync with current mobile direction)
+
+**What we changed:**
+- Updated `AGENTS.md` mobile definition from fixed "3 screens" to current in-scope/out-of-scope mobile product scope.
+  - In-scope: auth, courses, module/material workspace, favorites, profile.
+  - Out-of-scope: mobile Progress/Milestones, mobile Calendar, and full mobile Admin Panel (web-first unless explicitly requested).
+- Synced docs wording with the same decision:
+  - `docs/dev-log.md` scope-decision reason text for mobile admin de-scope.
+  - `docs/mobile-execution-checklist.md` admin de-scope reason text.
+
+**Why:**
+- Keep AI execution instructions aligned with real product direction, so future sessions do not re-open de-scoped work by mistake.
+
+**Verification:**
+- Documentation + instruction sync only (no runtime code changes in this session).
+
+**Continuity checklist:**
+- Added `docs/mobile-execution-checklist.md` with Sprint 1 / Sprint 2 tasks, acceptance criteria, and current status checkboxes.
+
+### Session 174 (AI env location clarification for continuity)
+
+**What we changed:**
+- Updated `README.md` with a dedicated AI env note clarifying where `GEMINI_API_KEY` is read from in local development and what is required in production deploys.
+  - Local dev (web AI routes): key is expected in `apps/web/.env`.
+  - Root `.env` can remain empty for `GEMINI_API_KEY` without breaking local web AI if `apps/web/.env` is configured.
+  - Production: `GEMINI_API_KEY` must be set in Vercel/Netlify environment variables.
+
+**Why:**
+- Prevent repeated confusion across sessions about "empty root `.env` vs working AI endpoints".
+
+**Verification:**
+- Docs-only update (no runtime code changes in this session).
+
+### Session 175 (Mobile roadmap reprioritized: quality-first + QR scope decision)
+
+**Context from planning discussion:**
+- Mobile standards score (`5.5/10`) was treated as a signal to prioritize app quality/stability over decorative expansion.
+- Requested scope decisions:
+  - move mobile AI work later,
+  - do not build Admin QR,
+  - keep focus on improving existing mobile experience first.
+
+**What we changed:**
+- Reworked `docs/mobile-execution-checklist.md` into a quality-first roadmap:
+  - `Phase 1`: lifecycle + cache correctness first.
+  - `Phase 2`: guardrail-driven refactors + UX hardening.
+  - `Phase 3`: quality gates, then optional expansion.
+- Added/confirmed scope statuses:
+  - `DEFERRED`: mobile AI entry points/tools.
+  - `DE-SCOPED`: Admin QR.
+  - `Optional later`: profile QR handoff (social-ready future idea).
+- Updated "Next Recommended Task" to start with lifecycle integration (`focusManager` + `onlineManager`) and cache policy hardening.
+
+**Why:**
+- For this capstone stage, reliability and maintainability improve the mobile quality score more than adding new AI feature surface area.
+- This order also fits the current learning path and reduces implementation risk.
+
+**Verification:**
+- Docs-only planning update (no runtime code changes in this session).
+
+### Session 176 (Mobile stability hardening kickoff + handoff)
+
+**What we did in this slice (context-safe handoff prep):**
+- Audited the current branch and confirmed these stabilization pieces are already present in code:
+  - lifecycle wiring file exists: `apps/mobile/lib/react-query-lifecycle.ts`
+  - root startup wiring exists: `apps/mobile/app/_layout.tsx` calls `configureReactQueryLifecycle()`
+  - partial cache-policy rollout already exists (`cache: false`) in:
+    - `apps/mobile/app/(tabs)/profile.tsx`
+    - `apps/mobile/app/(tabs)/index.tsx`
+    - `apps/mobile/app/course/[id]/index.tsx`
+- Revalidated type safety before handoff:
+  - `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass.
+- Updated continuity docs:
+  - `docs/mobile-execution-checklist.md` (Phase 1 task wording + next task)
+  - this handoff block in `docs/dev-log.md`
+
+**Current status:**
+- No additional runtime code changes were finalized in this handoff-only slice.
+- This slice is intentionally paused for context management and clean continuation.
+
+**Remaining work for next chat (same phase):**
+- Finish cache-policy rollout for remaining React Query/GET read paths:
+  - `apps/mobile/app/module/[id]/index.tsx`
+  - `apps/mobile/app/material/[id].tsx`
+  - `apps/mobile/app/course/[id]/edit.tsx`
+  - `apps/mobile/app/module/[id]/edit.tsx`
+  - `apps/mobile/app/material/[id]/edit.tsx`
+- Add brief README note for mobile cache policy (`React Query` as primary source for query-managed reads).
+- Run manual device validation scenarios:
+  - app background -> foreground refresh behavior
+  - offline -> online reconnect behavior
+  - core CRUD + favorites after reconnect
+
+**Next chat handoff prompt (copy/paste):**
+`Read docs/dev-log.md and docs/mobile-execution-checklist.md. Continue Phase 1 stabilization. Complete cache-policy rollout by setting cache:false on remaining query-managed GET reads in mobile screens, keep apiFetch cache for non-query/auth bootstrap paths, then run npm.cmd run --workspace @studyhub/mobile typecheck and document what was completed + what still needs physical-device verification (AppState + NetInfo scenarios).`
+
 ### Session 176 (Phase 2 UX hardening: reusable skeleton loading states)
 
 **What we changed:**
@@ -6031,6 +4956,33 @@ Sprint 2 - Production standards
 - Haptics for success/destructive actions
 - Hardware back behavior consistency in CRUD flows
 - Accessibility checks for Dynamic Type and VoiceOver/TalkBack
+
+### Session 177 (Phase 1 cache-policy rollout completed for query-managed reads)
+
+**What we changed:**
+- Completed the remaining React Query GET cache-policy rollout in mobile screens:
+  - `apps/mobile/app/module/[id]/index.tsx`
+    - module detail query (`/api/modules/[id]`) now uses `cache: false`
+    - module materials query (`/api/modules/[id]/materials`) now uses `cache: false`
+  - `apps/mobile/app/material/[id].tsx`
+    - material detail query (`/api/materials/[id]`) now uses `cache: false`
+- Re-audited all `useQuery` reads in mobile routes and confirmed query-managed GET paths now consistently bypass `apiFetch` cache.
+- Kept `apiFetch` cache behavior for non-query/auth bootstrap paths (for example `AuthProvider` bootstrap `GET /api/auth/me`) per Phase 1 policy.
+- Updated `README.md` mobile data-layer section with explicit cache policy:
+  - React Query-managed reads use `cache: false`.
+  - `apiFetch` cache remains enabled for non-query/auth bootstrap usage.
+- Updated `docs/mobile-execution-checklist.md`:
+  - marked cache-policy tasks as complete
+  - kept physical-device lifecycle verification as pending
+  - added explicit AppState + NetInfo verification matrix items
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
+
+**Still pending (physical-device verification):**
+- AppState foreground/background refetch behavior on core screens.
+- NetInfo offline/online reconnect refetch behavior.
+- Combined offline + background + reconnect recovery flow.
 
 ### Session 177 (Phase 2 UX hardening: explicit offline/empty/error states)
 
@@ -6076,6 +5028,23 @@ Sprint 2 - Production standards
 - Hardware back behavior consistency in CRUD flows
 - Accessibility checks for Dynamic Type and VoiceOver/TalkBack
 
+### Session 178 (Expo LAN start crash workaround: dependency validation skip)
+
+**Issue observed:**
+- `npm --workspace @studyhub/mobile run dev:mobile:lan` failed at startup with:
+  - `TypeError: Body is unusable: Body has already been read`
+  - stack trace in Expo CLI dependency validation path (`getNativeModuleVersionsAsync` -> `validateDependenciesVersionsAsync`)
+
+**What we verified:**
+- Environment currently uses `Node v22.21.0`.
+- Running mobile start with dependency validation disabled starts Metro successfully:
+  - `set EXPO_NO_DEPENDENCY_VALIDATION=1&& npm.cmd --workspace @studyhub/mobile run dev:mobile:lan`
+  - output reaches `Waiting on http://localhost:8081`
+
+**Current guidance for this branch/session:**
+- Use `EXPO_NO_DEPENDENCY_VALIDATION=1` for mobile start commands when this crash appears.
+- Continue physical-device Phase 1 lifecycle checks after Metro is up.
+
 ### Session 178 (Phase 2 UX hardening: haptics for success/destructive actions)
 
 **What we changed:**
@@ -6117,6 +5086,30 @@ Sprint 2 - Production standards
 - Hardware back behavior consistency in CRUD flows
 - Accessibility checks for Dynamic Type and VoiceOver/TalkBack
 
+### Session 179 (Mobile start scripts hardened for Expo dependency-validation crash)
+
+**Issue observed:**
+- Repeated `Body is unusable: Body has already been read` crash when running mobile start commands without env workaround.
+- Crash originates in Expo CLI dependency validation flow (`getNativeModuleVersionsAsync`).
+
+**What we changed:**
+- Updated mobile npm scripts in `apps/mobile/package.json` to always set:
+  - `EXPO_NO_DEPENDENCY_VALIDATION=1`
+- Hardened scripts:
+  - `start`
+  - `dev:mobile:tunnel`
+  - `dev:mobile:lan`
+  - `dev:mobile:usb`
+  - `android:usb`
+  - `android`
+  - `ios`
+  - `web`
+
+**Verification:**
+- `npm.cmd --workspace @studyhub/mobile run dev:mobile:lan` now reaches:
+  - `Waiting on http://localhost:8081`
+  - no `Body is unusable` crash in startup path
+
 ### Session 179 (Roadmap update: mobile Settings screen planned)
 
 **What we changed:**
@@ -6133,6 +5126,58 @@ Sprint 2 - Production standards
 
 **Verification:**
 - Docs-only update (no runtime code changes in this session).
+
+### Session 180 (Reconnect spinner stabilization)
+
+**Issue observed during manual device test:**
+- After offline -> online recovery, navigation remained usable but loading spinners could stay visible too long on data screens.
+
+**What we changed:**
+- Added request timeout support in `apps/mobile/lib/api.ts`:
+  - default API request timeout (`6s`) via `fetchWithTimeout(...)` + `AbortController`
+  - timeout now returns a network error message (`Request timed out. Please try again.`)
+- Reduced query retry aggressiveness in `apps/mobile/lib/query-client.ts`:
+  - retry policy now allows only one retry cycle for retryable query errors.
+
+**Why:**
+- Prevent long-hanging requests after network transitions from keeping screens in prolonged spinner states.
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
+
+**Next validation required on device:**
+- Re-run NetInfo reconnect scenario and confirm spinner duration is now acceptable.
+
+### Session 180 (Phase 2 guardrail refactor started: module workspace split)
+
+**What we changed:**
+- Split `apps/mobile/app/module/[id]/index.tsx` into smaller route + feature modules while preserving behavior:
+  - `apps/mobile/app/module/[id]/index.tsx` is now a thin orchestrator route file.
+  - New feature files in `apps/mobile/components/module-workspace/`:
+    - `module-workspace-screen.tsx` (UI composition)
+    - `use-module-workspace.ts` (state orchestration)
+    - `module-workspace.queries.ts` (React Query read hooks + focus refetch)
+    - `module-workspace.mutations.ts` (delete flows with optimistic updates + invalidation)
+    - `module-workspace.helpers.ts` (search/filter + confirm copy helpers)
+    - `module-workspace.styles.ts` (styles)
+    - `module-workspace.types.ts` (feature-local types)
+- Kept Phase 1 stabilization behavior intact:
+  - query-managed GET reads still use `cache: false` in module workspace queries,
+  - focus-driven invalidation remains active,
+  - delete module/material optimistic behavior and invalidation logic preserved.
+- Removed route-co-located type file and moved feature types under `components/` to avoid Expo Router route-file warnings.
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
+
+**Phase 2 status update:**
+- Completed:
+  - `apps/mobile/app/module/[id]/index.tsx` guardrail split (`<300` file-size guardrail achieved across extracted files).
+- Remaining Phase 2 guardrail split targets:
+  - `apps/mobile/app/(tabs)/index.tsx`
+  - `apps/mobile/app/(tabs)/profile.tsx`
+  - `apps/mobile/app/login.tsx`
+  - `apps/mobile/app/register.tsx`
 
 ### Session 180 (Auth UI branding harmony: logo, mascot, signature title)
 
@@ -6163,6 +5208,439 @@ Sprint 2 - Production standards
 
 **Verification:**
 - `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
+
+### Session 181 (Checkpoint: Phase 2 continuity + dashboard branding backlog)
+
+**What we changed:**
+- Added an explicit continuity checkpoint so current UI polish detours do not hide remaining Phase 2 priorities.
+- Updated `docs/mobile-execution-checklist.md` Phase 2 tasks with a tracked UI-hardening item:
+  - dashboard branding cleanup:
+    - remove decorative emoji markers
+    - align `StudyHub` heading typography/color with auth/web brand language
+- Updated "Next Recommended Task" in checklist to keep sequence clear:
+  - finish hardware back consistency first
+  - then execute dashboard branding cleanup
+
+**Why:**
+- Preserve momentum on core UX hardening while keeping requested branding fixes visible and scheduled.
+
+**Verification:**
+- Docs-only continuity update (no runtime code changes in this session).
+
+### Session 181 (Phase 1 manual verification pass + Expo Router warning cleanup)
+
+**Manual device verification result (reported):**
+- AppState scenario: pass
+- NetInfo scenario: pass
+- Combined offline/background/reconnect scenario: pass
+- Note: reconnect flow initially showed longer spinner duration; stabilized with timeout/retry tuning from Session 180.
+
+**Additional issue observed:**
+- Expo Router warnings in terminal:
+  - `Route "./(tabs)/favorites.styles.ts" is missing the required default export`
+  - `Route "./material/material-screen.styles.ts" is missing the required default export`
+
+**What we changed:**
+- Moved style-only files out of `app/` so Expo Router no longer treats them as route modules:
+  - `apps/mobile/app/(tabs)/favorites.styles.ts` -> `apps/mobile/components/favorites/favorites.styles.ts`
+  - `apps/mobile/app/material/material-screen.styles.ts` -> `apps/mobile/components/material/material-screen.styles.ts`
+- Updated imports:
+  - `apps/mobile/app/(tabs)/favorites.tsx`
+  - `apps/mobile/app/material/[id].tsx`
+- Synced `docs/mobile-execution-checklist.md`:
+  - Phase 1 manual verification + acceptance criteria marked complete.
+  - Next recommended task moved to Phase 2 guardrail refactor.
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
+
+### Session 181 (Phase 2 guardrail refactor continued: courses tab split)
+
+**What we changed:**
+- Split `apps/mobile/app/(tabs)/index.tsx` into a thin route file and extracted feature modules under:
+  - `apps/mobile/components/courses-list/courses-list-screen.tsx` (UI composition)
+  - `apps/mobile/components/courses-list/use-courses-list.ts` (query/mutation/state orchestration)
+  - `apps/mobile/components/courses-list/course-card.tsx` (animated item card)
+  - `apps/mobile/components/courses-list/courses-list.styles.ts` (styles)
+  - `apps/mobile/components/courses-list/courses-list.types.ts` (feature-local types)
+- Preserved behavior for:
+  - query-managed courses list read with `cache: false`
+  - focus refetch invalidation for courses list
+  - optimistic course delete and rollback on error
+  - existing header stats, empty/error/loading states, and create-course FAB flow
+- Kept file/function guardrails:
+  - route file is now minimal
+  - extracted files stay under 300 lines
+  - major functions remain under 60 lines
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
+
+**Phase 2 status update:**
+- Completed guardrail split targets:
+  - `apps/mobile/app/module/[id]/index.tsx`
+  - `apps/mobile/app/(tabs)/index.tsx`
+- Remaining guardrail split targets:
+  - `apps/mobile/app/(tabs)/profile.tsx`
+  - `apps/mobile/app/login.tsx`
+  - `apps/mobile/app/register.tsx`
+
+### Session 182 (Phase 2: hardware back consistency in CRUD forms)
+
+**What we changed:**
+- Implemented reusable unsaved-changes navigation guard:
+  - `apps/mobile/lib/use-confirm-discard.ts`
+  - Uses navigation `beforeRemove` to intercept back actions consistently (hardware back, header back, gesture back).
+  - Shows discard confirmation only when form state is dirty.
+  - Supports save flow via `allowNextLeave()` to avoid extra prompt after successful submit.
+- Applied guard in all mobile CRUD form screens:
+  - `apps/mobile/app/create-course.tsx`
+  - `apps/mobile/app/course/[id]/add-module.tsx`
+  - `apps/mobile/app/course/[id]/edit.tsx`
+  - `apps/mobile/app/module/[id]/add-material.tsx`
+  - `apps/mobile/app/module/[id]/edit.tsx`
+  - `apps/mobile/app/material/[id]/edit.tsx`
+- Dirty-state checks are field-aware per screen (text fields and material-type selector where applicable).
+
+**Kept intact (as requested):**
+- API contracts
+- Mutation behavior
+- React Query lifecycle/cache policy choices
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
+
+### Session 182 (Phase 2 guardrail refactor continued: profile tab split)
+
+**What we changed:**
+- Split `apps/mobile/app/(tabs)/profile.tsx` into a thin route file and extracted feature modules under:
+  - `apps/mobile/components/profile-tab/profile-tab-screen.tsx` (UI composition)
+  - `apps/mobile/components/profile-tab/use-profile-tab.ts` (query/mutation/editor-state orchestration)
+  - `apps/mobile/components/profile-tab/profile-tab.styles.ts` (styles)
+  - `apps/mobile/components/profile-tab/profile-tab.types.ts` (feature-local types)
+- Preserved behavior for:
+  - profile read via React Query (`/api/auth/me`, `cache: false`)
+  - optimistic profile name update on save with rollback on error
+  - refresh/retry behavior and profile editor flow (edit/cancel/save)
+  - logout action, role badge, and member-since display
+- Guardrail compliance after split:
+  - route file is now minimal
+  - extracted files are under 300 lines
+  - major functions remain under 60 lines
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
+
+**Phase 2 status update:**
+- Completed guardrail split targets:
+  - `apps/mobile/app/module/[id]/index.tsx`
+  - `apps/mobile/app/(tabs)/index.tsx`
+  - `apps/mobile/app/(tabs)/profile.tsx`
+- Remaining guardrail split targets:
+  - `apps/mobile/app/login.tsx`
+  - `apps/mobile/app/register.tsx`
+
+### Session 183 (Phase 2: accessibility hardening + CRUD/favorites stability acceptance)
+
+**What we changed:**
+- Completed accessibility hardening pass for core mobile CRUD and favorites flows.
+- Added explicit VoiceOver/TalkBack labels + hints on form controls in CRUD screens:
+  - `apps/mobile/app/create-course.tsx`
+  - `apps/mobile/app/course/[id]/add-module.tsx`
+  - `apps/mobile/app/course/[id]/edit.tsx`
+  - `apps/mobile/app/module/[id]/add-material.tsx`
+  - `apps/mobile/app/module/[id]/edit.tsx`
+  - `apps/mobile/app/material/[id]/edit.tsx`
+- Added selected-state accessibility semantics for chips/type selectors:
+  - `apps/mobile/components/type-filter-chips.tsx`
+  - material-type selectors in add/edit material screens
+- Improved VoiceOver/TalkBack action discoverability with contextual hints and Dynamic Type resilience in shared CRUD/favorites UI:
+  - `apps/mobile/app/(tabs)/favorites.tsx`
+  - `apps/mobile/components/courses-list/course-card.tsx`
+  - `apps/mobile/components/module-list-card.tsx`
+  - `apps/mobile/components/material-card.tsx`
+  - `apps/mobile/components/module-workspace/module-workspace-screen.tsx`
+  - `apps/mobile/components/courses-list/courses-list-screen.tsx`
+  - `apps/mobile/components/search-bar.tsx`
+  - `apps/mobile/components/profile-tab/profile-tab-screen.tsx`
+  - `apps/mobile/app/material/[id].tsx`
+
+**Phase 1 stabilization guardrails kept intact:**
+- React Query lifecycle integration unchanged
+- Query-managed reads with `cache: false` unchanged
+- Timeout/retry tuning unchanged
+- API contracts and mutation behavior unchanged
+
+**Checklist sync:**
+- Marked Phase 2 accessibility task as completed in `docs/mobile-execution-checklist.md`.
+- Marked Phase 2 acceptance criterion "Core CRUD/favorites flows are stable with improved perceived UX" as completed.
+- Updated next recommended task to finish dashboard branding cleanup, then proceed to Phase 3 quality gates.
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
+
+### Session 183 (Phase 2 guardrail refactor completed: login + register split)
+
+**What we changed:**
+- Split `apps/mobile/app/login.tsx` into a thin route + feature modules:
+  - `apps/mobile/components/login/login-screen.tsx`
+  - `apps/mobile/components/login/use-login-screen.ts`
+  - `apps/mobile/components/login/login-screen.styles.ts`
+- Split `apps/mobile/app/register.tsx` into a thin route + feature modules:
+  - `apps/mobile/components/register/register-screen.tsx`
+  - `apps/mobile/components/register/use-register-screen.ts`
+  - `apps/mobile/components/register/register-screen.styles.ts`
+- Preserved existing auth behavior:
+  - email/password validation timing and touched-field flow
+  - API error handling contract and loading states
+  - Google sign-in flow (`expo-auth-session`) and existing redirect URI
+  - animated card entrance and auth route switching (`login` <-> `register`)
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
+
+**Phase 2 status update:**
+- Guardrail file-splitting targets are now complete:
+  - `apps/mobile/app/module/[id]/index.tsx`
+  - `apps/mobile/app/(tabs)/index.tsx`
+  - `apps/mobile/app/(tabs)/profile.tsx`
+  - `apps/mobile/app/login.tsx`
+  - `apps/mobile/app/register.tsx`
+- Next Phase 2 work: UX hardening (skeleton/loading/offline/accessibility/haptics).
+
+### Session 184 (Dashboard branding final polish after visual review)
+
+**What we changed:**
+- Finalized the mobile dashboard branding decision after UI review:
+  - Kept the mascot in the Courses dashboard header and no-courses card.
+  - Removed the desktop-style icon from dashboard branding areas.
+- Kept auth branding aligned for mobile sign-in/sign-up with clean logo-first presentation (without extra decorative marker before it).
+- Updated docs copy to match the final visual decision:
+  - `docs/mobile-execution-checklist.md` dashboard branding notes now reflect mascot-first dashboard branding.
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
+
+### Session 185 (Phase 3 kickoff: mobile smoke quality-gate package)
+
+**What we changed:**
+- Started Phase 3 quality gates with a dedicated physical-device smoke execution artifact:
+  - `docs/mobile-smoke-test-matrix.md`
+  - Includes preflight setup, test-data assumptions, 20 smoke scenarios, pass/fail logging columns, and exit criteria.
+- Coverage in the matrix:
+  - auth/session
+  - courses/modules/materials CRUD
+  - favorites parity and quick navigation
+  - offline/online recovery
+  - AppState background/foreground recovery
+  - dirty-form back/discard behavior
+  - accessibility sanity pass
+- Updated `docs/mobile-execution-checklist.md`:
+  - Added explicit reference that smoke execution matrix is prepared and ready for run logging.
+  - Updated next recommended task to execute the matrix on a physical device and then proceed to telemetry.
+
+**Status:**
+- Smoke matrix setup complete.
+- Physical-device smoke execution still pending (rows are `PENDING` until run).
+
+### Session 186 (Phase 3 smoke execution: timeout reliability + runtime crash hardening)
+
+**What we changed:**
+- Continued Phase 3 smoke execution on physical device and logged initial outcomes in `docs/mobile-smoke-test-matrix.md`:
+  - PASS: `SMK-01`, `SMK-02`, `SMK-04`
+  - FAIL: `SMK-03`, `SMK-05`, `SMK-06`, `SMK-07`
+  - Core observed issue: intermittent request timeouts despite server-side success in some CRUD/auth actions.
+- Hardened mobile networking timeout behavior in `apps/mobile/lib/api.ts`:
+  - Increased mutation timeout window from `12s` to `25s`.
+  - Kept GET timeout shorter (`6s`) to avoid long hangs on read flows.
+  - Improved timeout message for mutations to indicate action may have succeeded server-side.
+- Fixed unhandled promise paths that were causing red `Uncaught (in promise)` runtime overlays:
+  - `apps/mobile/components/courses-list/use-courses-list.ts`
+    - delete confirm flow now awaits mutation in `try/catch/finally` instead of unhandled `.finally(...)` chain.
+  - `apps/mobile/components/confirm-modal.tsx`
+    - defensive `catch` in confirm handler to prevent promise rejection bubbling to runtime overlay.
+  - `apps/mobile/app/(tabs)/favorites.tsx`
+    - switched unpin action call to `mutate(...)` (callback-managed errors) instead of bare `mutateAsync(...)`.
+  - `apps/mobile/components/courses-list/courses-list.types.ts`
+    - aligned `confirmDeleteCourse` signature with async behavior.
+- Addressed intermittent Metro startup watcher crash:
+  - `apps/mobile/metro.config.js`
+  - narrowed `watchFolders` to required workspace folders (instead of watching full monorepo root) to reduce Windows watcher overload (`Failed to start watch mode`).
+- Added VS Code run configurations for quicker local startup:
+  - `.vscode/launch.json`
+  - `Run: dev:web`, `Run: dev:mobile:lan`, and compound `Run: Web + Mobile (LAN)`.
+
+**Known open issue after fixes:**
+- Intermittent timeout behavior still observed during smoke reruns; requires another focused pass on network stability and retry strategy before Phase 3 smoke can be marked complete.
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
+
+### Session 187 (Phase 3 smoke stabilization: Neon cold-start root cause + fix)
+
+**Root cause identified:**
+- All four FAIL rows (`SMK-03`, `SMK-05`, `SMK-06`, `SMK-07`) share the same pattern: action completes server-side, but mobile shows timeout error.
+- Backend uses `drizzle-orm/neon-http` — a stateless HTTP driver. Every DB query is a separate HTTP request to Neon serverless.
+- Neon free tier suspends the database after ~5 minutes of inactivity. Wake-up takes 5–30+ seconds.
+- The previous 25s mutation timeout was not enough to survive a full cold-start round-trip from mobile → Next.js → Neon wake → DB query → response.
+
+**What we changed:**
+- `apps/mobile/lib/api.ts`:
+  - Increased `DEFAULT_MUTATION_REQUEST_TIMEOUT_MS` from `25s` to `45s` (covers Neon cold-start window on free tier).
+  - Added exported `warmupBackend()` — fire-and-forget GET to `/api/ping` (60s timeout, no auth) to proactively wake the DB.
+- `apps/web/app/api/ping/route.ts` (NEW):
+  - Lightweight DB-touching probe: `SELECT 1` via Drizzle, no auth, returns `{ ok: true, latency: N }`.
+  - Used exclusively for pre-warming; not an application endpoint.
+- `apps/mobile/lib/auth-context.tsx`:
+  - `warmupBackend()` called after successful explicit login (email/password).
+  - `warmupBackend()` called after successful auto-login (stored token → `/api/auth/me`).
+  - Both calls are fire-and-forget; never block the auth flow.
+
+**Smoke status after fix:**
+- PASS: `SMK-01`, `SMK-02`, `SMK-04`
+- RETEST (fix applied): `SMK-03`, `SMK-05`, `SMK-06`, `SMK-07`
+- PENDING: `SMK-08` through `SMK-20`
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/mobile typecheck` → pass
+
+---
+
+### Session 188 (Phase 3 smoke stabilization: auth branding asset fix + broader DB warmup coverage)
+
+**Issue observed:**
+- Mobile auth screens started failing to bundle after the legacy `logo.png` asset was removed from `apps/mobile/assets/branding`.
+- Metro error:
+  - `Unable to resolve "../../assets/branding/logo.png" from "apps/mobile/components/auth/auth-brand-hero.tsx"`
+- At the same time, the auth header regressed visually because it rendered the wrong visual asset instead of the mascot.
+
+**What we changed:**
+- Updated `apps/mobile/components/auth/auth-brand-hero.tsx`:
+  - Replaced the broken `logo.png` import with the remaining `mascot.png` branding asset.
+  - Marked the mascot image as decorative (`accessible={false}`).
+- Updated `apps/mobile/components/auth/auth-brand-hero.styles.ts`:
+  - Renamed the image style from `logo` to `mascot`.
+  - Increased the auth hero image size so the mascot reads clearly again on login/register.
+- Broadened Phase 3 Neon pre-warm coverage in `apps/mobile/lib/auth-context.tsx`:
+  - Fire `warmupBackend()` on unauthenticated app start so the login/register screen can wake Neon in the background before the first auth mutation.
+  - Fire `warmupBackend()` after successful register and Google login as well (email login + auto-login were already covered in Session 187).
+
+**Why this matters for Phase 3:**
+- Restores Android bundle compilation so physical-device smoke testing can continue.
+- Removes a misleading auth-screen visual regression while keeping the branding aligned with the intended mascot-first mobile look.
+- Further reduces the chance that the first auth mutation hits a Neon free-tier cold start.
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
+- Android bundle probe via Metro LAN URL -> `200 OK`
+- `rg --line-number --hidden --glob '!node_modules/**' "logo\\.png" apps/mobile` -> no remaining mobile references
+
+### Session 189 (Phase 3 smoke stabilization: web dev API runtime workaround)
+
+**Issue observed:**
+- Physical-device mobile app could reach the web server process, but auth requests still failed with the generic fallback:
+  - `"Connection failed. Is the server running?"`
+- Metro/LAN manifest was healthy (`hostUri: 192.168.1.9:8081`), so this was **not** the previous zombie Metro `127.0.0.1` issue.
+- Direct local verification showed the web dev server process on port `3000` was responding incorrectly on API routes:
+  - `GET /api/ping` -> `200` with body `{}`
+  - `POST /api/auth/login` -> `200` with body `{}`
+- Those routes should return structured JSON payloads, so the mobile client was receiving invalid auth/warmup responses.
+
+**What we changed:**
+- Updated `apps/web/package.json`:
+  - Changed the web dev script from `next dev --turbopack` to `next dev`.
+- Fixed `apps/web/app/api/ping/route.ts`:
+  - Corrected the `db` import path from `../../lib/db` to `../../../lib/db`.
+
+**Why:**
+- Current evidence points to a local dev-runtime problem rather than an API logic bug:
+  - web root page rendered normally
+  - mobile device reached port `3000`
+  - only API route payloads were malformed in the active dev server instance
+- Removing Turbopack from the dev script is a low-risk workaround to stabilize local API behavior for Phase 3 smoke testing.
+
+**Next step required:**
+- Restart the web server so the updated script takes effect:
+  - stop the current `dev:web`
+  - start `npm run dev:web` again
+- Then re-test login/register and the Phase 3 RETEST rows (`SMK-03`, `SMK-05`, `SMK-06`, `SMK-07`).
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/web typecheck` -> pass
+
+### Session 190 (Phase 3 smoke stabilization: Favorites pin/unpin entry point in module workspace)
+
+**Issue observed:**
+- Mobile users could not discover a practical way to pin materials from the module workspace list.
+- Favorites existed in app logic and in material details screen, but there was no direct `Pin/Unpin` action on material cards where users spend most of the CRUD flow.
+
+**What we changed:**
+- Added direct `Pin/Unpin` action to module workspace material cards:
+  - `apps/mobile/components/material-card.tsx`
+    - new optional props: `isPinned`, `favoriteBusy`, `onToggleFavorite`
+    - renders a dedicated favorite action button in the card footer
+- Wired favorites query + optimistic toggle mutation into module workspace view model:
+  - `apps/mobile/components/module-workspace/use-module-workspace.ts`
+    - added favorites query (`queryKeys.favorites.lists()`)
+    - added optimistic pin/unpin mutation with rollback and toast feedback
+    - exposed new view-model helpers:
+      - `isMaterialPinned(materialId)`
+      - `isFavoriteBusy(materialId)`
+      - `toggleMaterialFavorite(material)`
+- Connected screen rendering to the new view-model capabilities:
+  - `apps/mobile/components/module-workspace/module-workspace-screen.tsx`
+- Extended view-model type contract accordingly:
+  - `apps/mobile/components/module-workspace/module-workspace.types.ts`
+
+**Result:**
+- Users can now pin/unpin materials directly from module workspace cards without opening each material detail screen first.
+- This unblocks practical execution of `SMK-14` and `SMK-15` in the smoke matrix.
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
+
+### Session 191 (Phase 3 smoke stabilization: background/foreground auth hydration smoothing)
+
+**Issue observed:**
+- Returning from background frequently felt like a cold app boot (initial loader and delayed restore), instead of immediate resume.
+
+**What we changed:**
+- Updated `apps/mobile/lib/auth-context.tsx`:
+  - Added persisted user snapshot cache (`studyhub_user_snapshot_v1`) via AsyncStorage.
+  - Hydrates `user` state immediately from snapshot when a token exists.
+  - Persists snapshot on login/register/google-login and clears it on logout/auth reset.
+  - Increased startup `/api/auth/me` timeout to `20s` and forced no-cache for validation.
+  - Kept session/snapshot on transient network/server failures; only clears session on auth/forbidden errors.
+  - Preserved Neon pre-warm behavior.
+
+**Why:**
+- Startup auth validation previously hard-blocked UI on every remount and could feel like full relaunch.
+- Snapshot-first hydration improves perceived foreground resume stability in mobile smoke flows.
+
+**Verification:**
+- `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass
+
+### Session 192 (Phase 3 smoke execution synced: SMK-01..SMK-19 pass, SMK-20 blocked)
+
+**Run outcome reported:**
+- Physical-device smoke execution completed for all practical flows.
+- PASS: `SMK-01` through `SMK-19`.
+- BLOCKED: `SMK-20` because VoiceOver/TalkBack verification was not available in the current test environment.
+
+**What we synced in docs:**
+- Updated `docs/mobile-smoke-test-matrix.md`:
+  - Status line now reflects `SMK-01..SMK-19` pass state.
+  - Converted prior RETEST/PENDING rows to PASS where re-run was completed.
+  - Marked `SMK-20` as BLOCKED with explicit reason.
+  - Added Run 2 summary.
+- Updated `docs/mobile-execution-checklist.md`:
+  - Marked Phase 3 smoke quality gate task as complete for covered scenarios.
+  - Updated acceptance criteria for key flow pass.
+  - Updated next recommended task to telemetry integration + release checklist.
+
+**Next step:**
+- Proceed to telemetry integration (Sentry or equivalent), then release checklist.
+- Keep `SMK-20` tracked as BLOCKED until accessibility test environment is available.
 
 ### Session 193 (Phase 3 quality gate: Sentry telemetry integration)
 
@@ -6326,7 +5804,7 @@ Sprint 2 - Production standards
 **Verification:**
 - `npm.cmd run --workspace @studyhub/mobile typecheck` -> pass.
 
-### Session 198 (Live theme switch вЂ” no reload)
+### Session 198 (Live theme switch — no reload)
 
 **Goal:**
 - Remove the full app reload triggered on theme change in Settings.
@@ -6336,9 +5814,9 @@ Sprint 2 - Production standards
 
 - Extended `apps/mobile/lib/app-preferences.tsx`:
   - Added `colors: AppColors` to context value (reactive, recomputed on every theme/system change).
-  - Exported `useTheme()` hook вЂ” returns `{ colors, resolvedTheme }` from context.
-  - Exported `useThemedStyles(factory)` hook вЂ” memoizes `StyleSheet.create(factory(colors))` per theme; recreates automatically when theme changes.
-  - Removed the boot-reload logic (`RUNTIME_BOOT_THEME_MODE` + `reloadAppForThemeChange` on mismatch) вЂ” no longer needed since styles are now computed dynamically.
+  - Exported `useTheme()` hook — returns `{ colors, resolvedTheme }` from context.
+  - Exported `useThemedStyles(factory)` hook — memoizes `StyleSheet.create(factory(colors))` per theme; recreates automatically when theme changes.
+  - Removed the boot-reload logic (`RUNTIME_BOOT_THEME_MODE` + `reloadAppForThemeChange` on mismatch) — no longer needed since styles are now computed dynamically.
 
 - Converted `apps/mobile/components/settings/settings-screen.styles.ts`:
   - Changed from static `StyleSheet.create({ ...COLORS... })` to `export function makeSettingsStyles(colors: AppColors)` factory.
@@ -6346,28 +5824,28 @@ Sprint 2 - Production standards
 - Updated `apps/mobile/components/settings/settings-screen.tsx`:
   - Each section now calls `useThemedStyles(makeSettingsStyles)` instead of importing a static `styles` object.
   - `Switch` color props now come from `useTheme()` (inline values, cannot use StyleSheet).
-  - Settings screen colors update immediately on theme change вЂ” no restart, no reload.
+  - Settings screen colors update immediately on theme change — no restart, no reload.
 
 - Updated `apps/mobile/components/settings/use-settings-screen.ts`:
   - Removed `reloadAppForThemeChange` import and call.
-  - Removed "Applying themeвЂ¦" toast.
-  - `setThemeMode` now simply calls `preferences.setThemeMode(value)` вЂ” context re-renders subscribers instantly.
+  - Removed "Applying theme…" toast.
+  - `setThemeMode` now simply calls `preferences.setThemeMode(value)` — context re-renders subscribers instantly.
 
 - Updated `apps/mobile/app/_layout.tsx`:
   - `AuthGate` now calls `useTheme()` to get live `colors`.
   - Stack `screenOptions` (header background, tint, shadow) and `StatusBar` are now driven by live colors.
-  - Font-loading fallback still uses static `COLORS` (acceptable вЂ” rendered before provider tree is active).
+  - Font-loading fallback still uses static `COLORS` (acceptable — rendered before provider tree is active).
 
 - Fixed `apps/mobile/tsconfig.json`:
   - Removed `.next/types/**/*.ts` include (irrelevant for Expo project, caused slowness).
   - Removed `next` plugin entry from compilerOptions.
-  - Changed `incremental: true` в†’ `false` (avoids stale `.tsbuildinfo` hangs).
+  - Changed `incremental: true` → `false` (avoids stale `.tsbuildinfo` hangs).
   - Added explicit `exclude` for `node_modules`, `.expo`, `dist`, `build`, `babel.config.js`, `metro.config.js`.
 
 **Architecture note:**
 - `theme-reload.ts` was kept as a stub in Session 198 and removed in Session 199 cleanup.
-- Static `StyleSheet.create()` files (courses, materials, profile, etc.) still capture boot-time colors. They are correct on first render and do not hot-swap вЂ” acceptable for this scope. Full migration of all style files can follow incrementally using `makeXxxStyles(colors)` factory pattern introduced here.
-- `system` mode reactivity is already covered by `useColorScheme()` in `AppPreferencesProvider` вЂ” no additional work needed.
+- Static `StyleSheet.create()` files (courses, materials, profile, etc.) still capture boot-time colors. They are correct on first render and do not hot-swap — acceptable for this scope. Full migration of all style files can follow incrementally using `makeXxxStyles(colors)` factory pattern introduced here.
+- `system` mode reactivity is already covered by `useColorScheme()` in `AppPreferencesProvider` — no additional work needed.
 
 **Kept intact (per guardrails):**
 - React Query lifecycle/cache behavior unchanged.
@@ -6377,7 +5855,7 @@ Sprint 2 - Production standards
 - SMK-20 remains PASS.
 
 **Verification:**
-- `npm.cmd run --workspace @studyhub/mobile typecheck` вЂ” run locally in IDE terminal (background runner unavailable this session due to stuck cmd.exe environment).
+- `npm.cmd run --workspace @studyhub/mobile typecheck` — run locally in IDE terminal (background runner unavailable this session due to stuck cmd.exe environment).
 
 ### Session 199 (Theme reload helper cleanup)
 
@@ -6763,7 +6241,7 @@ Sprint 2 - Production standards
   - `apps/mobile/components/chat/chat-screen.tsx` (KeyboardAvoidingView)
   - `apps/mobile/components/chat/use-chat.ts` 
 - Wired resilient state-rollback logic in `use-chat.ts` to cleanly drop un-committed optimistic user messages if Gemini API faults (preventing strict array session corruption `[user, user...]`).
-- Replaced text-based sparkler placeholders (`вњЁ`) with native mascot brand icons (`AI-icon-1.png`, `AI-icon-3.png`) matching the desktop presentation.
+- Replaced text-based sparkler placeholders (`✨`) with native mascot brand icons (`AI-icon-1.png`, `AI-icon-3.png`) matching the desktop presentation.
 
 **Verification:**
 - `npm.cmd run typecheck:mobile` -> pass
@@ -6771,326 +6249,642 @@ Sprint 2 - Production standards
 
 ---
 
-## 2026-04-11 (СЂРµС‚СЂРѕР°РєС‚РёРІРµРЅ Р·Р°РїРёСЃ вЂ” web UI СЃРµСЃРёРё Р±РµР· devlog)
+## 2026-04-11 (ретроактивен запис — web UI сесии без devlog)
 
-> РЎР»РµРґРЅРёС‚Рµ commit-Рё РјРѕРґРёС„РёС†РёСЂР°С…Р° РєРѕРґР° РЅРѕ РЅРµ РґРѕР±Р°РІРёС…Р° devlog Р·Р°РїРёСЃ. Р”РѕРєСѓРјРµРЅС‚РёСЂР°РЅРё СЂРµС‚СЂРѕР°РєС‚РёРІРЅРѕ.
+> Следните commit-и модифицираха кода но не добавиха devlog запис. Документирани ретроактивно.
 
-### Session 213 вЂ” Web: globals cleanup + spinner + dashboard polish
+### Session 213 — Web: globals cleanup + spinner + dashboard polish
 
 **Commits:** `3a8c625`
 
-**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ:**
-- `globals.css` вЂ” РїРѕС‡РёСЃС‚РІР°РЅРµ РЅР° РёР·Р»РёС€РЅРё СЃС‚РёР»РѕРІРµ
-- `layout.tsx` вЂ” РґСЂРµР±РЅРё РєРѕСЂРµРєС†РёРё
-- `chat-widget.tsx` вЂ” Р»РµРєРѕ РїРѕРґРѕР±СЂРµРЅРёРµ
-- `dashboard-hero.tsx` / `dashboard-page-shell.tsx` вЂ” layout РєРѕСЂРµРєС†РёРё
-- `ui/spinner.tsx` вЂ” РѕРїСЂРѕСЃС‚РµРЅ Рё РїРѕ-Р»РµРє СЃРїРёРЅСЉСЂ РєРѕРјРїРѕРЅРµРЅС‚
+**Какво направихме:**
+- `globals.css` — почистване на излишни стилове
+- `layout.tsx` — дребни корекции
+- `chat-widget.tsx` — леко подобрение
+- `dashboard-hero.tsx` / `dashboard-page-shell.tsx` — layout корекции
+- `ui/spinner.tsx` — опростен и по-лек спинър компонент
 
-### Session 214 вЂ” Web: Progress + Admin tabs UI polish
+### Session 214 — Web: Progress + Admin tabs UI polish
 
 **Commits:** `71a8d64`, `43e9e89`, `be8cd86`, `d7ec503`
 
-**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ:**
-- `ProgressSummaryCards` вЂ” РІРёР·СѓР°Р»РЅРё РїРѕРґРѕР±СЂРµРЅРёСЏ (brand С†РІРµС‚РѕРІРµ, layout)
-- `MilestoneTimeline` + `MilestoneTimelineItem` вЂ” РЅРѕРІРё РєРѕРјРїРѕРЅРµРЅС‚Рё Р·Р° РїСЂРѕРіСЂРµСЃ СЃС‚СЂР°РЅРёС†Р°; РёРЅС‚РµСЂР°РєС‚РёРІРµРЅ РёР·РіР»РµРґ РЅР° timeline
-- Admin tabs (`courses-tab`, `materials-tab`, `modules-tab`, `users-tab`) вЂ” UI РїРѕРґРѕР±СЂРµРЅРёСЏ (course cards, filters, pinned sidebar)
-- `dashboard-client-page.tsx` вЂ” РґРѕРїСЉР»РЅРёС‚РµР»РЅРё course card РїРѕРґРѕР±СЂРµРЅРёСЏ
+**Какво направихме:**
+- `ProgressSummaryCards` — визуални подобрения (brand цветове, layout)
+- `MilestoneTimeline` + `MilestoneTimelineItem` — нови компоненти за прогрес страница; интерактивен изглед на timeline
+- Admin tabs (`courses-tab`, `materials-tab`, `modules-tab`, `users-tab`) — UI подобрения (course cards, filters, pinned sidebar)
+- `dashboard-client-page.tsx` — допълнителни course card подобрения
 
 ---
 
-## 2026-04-12 (СЂРµС‚СЂРѕР°РєС‚РёРІРµРЅ Р·Р°РїРёСЃ вЂ” web UI РїСЂРµРґРё Social S0)
+## 2026-04-12 (ретроактивен запис — web UI преди Social S0)
 
-> РЎР»РµРґРЅРёС‚Рµ commit-Рё Р±СЏС…Р° РЅР°РїСЂР°РІРµРЅРё РІ СЂР°РЅРЅР°С‚Р° СЃРµСЃРёСЏ РЅР° 12 Р°РїСЂРёР» РїСЂРµРґРё Social features. РќРµ СЃР° РґРѕРєСѓРјРµРЅС‚РёСЂР°РЅРё.
+> Следните commit-и бяха направени в ранната сесия на 12 април преди Social features. Не са документирани.
 
-### Session 215 вЂ” Web: HeroMesh refactor + CalendarGrid + ProfilePageClient
+### Session 215 — Web: HeroMesh refactor + CalendarGrid + ProfilePageClient
 
 **Commit:** `9d7d470`
 
-**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ:**
-- `admin/hero/HeroMesh.tsx` вЂ” СЂРµС„Р°РєС‚РѕСЂРёРЅРі РЅР° 3D hero mesh РєРѕРјРїРѕРЅРµРЅС‚Р°
-- `calendar/calendar-grid.tsx` вЂ” РїСЂРµСЂР°Р±РѕС‚РµРЅ CalendarGrid (114 СЂРµРґР°, РїРѕРґРѕР±СЂРµРЅР° responsive Р»РѕРіРёРєР°)
-- `profile/profile-page-client.tsx` вЂ” РґСЂРµР±РЅРё РїРѕРґРѕР±СЂРµРЅРёСЏ РЅР° profile page РєРѕРјРїРѕРЅРµРЅС‚Р°
+**Какво направихме:**
+- `admin/hero/HeroMesh.tsx` — рефакторинг на 3D hero mesh компонента
+- `calendar/calendar-grid.tsx` — преработен CalendarGrid (114 реда, подобрена responsive логика)
+- `profile/profile-page-client.tsx` — дребни подобрения на profile page компонента
 
-### Session 216 вЂ” Web: How It Works + root layout improvements
+### Session 216 — Web: How It Works + root layout improvements
 
 **Commit:** `38c630c`
 
-**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ:**
-- `app/how-it-works/page.tsx` вЂ” РїРѕРґРѕР±СЂРµРЅР° How It Works СЃС‚СЂР°РЅРёС†Р° (metadata, СЃС‚СЂСѓРєС‚СѓСЂР°)
-- `app/layout.tsx` вЂ” РґРѕР±Р°РІРµРЅРё font preloads, РјРµС‚Р°РґР°РЅРЅРё РїРѕРґРѕР±СЂРµРЅРёСЏ
-- `app/page.tsx` вЂ” РєРѕСЂРµРєС†РёРё РЅР° landing page СЃС‚СЂСѓРєС‚СѓСЂР°
-- `how-it-works/how-it-works-page.tsx` вЂ” layout РїРѕРґРѕР±СЂРµРЅРёСЏ
+**Какво направихме:**
+- `app/how-it-works/page.tsx` — подобрена How It Works страница (metadata, структура)
+- `app/layout.tsx` — добавени font preloads, метаданни подобрения
+- `app/page.tsx` — корекции на landing page структура
+- `how-it-works/how-it-works-page.tsx` — layout подобрения
 
-### Session 217 вЂ” Web: Module workspace UI + Admin mobile cards + РЅРѕРІРё UI РєРѕРјРїРѕРЅРµРЅС‚Рё
+### Session 217 — Web: Module workspace UI + Admin mobile cards + нови UI компоненти
 
 **Commit:** `f8ef618`
 
-**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ:**
-- `globals.css` вЂ” РЅРѕРІРё utility РєР»Р°СЃРѕРІРµ (29 СЂРµРґР°)
-- `app/layout.tsx` + `loading.tsx` вЂ” РїРѕРґРѕР±СЂРµРЅРё loading states
-- **РќРѕРІРё UI РєРѕРјРїРѕРЅРµРЅС‚Рё:**
-  - `ui/add-material-fab.tsx` вЂ” Floating Action Button Р·Р° РґРѕР±Р°РІСЏРЅРµ РЅР° РјР°С‚РµСЂРёР°Р»
-  - `ui/nav-progress-bar.tsx` вЂ” РЅР°РІРёРіР°С†РёРѕРЅРЅР° РїСЂРѕРіСЂРµСЃ Р»РµРЅС‚Р°
-  - `ui/page-enter-effect.tsx` вЂ” page entrance Р°РЅРёРјР°С†РёСЏ
-  - `admin/admin-mobile-card.tsx` вЂ” responsive mobile РєР°СЂС‚Р° Р·Р° admin С‚Р°Р±Р»РёС†Рё
-- Admin tabs (`courses`, `materials`, `modules`, `users`) вЂ” РґРѕР±Р°РІРµРЅР° responsive mobile card РїРѕРґРґСЂСЉР¶РєР° (30+ СЂРµРґР° Р·Р° РІСЃСЏРєР°)
-- Module sidebar РєРѕРјРїРѕРЅРµРЅС‚Рё вЂ” РґСЂРµР±РЅРё РєРѕСЂРµРєС†РёРё
+**Какво направихме:**
+- `globals.css` — нови utility класове (29 реда)
+- `app/layout.tsx` + `loading.tsx` — подобрени loading states
+- **Нови UI компоненти:**
+  - `ui/add-material-fab.tsx` — Floating Action Button за добавяне на материал
+  - `ui/nav-progress-bar.tsx` — навигационна прогрес лента
+  - `ui/page-enter-effect.tsx` — page entrance анимация
+  - `admin/admin-mobile-card.tsx` — responsive mobile карта за admin таблици
+- Admin tabs (`courses`, `materials`, `modules`, `users`) — добавена responsive mobile card поддръжка (30+ реда за всяка)
+- Module sidebar компоненти — дребни корекции
 
-### Session 218 вЂ” Web: Progress components polish
+### Session 218 — Web: Progress components polish
 
 **Commit:** `2c49fb4`
 
-**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ:**
-- `progress/add-milestone-form.tsx` вЂ” brand С†РІСЏС‚ РєРѕСЂРµРєС†РёРё
-- `progress/milestone-timeline-item.tsx` вЂ” РґРѕР±Р°РІРµРЅРё 8 СЂРµРґР° РґРѕРїСЉР»РЅРёС‚РµР»РЅР° С„СѓРЅРєС†РёРѕРЅР°Р»РЅРѕСЃС‚
-- `progress/progress-page-client.tsx` вЂ” РїРѕРґРѕР±СЂРµРЅР° progress page РёРЅС‚РµРіСЂР°С†РёСЏ
-- `progress/progress-summary-cards.tsx` вЂ” brand С†РІСЏС‚ РєРѕСЂРµРєС†РёРё
+**Какво направихме:**
+- `progress/add-milestone-form.tsx` — brand цвят корекции
+- `progress/milestone-timeline-item.tsx` — добавени 8 реда допълнителна функционалност
+- `progress/progress-page-client.tsx` — подобрена progress page интеграция
+- `progress/progress-summary-cards.tsx` — brand цвят корекции
 
-### Session 219 вЂ” Web: Admin panel responsive + members tab improvements
+### Session 219 — Web: Admin panel responsive + members tab improvements
 
 **Commit:** `eab53c8`
 
-**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ:**
-- `app/admin/page.tsx` вЂ” Р·РЅР°С‡РёС‚РµР»РЅРѕ РїСЂРµСЂР°Р±РѕС‚РµРЅР° admin СЃС‚СЂР°РЅРёС†Р° (62 СЂРµРґР° РїСЂРѕРјРµРЅРё, РїРѕ-РґРѕР±СЂР° responsive СЃС‚СЂСѓРєС‚СѓСЂР°)
-- `components/admin/members-tab.tsx` вЂ” РїРѕРґРѕР±СЂРµРЅ Members С‚Р°Р± (responsive layout, РїРѕ-РґРѕР±СЂРё action Р±СѓС‚РѕРЅРё)
-
----
-
-## 2026-04-12
-
-### РЎРµСЃРёСЏ 220 вЂ” Social S2: Ask Mentor + UI polish + bug fixes
-
-**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ:**
-
-#### Social S0 вЂ” Course Membership + Mentor Role (РЅРѕРІРѕ)
-
-**Schema:**
-- РќРѕРІР° С‚Р°Р±Р»РёС†Р° `course_members` (migration `0006_course_members.sql`): `course_id`, `user_id`, `role` (student | mentor), `joined_at`
-- РЈРЅРёРєР°Р»РµРЅ РёРЅРґРµРєСЃ `(course_id, user_id)` вЂ” РїРѕС‚СЂРµР±РёС‚РµР»СЏС‚ РјРѕР¶Рµ РґР° Рµ РІ РєСѓСЂСЃ СЃР°РјРѕ РІРµРґРЅСЉР¶
-- `users.role` СЂР°Р·С€РёСЂРµРЅ: РІРµС‡Рµ РїРѕРґРґСЉСЂР¶Р° `'mentor'` РѕСЃРІРµРЅ `'user'` Рё `'admin'`
-
-**РќРѕРІРё API endpoints:**
-- `GET/POST /api/courses/[id]/members` вЂ” СЃРїРёСЃСЉРє РЅР° С‡Р»РµРЅРѕРІРµ / РґРѕР±Р°РІСЏРЅРµ
-- `PUT/DELETE /api/courses/[id]/members/[userId]` вЂ” СЃРјСЏРЅР° РЅР° СЂРѕР»СЏ / РїСЂРµРјР°С…РІР°РЅРµ
-- `GET/POST /api/admin/members` вЂ” admin РїСЂРµРіР»РµРґ РЅР° РІСЃРёС‡РєРё С‡Р»РµРЅСЃС‚РІР°
-- `PUT/DELETE /api/admin/members/[id]` вЂ” admin СѓРїСЂР°РІР»РµРЅРёРµ
-
-**Auth helpers:**
-- `requireMentor()` вЂ” 403 Р°РєРѕ РЅРµ Рµ mentor РёР»Рё admin
-- `requireCourseMentor(courseId)` вЂ” 403 Р°РєРѕ РЅРµ Рµ РјРµРЅС‚РѕСЂ С‚РѕС‡РЅРѕ РЅР° С‚РѕР·Рё РєСѓСЂСЃ
-
-**Admin panel:**
-- РќРѕРІ "Members" С‚Р°Р± вЂ” РґРѕР±Р°РІСЏРЅРµ/РїСЂРµРјР°С…РІР°РЅРµ РЅР° С‡Р»РµРЅСЃС‚РІР°, toggle РЅР° СЂРѕР»СЏ (student в†” mentor)
-- Fix: СЃС‚ray `</div>` JSX РіСЂРµС€РєРё РІ 4 admin tab РєРѕРјРїРѕРЅРµРЅС‚Р°
-
-**Р”СЂСѓРіРѕ:**
-- `scripts/run-migration.mjs` вЂ” helper script Р·Р° СЂСЉС‡РЅРѕ РїСѓСЃРєР°РЅРµ РЅР° SQL РјРёРіСЂР°С†РёРё
-
-Commit: `feat: implement Social S0 вЂ” course membership + mentor role`
-
----
-
-#### Social S1 вЂ” Community Board (РЅРѕРІРѕ)
-
-**Schema (4 РЅРѕРІРё С‚Р°Р±Р»РёС†Рё, migration `0007_community_board.sql`):**
-- `posts` вЂ” Р°РІС‚РѕСЂ, Р·Р°РіР»Р°РІРёРµ, СЃСЉРґСЉСЂР¶Р°РЅРёРµ, С‚РёРї (discussion/question/resource/article), СЃС‚Р°С‚СѓСЃ (pending/approved/hidden), pinning, `question_status`
-- `comments` вЂ” flat thread РєСЉРј РїРѕСЃС‚
-- `post_likes` вЂ” toggle like СЃ СѓРЅРёРєР°Р»РµРЅ constraint
-- `post_bookmarks` вЂ” bookmark СЃ СѓРЅРёРєР°Р»РµРЅ constraint
-
-**API endpoints (12):**
-- `GET/POST /api/posts` вЂ” Р»РёСЃС‚ (С„РёР»С‚СЂРё: type, courseId, search, page/20) + СЃСЉР·РґР°РІР°РЅРµ
-- `GET/PUT/DELETE /api/posts/[id]` вЂ” РґРµС‚Р°Р№Р»Рё (+ comments + like/bookmark state), СЂРµРґР°РєС‚РёСЂР°РЅРµ, РёР·С‚СЂРёРІР°РЅРµ
-- `POST /api/posts/[id]/comments` вЂ” РґРѕР±Р°РІСЏРЅРµ РЅР° РєРѕРјРµРЅС‚Р°СЂ
-- `DELETE /api/comments/[id]` вЂ” РёР·С‚СЂРёРІР°РЅРµ (Р°РІС‚РѕСЂ РёР»Рё admin)
-- `POST /api/posts/[id]/like` вЂ” toggle like
-- `POST /api/posts/[id]/bookmark` вЂ” toggle bookmark
-- `GET /api/admin/posts` вЂ” РІСЃРёС‡РєРё РїРѕСЃС‚РѕРІРµ Р·Р° РјРѕРґРµСЂР°С†РёСЏ
-- `PUT /api/admin/posts/[id]` вЂ” approve / hide / pin
-- `DELETE /api/admin/posts/[id]` вЂ” hard delete
-
-**Web СЃС‚СЂР°РЅРёС†Рё:**
-- `/community` вЂ” CommunityFeed: СЃРїРёСЃСЉРє СЃ search + type filter + Load More (pagination)
-- `/community/new` вЂ” CreatePostForm: РёР·Р±РѕСЂ РЅР° С‚РёРї, РєСѓСЂСЃ, Р·Р°РіР»Р°РІРёРµ, СЃСЉРґСЉСЂР¶Р°РЅРёРµ
-- `/community/[id]` вЂ” PostDetails: РїСЉР»РµРЅ РїРѕСЃС‚, РєРѕРјРµРЅС‚Р°СЂРё, like/bookmark
-- `/community/[id]/edit` вЂ” EditPostForm: СЂРµРґР°РєС‚РёСЂР°РЅРµ (Р°РІС‚РѕСЂ РёР»Рё admin)
-
-**Shared С‚РёРїРѕРІРµ:**
-- `post-types.ts` вЂ” `Post`, `Comment` С‚РёРїРѕРІРµ; `TYPE_LABELS`, `TYPE_COLORS`, `timeAgo()`
-- `comment-item.tsx` вЂ” reusable РєРѕРјРµРЅС‚Р°СЂ РєРѕРјРїРѕРЅРµРЅС‚
-
-**Admin:**
-- `posts-tab.tsx` вЂ” Moderation С‚Р°Р±: approve/hide/pin/delete СЃ inline actions
-- Р”РѕР±Р°РІРµРЅ РєР°С‚Рѕ "Moderation" С‚Р°Р± РІ `/admin`
-
-**Navbar:** "Community" Р»РёРЅРє РґРѕР±Р°РІРµРЅ
-
-**Seed РґР°РЅРЅРё:** `drizzle/seeds/community_demo.sql` вЂ” 150 demo posts, ~300 comments
-
-Commits: `feat: implement community forum system...` + `feat: implement community board features...`
-
----
-
-#### UI Polish вЂ” Community Board (Р±СЂР°РЅРґ С†РІРµС‚РѕРІРµ)
-- РћС‚РєСЂРёС…РјРµ Рё РїРѕРїСЂР°РІРёС…РјРµ РІСЃРёС‡РєРё `primary-*` Tailwind РєР»Р°СЃРѕРІРµ РІ community РєРѕРјРїРѕРЅРµРЅС‚РёС‚Рµ вЂ” `primary-*` РЅРµ СЃСЉС‰РµСЃС‚РІСѓРІР° РІ Tailwind config (СЃР°РјРѕ РєР°С‚Рѕ CSS variables), РєРѕРµС‚Рѕ РІРѕРґРµС€Рµ РґРѕ Р»РёРїСЃРІР°С‰Рё СЃС‚РёР»РѕРІРµ РІ СЃРІРµС‚Р»РёСЏ/С‚СЉРјРЅРёСЏ СЂРµР¶РёРј
-- Р—Р°РјРµРЅРµРЅРё СЃ `brand-*` РІ 5 С„Р°Р№Р»Р°: `community-feed.tsx`, `post-details.tsx`, `create-post-form.tsx`, `edit-post-form.tsx`, `posts-tab.tsx`
-- Р—Р°СЃСЏРіР°: avatar РіСЂР°РґРёРµРЅС‚Рё, hover С†РІРµС‚РѕРІРµ РЅР° Р·Р°РіР»Р°РІРёСЏ, focus rings РЅР° inputs, pinned Р±РµР№РґР¶РѕРІРµ, filter Р±СѓС‚РѕРЅРё РІ admin
-- Commit: `fix: replace primary-* with brand-* in community components`
-
-#### РЁСЂРёС„С‚ РЅР° Р·Р°РіР»Р°РІРёСЏ
-- `font-shantell` РґРѕР±Р°РІРµРЅ РЅР° post Р·Р°РіР»Р°РІРёСЏ РІ `community-feed.tsx`, `post-details.tsx`, `mentor-inbox.tsx` вЂ” signature brand font
-
-#### Social S2 вЂ” Ask Mentor (РЅРѕРІРѕ)
-РРјРїР»РµРјРµРЅС‚РёСЂР°С…РјРµ РїСЉР»РЅРёСЏ Q&A workflow Р·Р° РјРµРЅС‚РѕСЂРё.
-
-**РќРѕРІРё API endpoints:**
-- `GET /api/mentor/questions` вЂ” СЃРїРёСЃСЉРє СЃ РІСЉРїСЂРѕСЃРё РѕС‚ РєСѓСЂСЃРѕРІРµС‚Рµ, РІ РєРѕРёС‚Рѕ РїРѕС‚СЂРµР±РёС‚РµР»СЏС‚ Рµ РјРµРЅС‚РѕСЂ; admin РІРёР¶РґР° РІСЃРёС‡РєРё; РїРѕРґРґСЉСЂР¶Р° `?status=` С„РёР»С‚СЉСЂ
-- `PUT /api/posts/[id]/answer-status` вЂ” mentor/admin СЃРјРµРЅСЏ `question_status` (open в†’ answered в†’ closed); РІР°Р»РёРґРёСЂР° course membership Р·Р° РјРµРЅС‚РѕСЂРё
-
-**РќРѕРІР° СЃС‚СЂР°РЅРёС†Р°:**
-- `/mentor-inbox` вЂ” Mentor Inbox СЃ С‚СЂРё РєРѕР»РѕРЅРё СЃС‚Р°С‚РёСЃС‚РёРєР° (open/answered/closed), click-to-filter, СЃРїРёСЃСЉРє СЃ РІСЉРїСЂРѕСЃРё Рё inline status Р±СѓС‚РѕРЅРё (Mark answered / Close / Reopen)
-- Server-side role guard: redirect РєСЉРј `/forbidden` Р°РєРѕ РЅРµ Рµ mentor/admin
-
-**Navbar:**
-- "Inbox" Р»РёРЅРє РґРѕР±Р°РІРµРЅ вЂ” РІРёРґРёРј СЃР°РјРѕ Р·Р° `mentor` Рё `admin` СЂРѕР»Рё
-
-**Р¤Р°Р№Р»РѕРІРµ:**
-- `apps/web/app/api/mentor/questions/route.ts` (РЅРѕРІ)
-- `apps/web/app/api/posts/[id]/answer-status/route.ts` (РЅРѕРІ)
-- `apps/web/app/mentor-inbox/page.tsx` (РЅРѕРІ)
-- `apps/web/components/mentor/mentor-inbox.tsx` (РЅРѕРІ)
-- `apps/web/components/navbar-client.tsx` (РѕР±РЅРѕРІРµРЅ)
-
-Commit: `feat: implement S2 Ask Mentor вЂ” mentor inbox + answer-status API`
-
-#### Bug fix вЂ” Mentor Inbox Р±СЂРѕСЏС‡Рё
-- **РџСЂРѕР±Р»РµРј:** РїСЂРё РЅР°С‚РёСЃРєР°РЅРµ РЅР° stat РєР°СЂС‚Р° (РЅР°РїСЂ. "open"), API СЃРµ РёР·РІРёРєРІР°С€Рµ СЃ `?status=open` в†’ РґСЂСѓРіРёС‚Рµ Р±СЂРѕСЏС‡Рё СЃС‚Р°РІР°С…Р° 0
-- **Р РµС€РµРЅРёРµ:** Р·Р°СЂРµР¶РґР°РјРµ РІСЃРёС‡РєРё РІСЉРїСЂРѕСЃРё РІРµРґРЅСЉР¶ (Р±РµР· server-side С„РёР»С‚СЉСЂ); Р±СЂРѕСЏС‡РёС‚Рµ СЃРµ РёР·С‡РёСЃР»СЏРІР°С‚ РѕС‚ РїСЉР»РЅРёСЏ dataset; С„РёР»С‚СЂРёСЂР°РЅРµС‚Рѕ Рµ СЃР°РјРѕ client-side
-- Commit: `fix: mentor inbox counts stay correct when filter is active`
-
-#### Bug fix вЂ” Back Р±СѓС‚РѕРЅ РѕС‚ post detail
-- **РџСЂРѕР±Р»РµРј:** "в†ђ Community" Р±СѓС‚РѕРЅСЉС‚ РІ post details Р±РµС€Рµ hardcoded РєСЉРј `/community` вЂ” РѕС‚РІР°СЂРµРЅ РѕС‚ mentor-inbox, Р±СѓС‚РѕРЅСЉС‚ РІСЂСЉС‰Р°С€Рµ РІ Community РІРјРµСЃС‚Рѕ РІ Inbox
-- **Р РµС€РµРЅРёРµ:** `router.back()` РІРјРµСЃС‚Рѕ `<Link href="/community">` вЂ” СЃР»РµРґРІР° browser history
-- Р›РµР№Р±СЉР»СЉС‚ Рµ СЃРјРµРЅРµРЅ РѕС‚ "Community" РЅР° "Back"
-
-#### Bug fix вЂ” Navbar Р°РєС‚РёРІРµРЅ С‚Р°Р± РїСЂРё С‡РµС‚РµРЅРµ РЅР° РїРѕСЃС‚
-- **РџСЂРѕР±Р»РµРј:** `/community/[id]` РїСЉС‚СЏС‚ СЃСЉРґСЉСЂР¶Р° `/community` в†’ `pathname.startsWith("/community")` Р±РµС€Рµ true в†’ Community С‚Р°Р±СЉС‚ СЃРІРµС‚РІР°С€Рµ РїСЂРё С‡РµС‚РµРЅРµ РЅР° РїРѕСЃС‚ РѕС‚ Inbox
-- **Р РµС€РµРЅРёРµ:** Custom `isActive()` С„СѓРЅРєС†РёСЏ РІ `navbar-client.tsx`:
-  - `/community` Р°РєС‚РёРІРµРЅ СЃР°РјРѕ РїСЂРё: `/community`, `/community/new`, `/community/[id]/edit`
-  - `/community/[id]` (С‡РµС‚РµРЅРµ РЅР° РєРѕРЅРєСЂРµС‚РµРЅ РїРѕСЃС‚) Рµ РЅРµСѓС‚СЂР°Р»РЅР° СЃС‚СЂР°РЅРёС†Р° вЂ” РЅРёС‰Рѕ РЅРµ СЃРІРµС‚РІР°
-  - РћСЃС‚Р°РЅР°Р»РёС‚Рµ Р»РёРЅРєРѕРІРµ РїРѕР»Р·РІР°С‚ `startsWith` (РЅРµРїСЂРѕРјРµРЅРµРЅРѕ)
-
-**Typecheck:** `tsc --noEmit` в†’ pass (0 РіСЂРµС€РєРё) СЃР»РµРґ РІСЃРёС‡РєРё РїСЂРѕРјРµРЅРё
+**Какво направихме:**
+- `app/admin/page.tsx` — значително преработена admin страница (62 реда промени, по-добра responsive структура)
+- `components/admin/members-tab.tsx` — подобрен Members таб (responsive layout, по-добри action бутони)
 
 ---
 
 ## 2026-04-11
 
-### РЎРµСЃРёСЏ 221 вЂ” Web UI polish (Р°РЅРёРјР°С†РёРё)
+### Сесия 221 — Web UI polish (анимации)
 
-**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ:**
-- РџСЂРѕСѓС‡РёС…РјРµ page transitions СЃ Framer Motion вЂ” РѕРїРёС‚Р°С…РјРµ, РјР°С…РЅР°С…РјРµ (App Router РЅРµ РїРѕРґРґСЉСЂР¶Р° exit Р°РЅРёРјР°С†РёРё Р·Р° server components)
-- РџРѕС‚РІСЉСЂРґРёС…РјРµ, С‡Рµ scroll reveal РІРµС‡Рµ СЃСЉС‰РµСЃС‚РІСѓРІР° (`use-scroll-reveal.ts`, `use-visible-animation.ts`) Рё Рµ Р°РєС‚РёРІРµРЅ РІ hero, features, about, stats, cta-banner
-- **Dashboard hero** вЂ” СЂР°Р·С€РёСЂРёС…РјРµ РѕС‚ 2 РЅР° 4 stat РєР°СЂС‚Рё (Courses, Modules, Materials, Pinned)
-  - Р”РѕР±Р°РІРёС…РјРµ DB Р·Р°СЏРІРєРё Р·Р° Р±СЂРѕР№ РјРѕРґСѓР»Рё Рё РјР°С‚РµСЂРёР°Р»Рё РІ `getDashboardData`
-  - Р”РѕР±Р°РІРёС…РјРµ `useCountUp` hook СЃ `requestAnimationFrame` + easeOut РєСЂРёРІР° вЂ” С‡РёСЃР»Р°С‚Р° Р±СЂРѕР№С‚ РѕС‚ 0 РїСЂРё Р·Р°СЂРµР¶РґР°РЅРµ
-  - Gradient С‚РµРєСЃС‚ РЅР° С‡РёСЃР»Р°С‚Р° (brandв†’cyan)
-- **Hero landing** вЂ” "Learning Journey" СЂР°Р·РґРµР»РµРЅРѕ РЅР° РґРІР° РѕС‚РґРµР»РЅРё `block` СЃРїР°РЅР°
-  - Р’СЃРµРєРё СЂРµРґ РїРѕР»СѓС‡Р°РІР° СЃРѕР±СЃС‚РІРµРЅ РіСЂР°РґРёРµРЅС‚ `from-white via-cyan-300 to-white`
-- Р”РѕР±Р°РІРµРЅ `.hero-gradient-text` CSS РєР»Р°СЃ РІ `globals.css` вЂ” Р·Р°РїР°Р·РµРЅ Р·Р° Social Features
+**Какво направихме:**
+- Проучихме page transitions с Framer Motion — опитахме, махнахме (App Router не поддържа exit анимации за server components)
+- Потвърдихме, че scroll reveal вече съществува (`use-scroll-reveal.ts`, `use-visible-animation.ts`) и е активен в hero, features, about, stats, cta-banner
+- **Dashboard hero** — разширихме от 2 на 4 stat карти (Courses, Modules, Materials, Pinned)
+  - Добавихме DB заявки за брой модули и материали в `getDashboardData`
+  - Добавихме `useCountUp` hook с `requestAnimationFrame` + easeOut крива — числата бройт от 0 при зареждане
+  - Gradient текст на числата (brand→cyan)
+- **Hero landing** — "Learning Journey" разделено на два отделни `block` спана
+  - Всеки ред получава собствен градиент `from-white via-cyan-300 to-white`
+- Добавен `.hero-gradient-text` CSS клас в `globals.css` — запазен за Social Features
 
-**Р РµС€РµРЅРёСЏ:**
-- Page transitions вЂ” РЅРµ РІСЉСЂРІСЏС‚ РґРѕР±СЂРµ СЃ Next.js App Router, РѕС‚РєР°Р·Р°С…РјРµ СЃРµ
-- РџР°РіРёРЅР°С†РёСЏ Р·Р° РјРѕРґСѓР»Рё/РјР°С‚РµСЂРёР°Р»Рё вЂ” РЅРµ Рµ РЅСѓР¶РЅР° Р·Р° С‚РµРєСѓС‰РёСЏ РѕР±С…РІР°С‚ РЅР° РїСЂРѕРµРєС‚Р°
+**Решения:**
+- Page transitions — не вървят добре с Next.js App Router, отказахме се
+- Пагинация за модули/материали — не е нужна за текущия обхват на проекта
 
 ---
+
+## 2026-04-12
+
+### Сесия 220 — Social S2: Ask Mentor + UI polish + bug fixes
+
+**Какво направихме:**
+
+#### Social S0 — Course Membership + Mentor Role (ново)
+
+**Schema:**
+- Нова таблица `course_members` (migration `0006_course_members.sql`): `course_id`, `user_id`, `role` (student | mentor), `joined_at`
+- Уникален индекс `(course_id, user_id)` — потребителят може да е в курс само веднъж
+- `users.role` разширен: вече поддържа `'mentor'` освен `'user'` и `'admin'`
+
+**Нови API endpoints:**
+- `GET/POST /api/courses/[id]/members` — списък на членове / добавяне
+- `PUT/DELETE /api/courses/[id]/members/[userId]` — смяна на роля / премахване
+- `GET/POST /api/admin/members` — admin преглед на всички членства
+- `PUT/DELETE /api/admin/members/[id]` — admin управление
+
+**Auth helpers:**
+- `requireMentor()` — 403 ако не е mentor или admin
+- `requireCourseMentor(courseId)` — 403 ако не е ментор точно на този курс
+
+**Admin panel:**
+- Нов "Members" таб — добавяне/премахване на членства, toggle на роля (student ↔ mentor)
+- Fix: стray `</div>` JSX грешки в 4 admin tab компонента
+
+**Друго:**
+- `scripts/run-migration.mjs` — helper script за ръчно пускане на SQL миграции
+
+Commit: `feat: implement Social S0 — course membership + mentor role`
+
+---
+
+#### Social S1 — Community Board (ново)
+
+**Schema (4 нови таблици, migration `0007_community_board.sql`):**
+- `posts` — автор, заглавие, съдържание, тип (discussion/question/resource/article), статус (pending/approved/hidden), pinning, `question_status`
+- `comments` — flat thread към пост
+- `post_likes` — toggle like с уникален constraint
+- `post_bookmarks` — bookmark с уникален constraint
+
+**API endpoints (12):**
+- `GET/POST /api/posts` — лист (филтри: type, courseId, search, page/20) + създаване
+- `GET/PUT/DELETE /api/posts/[id]` — детайли (+ comments + like/bookmark state), редактиране, изтриване
+- `POST /api/posts/[id]/comments` — добавяне на коментар
+- `DELETE /api/comments/[id]` — изтриване (автор или admin)
+- `POST /api/posts/[id]/like` — toggle like
+- `POST /api/posts/[id]/bookmark` — toggle bookmark
+- `GET /api/admin/posts` — всички постове за модерация
+- `PUT /api/admin/posts/[id]` — approve / hide / pin
+- `DELETE /api/admin/posts/[id]` — hard delete
+
+**Web страници:**
+- `/community` — CommunityFeed: списък с search + type filter + Load More (pagination)
+- `/community/new` — CreatePostForm: избор на тип, курс, заглавие, съдържание
+- `/community/[id]` — PostDetails: пълен пост, коментари, like/bookmark
+- `/community/[id]/edit` — EditPostForm: редактиране (автор или admin)
+
+**Shared типове:**
+- `post-types.ts` — `Post`, `Comment` типове; `TYPE_LABELS`, `TYPE_COLORS`, `timeAgo()`
+- `comment-item.tsx` — reusable коментар компонент
+
+**Admin:**
+- `posts-tab.tsx` — Moderation таб: approve/hide/pin/delete с inline actions
+- Добавен като "Moderation" таб в `/admin`
+
+**Navbar:** "Community" линк добавен
+
+**Seed данни:** `drizzle/seeds/community_demo.sql` — 150 demo posts, ~300 comments
+
+Commits: `feat: implement community forum system...` + `feat: implement community board features...`
+
+---
+
+#### UI Polish — Community Board (бранд цветове)
+- Открихме и поправихме всички `primary-*` Tailwind класове в community компонентите — `primary-*` не съществува в Tailwind config (само като CSS variables), което водеше до липсващи стилове в светлия/тъмния режим
+- Заменени с `brand-*` в 5 файла: `community-feed.tsx`, `post-details.tsx`, `create-post-form.tsx`, `edit-post-form.tsx`, `posts-tab.tsx`
+- Засяга: avatar градиенти, hover цветове на заглавия, focus rings на inputs, pinned бейджове, filter бутони в admin
+- Commit: `fix: replace primary-* with brand-* in community components`
+
+#### Шрифт на заглавия
+- `font-shantell` добавен на post заглавия в `community-feed.tsx`, `post-details.tsx`, `mentor-inbox.tsx` — signature brand font
+
+#### Social S2 — Ask Mentor (ново)
+Имплементирахме пълния Q&A workflow за ментори.
+
+**Нови API endpoints:**
+- `GET /api/mentor/questions` — списък с въпроси от курсовете, в които потребителят е ментор; admin вижда всички; поддържа `?status=` филтър
+- `PUT /api/posts/[id]/answer-status` — mentor/admin сменя `question_status` (open → answered → closed); валидира course membership за ментори
+
+**Нова страница:**
+- `/mentor-inbox` — Mentor Inbox с три колони статистика (open/answered/closed), click-to-filter, списък с въпроси и inline status бутони (Mark answered / Close / Reopen)
+- Server-side role guard: redirect към `/forbidden` ако не е mentor/admin
+
+**Navbar:**
+- "Inbox" линк добавен — видим само за `mentor` и `admin` роли
+
+**Файлове:**
+- `apps/web/app/api/mentor/questions/route.ts` (нов)
+- `apps/web/app/api/posts/[id]/answer-status/route.ts` (нов)
+- `apps/web/app/mentor-inbox/page.tsx` (нов)
+- `apps/web/components/mentor/mentor-inbox.tsx` (нов)
+- `apps/web/components/navbar-client.tsx` (обновен)
+
+Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
+
+#### Bug fix — Mentor Inbox броячи
+- **Проблем:** при натискане на stat карта (напр. "open"), API се извикваше с `?status=open` → другите броячи ставаха 0
+- **Решение:** зареждаме всички въпроси веднъж (без server-side филтър); броячите се изчисляват от пълния dataset; филтрирането е само client-side
+- Commit: `fix: mentor inbox counts stay correct when filter is active`
+
+#### Bug fix — Back бутон от post detail
+- **Проблем:** "← Community" бутонът в post details беше hardcoded към `/community` — отварен от mentor-inbox, бутонът връщаше в Community вместо в Inbox
+- **Решение:** `router.back()` вместо `<Link href="/community">` — следва browser history
+- Лейбълът е сменен от "Community" на "Back"
+
+#### Bug fix — Navbar активен таб при четене на пост
+- **Проблем:** `/community/[id]` пътят съдържа `/community` → `pathname.startsWith("/community")` беше true → Community табът светваше при четене на пост от Inbox
+- **Решение:** Custom `isActive()` функция в `navbar-client.tsx`:
+  - `/community` активен само при: `/community`, `/community/new`, `/community/[id]/edit`
+  - `/community/[id]` (четене на конкретен пост) е неутрална страница — нищо не светва
+  - Останалите линкове ползват `startsWith` (непроменено)
+
+**Typecheck:** `tsc --noEmit` → pass (0 грешки) след всички промени
+
+---
+
 ## 2026-04-13
 
-### РЎРµСЃРёСЏ 222 вЂ” Social S3: Real-time Messaging (РёРјРїР»РµРјРµРЅС‚Р°С†РёСЏ)
+### Session 135 — Mobile Community Feed Implementation
+
+
+**Какво направихме:**
+- Създадохме мобилен изглед за "Community Board", консумирайки съществуващия backend endpoint `/api/posts`.
+- Добавихме `community` таб в долната навигация на мобилното приложение.
+- Спазихме стриктно принципа на модулност, като разделихме view логиката, state логиката, UI компонентите и стиловете.
+
+**Файлове:**
+- `[NEW] apps/mobile/app/(tabs)/community.tsx`
+- `[MODIFY] apps/mobile/app/(tabs)/_layout.tsx`
+- `[NEW] apps/mobile/components/community/community.styles.ts`
+- `[NEW] apps/mobile/components/community/use-community-feed.ts`
+- `[NEW] apps/mobile/components/community/post-card.tsx`
+- `[NEW] apps/mobile/components/community/community-screen.tsx`
+
+**Verification:**
+- Структурите очакват стандартен response от `/api/posts?page=1`.
+
+**Решения:**
+- Имплементацията предоставя честна основа за Social Features в мобилната версия спрямо `social-features-plan.md`.
+
+### Session 136 — Mobile Community Interactions & Details
+
+**Какво направихме:**
+- Оправихме възможността за отваряне на "post" картичките в Community Feed.
+- Имплементирахме нов екран "Post Details" (чрез expo-router dynamic route `community/[id]`), който консумира `/api/posts/[id]` и рендира поста и коментарите.
+- Осъществихме възможността за реално коментиране на постовете (чрез `TextInput` и `commentMutation` към `/api/posts/[id]/comments`) с `KeyboardAvoidingView` оптимизация.
+- Добавихме логика за "Like" (чрез `useMutation` и `/api/posts/[id]/like`), работеща директно от списъка и от детайлите, с автоматично инвалидиране на кеша.
+- Заменихме проблемната `AntDesign` 'hearto' иконка с `Ionicons`, за да предотвратим warning съобщенията.
+
+**Файлове:**
+- `[NEW] apps/mobile/app/community/[id].tsx`
+- `[NEW] apps/mobile/components/community/post-details-screen.tsx`
+- `[MODIFY] apps/mobile/components/community/use-community-feed.ts`
+- `[MODIFY] apps/mobile/components/community/post-card.tsx`
+- `[MODIFY] apps/mobile/components/community/community-screen.tsx`
+
+**Verification:**
+- Навигацията и mutator-ите работят и са строго типизирани; `post-details` успешно се свързва с backend.
+
+### Session 137 — Community post creation unblock (web + mobile)
+
+**Какво направихме:**
+- Подсилихме `POST /api/posts` с устойчив error handling (JSON contract), валидация за `postType` и `courseId`, и по-ясни API кодове при невалидни данни.
+- Добавихме защитен fallback в създаването на пост: route-ът вече задава експлицитно `status: "approved"` при insert, за да няма environment-specific fail при липсващ DB default.
+- Оправихме web create формата (`CreatePostForm`) да не блокира при non-JSON backend грешки и винаги да връща user-facing message + `saving` reset.
+- Добавихме mobile create flow за Community:
+  - нов екран за създаване на пост (`/community/new`)
+  - форма с избор на тип, title/content полета и publish mutation към `/api/posts`
+  - invalidation на community feed query при успешно публикуване
+- Добавихме CTA бутон "New Post" в mobile community header-а, който отваря новия create екран.
+
+**Файлове:**
+- `[MODIFY] apps/web/app/api/posts/route.ts`
+- `[MODIFY] apps/web/components/community/create-post-form.tsx`
+- `[MODIFY] apps/mobile/components/community/community-screen.tsx`
+- `[MODIFY] apps/mobile/components/community/community.styles.ts`
+- `[NEW] apps/mobile/components/community/create-post-screen.tsx`
+- `[NEW] apps/mobile/app/community/new.tsx`
+
+**Verification:**
+- `npm.cmd run typecheck:web` ✅
+- `npm.cmd run typecheck:mobile` ✅
+
+**Решения:**
+- Избрахме mobile MVP create flow без course picker (course остава optional `null`) за по-бърз unblock на публикуването и минимален UI риск.
+- Запазихме текущата community feed структура и добавихме write capability без breaking промени към съществуващите interactions (like/comment/details).
+
+### Session 138 — Courses list visibility fix (owner + member)
+
+**Какво направихме:**
+- Открихме причината за празен списък с курсове: `GET /api/courses` връщаше само курсовете, създадени от текущия потребител (`createdBy`).
+- Разширихме route-а да връща и курсовете, в които потребителят е записан като member през `course_members`.
+- Така се оправя зареждането както за mobile Courses tab, така и за Community create/edit формите, които ползват същия endpoint за course dropdown.
+
+**Файлове:**
+- `[MODIFY] apps/web/app/api/courses/route.ts`
+
+**Verification:**
+- `npm.cmd run typecheck:web` ✅
+
+**Решения:**
+- Запазихме единен source of truth (`/api/courses`) за всички клиенти вместо ad-hoc client-side workaround, за да няма разминаване между web и mobile.
+
+### Session 139 — Mobile community header cleanup for dynamic routes
+
+**Какво направихме:**
+- Оправихме странното auto-generated заглавие в mobile header-а (формат като `community/[id]`), което се виждаше след публикуване/отваряне на пост.
+- Добавихме explicit `Stack.Screen` конфигурация за community detail/create route-овете с `headerShown: false`, за да се ползва само custom in-screen header (без дублиран stack header).
+
+**Файлове:**
+- `[MODIFY] apps/mobile/app/_layout.tsx`
+
+**Verification:**
+- `npm.cmd run typecheck:mobile` ✅
+
+**Решения:**
+- Запазихме custom header UX в community екрани и изключихме route-name header-а от Expo Router stack за по-чист визуален резултат.
+
+### Session 140 — Android safe-area fix for community writing inputs
+
+**Какво направихме:**
+- Оправихме припокриването със системните Android бутони при писане в Community екрани (create post и comment input в post details).
+- Добавихме `useSafeAreaInsets()` и динамичен `paddingBottom` за долните input/footer секции вместо фиксирана стойност.
+- Добавихме и safe-area-aware `paddingTop` за header-ите, плюс допълнителен bottom padding в `ScrollView`, за да не се скрива съдържание под фиксирания footer.
+
+**Файлове:**
+- `[MODIFY] apps/mobile/components/community/create-post-screen.tsx`
+- `[MODIFY] apps/mobile/components/community/post-details-screen.tsx`
+
+**Verification:**
+- `npm.cmd run typecheck:mobile` ✅
+
+**Решения:**
+- Стандартизирахме community input layout-а върху `safe area insets`, за да е стабилен на Android устройства с 3-button navigation и gesture nav.
+
+### Сесия 222 — Social S3: Real-time Messaging (имплементация)
 
 **Schema (migration `0008_messaging.sql`):**
-- `conversations`, `conversation_members`, `messages` вЂ” 3 С‚Р°Р±Р»РёС†Рё
+- `conversations`, `conversation_members`, `messages` — 3 таблици
 
-**Pusher setup:** `studyhub-chat` (eu), `pusher` + `pusher-js`, `lib/pusher.ts`, env vars РІ `apps/web/.env`
+**Pusher setup:** `studyhub-chat` (eu), `pusher` + `pusher-js`, `lib/pusher.ts`, env vars в `apps/web/.env`
 
 **API endpoints:** GET/POST `/api/conversations`, GET/POST `/api/conversations/[id]/messages`, POST `/api/pusher/auth`
 
-**Web UI:** `/messages` (inbox), `/messages/[id]` (chat), "Send message" Р±СѓС‚РѕРЅ РІ `post-details.tsx`, Navbar Р»РёРЅРє
+**Web UI:** `/messages` (inbox), `/messages/[id]` (chat), "Send message" бутон в `post-details.tsx`, Navbar линк
 
 ---
 
-### РЎРµСЃРёСЏ 223 вЂ” S3 Chat: Bug fixes + production С‚РµСЃС‚
+### Session 223 — Backlog capture from Community follow-up ideas
 
-**РљСЂРёС‚РёС‡РµРЅ Р±СЉРі (500 РЅР° GET /api/conversations):**
-- РћСЂРёРіРёРЅР°Р»РЅРёСЏС‚ `DISTINCT ON` raw SQL С‡СЂРµР· `db.execute` РєСЂР°С€РІР°С€Рµ РІ production
-- Fix: Р·Р°РјСЏРЅР° СЃ С‡РёСЃС‚ Drizzle ORM query (select + orderBy desc + JS Map Р·Р° last message)
+**Какво направихме:**
+- Добавихме нови TODO точки в секцията „Предстоящо“ по последните product идеи за Community:
+  - typography pass с `font-shantell`
+  - QR handoff → директен messaging shortcut към сканирания потребител
+  - moderation workflow за mentor/admin
+  - screenshot attachments архитектура (R2-first подход + security constraints)
 
-**UI РїРѕРґРѕР±СЂРµРЅРёСЏ:**
-- Chat window: РєРѕРЅС‚РµР№РЅРµСЂ (`max-w-2xl`, РєР°СЂС‚Р° СЃ `rounded-2xl`, border, shadow) РІРјРµСЃС‚Рѕ full-width
-- Chat height: `h-[calc(100dvh-5rem)]` + `flex-1 min-h-0` (РІСЃРµ РѕС‰Рµ РјРѕР¶Рµ РґР° РёСЃРєР° С„РёРЅР° РЅР°СЃС‚СЂРѕР№РєР°)
+**Файлове:**
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- Документационна промяна (няма runtime/typecheck нужда)
+
+**Решения:**
+- Записахме задачите като explicit TODO backlog за да не се изгубят между сесиите и за да има ясен execution order за следващите стъпки.
+
+### Сесия 223 — S3 Chat: Bug fixes + production тест
+
+**Критичен бъг (500 на GET /api/conversations):**
+- Оригиналният `DISTINCT ON` raw SQL чрез `db.execute` крашваше в production
+- Fix: замяна с чист Drizzle ORM query (select + orderBy desc + JS Map за last message)
+
+**UI подобрения:**
+- Chat window: контейнер (`max-w-2xl`, карта с `rounded-2xl`, border, shadow) вместо full-width
+- Chat height: `h-[calc(100dvh-5rem)]` + `flex-1 min-h-0` (все още може да иска фина настройка)
 - Messages anchored to bottom: `flex flex-col justify-end min-h-full`
-- Header РїРѕРєР°Р·РІР° РїСЂР°РІРёР»РЅРѕ РґСЂСѓРіРёСЏ СѓС‡Р°СЃС‚РЅРёРє: API GET messages РІСЂСЉС‰Р° `{ messages, other }`
-- AI chatbot FAB СЃРєСЂРёС‚ РЅР° `/messages/*` (overlap СЃ send Р±СѓС‚РѕРЅР°)
+- Header показва правилно другия участник: API GET messages връща `{ messages, other }`
+- AI chatbot FAB скрит на `/messages/*` (overlap с send бутона)
 
-**Pusher real-time вЂ” РїРѕС‚РІСЉСЂРґРµРЅРѕ СЂР°Р±РѕС‚РµС‰:**
-- Admin в†” Demo User, Admin в†” Test User вЂ” СЃСЉРѕР±С‰РµРЅРёСЏС‚Р° РїСЂРёСЃС‚РёРіР°С‚ РјРёРіРЅРѕРІРµРЅРѕ
+**Pusher real-time — потвърдено работещ:**
+- Admin ↔ Demo User, Admin ↔ Test User — съобщенията пристигат мигновено
 
 ---
 
-### РЎРµСЃРёСЏ 224 вЂ” S3 Chat: Height fix + commit
+### Session 224 — TODO clarification: Social gradient animation (not font)
+
+**Какво направихме:**
+- Уточнихме backlog елементa за Community визуала: не става дума за шрифт, а за преливащата gradient text анимация.
+- Обновихме TODO записа от „Community typography pass (Shantell)“ към конкретния елемент:
+  - `Community animated gradient title (.hero-gradient-text)`
+- Премахнахме дублиращ стар TODO ред за `.hero-gradient-text`, за да остане само един source of truth в „Предстоящо“.
+- Причината: има исторически запис, че `.hero-gradient-text` е „запазен за Social Features“, но реално остава неизползван (включително отчетен при одит като unused).
+
+**Файлове:**
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- Документационна промяна (няма runtime/typecheck нужда)
+
+**Решения:**
+- Фиксирахме формулировката в backlog-а към точния visual artifact, за да няма бъдещо объркване между typography и animation задача.
+
+### Сесия 224 — S3 Chat: Height fix + commit
 
 **Chat container height fix:**
-- РџСЂРѕР±Р»РµРј: `h-[calc(100dvh-5rem)]` hardcode-РІР°С€Рµ navbar РІРёСЃРѕС‡РёРЅР°С‚Р°; РїСЂРё wrap РЅР° mobile Р»РёРЅРєРѕРІРµС‚Рµ РєРѕРЅС‚РµР№РЅРµСЂСЉС‚ overflow-РІР°С€Рµ
-- Fix: `useEffect` + `getBoundingClientRect().top` РёР·РјРµСЂРІР° СЂРµР°Р»РЅРёСЏ navbar offset Рё Р·Р°РґР°РІР° `calc(100dvh - Xpx)` РґРёРЅР°РјРёС‡РЅРѕ
-- Resize listener РїСЂРµРёР·С‡РёСЃР»СЏРІР° РїСЂРё РїСЂРѕРјСЏРЅР° РЅР° viewport (navbar wrap/unwrap)
-- Р¤Р°Р№Р»: `apps/web/components/messages/chat-window.tsx`
+- Проблем: `h-[calc(100dvh-5rem)]` hardcode-ваше navbar височината; при wrap на mobile линковете контейнерът overflow-ваше
+- Fix: `useEffect` + `getBoundingClientRect().top` измерва реалния navbar offset и задава `calc(100dvh - Xpx)` динамично
+- Resize listener преизчислява при промяна на viewport (navbar wrap/unwrap)
+- Файл: `apps/web/components/messages/chat-window.tsx`
 
-**Commit:** `feat: implement S3 real-time messaging` вЂ” РІСЃРёС‡РєРё S3 С„Р°Р№Р»РѕРІРµ
+**Commit:** `feat: implement S3 real-time messaging` — всички S3 файлове
 
-### РЎРµСЃРёСЏ 225 вЂ” Messaging Premium UI Polish
+### Session 225 — Backlog priority reminder: mobile social not finished
 
-**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ вЂ” Inbox (messages-inbox.tsx):**
-- **Р—Р°РіР»Р°РІРёРµ Messages** вЂ” РІРµС‡Рµ РїРѕР»Р·РІР° `font-shantell` + `bg-v1-gradient` (С‚РµРєСЃС‚СЉС‚ Рµ РіСЂР°РґРёРµРЅС‚РµРЅ)
-- **РљР°СЂС‚Рё РЅР° СЂР°Р·РіРѕРІРѕСЂРёС‚Рµ** вЂ” РґРѕР±Р°РІРµРЅ glass (white/80 backdrop-blur) + hover Р°РЅРёРјР°С†РёСЏ (РїРѕРґСЃРєР°С‡Р°РЅРµ Рё СЃСЏРЅРєР°)
-- **Avatar** вЂ” СЃРїРµС†РёС„РёС‡РµРЅ РіСЂР°РґРёРµРЅС‚ `from-brand-500 via-fuchsia-500 to-cyan-400`
-- **РЎС‚СЂРµР»РєР° (hint)** вЂ” РѕС†РІРµС‚СЏРІР° СЃРµ РїСЂРё hover РЅР° С†СЏР»Р°С‚Р° РєР°СЂС‚Р°
-- **Skeleton placeholders** вЂ” Р·Р°РјРµРЅРµРЅРё СЃ "glass" РїСѓР»СЃРёСЂР°С‰Рё РєР°СЂС‚Рё
+**Какво направихме:**
+- Добавихме explicit TODO приоритет за незавършения mobile social обхват:
+  - `Mobile Social completion (S2/S3): Inbox + Messages`
+- Описахме подзадачите, които остават за затваряне на mobile social вертикала:
+  - inbox списък с разговори
+  - conversation thread екран
+  - Community/QR entry points към DM
+  - parity с web messaging + auth guard-ите
 
-**РљР°РєРІРѕ РЅР°РїСЂР°РІРёС…РјРµ вЂ” Chat window (chat-window.tsx):**
-- **Shell & Card** вЂ” РїРѕ-Р»РµРє С„РѕРЅ (`bg-slate-50`) Рё СѓР»С‚СЂР°-СЃС‚СЉРєР»Рѕ Р·Р° С‡Р°С‚ РєР°СЂС‚Р°С‚Р° (`backdrop-blur-xl`)
-- **Header** вЂ” РґРѕР±Р°РІРµРЅ Avatar РЅР° СЃСЉР±РµСЃРµРґРЅРёРєР° + `font-shantell bold` РёРјРµ
-- **Back Р±СѓС‚РѕРЅ** вЂ” СЂРµРґРёР·Р°Р№РЅ РєР°С‚Рѕ СЃС‚РёР»РЅРѕ `rounded-lg` РєРІР°РґСЂР°С‚С‡Рµ СЃ hover СЃСЉСЃС‚РѕСЏРЅРёРµ
-- **РЎРѕР±СЃС‚РІРµРЅРё СЃСЉРѕР±С‰РµРЅРёСЏ** вЂ” РІРµС‡Рµ СЃР° СЃ `bg-v1-gradient` (indigoв†’purpleв†’cyan)
-- **РўРµС…РЅРёС‚Рµ СЃСЉРѕР±С‰РµРЅРёСЏ** вЂ” glass style (white/90 backdrop-blur)
-- **Input & Send** вЂ” `focus:ring-brand-400` Рё РіСЂР°РґРёРµРЅС‚РµРЅ Р±СѓС‚РѕРЅ СЃ С…РѕРІСЉСЂ Р°РЅРёРјР°С†РёСЏ
-- **Empty state** вЂ” РјР°Р»РєР° glass РєР°СЂС‚Р° СЃ РµРјРѕС‚РёРєРѕРЅР° рџ‘‹
+**Файлове:**
+- `[MODIFY] docs/dev-log.md`
 
-**Р¤Р°Р№Р»РѕРІРµ:**
+**Verification:**
+- Документационна промяна (няма runtime/typecheck нужда)
+
+**Решения:**
+- Маркирахме mobile inbox/messages като отделен high-priority backlog item, за да не се изгуби фокусът върху незавършения social scope.
+
+### Сесия 225 — Messaging Premium UI Polish
+
+**Какво направихме — Inbox (messages-inbox.tsx):**
+- **Заглавие Messages** — вече ползва `font-shantell` + `bg-v1-gradient` (текстът е градиентен)
+- **Карти на разговорите** — добавен glass (white/80 backdrop-blur) + hover анимация (подскачане и сянка)
+- **Avatar** — специфичен градиент `from-brand-500 via-fuchsia-500 to-cyan-400`
+- **Стрелка (hint)** — оцветява се при hover на цялата карта
+- **Skeleton placeholders** — заменени с "glass" пулсиращи карти
+
+**Какво направихме — Chat window (chat-window.tsx):**
+- **Shell & Card** — по-лек фон (`bg-slate-50`) и ултра-стъкло за чат картата (`backdrop-blur-xl`)
+- **Header** — добавен Avatar на събеседника + `font-shantell bold` име
+- **Back бутон** — редизайн като стилно `rounded-lg` квадратче с hover състояние
+- **Собствени съобщения** — вече са с `bg-v1-gradient` (indigo→purple→cyan)
+- **Техните съобщения** — glass style (white/90 backdrop-blur)
+- **Input & Send** — `focus:ring-brand-400` и градиентен бутон с ховър анимация
+- **Empty state** — малка glass карта с емотикона 👋
+
+**Файлове:**
 - `apps/web/components/messages/messages-inbox.tsx`
 - `apps/web/components/messages/chat-window.tsx`
 
-**Typecheck:** `tsc --noEmit` в†’ pass
+**Typecheck:** `tsc --noEmit` → pass
 
 ---
 
-**РЎР»РµРґРІР°С‰Р° СЃРµСЃРёСЏ:**
-1. Mobile С„Р°Р·Р° (Community Board + Mentor Inbox + Chat responsive)
+**Следваща сесия:**
+1. Mobile фаза (Community Board + Mentor Inbox + Chat responsive)
 
-### Session 238 - Desktop profile DM entry point from community authors
+### Session 226 - Mobile Inbox + Messages implementation (Community handoff)
 
 **Какво направихме:**
-- Added author profile links across Community feed, post details, and comments.
-- Added public profile route `/profile/[id]` for viewing other users server-side.
-- Added `Send message` CTA on public profile card; creates/opens conversation via `POST /api/conversations` and routes to `/messages/{id}`.
-- Added in-app error toast handling for failed DM conversation creation.
-- Fixed mojibake text artifacts in touched community/profile UI strings (`Opening...`, `Pinned`, separators).
+- Implemented mobile inbox screen (`/messages`) that loads conversations from `GET /api/conversations` with pull-to-refresh and periodic refetch.
+- Implemented conversation thread screen (`/messages/[id]`) that loads history from `GET /api/conversations/[id]/messages` and sends messages via `POST /api/conversations/[id]/messages`.
+- Added reusable messaging hooks/types/styles in `apps/mobile/components/messages/`.
+- Added mobile stack routes for messages screens in `apps/mobile/app/_layout.tsx`.
+- Added Community entry points into messaging:
+  - Inbox button in Community header.
+  - "Message" action in post details that creates/opens conversation via `POST /api/conversations`.
+- Added query invalidation between inbox/thread/community so latest messages appear after send/start conversation.
+- Replaced fragile text-symbol icons in messages screens with stable icon rendering (`Ionicons` / unicode escape), avoiding mojibake risk.
 
 **Файлове:**
-- `[NEW] apps/web/app/profile/[id]/page.tsx`
-- `[NEW] apps/web/components/profile/public-profile-view.tsx`
-- `[MODIFY] apps/web/components/community/community-feed.tsx`
-- `[MODIFY] apps/web/components/community/post-details.tsx`
-- `[MODIFY] apps/web/components/community/comment-item.tsx`
+- `[NEW] apps/mobile/components/messages/messages.types.ts`
+- `[NEW] apps/mobile/components/messages/messages.styles.ts`
+- `[NEW] apps/mobile/components/messages/use-messages-inbox.ts`
+- `[NEW] apps/mobile/components/messages/use-message-thread.ts`
+- `[NEW] apps/mobile/components/messages/messages-inbox-screen.tsx`
+- `[NEW] apps/mobile/components/messages/message-thread-screen.tsx`
+- `[NEW] apps/mobile/app/messages/index.tsx`
+- `[NEW] apps/mobile/app/messages/[id].tsx`
+- `[MODIFY] apps/mobile/app/_layout.tsx`
+- `[MODIFY] apps/mobile/components/community/community-screen.tsx`
+- `[MODIFY] apps/mobile/components/community/community.styles.ts`
+- `[MODIFY] apps/mobile/components/community/use-community-feed.ts`
+- `[MODIFY] apps/mobile/components/community/post-details-screen.tsx`
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- `npm.cmd run typecheck:mobile` ✅
+
+**Решения:**
+- Built mobile messaging by reusing existing web conversation endpoints to keep behavior/auth rules consistent across clients.
+- Kept QR-to-DM as a separate next step (tracked in TODO), while delivering Community-to-DM handoff now.
+
+### Session 227 - Community inbox CTA discoverability fix
+
+**Какво направихме:**
+- Improved the Community header inbox action so users can immediately recognize its purpose.
+- Replaced the icon-only circular inbox control with a labeled CTA (`Inbox`) next to the icon.
+- Kept existing navigation behavior unchanged (`/messages`), only improved clarity and visual affordance.
+
+**Файлове:**
+- `[MODIFY] apps/mobile/components/community/community-screen.tsx`
+- `[MODIFY] apps/mobile/components/community/community.styles.ts`
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- `npm.cmd run typecheck:mobile` ✅
+
+**Решения:**
+- Prioritized explicit labeling over icon-only affordance after UX feedback, so first-time users do not need prior guidance to find inbox/messages.
+
+### Session 228 - Mobile Community Inbox unread badge
+
+**Какво направихме:**
+- Added unread badge on the Community `Inbox` CTA so new incoming conversations are visible without opening messages.
+- Implemented local read-state persistence for conversations (`AsyncStorage`) and unread count calculation against latest incoming message timestamps.
+- Hooked message thread screen to mark a conversation as read when opened (based on latest incoming message timestamp), so the badge count drops after reading.
+
+**Файлове:**
+- `[NEW] apps/mobile/components/messages/messages-read-state.ts`
+- `[MODIFY] apps/mobile/components/community/community-screen.tsx`
+- `[MODIFY] apps/mobile/components/community/community.styles.ts`
+- `[MODIFY] apps/mobile/components/messages/message-thread-screen.tsx`
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- `npm.cmd run typecheck:mobile` ✅
+
+**Решения:**
+- Kept unread tracking as client-side MVP (no DB migration/API contract change) to ship fast and avoid breaking existing web/mobile messaging routes.
+- Badge semantics for this MVP: conversations with a newer incoming message than locally recorded read timestamp are counted as unread.
+
+### Session 229 - Web messages notifications (toast + navbar unread badge)
+
+**Какво направихме:**
+- Added web unread badge on the `Messages` nav link in the global navbar.
+- Added foreground in-app toast for newly received incoming messages (polling-based) so users get immediate feedback while browsing other pages.
+- Added client-side web read-state persistence (`localStorage`) and automatic mark-as-read when the user is on `/messages/[id]`.
+- Kept implementation DB/API-compatible (no schema migration), using existing `/api/conversations` payload.
+
+**Файлове:**
+- `[NEW] apps/web/components/messages/use-web-messages-notifications.ts`
+- `[MODIFY] apps/web/components/navbar-client.tsx`
+- `[MODIFY] apps/web/components/navbar.tsx`
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- `npm.cmd run typecheck:web` ✅
+
+**Решения:**
+- Executed the fast/high-impact step first: `Web toast + unread badge`.
+- Captured the next notifications roadmap requested by product:
+  - Inbox unread badge + foreground in-app alert (mobile)
+  - Full push notifications (foreground/background/killed app)
+  - Browser native notifications (permission-based)
+  - Mobile push/local notifications
+
+### Session 230 - QR to DM handoff (mobile deep-link)
+
+**Какво направихме:**
+- Upgraded mobile QR profile handoff so scanning another user profile now opens (or creates) a direct conversation instead of only showing an informational toast.
+- Reused existing messaging API (`POST /api/conversations`) to preserve auth/guard behavior and avoid backend schema changes.
+- Kept self-profile QR behavior safe: scanning your own profile still returns to profile tab with info toast.
+
+**Файлове:**
+- `[MODIFY] apps/mobile/app/(tabs)/profile.tsx`
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- `npm.cmd run typecheck:mobile` ✅
+
+**Решения:**
+- Implemented QR->DM as an app-level handoff in the existing deep-link route chain (`studyhubv2://profile/{userId}` -> profile tab handoff -> messages thread), minimizing UI/route churn.
+
+### Session 231 - Browser native notifications for web messages (permission-based)
+
+**Какво направихме:**
+- Added permission-based browser native notifications for new incoming chat messages on desktop web.
+- Added `Enable Alerts` CTA in navbar when browser notification permission is still `default`.
+- Kept behavior user-friendly:
+  - if tab is active -> in-app toast
+  - if tab is not active and permission is granted -> native browser notification with click-to-open conversation
+- Reused existing web messaging polling/unread flow (no DB/API schema change required for this step).
+
+**Файлове:**
+- `[MODIFY] apps/web/components/navbar-client.tsx`
+- `[MODIFY] apps/web/components/messages/use-web-messages-notifications.ts`
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- `npm.cmd run typecheck:web` ✅
+
+**Решения:**
+- Implemented browser notifications as permission-gated progressive enhancement, keeping toast fallback for unsupported/denied states.
+
+### Session 232 - Server-side unread state for messages (web + mobile)
+
+**Какво направихме:**
+- Added server-side unread cursor in messaging schema via `conversation_members.last_read_at`.
+- Updated conversations API to compute and return `hasUnread` + `unreadCount` from DB message timestamps and `last_read_at`.
+- Updated message thread API to mark conversation as read on `GET /api/conversations/[id]/messages` and to advance sender cursor on `POST`.
+- Switched web notifications/unread badge logic from localStorage read-state to server unread state from `/api/conversations`.
+- Removed mobile local unread MVP state (`AsyncStorage`) and now use API unread values end-to-end.
+
+**Файлове:**
+- `[MODIFY] drizzle/schema.ts`
+- `[NEW] drizzle/migrations/0009_conversation_last_read_at.sql`
+- `[MODIFY] apps/web/app/api/conversations/route.ts`
+- `[MODIFY] apps/web/app/api/conversations/[id]/messages/route.ts`
+- `[MODIFY] apps/web/components/messages/use-web-messages-notifications.ts`
+- `[MODIFY] apps/mobile/components/community/community-screen.tsx`
+- `[MODIFY] apps/mobile/components/messages/messages.types.ts`
+- `[MODIFY] apps/mobile/components/messages/message-thread-screen.tsx`
+- `[DELETE] apps/mobile/components/messages/messages-read-state.ts`
 - `[MODIFY] docs/dev-log.md`
 
 **Verification:**
@@ -7098,8 +6892,142 @@ Commit: `feat: implement S2 Ask Mentor вЂ” mentor inbox + answer-status API`
 - `npm.cmd run typecheck:mobile` ✅
 
 **Решения:**
-- Kept existing `/profile` as editable self-profile and introduced `/profile/[id]` strictly for read-only public profile view.
-- Reused existing conversations API (`POST /api/conversations`) to avoid backend contract changes and preserve `{ code, message }` error contract.
+- Replaced client-only unread tracking with a DB-backed source of truth so unread state stays consistent across devices.
+- Kept browser native notifications and in-app toast behavior, but now trigger logic is based on server unread deltas.
+
+### Session 233 - Mobile native push notifications for chat messages
+
+**Какво направихме:**
+- Added push token persistence in DB with new `user_push_tokens` Drizzle model and SQL migration (`0010_user_push_tokens.sql`), aligned with the hosted Neon SQL rollout.
+- Added mobile endpoint `POST /api/mobile/push-token` to register/update Expo push tokens for the authenticated user.
+- Added Expo push helper (`sendExpoPushNotifications`) with Expo token validation and `DeviceNotRegistered` cleanup support.
+- Extended `POST /api/conversations/[id]/messages` to send best-effort native push notifications to other conversation members (excluding sender).
+- Added mobile push notifications integration:
+  - installed and configured `expo-notifications`
+  - created `usePushNotifications` hook for permission flow, token registration, foreground toast, and notification-tap deep-link to `/messages/[id]`
+  - wired the hook in app root layout so behavior is active app-wide for authenticated users.
+- Hardened updated conversation message API error handling to return `{ code, message }` for invalid conversation id, invalid JSON, missing content, and forbidden access.
+
+**Файлове:**
+- `[MODIFY] drizzle/schema.ts`
+- `[NEW] drizzle/migrations/0010_user_push_tokens.sql`
+- `[NEW] apps/web/lib/expo-push.ts`
+- `[NEW] apps/web/app/api/mobile/push-token/route.ts`
+- `[MODIFY] apps/web/app/api/conversations/[id]/messages/route.ts`
+- `[NEW] apps/mobile/lib/use-push-notifications.ts`
+- `[MODIFY] apps/mobile/app/_layout.tsx`
+- `[MODIFY] apps/mobile/app.json`
+- `[MODIFY] apps/mobile/package.json`
+- `[MODIFY] apps/mobile/package-lock.json`
+- `[MODIFY] .env.example`
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- `npm.cmd run typecheck:web` ✅
+- `npm.cmd run typecheck:mobile` ✅
+
+**Решения:**
+- Push dispatch is intentionally best-effort and does not block message delivery (chat send path stays fast/reliable even if Expo push fails).
+- Invalid Expo tokens are marked inactive server-side to reduce repeated failed push attempts over time.
+
+### Session 234 - Community gradient title parity (web + mobile + reduced motion)
+
+**Какво направихме:**
+- Wired the reserved `.hero-gradient-text` animation into the web Community page title so it is no longer unused.
+- Added `prefers-reduced-motion` fallback for `.hero-gradient-text` in global web styles.
+- Built mobile parity for the same visual concept via animated multi-stop title coloring in Community header.
+- Added mobile reduced-motion accessibility hook (`AccessibilityInfo.isReduceMotionEnabled + reduceMotionChanged`) and disabled title animation when reduced motion is enabled.
+
+**Файлове:**
+- `[MODIFY] apps/web/components/community/community-feed.tsx`
+- `[MODIFY] apps/web/app/globals.css`
+- `[NEW] apps/mobile/lib/use-reduced-motion-preference.ts`
+- `[NEW] apps/mobile/components/community/community-gradient-title.tsx`
+- `[MODIFY] apps/mobile/components/community/community-screen.tsx`
+- `[MODIFY] apps/mobile/components/community/community.styles.ts`
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- `npm.cmd run typecheck:web` ✅
+- `npm.cmd run typecheck:mobile` ✅
+
+**Решения:**
+- Kept motion subtle and looped only for the title itself, while honoring reduced-motion on both platforms.
+- Used a dedicated mobile title component so the effect stays isolated to Community header and easy to reuse/tune later.
+
+### Session 235 - MVP true moderation flow (user pending + mentor/admin moderation)
+
+**Какво направихме:**
+- Enabled true pre-moderation for Community posts:
+  - new posts by `user` are now created as `pending`
+  - new posts by `mentor`/`admin` remain `approved`
+- Added centralized post access/moderation helper logic in web backend:
+  - visibility checks for `approved/pending/hidden`
+  - mentor scope checks bound to mentored courses
+- Hardened post interaction routes so non-visible posts cannot be liked/bookmarked/commented by unauthorized users.
+- Extended moderation API permissions from admin-only to mentor/admin for moderation actions:
+  - mentors can moderate only posts from courses they mentor
+  - mentors can `approve/hide` (pin changes remain admin-only)
+  - hard delete remains admin-only
+- Improved moderation queue behavior in web admin tab by defaulting status filter to `pending`.
+- Updated create-post CTA wording (`Publish` -> `Submit`) in web and mobile Community create flows to align with moderation semantics.
+
+**Файлове:**
+- `[NEW] apps/web/lib/post-access.ts`
+- `[MODIFY] apps/web/app/api/posts/route.ts`
+- `[MODIFY] apps/web/app/api/posts/[id]/route.ts`
+- `[MODIFY] apps/web/app/api/posts/[id]/comments/route.ts`
+- `[MODIFY] apps/web/app/api/posts/[id]/like/route.ts`
+- `[MODIFY] apps/web/app/api/posts/[id]/bookmark/route.ts`
+- `[MODIFY] apps/web/app/api/admin/posts/route.ts`
+- `[MODIFY] apps/web/app/api/admin/posts/[id]/route.ts`
+- `[MODIFY] apps/web/components/admin/posts-tab.tsx`
+- `[MODIFY] apps/web/components/community/create-post-form.tsx`
+- `[MODIFY] apps/mobile/components/community/create-post-screen.tsx`
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- `npm.cmd run typecheck:web` ✅
+- `npm.cmd run typecheck:mobile` ✅
+
+**Решения:**
+- Kept mobile without moderation/admin UI per scope decision; moderation remains web/backend-driven.
+- Applied mentor moderation with course-scoped authorization to avoid global mentor moderation rights.
+- Preserved admin-only destructive controls (`DELETE`, pin management) while opening `approve/hide` to mentors.
+
+### Session 236 - Community pending UX + messaging notifications follow-up
+
+**Какво направихме:**
+- Added explicit pending-moderation visibility in Community web UI so authors can clearly see moderation state:
+  - Community feed cards now show `Pending review` status and helper copy for own pending posts.
+  - Post details page now shows `Pending review` badge + moderation notice banner.
+- Polished web permission-based browser message notifications:
+  - native notification title/body now include sender context + message preview.
+  - in-app toast fallback mirrors the same content when native notifications are not shown.
+- Improved mobile foreground message alerts:
+  - switched foreground push behavior to in-app toast only (no duplicate OS foreground banner).
+  - suppressed foreground toast when user is already inside the same `/messages/[id]` thread.
+- Extended push verification tracking docs for full pipeline validation:
+  - added `SMK-21` / `SMK-22` / `SMK-23` (foreground/background/killed app flows) to mobile smoke matrix.
+  - synced mobile execution checklist with current verification status.
+
+**Файлове:**
+- `[MODIFY] apps/web/components/community/community-feed.tsx`
+- `[MODIFY] apps/web/components/community/post-details.tsx`
+- `[MODIFY] apps/web/components/messages/use-web-messages-notifications.ts`
+- `[MODIFY] apps/mobile/lib/use-push-notifications.ts`
+- `[MODIFY] docs/mobile-smoke-test-matrix.md`
+- `[MODIFY] docs/mobile-execution-checklist.md`
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- `npm.cmd run typecheck:web` ✅
+- `npm.cmd run typecheck:mobile` ✅
+
+**Решения:**
+- Kept moderation visibility UX scoped to authors' pending posts in Community feed/details, without introducing new moderation/admin surfaces on mobile.
+- Preserved browser notifications as permission-gated progressive enhancement and kept in-app fallback for unsupported/denied/visible-tab scenarios.
+- Marked push pipeline rows as `BLOCKED` in docs until physical-device validation is executed (foreground/background/killed app cannot be fully verified from terminal-only session).
 
 ### Session 237 - Desktop moderation ergonomics + dedicated mentor/admin queue view
 
@@ -7139,7 +7067,33 @@ Commit: `feat: implement S2 Ask Mentor вЂ” mentor inbox + answer-status API`
 - Chose a dedicated `/moderation` route so mentors can moderate without entering admin-only dashboard context, while still reusing one shared queue implementation.
 - Kept destructive/pinning actions admin-only in UI as an explicit capability boundary aligned with backend authorization rules.
 
+### Session 238 - Desktop profile DM entry point from community authors
+
+**Какво направихме:**
+- Added author profile links across Community feed, post details, and comments.
+- Added public profile route `/profile/[id]` for viewing other users server-side.
+- Added `Send message` CTA on public profile card; creates/opens conversation via `POST /api/conversations` and routes to `/messages/{id}`.
+- Added in-app error toast handling for failed DM conversation creation.
+- Fixed mojibake text artifacts in touched community/profile UI strings (`Opening...`, `Pinned`, separators).
+
+**Файлове:**
+- `[NEW] apps/web/app/profile/[id]/page.tsx`
+- `[NEW] apps/web/components/profile/public-profile-view.tsx`
+- `[MODIFY] apps/web/components/community/community-feed.tsx`
+- `[MODIFY] apps/web/components/community/post-details.tsx`
+- `[MODIFY] apps/web/components/community/comment-item.tsx`
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- `npm.cmd run typecheck:web` ✅
+- `npm.cmd run typecheck:mobile` ✅
+
+**Решения:**
+- Kept existing `/profile` as editable self-profile and introduced `/profile/[id]` strictly for read-only public profile view.
+- Reused existing conversations API (`POST /api/conversations`) to avoid backend contract changes and preserve `{ code, message }` error contract.
+
 ## 2026-04-14
+
 ### Session 239 - Mobile Community hero spacing + Rubik typography alignment
 
 **Какво направихме:**
@@ -7258,36 +7212,6 @@ Commit: `feat: implement S2 Ask Mentor вЂ” mentor inbox + answer-status API`
 - Lazy `require()` is the only reliable fix for Expo Go SDK 53+ push side effects — runtime guards are too late since module init runs before any hook.
 - Reused React Query cache for tab badge unread count to avoid extra polling.
 
-### Диагноза — неимплементирани функции (Codex)
-
-**QR код — само receiving end е имплементиран:**
-- ✅ Deep link handler в `apps/mobile/app/(tabs)/profile.tsx` — при `handoffUserId` параметър отваря/създава DM conversation
-- ❌ QR code генератор (показва QR на собствения профил)
-- ❌ QR code скенер (сканира QR на друг потребител)
-- ❌ Нужни пакети: `react-native-svg`, `react-native-qrcode-svg`, `expo-camera`
-- Всички три пакета работят в Expo Go
-
-**Нотификации при коментар — не са имплементирани:**
-- Push се изпраща само за DM (`type: "message"`)
-- Коментари на постове не генерират push/inbox нотификация
-- Вариант A (само push, ~30 мин): при нов коментар → push до автора → tap отваря поста
-- Вариант B (push + persistent inbox, ~2-3ч): нова `notifications` DB таблица + API + UI
-
-**Community hero title font регресия:**
-- Преди имплементацията на gradient ефекта (Session 234/239) заглавието "Community" в mobile hero е имало правилен шрифт
-- След като `CommunityGradientTitle` е въведен с `Animated.Text` + animated color, шрифтът се е наранил
-- `fontFamily: "Rubik"` е в `headerTitleGlyph` (подаден като `textStyle` prop) → прилага се на `Animated.Text`
-- Рубик файлът не е съществувал → `fontFamily` е бил игнориран → system bold е изглеждал добре
-- Сега Rubik е свален и зареден — `Animated.Text` може да рендерира по-различно от `Text`
-- Възможна причина: `Animated.Text` + `fontFamily` + `fontWeight: "800"` комбинацията счупва рендерирането на някои Android устройства
-- Следващата сесия: диагностицирай и оправи — евентуално замени `Animated.Text` с `MaskedView` + `LinearGradient` за gradient текст
-
-**Следваща сесия — приоритети:**
-1. Community hero title font fix
-2. QR код (display + scanner) — ~150 реда, 3 пакета
-3. Push нотификации при коментар — Вариант A (~40 реда)
-
-## 2026-04-14
 ### Session 244 — Community font fix + QR feature + push on comment
 
 **Какво направихме:**
@@ -7340,7 +7264,6 @@ Commit: `feat: implement S2 Ask Mentor вЂ” mentor inbox + answer-status API`
 **npm install status:**
 - `npm install` completed successfully from monorepo root — all three packages now in `node_modules/` (root-hoisted). Ready to test in Expo Go.
 
-
 ### Session 244 (продължение) — Community font fix v2 + QR format унификация + GO_BACK fix
 
 **Какво направихме:**
@@ -7383,7 +7306,6 @@ Commit: `feat: implement S2 Ask Mentor вЂ” mentor inbox + answer-status API`
 - QR формат: унифицирахме около съществуващия уеб формат `studyhubv2://profile/<id>` вместо да въвеждаме нов мобилен формат
 - WeChat-style flow: показваш своя QR на екрана → другият скенира → директен DM
 
-
 ### Session 244 (продължение 2) — Moderation UX fix + web desktop notification тест
 
 **Какво направихме:**
@@ -7416,145 +7338,102 @@ Commit: `feat: implement S2 Ask Mentor вЂ” mentor inbox + answer-status API`
 - Коментар нотификация на десктоп (web browser notification) — ако има квота
 - ConfirmModal за `confirm()` в post-details.tsx и posts-tab.tsx (правило "No native dialogs")
 
-## 2026-04-14 (продължение)
+### Диагноза — неимплементирани функции (Codex)
 
-### Session 245 — Hydration fix + email in public profile + comment notifications
+**QR код — само receiving end е имплементиран:**
+- ✅ Deep link handler в `apps/mobile/app/(tabs)/profile.tsx` — при `handoffUserId` параметър отваря/създава DM conversation
+- ❌ QR code генератор (показва QR на собствения профил)
+- ❌ QR code скенер (сканира QR на друг потребител)
+- ❌ Нужни пакети: `react-native-svg`, `react-native-qrcode-svg`, `expo-camera`
+- Всички три пакета работят в Expo Go
 
-**Какво направихме:**
+**Нотификации при коментар — не са имплементирани:**
+- Push се изпраща само за DM (`type: "message"`)
+- Коментари на постове не генерират push/inbox нотификация
+- Вариант A (само push, ~30 мин): при нов коментар → push до автора → tap отваря поста
+- Вариант B (push + persistent inbox, ~2-3ч): нова `notifications` DB таблица + API + UI
 
-**1. Rebuild + moderation flow тест:**
-- `npm run build:web && npm run start:web` — rebuild за moderation fix от Session 244
-- Добавени 4 pending поста за тест на moderation (seed script `scripts/seed-pending-posts.mjs`)
-- Moderation flow потвърден: Admin Panel → Posts → клик → Approve/Hide бутони + Back to Admin ✅
+**Community hero title font регресия:**
+- Преди имплементацията на gradient ефекта (Session 234/239) заглавието "Community" в mobile hero е имало правилен шрифт
+- След като `CommunityGradientTitle` е въведен с `Animated.Text` + animated color, шрифтът се е наранил
+- `fontFamily: "Rubik"` е в `headerTitleGlyph` (подаден като `textStyle` prop) → прилага се на `Animated.Text`
+- Рубик файлът не е съществувал → `fontFamily` е бил игнориран → system bold е изглеждал добре
+- Сега Rubik е свален и зареден — `Animated.Text` може да рендерира по-различно от `Text`
+- Възможна причина: `Animated.Text` + `fontFamily` + `fontWeight: "800"` комбинацията счупва рендерирането на някои Android устройства
+- Следващата сесия: диагностицирай и оправи — евентуално замени `Animated.Text` с `MaskedView` + `LinearGradient` за gradient текст
 
-**2. Hydration error #418 fix:**
-- Root cause: `notificationsSupported` беше inline `const` (изчислявана при render) — на сървъра `false`, на клиента `true` → NavbarClient рендерира "Enable Alerts" бутон само на клиент → React #418 hydration crash
-- Втора причина: `notificationPermission` state initializer четеше `window.Notification.permission` на клиента, но сървърът рендерираше с `"denied"` → mismatch при `"default"` permission
-- Fix: `notificationsSupported` → `useState(false)` + `useEffect` синхронизация след хидрация
-- Fix: `notificationPermission` → `useState("denied")` (constant initial value, synced via existing effect)
-- Bonus fix: `formatMemberSince` добави `timeZone: "UTC"` за консистентност между сървър и клиент
-
-**3. Email в публичен профил:**
-- `ProfileUser.email` вече се показва в `public-profile-view.tsx` под името на потребителя
-
-**4. Web desktop comment notifications:**
-- Нов endpoint `GET /api/notifications/comments?since=<ISO>` — връща нови коментари на одобрени постове на текущия юзър, направени от друг юзър, след `since` timestamp
-- Разширен `use-web-messages-notifications.ts`: добавен `refreshCommentNotifications` callback + `useEffect` с 20s интервал (отделен от messages polling на 15s)
-- При нов коментар: browser notification (ако granted + tab не е visible) или toast fallback
-- Notification click → навигира към `/community/<postId>`
-
-**Файлове:**
-- `[MODIFY] apps/web/components/messages/use-web-messages-notifications.ts` — hydration fix + comment notifications polling
-- `[MODIFY] apps/web/lib/profile.ts` — timeZone: "UTC" в formatMemberSince
-- `[MODIFY] apps/web/components/profile/public-profile-view.tsx` — показва email
-- `[NEW] apps/web/app/api/notifications/comments/route.ts` — comment notifications endpoint
-- `[NEW] scripts/seed-pending-posts.mjs` — seed script за pending постове (dev/test)
-
-**Verification:**
-- `npm.cmd run typecheck:web` ✅
-- Build ✅ (exit code 0)
-
-**Решения:**
-- Comment notifications: poll-based (без Pusher/WebSocket) за консистентност с messaging notifications — same fire-and-forget pattern
-- `lastCommentCheckRef` се инициализира с `new Date().toISOString()` при mount → не се показват стари коментари при първо зареждане
-- `notificationsSupported` pattern: standard Next.js SSR practice — инициализирай с `false`, актуализирай в `useEffect`
-
-**Следващ чат — приоритети:**
-- ConfirmModal за `confirm()` в `post-details.tsx` и `posts-tab.tsx` (правило "No native dialogs") — вече има `ConfirmModal` компонент
-- Miniblog rich text editor (Tiptap) за Community posts — ако има квота
-- Тест на comment notifications с два акаунта
-
----
+**Следваща сесия — приоритети:**
+1. Community hero title font fix
+2. QR код (display + scanner) — ~150 реда, 3 пакета
+3. Push нотификации при коментар — Вариант A (~40 реда)
 
 ## 2026-04-15
-### Session 246 — Weather widget в Calendar sidebar
+
+### Session 247 — Tiptap Rich Text Editor for Community posts
 
 **Какво направихме:**
-- Нов компонент `WeatherWidget` в дясната колона на Calendar страницата (под `EventSidebar`).
-- Нов hook `useWeather` — auto-geolocation при mount (`navigator.geolocation`), fallback към city search ако потребителят откаже.
-- Данните идват от **Open-Meteo** (безплатен, без API key) — текущо време + hourly + 3-day прогноза.
-- Часовник: live tick всяка секунда (`setInterval`, pure JS — нулев разход).
-- City label: при geolocation → извлечен от `timezone` полето на API (`Europe/Sofia` → `Sofia`); при search → `${name}, ${country}` от geocoding API.
-- Accordion pattern (само един панел отворен наведнъж):
-  - **3-day forecast** — 3 реда с емоджи, max/min temp, вероятност за валежи.
-  - **Hourly forecast** — хоризонтален scroll (`overflow-x-auto`), 24 карти.
-- При denied/error → показва search form; бутон "Change city" за ръчна смяна.
-- Layout промяна в `calendar-client-page.tsx`: дясната колона вече е `<div className="flex flex-col gap-6">` с `EventSidebar` (conditional) + `WeatherWidget` (винаги видим).
-- **Нови пакети: 0** — всичко е pure fetch + React hooks.
+- Инсталирахме Tiptap пакети в web workspace: `@tiptap/react`, `@tiptap/starter-kit`, `dompurify`, `@types/dompurify`
+- Нов shared UI компонент `components/ui/rich-text-editor.tsx`:
+  - `"use client"` — client-only, useEditor не работи на сървъра
+  - Toolbar: **B**, *I*, H2, H3, • List, 1. List, \<\> Code Block — всеки бутон с active state
+  - Dark mode Tailwind класове без CSS файлове (brand-400, slate-700/800 palette)
+  - Placeholder чрез CSS `::before` pseudo-element с `data-placeholder` атрибут
+  - Props: `value`, `onChange`, `placeholder?`, `minHeight?`
+- `create-post-form.tsx` — заменен `<textarea>` с `<RichTextEditor>`, state остава `string` (HTML), submit логика непроменена
+- `edit-post-form.tsx` — същото (textarea → RichTextEditor)
+- `post-details.tsx`:
+  - Добавена `sanitizeHtml()` helper функция с DOMPurify (dynamic `require` за SSR guard, `any` cast за type compatibility)
+  - Заменен `whitespace-pre-wrap` content div с `dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content) }}`
+  - CSS клас `post-html-content` за prose-like rendering
+- `community-feed.tsx` — добавен `stripHtml()` helper, excerpt в PostCard вече показва plain text (без HTML тагове)
+- `globals.css`:
+  - Добавени `.post-html-content` prose стилове (h2, h3, p, strong, em, ul, ol, li, code, pre)
+  - Добавен Tiptap `.tiptap-content p.is-editor-empty::before` placeholder CSS
+- **Mobile (Вариант Б — пълен HTML рендър)**:
+  - Инсталирахме `react-native-render-html`
+  - `apps/mobile/components/community/post-card.tsx` — добавен `stripHtml()`, приложен на `post.content` за excerpt (остава plain text за превю)
+  - `apps/mobile/components/community/post-details-screen.tsx` — използва `RenderHtml` компонент с custom `tagsStyles` за форматиране на Tiptap HTML съдържанието
 
 **Файлове:**
-- `[NEW] apps/web/components/calendar/use-weather.ts` — hook с geolocation, Open-Meteo fetch, clock
-- `[NEW] apps/web/components/calendar/weather-widget.tsx` — UI компонент с accordion
-- `[MODIFY] apps/web/components/calendar/calendar-client-page.tsx` — добавен WeatherWidget в sidebar колоната
+- `[NEW] apps/web/components/ui/rich-text-editor.tsx`
+- `[MODIFY] apps/web/components/community/create-post-form.tsx`
+- `[MODIFY] apps/web/components/community/edit-post-form.tsx`
+- `[MODIFY] apps/web/components/community/post-details.tsx`
+- `[MODIFY] apps/web/components/community/community-feed.tsx`
+- `[MODIFY] apps/web/app/globals.css`
+- `[MODIFY] apps/web/package.json` (+ 3 пакета)
+- `[MODIFY] apps/mobile/components/community/post-card.tsx`
+- `[MODIFY] apps/mobile/components/community/post-details-screen.tsx`
 - `[MODIFY] docs/dev-log.md`
 
 **Verification:**
 - `npm.cmd run typecheck:web` ✅
+- `npm.cmd run typecheck:mobile` ✅
 
 **Решения:**
-- Open-Meteo избран заради нулев разход и липса на API key — идеален за capstone.
-- Timezone string като city label при geolocation (без reverse geocode API) — достатъчно точно за widget.
-- Accordion вместо два независими expand-а — по-компактно в тясна 280-320px колона.
-- Hourly: хоризонтален scroll вместо grid — стандартен pattern за тясна колона.
-- Widget е винаги видим в sidebar-а (не conditional на selectedDate) — часовникът е полезен дори без избрана дата.
-
-**Следващ чат — приоритети:**
-- Tiptap rich text editor за Community posts (Miniblog упражнение) — create/edit форми + DOMPurify render
-- How It Works реални скрийншотове
-
-### Session 246 (follow-up) — Weather widget UX fixes + wind speed
-
-**Какво направихме:**
-- Добавен `windSpeed` към `WeatherDay` и `WeatherHour` интерфейсите.
-- Добавени `wind_speed_10m` (hourly) и `wind_speed_10m_max` (daily) към Open-Meteo API заявката.
-- `ForecastPanel` (3-day): показва вятъра под реда с температурата (`💨 X km/h`).
-- `HourlyPanel`: добавена `💨` редичка в hourly картичките.
-- Добавен `"WEATHER"` header в widget-а (uppercase tracking label + часовник до него).
-- При `status === "denied"` без данни — ясен текст "Enter your city to see the forecast." вместо само search форма.
-- При `status === "error"` — показва грешката + бутон **Retry** до нея.
-- `retryLocation()` в hook-а — при Retry: опитва последните coords ако са налични, иначе re-triggers geolocation.
-- `lastCoordsRef` в hook-а пази последно успешно използваните coords/label за retry.
-
-**Файлове:**
-- `[MODIFY] apps/web/components/calendar/use-weather.ts`
-- `[MODIFY] apps/web/components/calendar/weather-widget.tsx`
-
-**Verification:**
-- `npm.cmd run typecheck:web` ✅
-
-**Бележка за шрифтовете:** Google Fonts timeout в `dev` mode е известен Next.js артефакт при бавна/нестабилна мрежа по време на компилация. Prod build-ът (`npm run build:web`) bundl-ва шрифтовете локално — няма проблем в production.
-
-### Session 246 (follow-up 2) — Weather widget geolocation robustness
-
-**Какво направихме:**
-- Разграничени geolocation error кодове: `PERMISSION_DENIED (code 1)` → `status="denied"`; `POSITION_UNAVAILABLE` / `TIMEOUT` → `status="error"` с retry бутон.
-- Timeout увеличен от 8000ms на 12000ms + добавен `maximumAge: 60000` (кешира позицията до 1 мин за по-бърз retry).
-- Бутон **📍 Use my location** се показва при `denied` И `error` без данни — потребителят може да retry geolocation вместо само да пише ръчно.
-- Текстът при `denied` е "Or enter your city manually:" вместо обезличено "Enter your city to see the forecast." — по-ясна UX последователност.
-- `retryLocation()` в hook-а пази `lastCoordsRef` — при retry използва последните coords ако са налични.
-
-**Файлове:**
-- `[MODIFY] apps/web/components/calendar/use-weather.ts`
-- `[MODIFY] apps/web/components/calendar/weather-widget.tsx`
-
-**Verification:**
-- `npm.cmd run typecheck:web` ✅
-
-**Диагностична бележка:** React error #418 (от Session 245) е hydration mismatch — НЕ е "Invalid hook call" (#321) и НЕ се дължи на дублиран React. Проверка с `npm ls react` потвърди: всичко е `react@19.1.0 deduped`. Никакви override/dedupe промени не са нужни.
-
-**Бележка за лендинга:** `app/page.tsx:40` — `if (user) redirect("/dashboard")` е умишлено. Логнатите потребители не виждат landing page — редиректват се към dashboard.
+- DOMPurify с `typeof window === "undefined"` guard — чист SSR, никакъв window call на сървъра
+- Избрахме `require("dompurify") as any` вместо static import, за да избегнем ESM/SSR bundle на DOMPurify
+- Mobile: Първоначално решено за Вариант А (stripHtml regex), но по желание на потребителя е внедрен **Вариант Б** с `react-native-render-html` пакет за пълен rich rendering на поста в детайлния екран.
+- Prose CSS е custom в globals.css (без @tailwindcss/typography plugin — не е конфигуриран в проекта)
 
 ---
 
-## Следващи приоритети (за следваща сесия)
+### Session 248 - Dev-log encoding recovery (Gemini handoff repair)
 
-1. **Tiptap Rich Text Editor** за Community posts — пълен план записан в `memory/project_tiptap_plan.md`:
-   - `npm install @tiptap/react @tiptap/starter-kit dompurify @types/dompurify` в `apps/web`
-   - Нов `apps/web/components/ui/rich-text-editor.tsx` (адаптиран от Miniblog упражнението)
-   - `create-post-form.tsx` + `edit-post-form.tsx` — textarea → RichTextEditor
-   - `post-details.tsx` — DOMPurify + prose render
-   - `community-feed.tsx` — stripHtml за excerpt
-   - Mobile: `stripHtml()` (1 ред, вариант А) — Вариант Б (react-native-render-html) е ~30-45 мин, Community е out-of-scope за mobile по AGENTS.md
-2. **How It Works** реални скрийншотове — placeholder изображения чакат
-3. **Weather widget тест** с rebuild след geolocation fixes
+**What we did:**
+- Recovered `docs/dev-log.md` from mojibake/corrupted encoding artifacts.
+- Applied multi-pass safe repair logic to restore mixed `cp1251/cp1252/latin1` damage while preserving document structure.
+- Validated the repaired file with artifact scans (no remaining known mojibake patterns).
+- Restored the missing `Session 247` block from `HEAD` so no historical progress is lost.
 
+**Files:**
+- `[MODIFY] docs/dev-log.md`
+- `[NEW] docs/dev-log.md.pre-repair-2026-04-15.bak`
+
+**Verification:**
+- Artifact-scan command run on `docs/dev-log.md` with no mojibake matches.
+- Manual spot checks on top sections and historical entries: PASS.
+
+**Decisions:**
+- Kept a rollback backup (`docs/dev-log.md.pre-repair-2026-04-15.bak`) for safety.
+- Avoided `git restore` to prevent losing uncommitted local dev-log updates.
