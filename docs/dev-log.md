@@ -7437,3 +7437,60 @@ Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
 **Decisions:**
 - Kept a rollback backup (`docs/dev-log.md.pre-repair-2026-04-15.bak`) for safety.
 - Avoided `git restore` to prevent losing uncommitted local dev-log updates.
+
+---
+
+### Session 249 - Pre-commit mojibake guardrail (encoding safety automation)
+
+**Какво направихме:**
+- Добавихме repo-level pre-commit защита срещу mojibake/encoding артефакти.
+- Добавихме PowerShell checker `scripts/check-mojibake.ps1`, който сканира **staged diff добавените редове** за подозрителни CP1251/CP1252/replacement-character шаблони.
+- Добавихме `.githooks/pre-commit`, който пуска checker-а и блокира commit при засечени артефакти.
+- Добавихме npm скриптове:
+  - `check:mojibake` — ръчно пускане на checker-а
+  - `hooks:install` — настройва `core.hooksPath` към `.githooks`
+- Подсилихме правилата в `AGENTS.md` с изрична инструкция за hook инсталация.
+- Добавихме `.editorconfig` с глобален UTF-8 и специално правило за `docs/dev-log.md` (`utf-8-bom`).
+- Активирахме hook-а локално (`git config core.hooksPath .githooks`).
+
+**Файлове:**
+- `[MODIFY] AGENTS.md`
+- `[NEW] .editorconfig`
+- `[NEW] .githooks/pre-commit`
+- `[NEW] scripts/check-mojibake.ps1`
+- `[NEW] scripts/check-mojibake.mjs` (fallback runner path)
+- `[MODIFY] package.json`
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- `npm.cmd run hooks:install` ✅
+- `git config --get core.hooksPath` → `.githooks` ✅
+- `npm.cmd run check:mojibake` ✅ (чисто текущо състояние)
+- Контролиран тест: staged временен файл с CP1252-dash mojibake артефакт → checker-ът блокира commit ✅
+
+**Решения:**
+- Използвахме PowerShell checker като primary implementation за стабилност на Windows tooling.
+- Hook-ът има fallback path и не разчита на implicit shell encoding.
+- Проверяваме staged diff редове (не целия файл), за да намалим false positives и да блокираме само нововнесени проблеми.
+
+---
+
+### Session 250 - UTF-8 BOM guard for dev-log in pre-commit
+
+**Какво направихме:**
+- Разширихме `scripts/check-mojibake.ps1` с отделна guard проверка: ако `docs/dev-log.md` е staged, файлът се валидира като **UTF-8 with BOM**.
+- Имплементирахме четене на staged blob bytes от git index (`rev-parse :path` + `cat-file -p <sha>`) и byte-level BOM проверка (`EF BB BF`).
+- При липсващ BOM checker-ът вече връща отделна грешка секция `UTF-8 BOM requirement failed` и блокира commit.
+
+**Файлове:**
+- `[MODIFY] scripts/check-mojibake.ps1`
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- `npm.cmd run check:mojibake` ✅ (baseline pass)
+- Контролиран тест:
+  - staged `docs/dev-log.md` без BOM → checker block ✅
+  - възстановен BOM и re-stage → checker pass ✅
+
+**Решения:**
+- BOM проверката е върху staged content (index blob), не върху working copy, за да е коректна при частично staging/разлики.

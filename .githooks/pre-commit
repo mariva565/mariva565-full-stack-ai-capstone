@@ -1,0 +1,19 @@
+#!/usr/bin/env sh
+
+if command -v powershell.exe >/dev/null 2>&1; then
+  powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/check-mojibake.ps1
+  status=$?
+elif command -v pwsh >/dev/null 2>&1; then
+  pwsh -NoProfile -File scripts/check-mojibake.ps1
+  status=$?
+else
+  node scripts/check-mojibake.mjs
+  status=$?
+fi
+
+if [ "$status" -ne 0 ]; then
+  echo "pre-commit: mojibake check failed."
+  exit "$status"
+fi
+
+exit 0

@@ -19,6 +19,8 @@
     "dev:mobile:lan": "npm --workspace @studyhub/mobile run start -- --host lan -c",
     "dev:mobile:usb": "npm --workspace @studyhub/mobile run dev:mobile:usb",
     "dev:mobile:android:usb": "npm --workspace @studyhub/mobile run android:usb",
+    "check:mojibake": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/check-mojibake.ps1",
+    "hooks:install": "git config core.hooksPath .githooks",
     "typecheck:mobile": "npm --workspace @studyhub/mobile run typecheck",
     "typecheck:shared": "npm --workspace @studyhub/shared run typecheck",
     "kill:node": "taskkill //F //IM node.exe || true"

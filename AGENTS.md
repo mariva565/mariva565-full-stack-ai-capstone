@@ -129,6 +129,14 @@ Current mobile quality-gate status:
 - TypeScript strict mode
 - API error contract: `{ code: string, message: string }`
 
+### Encoding & Text Safety
+- **All text/code files must be UTF-8**. Never save project files as ANSI/Windows-1251/Windows-1252.
+- **`docs/dev-log.md` must be UTF-8 with BOM** to avoid PowerShell/editor mis-detection on Windows.
+- When writing files from scripts/tools, always set encoding explicitly (`utf-8` or `utf-8-sig` for `dev-log.md`).
+- If mojibake appears (for example CP1251/CP1252 artifact text or replacement-character corruption), stop and repair encoding before continuing with functional edits.
+- Before commit, run a quick artifact scan for mojibake patterns in changed docs.
+- Repo guardrail: install hooks once with `npm run hooks:install` (enables `.githooks/pre-commit` mojibake check).
+
 ### Performance Planning
 - For new authenticated web pages, plan **server-first initial data** from the start whenever first render depends on user-specific content.
 - Avoid designing pages around `empty state -> useEffect fetch -> real content` if the initial content can be rendered on the server.
@@ -167,6 +175,7 @@ Current mobile quality-gate status:
 
 - Добавяй нов запис в края на файла с формат `## YYYY-MM-DD`
 - Всяка логически свързана група промени → отделен `### Session NNN — <кратко описание>` блок
+- Кодировка: файлът се поддържа в **UTF-8 with BOM** (без ANSI/CP1251 save).
 - За всеки блок включи:
   - **Какво направихме** — списък с конкретни промени (нови файлове, API endpoints, компоненти)
   - **Файлове** — кои файлове са засегнати
