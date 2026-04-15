@@ -7501,39 +7501,116 @@ Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
 
 **Какво направихме:**
 - Поправихме подравняването на bullets/numbering в Community post rich-text рендериране.
-- Добавихме mt-0 за .post-html-content p, за да се елиминира browser default margin-top, който измества текста спрямо marker-а.
-- Принудихме list-outside за ul/ol, за да е консистентно подравняването при пренасяне на ред.
-- Добавихме специфични правила за параграфи вътре в li (li > p, li > p + p) за стабилна визуализация при Tiptap HTML (<li><p>...</p></li>).
+- Добавихме `mt-0` за `.post-html-content p`, за да се елиминира browser default `margin-top`, който измества текста спрямо marker-а.
+- Принудихме `list-outside` за `ul/ol`, за да е консистентно подравняването при пренасяне на ред.
+- Добавихме специфични правила за параграфи вътре в `li` (`li > p`, `li > p + p`) за стабилна визуализация при Tiptap HTML (`<li><p>...</p></li>`).
 
 **Файлове:**
-- [MODIFY] apps/web/app/globals.css
+- `[MODIFY] apps/web/app/globals.css`
 
 **Verification:**
-- 
-pm.cmd run typecheck:web ✅
+- `npm.cmd run typecheck:web` ✅
 
 **Решения:**
-- Избрахме CSS fix в слоя за rich-text render (.post-html-content) вместо промяна на Tiptap output структурата, за да запазим съществуващото content поведение и да елиминираме проблема на UI ниво.
+- Избрахме CSS fix в слоя за rich-text render (`.post-html-content`) вместо промяна на Tiptap output структурата, за да запазим съществуващото content поведение и да елиминираме проблема на UI ниво.
 
 ### Session 252 — Local production quick-start (runbook reminder)
 
 **Какво направихме:**
 - Добавихме кратък runbook напомнящ flow за локален production preview на web app.
-- Потвърдихме, че проектът ползва централен скрипт scripts/run-local-prod.ps1, който:
-  - чисти зает порт 3002 (ако има stale процес)
-  - пуска uild:web (освен при -SkipBuild)
-  - стартира start:web на http://localhost:3002
+- Потвърдихме, че проектът ползва централен скрипт `scripts/run-local-prod.ps1`, който:
+  - чисти зает порт `3002` (ако има stale процес)
+  - пуска `build:web` (освен при `-SkipBuild`)
+  - стартира `start:web` на `http://localhost:3002`
 - Уточнихме двете команди за ежедневна употреба:
-  - 
-pm.cmd run prod:web (build + start)
-  - 
-pm.cmd run prod:web:skip-build (само start върху последния build)
+  - `npm.cmd run prod:web` (build + start)
+  - `npm.cmd run prod:web:skip-build` (само start върху последния build)
 
 **Файлове:**
-- [MODIFY] docs/dev-log.md
+- `[MODIFY] docs/dev-log.md`
 
 **Verification:**
 - Документационен ъпдейт (без нов code-path).
 
 **Решения:**
-- Запазваме prod:web като default вход за локален production, за да избегнем ръчни стъпки и чести EADDRINUSE случаи на порт 3002.
+- Запазваме `prod:web` като default вход за локален production, за да избегнем ръчни стъпки и чести `EADDRINUSE` случаи на порт `3002`.
+
+### Session 253 — Community list rendering diagnosis (post 158)
+
+**Какво направихме:**
+- Диагностицирахме конкретния проблем за `/community/158?from=admin` директно от DB съдържанието на поста.
+- Потвърдихме, че записаното rich-text съдържание е:
+  - `<br><br>` вътре в list item
+  - празен list item (`<li><p></p></li>`)
+- Това води до визуален ефект „разминаване“ и самотен bullet/number marker, дори след build.
+- Потвърдихме, че проблемът е в самото HTML съдържание на поста, а не в stale CSS chunk.
+- Изпълнихме повторна валидация на проекта:
+  - `npm.cmd run typecheck:web` ✅
+  - `npm.cmd run build:web` ✅
+
+**Файлове:**
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- `npm.cmd run typecheck:web` ✅
+- `npm.cmd run build:web` ✅
+
+**Решения:**
+- За този конкретен пост е нужен content cleanup (edit/resave), защото артефактът идва от въведен HTML, не от build cache.
+### Session 254 — One-off content cleanup for community post 158
+
+**Какво направихме:**
+- Изпълнихме еднократен DB cleanup за `posts.id = 158` след diagnosis от Session 253.
+- Нормализирахме `content` чрез `normalizePostHtmlContent(...)`:
+  - премахнат празен list item (`<li><p></p></li>`)
+  - свити поредни `<br><br>` до единичен `<br>`
+- Записахме обновеното съдържание обратно в `posts.content` и обновихме `updated_at`.
+
+**Файлове:**
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- Read-after-write проверка към DB за `posts.id = 158` потвърди новото съдържание:
+  - `<ul><li><p><strong>Правим тест заради новата Типтап функционалност.</strong><br><strong><em>Нека да видим как ще се държи шрифтът.</em></strong></p></li></ul>`
+
+**Решения:**
+- Подходът е таргетиран само за засегнатия пост, без масова миграция на исторически съдържания.
+
+### Session 255 — Admin unauthorized redirect restored to 403 page
+
+**Какво направихме:**
+- Върнахме поведението за unauthorized достъп до `/admin` към 403 страница.
+- Обновихме middleware guard-а: non-admin при `/admin` вече се пренасочва към `/forbidden` (вместо към `/dashboard`).
+- Потвърдихме текущото CTA поведение на 403 страницата: бутонът е `Return to Home` (линк към `/`).
+
+**Файлове:**
+- `[MODIFY] apps/web/middleware.ts`
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- `npm.cmd run typecheck:web` ✅
+
+**Решения:**
+- Пазим `/forbidden` като консистентна unauthorized destination за role-guarded web страници, вместо „тих“ redirect към dashboard.
+
+### Session 256 — Landing access restored for authenticated users (v1 behavior)
+
+**Какво направихме:**
+- Възстановихме v1 поведение за Home/Landing при логнат потребител:
+  - `/` вече е достъпна и при активна сесия (премахнат auto-redirect към `/dashboard`).
+- Направихме landing navbar auth-aware:
+  - добавихме `isAuthenticated` prop в `components/layout/Navbar.tsx`
+  - при логнат потребител navbar показва `Dashboard` бутон (desktop + mobile)
+  - при нелогнат потребител остават `Login` + `Register` CTA бутони.
+- Подадохме auth state от server page към landing navbar (`app/page.tsx` -> `<Navbar isAuthenticated={Boolean(user)} />`).
+
+**Файлове:**
+- `[MODIFY] apps/web/app/page.tsx`
+- `[MODIFY] apps/web/components/layout/Navbar.tsx`
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- `npm.cmd run typecheck:web` ✅
+
+**Решения:**
+- Запазихме auth-aware navigation в landing без допълнителни login стъпки за вече аутентикирани потребители.

@@ -5,7 +5,11 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
-export function Navbar() {
+type NavbarProps = {
+  isAuthenticated?: boolean;
+};
+
+export function Navbar({ isAuthenticated = false }: NavbarProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -66,19 +70,30 @@ export function Navbar() {
           <NavLink href="/#faq">FAQ</NavLink>
           <NavLink href="/contact">Contact</NavLink>
 
-          <Link
-            href="/login"
-            className="ml-3 rounded-full border-2 border-[#8b5cf6]/30 px-6 py-2 text-sm font-semibold text-[#8b5cf6] hover:bg-[#8b5cf6]/5 hover:-translate-y-1 hover:scale-105 hover:border-[#8b5cf6]/50 hover:shadow-[0_12px_20px_-5px_rgba(99,102,241,0.2)] transition-all duration-[400ms] ease-[cubic-bezier(0.175,0.885,0.32,1.275)]"
-          >
-            Login
-          </Link>
+          {isAuthenticated ? (
+            <Link
+              href="/dashboard"
+              className="btn-gradient-primary ml-3 !py-2.5 !px-6 text-sm shadow-lg"
+            >
+              Dashboard
+            </Link>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className="ml-3 rounded-full border-2 border-[#8b5cf6]/30 px-6 py-2 text-sm font-semibold text-[#8b5cf6] hover:bg-[#8b5cf6]/5 hover:-translate-y-1 hover:scale-105 hover:border-[#8b5cf6]/50 hover:shadow-[0_12px_20px_-5px_rgba(99,102,241,0.2)] transition-all duration-[400ms] ease-[cubic-bezier(0.175,0.885,0.32,1.275)]"
+              >
+                Login
+              </Link>
 
-          <Link
-            href="/register"
-            className="btn-gradient-primary !py-2.5 !px-6 text-sm shadow-lg"
-          >
-            Register
-          </Link>
+              <Link
+                href="/register"
+                className="btn-gradient-primary !py-2.5 !px-6 text-sm shadow-lg"
+              >
+                Register
+              </Link>
+            </>
+          )}
         </div>
 
         {/* Mobile Toggle */}
@@ -115,22 +130,32 @@ export function Navbar() {
             <MobileNavLink href="/how-it-works" onClick={() => setMenuOpen(false)}>How It Works</MobileNavLink>
             <MobileNavLink href="/#faq" onClick={() => setMenuOpen(false)}>FAQ</MobileNavLink>
             <MobileNavLink href="/contact" onClick={() => setMenuOpen(false)}>Contact</MobileNavLink>
-            <div className="mt-2 flex flex-col gap-2">
+            {isAuthenticated ? (
               <Link
-                href="/login"
+                href="/dashboard"
                 onClick={() => setMenuOpen(false)}
-                className="rounded-full border-2 border-[#8b5cf6]/30 px-5 py-2.5 text-center text-sm font-semibold text-[#8b5cf6] transition-colors hover:bg-[#8b5cf6]/5"
+                className="mt-2 btn-gradient-primary !py-2.5 !px-5 text-sm text-center"
               >
-                Login
+                Dashboard
               </Link>
-              <Link
-                href="/register"
-                onClick={() => setMenuOpen(false)}
-                className="btn-gradient-primary !py-2.5 !px-5 text-sm text-center"
-              >
-                Register
-              </Link>
-            </div>
+            ) : (
+              <div className="mt-2 flex flex-col gap-2">
+                <Link
+                  href="/login"
+                  onClick={() => setMenuOpen(false)}
+                  className="rounded-full border-2 border-[#8b5cf6]/30 px-5 py-2.5 text-center text-sm font-semibold text-[#8b5cf6] transition-colors hover:bg-[#8b5cf6]/5"
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/register"
+                  onClick={() => setMenuOpen(false)}
+                  className="btn-gradient-primary !py-2.5 !px-5 text-sm text-center"
+                >
+                  Register
+                </Link>
+              </div>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

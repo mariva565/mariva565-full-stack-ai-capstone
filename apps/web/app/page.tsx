@@ -1,4 +1,3 @@
-import { redirect } from "next/navigation";
 import dynamic from "next/dynamic";
 import { V1Hero } from "../components/home/v1-hero";
 import { Navbar } from "../components/layout/Navbar";
@@ -37,7 +36,6 @@ function SocialLink({ href, label, children }: { href: string; label: string; ch
 
 export default async function HomePage() {
   const user = await getRequestUserOrNull();
-  if (user) redirect("/dashboard");
 
   return (
     <div className="min-h-screen bg-purple-50 flex flex-col p-4 md:p-8 selection:bg-brand-100 selection:text-brand-900 overflow-x-hidden transition-colors duration-500">
@@ -48,7 +46,7 @@ export default async function HomePage() {
         
         {/* Content Layers with Breathable Padding */}
         <div className="relative z-10 flex flex-col w-full">
-          <Navbar />
+          <Navbar isAuthenticated={Boolean(user)} />
           <V1Hero />
           
           <div className="bg-white">

@@ -47,7 +47,7 @@ export async function middleware(request: NextRequest) {
 
   // Admin-only paths
   if (ADMIN_PATHS.some((p) => pathname.startsWith(p)) && payload.role !== "admin") {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+    return NextResponse.redirect(new URL("/forbidden", request.url));
   }
 
   return NextResponse.next();
