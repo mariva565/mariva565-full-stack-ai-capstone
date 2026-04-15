@@ -7413,3 +7413,63 @@ Commit: `feat: implement S2 Ask Mentor вЂ” mentor inbox + answer-status API`
 - Miniblog rich text editor (Tiptap) за Community posts — ако има квота
 - Тест на comment notifications с два акаунта
 
+---
+
+## 2026-04-15
+### Session 246 — Weather widget в Calendar sidebar
+
+**Какво направихме:**
+- Нов компонент `WeatherWidget` в дясната колона на Calendar страницата (под `EventSidebar`).
+- Нов hook `useWeather` — auto-geolocation при mount (`navigator.geolocation`), fallback към city search ако потребителят откаже.
+- Данните идват от **Open-Meteo** (безплатен, без API key) — текущо време + hourly + 3-day прогноза.
+- Часовник: live tick всяка секунда (`setInterval`, pure JS — нулев разход).
+- City label: при geolocation → извлечен от `timezone` полето на API (`Europe/Sofia` → `Sofia`); при search → `${name}, ${country}` от geocoding API.
+- Accordion pattern (само един панел отворен наведнъж):
+  - **3-day forecast** — 3 реда с емоджи, max/min temp, вероятност за валежи.
+  - **Hourly forecast** — хоризонтален scroll (`overflow-x-auto`), 24 карти.
+- При denied/error → показва search form; бутон "Change city" за ръчна смяна.
+- Layout промяна в `calendar-client-page.tsx`: дясната колона вече е `<div className="flex flex-col gap-6">` с `EventSidebar` (conditional) + `WeatherWidget` (винаги видим).
+- **Нови пакети: 0** — всичко е pure fetch + React hooks.
+
+**Файлове:**
+- `[NEW] apps/web/components/calendar/use-weather.ts` — hook с geolocation, Open-Meteo fetch, clock
+- `[NEW] apps/web/components/calendar/weather-widget.tsx` — UI компонент с accordion
+- `[MODIFY] apps/web/components/calendar/calendar-client-page.tsx` — добавен WeatherWidget в sidebar колоната
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- `npm.cmd run typecheck:web` ✅
+
+**Решения:**
+- Open-Meteo избран заради нулев разход и липса на API key — идеален за capstone.
+- Timezone string като city label при geolocation (без reverse geocode API) — достатъчно точно за widget.
+- Accordion вместо два независими expand-а — по-компактно в тясна 280-320px колона.
+- Hourly: хоризонтален scroll вместо grid — стандартен pattern за тясна колона.
+- Widget е винаги видим в sidebar-а (не conditional на selectedDate) — часовникът е полезен дори без избрана дата.
+
+**Следващ чат — приоритети:**
+- Tiptap rich text editor за Community posts (Miniblog упражнение) — create/edit форми + DOMPurify render
+- How It Works реални скрийншотове
+
+### Session 246 (follow-up) — Weather widget UX fixes + wind speed
+
+**Какво направихме:**
+- Добавен `windSpeed` към `WeatherDay` и `WeatherHour` интерфейсите.
+- Добавени `wind_speed_10m` (hourly) и `wind_speed_10m_max` (daily) към Open-Meteo API заявката.
+- `ForecastPanel` (3-day): показва вятъра под реда с температурата (`💨 X km/h`).
+- `HourlyPanel`: добавена `💨` редичка в hourly картичките.
+- Добавен `"WEATHER"` header в widget-а (uppercase tracking label + часовник до него).
+- При `status === "denied"` без данни — ясен текст "Enter your city to see the forecast." вместо само search форма.
+- При `status === "error"` — показва грешката + бутон **Retry** до нея.
+- `retryLocation()` в hook-а — при Retry: опитва последните coords ако са налични, иначе re-triggers geolocation.
+- `lastCoordsRef` в hook-а пази последно успешно използваните coords/label за retry.
+
+**Файлове:**
+- `[MODIFY] apps/web/components/calendar/use-weather.ts`
+- `[MODIFY] apps/web/components/calendar/weather-widget.tsx`
+
+**Verification:**
+- `npm.cmd run typecheck:web` ✅
+
+**Бележка за шрифтовете:** Google Fonts timeout в `dev` mode е известен Next.js артефакт при бавна/нестабилна мрежа по време на компилация. Prod build-ът (`npm run build:web`) bundl-ва шрифтовете локално — няма проблем в production.
+

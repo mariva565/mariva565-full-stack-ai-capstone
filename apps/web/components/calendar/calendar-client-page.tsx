@@ -6,6 +6,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { CalendarGrid } from "./calendar-grid";
 import { EventSidebar } from "./event-sidebar";
+import { WeatherWidget } from "./weather-widget";
 import type { CalendarEvent, CalendarInitialView } from "./types";
 import { Toast, type ToastTone } from "../ui/toast";
 
@@ -267,15 +268,18 @@ export function CalendarClientPage({
               />
             </section>
 
-            {selectedDate && (
-              <EventSidebar
-                date={selectedDate}
-                events={selectedEvents}
-                onAdd={handleAddEvent}
-                onDelete={handleDeleteEvent}
-                addBusy={addBusy}
-              />
-            )}
+            <div className="flex flex-col gap-6">
+              {selectedDate && (
+                <EventSidebar
+                  date={selectedDate}
+                  events={selectedEvents}
+                  onAdd={handleAddEvent}
+                  onDelete={handleDeleteEvent}
+                  addBusy={addBusy}
+                />
+              )}
+              <WeatherWidget />
+            </div>
           </div>
         </div>
       </div>
