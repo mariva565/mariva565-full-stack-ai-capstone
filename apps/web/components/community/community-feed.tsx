@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
@@ -46,6 +46,11 @@ function timeAgo(dateStr: string) {
   if (h < 24) return `${h}h ago`;
   const d = Math.floor(h / 24);
   return `${d}d ago`;
+}
+
+/** Strip HTML tags to show a plain-text excerpt in feed cards */
+function stripHtml(html: string): string {
+  return html.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
 }
 
 function shouldShowPendingBadge(post: Post, currentUserId: number) {
@@ -116,7 +121,7 @@ function PostCard({ post, currentUserId, onLike }: {
           </Link>
 
           {/* Excerpt */}
-          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400 line-clamp-2">{post.content}</p>
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400 line-clamp-2">{stripHtml(post.content)}</p>
           {showPendingBadge ? (
             <p className="mt-2 text-xs font-medium text-amber-700 dark:text-amber-300">
               Pending review. Visible only to you until approved.

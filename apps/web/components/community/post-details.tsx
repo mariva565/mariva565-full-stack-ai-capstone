@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
@@ -7,6 +7,15 @@ import { getProfileInitials } from "@/lib/profile";
 import { type Post, type Comment, TYPE_LABELS, TYPE_COLORS, timeAgo } from "./post-types";
 import { CommentItem } from "./comment-item";
 import { ConfirmModal } from "../ui/confirm-modal";
+
+function sanitizeHtml(dirty: string): string {
+  if (typeof window === "undefined") return "";
+  // Dynamic require keeps DOMPurify out of SSR bundle
+  // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-explicit-any
+  const DOMPurify = require("dompurify") as any;
+  const purify = DOMPurify.default ?? DOMPurify;
+  return purify.sanitize(dirty) as string;
+}
 
 function getProfileHref(targetUserId: number, currentUserId: number) {
   if (targetUserId === currentUserId) {
@@ -245,9 +254,10 @@ export function PostDetails({ postId, currentUser }: {
               : "This post is pending moderation review."}
           </div>
         ) : null}
-        <div className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-slate-600 dark:text-slate-300">
-          {post.content}
-        </div>
+        <div
+          className="post-html-content mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-300"
+          dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content) }}
+        />
 
         {/* Like + Bookmark */}
         <div className="mt-6 flex items-center gap-4 border-t border-slate-100 pt-4 dark:border-slate-800">

@@ -3,6 +3,11 @@ import { View, Text, TouchableOpacity } from "react-native";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { useTheme } from "../../lib/app-preferences";
 
+/** Strip HTML tags so Tiptap content displays as plain text on mobile */
+function stripHtml(html: string): string {
+  return html.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+}
+
 type PostCardProps = {
   post: any;
   styles: any;
@@ -43,7 +48,7 @@ export function PostCard({ post, styles, onPress, onLike }: PostCardProps) {
 
       <Text style={styles.cardTitle}>{post.title}</Text>
       <Text style={styles.cardBody} numberOfLines={3}>
-        {post.content}
+        {stripHtml(post.content)}
       </Text>
 
       <View style={styles.cardFooter}>

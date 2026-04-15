@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
 
 type Course = { id: number; title: string };
 
@@ -29,7 +30,8 @@ export function CreatePostForm() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!title.trim() || !content.trim()) {
+    const plainContent = content.replace(/<[^>]*>/g, "").trim();
+    if (!title.trim() || !plainContent) {
       setError("Title and content are required.");
       return;
     }
@@ -140,12 +142,11 @@ export function CreatePostForm() {
         {/* Content */}
         <div>
           <label className="mb-1.5 block text-sm font-semibold text-slate-700 dark:text-slate-300">Content</label>
-          <textarea
+          <RichTextEditor
             value={content}
-            onChange={(e) => setContent(e.target.value)}
-            rows={8}
+            onChange={setContent}
             placeholder="Write your post here..."
-            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm leading-relaxed placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-400 dark:border-slate-700 dark:bg-slate-800 dark:text-white resize-none"
+            minHeight="200px"
           />
         </div>
 

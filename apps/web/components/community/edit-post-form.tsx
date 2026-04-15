@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
 
 const TYPE_OPTIONS = [
   { value: "discussion", label: "Discussion" },
@@ -41,7 +42,8 @@ export function EditPostForm({ postId }: { postId: number }) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!title.trim() || !content.trim()) {
+    const plainContent = content.replace(/<[^>]*>/g, "").trim();
+    if (!title.trim() || !plainContent) {
       setError("Title and content are required.");
       return;
     }
@@ -138,11 +140,10 @@ export function EditPostForm({ postId }: { postId: number }) {
         {/* Content */}
         <div>
           <label className="mb-1.5 block text-sm font-semibold text-slate-700 dark:text-slate-300">Content</label>
-          <textarea
+          <RichTextEditor
             value={content}
-            onChange={(e) => setContent(e.target.value)}
-            rows={8}
-            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-brand-400 dark:border-slate-700 dark:bg-slate-800 dark:text-white resize-none"
+            onChange={setContent}
+            minHeight="200px"
           />
         </div>
 

@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { View, Text, ScrollView, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform, ActivityIndicator } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform, ActivityIndicator, useWindowDimensions } from "react-native";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import RenderHtml from "react-native-render-html";
 import { apiFetch, getUserFriendlyError } from "../../lib/api";
 import { useTheme, useThemedStyles } from "../../lib/app-preferences";
 import { useAuth } from "../../lib/auth-context";
@@ -99,6 +100,7 @@ export function PostDetailsScreen({ postId }: { postId: number }) {
 
   const { post, comments } = query.data;
   const canMessageAuthor = !!post.authorId && post.authorId !== user?.id;
+  const { width } = useWindowDimensions();
 
   const authorInitials = (post.authorName || "St").substring(0, 2).toUpperCase();
   const timeAgo = new Date(post.createdAt).toLocaleDateString();
@@ -132,7 +134,23 @@ export function PostDetailsScreen({ postId }: { postId: number }) {
             <Text style={styles.badgeText}>{post.postType}</Text>
           </View>
           <Text style={styles.cardTitle}>{post.title}</Text>
-          <Text style={styles.cardBody}>{post.content}</Text>
+          <RenderHtml
+            contentWidth={width - 64}
+            source={{ html: post.content }}
+            tagsStyles={{
+              body: { color: colors.textSecondary, fontSize: 14, lineHeight: 22 },
+              p: { marginTop: 0, marginBottom: 8 },
+              strong: { color: colors.textPrimary, fontWeight: "700" },
+              em: { fontStyle: "italic" },
+              h2: { color: colors.textPrimary, fontSize: 16, fontWeight: "700", marginTop: 12, marginBottom: 4 },
+              h3: { color: colors.textPrimary, fontSize: 15, fontWeight: "600", marginTop: 8, marginBottom: 4 },
+              ul: { paddingLeft: 16 },
+              ol: { paddingLeft: 16 },
+              li: { color: colors.textSecondary, fontSize: 14, lineHeight: 22, marginBottom: 2 },
+              code: { fontFamily: "monospace", backgroundColor: colors.canvas, paddingHorizontal: 4, borderRadius: 4, fontSize: 13 },
+              pre: { backgroundColor: colors.canvas, borderRadius: 8, padding: 12, overflow: "hidden" },
+            }}
+          />
           
           <View style={styles.cardFooter}>
             <View style={styles.interactionRow}>

@@ -603,3 +603,62 @@
 .page-enter-animation {
   animation: pageEnter 0.22s ease-out both;
 }
+
+/* ===== Tiptap editor — placeholder ===== */
+.tiptap-content p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #94a3b8;
+  pointer-events: none;
+  height: 0;
+}
+
+.dark .tiptap-content p.is-editor-empty:first-child::before {
+  color: #475569;
+}
+
+/* ===== Post rich-text rendering — prose-like styles ===== */
+.post-html-content h2 {
+  @apply mt-5 mb-2 text-base font-bold text-slate-900 dark:text-white;
+}
+
+.post-html-content h3 {
+  @apply mt-4 mb-1.5 text-sm font-semibold text-slate-800 dark:text-slate-100;
+}
+
+.post-html-content p {
+  @apply mb-3 last:mb-0;
+}
+
+.post-html-content strong {
+  @apply font-semibold text-slate-900 dark:text-white;
+}
+
+.post-html-content em {
+  @apply italic;
+}
+
+.post-html-content ul {
+  @apply mb-3 list-disc pl-5 space-y-0.5;
+}
+
+.post-html-content ol {
+  @apply mb-3 list-decimal pl-5 space-y-0.5;
+}
+
+.post-html-content li {
+  @apply text-sm leading-relaxed;
+}
+
+.post-html-content code {
+  @apply rounded bg-slate-100 px-1 py-0.5 text-xs font-mono text-slate-700 dark:bg-slate-800 dark:text-slate-300;
+}
+
+.post-html-content pre {
+  @apply mb-3 overflow-x-auto rounded-xl bg-slate-100 p-4 text-xs font-mono dark:bg-slate-900;
+}
+
+.post-html-content pre code {
+  @apply bg-transparent p-0 text-inherit;
+}
+

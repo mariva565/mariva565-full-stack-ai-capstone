@@ -1,4 +1,4 @@
-﻿# Dev Log вЂ” StudyHub v2
+# Dev Log вЂ” StudyHub v2
 
 Р”РЅРµРІРЅРёРє РЅР° СЂР°Р·СЂР°Р±РѕС‚РєР°С‚Р°. РћР±РЅРѕРІСЏРІР° СЃРµ РїСЂРё РІСЃСЏРєР° СЃРµСЃРёСЏ.
 
@@ -24,6 +24,57 @@
 - [x] **S3 Chat вЂ” build + С‚РµСЃС‚** вЂ” РўРµСЃС‚РІР°РЅРѕ СЃ РґРІР° Р°РєР°СѓРЅС‚Р°; Pusher real-time СЂР°Р±РѕС‚Рё.
 - [x] **S3 Chat вЂ” РІРёСЃРѕС‡РёРЅР°** вЂ” С„РёРєСЃРёСЂР°РЅРѕ: РґРёРЅР°РјРёС‡РЅРѕ РёР·РјРµСЂРІР°РЅРµ РЅР° navbar offset РІРјРµСЃС‚Рѕ hardcoded `5rem`.
 - [x] **S3 Chat — "Send message" от профил** — бутонът е добавен и в публичен профил `/profile/[id]` (не само в post details).
+
+---
+
+## 2026-04-15
+
+### Session 247 — Tiptap Rich Text Editor for Community posts
+
+**Какво направихме:**
+- Инсталирахме Tiptap пакети в web workspace: `@tiptap/react`, `@tiptap/starter-kit`, `dompurify`, `@types/dompurify`
+- Нов shared UI компонент `components/ui/rich-text-editor.tsx`:
+  - `"use client"` — client-only, useEditor не работи на сървъра
+  - Toolbar: **B**, *I*, H2, H3, • List, 1. List, \<\> Code Block — всеки бутон с active state
+  - Dark mode Tailwind класове без CSS файлове (brand-400, slate-700/800 palette)
+  - Placeholder чрез CSS `::before` pseudo-element с `data-placeholder` атрибут
+  - Props: `value`, `onChange`, `placeholder?`, `minHeight?`
+- `create-post-form.tsx` — заменен `<textarea>` с `<RichTextEditor>`, state остава `string` (HTML), submit логика непроменена
+- `edit-post-form.tsx` — същото (textarea → RichTextEditor)
+- `post-details.tsx`:
+  - Добавена `sanitizeHtml()` helper функция с DOMPurify (dynamic `require` за SSR guard, `any` cast за type compatibility)
+  - Заменен `whitespace-pre-wrap` content div с `dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content) }}`
+  - CSS клас `post-html-content` за prose-like rendering
+- `community-feed.tsx` — добавен `stripHtml()` helper, excerpt в PostCard вече показва plain text (без HTML тагове)
+- `globals.css`:
+  - Добавени `.post-html-content` prose стилове (h2, h3, p, strong, em, ul, ol, li, code, pre)
+  - Добавен Tiptap `.tiptap-content p.is-editor-empty::before` placeholder CSS
+- **Mobile (Вариант Б — пълен HTML рендър)**:
+  - Инсталирахме `react-native-render-html`
+  - `apps/mobile/components/community/post-card.tsx` — добавен `stripHtml()`, приложен на `post.content` за excerpt (остава plain text за превю)
+  - `apps/mobile/components/community/post-details-screen.tsx` — използва `RenderHtml` компонент с custom `tagsStyles` за форматиране на Tiptap HTML съдържанието
+
+**Файлове:**
+- `[NEW] apps/web/components/ui/rich-text-editor.tsx`
+- `[MODIFY] apps/web/components/community/create-post-form.tsx`
+- `[MODIFY] apps/web/components/community/edit-post-form.tsx`
+- `[MODIFY] apps/web/components/community/post-details.tsx`
+- `[MODIFY] apps/web/components/community/community-feed.tsx`
+- `[MODIFY] apps/web/app/globals.css`
+- `[MODIFY] apps/web/package.json` (+ 3 пакета)
+- `[MODIFY] apps/mobile/components/community/post-card.tsx`
+- `[MODIFY] apps/mobile/components/community/post-details-screen.tsx`
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- `npm.cmd run typecheck:web` ✅
+- `npm.cmd run typecheck:mobile` ✅
+
+**Решения:**
+- DOMPurify с `typeof window === "undefined"` guard — чист SSR, никакъв window call на сървъра
+- Избрахме `require("dompurify") as any` вместо static import, за да избегнем ESM/SSR bundle на DOMPurify
+- Mobile: Първоначално решено за Вариант А (stripHtml regex), но по желание на потребителя е внедрен **Вариант Б** с `react-native-render-html` пакет за пълен rich rendering на поста в детайлния екран.
+- Prose CSS е custom в globals.css (без @tailwindcss/typography plugin — не е конфигуриран в проекта)
 
 ---
 
@@ -7472,4 +7523,38 @@ Commit: `feat: implement S2 Ask Mentor вЂ” mentor inbox + answer-status API`
 - `npm.cmd run typecheck:web` ✅
 
 **Бележка за шрифтовете:** Google Fonts timeout в `dev` mode е известен Next.js артефакт при бавна/нестабилна мрежа по време на компилация. Prod build-ът (`npm run build:web`) bundl-ва шрифтовете локално — няма проблем в production.
+
+### Session 246 (follow-up 2) — Weather widget geolocation robustness
+
+**Какво направихме:**
+- Разграничени geolocation error кодове: `PERMISSION_DENIED (code 1)` → `status="denied"`; `POSITION_UNAVAILABLE` / `TIMEOUT` → `status="error"` с retry бутон.
+- Timeout увеличен от 8000ms на 12000ms + добавен `maximumAge: 60000` (кешира позицията до 1 мин за по-бърз retry).
+- Бутон **📍 Use my location** се показва при `denied` И `error` без данни — потребителят може да retry geolocation вместо само да пише ръчно.
+- Текстът при `denied` е "Or enter your city manually:" вместо обезличено "Enter your city to see the forecast." — по-ясна UX последователност.
+- `retryLocation()` в hook-а пази `lastCoordsRef` — при retry използва последните coords ако са налични.
+
+**Файлове:**
+- `[MODIFY] apps/web/components/calendar/use-weather.ts`
+- `[MODIFY] apps/web/components/calendar/weather-widget.tsx`
+
+**Verification:**
+- `npm.cmd run typecheck:web` ✅
+
+**Диагностична бележка:** React error #418 (от Session 245) е hydration mismatch — НЕ е "Invalid hook call" (#321) и НЕ се дължи на дублиран React. Проверка с `npm ls react` потвърди: всичко е `react@19.1.0 deduped`. Никакви override/dedupe промени не са нужни.
+
+**Бележка за лендинга:** `app/page.tsx:40` — `if (user) redirect("/dashboard")` е умишлено. Логнатите потребители не виждат landing page — редиректват се към dashboard.
+
+---
+
+## Следващи приоритети (за следваща сесия)
+
+1. **Tiptap Rich Text Editor** за Community posts — пълен план записан в `memory/project_tiptap_plan.md`:
+   - `npm install @tiptap/react @tiptap/starter-kit dompurify @types/dompurify` в `apps/web`
+   - Нов `apps/web/components/ui/rich-text-editor.tsx` (адаптиран от Miniblog упражнението)
+   - `create-post-form.tsx` + `edit-post-form.tsx` — textarea → RichTextEditor
+   - `post-details.tsx` — DOMPurify + prose render
+   - `community-feed.tsx` — stripHtml за excerpt
+   - Mobile: `stripHtml()` (1 ред, вариант А) — Вариант Б (react-native-render-html) е ~30-45 мин, Community е out-of-scope за mobile по AGENTS.md
+2. **How It Works** реални скрийншотове — placeholder изображения чакат
+3. **Weather widget тест** с rebuild след geolocation fixes
 
