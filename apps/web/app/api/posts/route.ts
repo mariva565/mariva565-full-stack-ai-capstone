@@ -3,6 +3,10 @@ import { db } from "../../../lib/db";
 import { posts, users, courses, postLikes, postBookmarks, comments } from "../../../../../drizzle/schema";
 import { requireAuth } from "../../../lib/api-utils";
 import { logActivity } from "../../../lib/activity";
+import {
+  hasMeaningfulPostHtmlContent,
+  normalizePostHtmlContent,
+} from "../../../lib/post-html";
 import { desc, eq, and, ilike, or, sql, inArray } from "drizzle-orm";
 
 // GET /api/posts — list posts (filters: type, courseId, status, search, pinned)
@@ -94,8 +98,12 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { title, content, postType, courseId } = body;
+    const normalizedTitle = typeof title === "string" ? title.trim() : "";
+    const normalizedContent = normalizePostHtmlContent(
+      typeof content === "string" ? content : ""
+    );
 
-    if (!title?.trim() || !content?.trim()) {
+    if (!normalizedTitle || !hasMeaningfulPostHtmlContent(normalizedContent)) {
       return NextResponse.json(
         { code: "MISSING_FIELDS", message: "Title and content are required" },
         { status: 400 }
@@ -141,8 +149,8 @@ export async function POST(request: NextRequest) {
       .insert(posts)
       .values({
         authorId: auth.user.sub,
-        title: title.trim(),
-        content: content.trim(),
+        title: normalizedTitle,
+        content: normalizedContent,
         postType: normalizedPostType,
         status:
           auth.user.role === "admin" || auth.user.role === "mentor"

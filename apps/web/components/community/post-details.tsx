@@ -4,17 +4,19 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { getProfileInitials } from "@/lib/profile";
+import { normalizePostHtmlContent } from "@/lib/post-html";
 import { type Post, type Comment, TYPE_LABELS, TYPE_COLORS, timeAgo } from "./post-types";
 import { CommentItem } from "./comment-item";
 import { ConfirmModal } from "../ui/confirm-modal";
 
 function sanitizeHtml(dirty: string): string {
-  if (typeof window === "undefined") return "";
+  const normalized = normalizePostHtmlContent(dirty);
+  if (typeof window === "undefined") return normalized;
   // Dynamic require keeps DOMPurify out of SSR bundle
   // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-explicit-any
   const DOMPurify = require("dompurify") as any;
   const purify = DOMPurify.default ?? DOMPurify;
-  return purify.sanitize(dirty) as string;
+  return purify.sanitize(normalized) as string;
 }
 
 function getProfileHref(targetUserId: number, currentUserId: number) {

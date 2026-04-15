@@ -4,6 +4,10 @@ import { posts, users, courses, comments, postLikes, postBookmarks } from "../..
 import { requireAuth } from "../../../../lib/api-utils";
 import { logActivity } from "../../../../lib/activity";
 import { canUserAccessPost } from "../../../../lib/post-access";
+import {
+  hasMeaningfulPostHtmlContent,
+  normalizePostHtmlContent,
+} from "../../../../lib/post-html";
 import { eq, and, desc, sql } from "drizzle-orm";
 
 type Params = { params: Promise<{ id: string }> };
@@ -100,12 +104,30 @@ export async function PUT(request: NextRequest, { params }: Params) {
 
   const body = await request.json();
   const { title, content, postType, courseId } = body;
+  const hasTitle = typeof title === "string";
+  const hasContent = typeof content === "string";
+  const normalizedTitle = hasTitle ? title.trim() : "";
+  const normalizedContent = hasContent ? normalizePostHtmlContent(content) : "";
+
+  if (hasTitle && !normalizedTitle) {
+    return NextResponse.json(
+      { code: "MISSING_TITLE", message: "Title is required" },
+      { status: 400 }
+    );
+  }
+
+  if (hasContent && !hasMeaningfulPostHtmlContent(normalizedContent)) {
+    return NextResponse.json(
+      { code: "MISSING_CONTENT", message: "Content is required" },
+      { status: 400 }
+    );
+  }
 
   const [updated] = await db
     .update(posts)
     .set({
-      ...(title ? { title: title.trim() } : {}),
-      ...(content ? { content: content.trim() } : {}),
+      ...(hasTitle ? { title: normalizedTitle } : {}),
+      ...(hasContent ? { content: normalizedContent } : {}),
       ...(postType ? { postType } : {}),
       ...(courseId !== undefined ? { courseId: courseId ? parseInt(courseId, 10) : null } : {}),
       updatedAt: new Date(),

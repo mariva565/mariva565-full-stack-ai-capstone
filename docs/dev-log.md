@@ -7494,3 +7494,46 @@ Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
 
 **Решения:**
 - BOM проверката е върху staged content (index blob), не върху working copy, за да е коректна при частично staging/разлики.
+
+## 2026-04-16
+
+### Session 251 — Community Tiptap list alignment fix
+
+**Какво направихме:**
+- Поправихме подравняването на bullets/numbering в Community post rich-text рендериране.
+- Добавихме mt-0 за .post-html-content p, за да се елиминира browser default margin-top, който измества текста спрямо marker-а.
+- Принудихме list-outside за ul/ol, за да е консистентно подравняването при пренасяне на ред.
+- Добавихме специфични правила за параграфи вътре в li (li > p, li > p + p) за стабилна визуализация при Tiptap HTML (<li><p>...</p></li>).
+
+**Файлове:**
+- [MODIFY] apps/web/app/globals.css
+
+**Verification:**
+- 
+pm.cmd run typecheck:web ✅
+
+**Решения:**
+- Избрахме CSS fix в слоя за rich-text render (.post-html-content) вместо промяна на Tiptap output структурата, за да запазим съществуващото content поведение и да елиминираме проблема на UI ниво.
+
+### Session 252 — Local production quick-start (runbook reminder)
+
+**Какво направихме:**
+- Добавихме кратък runbook напомнящ flow за локален production preview на web app.
+- Потвърдихме, че проектът ползва централен скрипт scripts/run-local-prod.ps1, който:
+  - чисти зает порт 3002 (ако има stale процес)
+  - пуска uild:web (освен при -SkipBuild)
+  - стартира start:web на http://localhost:3002
+- Уточнихме двете команди за ежедневна употреба:
+  - 
+pm.cmd run prod:web (build + start)
+  - 
+pm.cmd run prod:web:skip-build (само start върху последния build)
+
+**Файлове:**
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Документационен ъпдейт (без нов code-path).
+
+**Решения:**
+- Запазваме prod:web като default вход за локален production, за да избегнем ръчни стъпки и чести EADDRINUSE случаи на порт 3002.

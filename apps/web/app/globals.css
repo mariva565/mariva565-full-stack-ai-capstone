@@ -627,7 +627,7 @@
 }
 
 .post-html-content p {
-  @apply mb-3 last:mb-0;
+  @apply mt-0 mb-3 last:mb-0;
 }
 
 .post-html-content strong {
@@ -639,15 +639,23 @@
 }
 
 .post-html-content ul {
-  @apply mb-3 list-disc pl-5 space-y-0.5;
+  @apply mb-3 list-disc list-outside pl-5 space-y-0.5;
 }
 
 .post-html-content ol {
-  @apply mb-3 list-decimal pl-5 space-y-0.5;
+  @apply mb-3 list-decimal list-outside pl-5 space-y-0.5;
 }
 
 .post-html-content li {
   @apply text-sm leading-relaxed;
+}
+
+.post-html-content li > p {
+  @apply my-0;
+}
+
+.post-html-content li > p + p {
+  @apply mt-2;
 }
 
 .post-html-content code {
@@ -661,4 +669,3 @@
 .post-html-content pre code {
   @apply bg-transparent p-0 text-inherit;
 }
-
