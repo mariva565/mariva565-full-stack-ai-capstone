@@ -7725,3 +7725,24 @@ Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
 
 **Решения:**
 - За Mermaid диаграми в README използваме syntax, който е доказано стабилен за GitHub renderer (quoted aliases + plain-text conditions), за да избегнем runtime render errors.
+
+### Session 261 — AGENTS operational guidance tightened without adding ceremony
+
+**Какво направихме:**
+- Добавихме минимален operational layer в `AGENTS.md`, насочен към по-стегната agent работа без допълнителна разговорна тежест.
+- Добавихме кратки секции за:
+  - `Task Scoping`
+  - `Context Loading Rules`
+  - `Simplicity Rule`
+  - `Testing Mindset`
+- Запазихме правилата кратки и project-aware, без тежък execution protocol, който би забавял работата или би насърчил излишни обяснения.
+
+**Файлове:**
+- `[MODIFY] AGENTS.md`
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- Документационен ъпдейт; функционален code-path не е променян.
+
+**Решения:**
+- Избрахме minimal patch вместо голям rewrite на `AGENTS.md`, за да подобрим scoping и decision quality без да направим агентите по-тромави.

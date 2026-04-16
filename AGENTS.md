@@ -150,6 +150,39 @@ Current mobile quality-gate status:
 - TypeScript strict mode
 - API error contract: `{ code: string, message: string }`
 
+### Task Scoping
+- Before making changes, identify:
+  - the primary task type: feature, bug fix, refactor, or docs sync
+  - the affected layers: web, backend/API, mobile, database, shared, docs
+  - the likely files and helpers involved
+  - whether cross-layer follow-through is required
+- Keep one primary objective per task.
+- Allow multi-layer changes only when they complete the same feature or fix end-to-end.
+- Do not bundle unrelated cleanup into the same change.
+
+### Context Loading Rules
+- Do not scan the entire repository by default.
+- Start from the smallest relevant scope.
+- Expand only when shared contracts, auth, schema, navigation, parity, or docs are affected.
+- Avoid large file dumps; read the relevant sections only.
+
+### Simplicity Rule
+- Prefer the simplest solution that fully satisfies the task and respects project constraints.
+- Avoid:
+  - premature optimization
+  - unnecessary abstractions
+  - speculative generalization
+- Do not introduce reusable abstractions unless reuse is already proven.
+
+### Testing Mindset
+- For every change, consider:
+  - happy path
+  - edge cases
+  - failure scenarios
+  - regression risk
+- Run the smallest relevant validation available.
+- If full verification is not possible, state that clearly.
+
 ### Encoding & Text Safety
 - **All text/code files must be UTF-8**. Never save project files as ANSI/Windows-1251/Windows-1252.
 - **`docs/dev-log.md` must be UTF-8 with BOM** to avoid PowerShell/editor mis-detection on Windows.
