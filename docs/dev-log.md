@@ -7667,3 +7667,41 @@ Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
 **Решения:**
 - Премахнахме hardcoded endpoint-count заглавия от README секциите, за да намалим drift при бъдещи API разширения.
 - Оставихме endpoint matrix-а feature-oriented (продуктово-ориентиран), вместо да се опитваме да поддържаме изчерпателен route-by-route dump в README.
+
+### Session 259 — Implementation plan + mobile docs sync after major feature expansion
+
+**Какво направихме:**
+- Синхронизирахме `docs/implementation-plan.md` с текущия реален продукт:
+  - обновен header статус (`2026-04-16`) и текуща фаза,
+  - MVP rubric lock маркиран по реално изпълнение (roles, schema size, screen scope),
+  - добавени ясни бележки кое е historical MVP baseline и кое е current scope,
+  - обновена `Текущ статус` таблица (вкл. Social S3, weather widget, Tiptap, messaging/notifications),
+  - добавен `capability snapshot` за ключовите текущи функционалности.
+- Обновихме `docs/mobile-execution-checklist.md`:
+  - `Last updated` на `2026-04-16`,
+  - приоритет №1 вече е физическа device верификация за `SMK-21..SMK-23`,
+  - добавен `Doc Sync Update` блок за Session 258,
+  - премахнато противоречие за mobile AI defer статус.
+- Обновихме `docs/mobile-smoke-test-matrix.md`:
+  - `Last updated` към Session 258,
+  - status line уточнява, че `SMK-21..23` остават `BLOCKED`,
+  - добавен `Run 6 (2026-04-16)` като doc-sync run (без нов физически test execution).
+- Обновихме `docs/mobile-release-checklist.md`:
+  - `Current Gate Summary` вече е `2026-04-16`,
+  - release status премина към `CONDITIONAL GO for core handoff`,
+  - ясно описан оставащ blocker за physical-device push validation (`SMK-21..23`),
+  - signoff статус актуализиран към реалното състояние.
+
+**Файлове:**
+- `[MODIFY] docs/implementation-plan.md`
+- `[MODIFY] docs/mobile-execution-checklist.md`
+- `[MODIFY] docs/mobile-smoke-test-matrix.md`
+- `[MODIFY] docs/mobile-release-checklist.md`
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- `npm.cmd run check:mojibake` ✅
+
+**Решения:**
+- Държим implementation-plan-а като hybrid документ: original MVP baseline + актуален live status snapshot, за да не се губи traceability към assignment изискванията.
+- За mobile release комуникация използваме `CONDITIONAL GO`, докато `SMK-21..23` не минат физически device pass.

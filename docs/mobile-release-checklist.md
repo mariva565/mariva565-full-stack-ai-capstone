@@ -1,6 +1,6 @@
 # Mobile Release Checklist (Phase 3 Handoff)
 
-Last updated: 2026-04-10  
+Last updated: 2026-04-16  
 Owner: Mobile stream  
 Scope: Expo mobile release-readiness signoff for StudyHub v2
 
@@ -12,12 +12,13 @@ This checklist is grounded in:
 - `docs/mobile-execution-checklist.md`
 - `docs/mobile-phone-testing-handoff.md`
 
-## Current Gate Summary (2026-04-10)
+## Current Gate Summary (2026-04-16)
 
 - Smoke matrix: `SMK-01` through `SMK-20` = `PASS`
 - Accessibility sanity (`SMK-20`) = `PASS`
+- Messaging push verification rows: `SMK-21` through `SMK-23` = `BLOCKED` (requires physical-device run with two accounts)
 - Telemetry: Sentry integrated and validated with manual event (`SENTRY_TEST_EVENT`)
-- Result: `GO for handoff`
+- Result: `CONDITIONAL GO for core handoff` (full push-delivery signoff pending)
 
 ## Release Readiness Checklist
 
@@ -65,15 +66,19 @@ This checklist is grounded in:
 
 ## 7) Known Blockers / Risks
 
-- [x] No active quality-gate blockers in current mobile handoff state.
+- [ ] Push delivery validation for messages is pending on physical devices:
+  - `SMK-21`: foreground incoming message path
+  - `SMK-22`: background notification + tap deep-link
+  - `SMK-23`: killed-app cold-start + tap deep-link
 
 ## 8) Go / No-Go Rule
 
-- `GO` when sections 1 through 6 are complete and section 7 has no unresolved blockers.
+- `GO` (core handoff) when sections 1 through 6 are complete and only non-regression device-only validations remain.
+- `FULL GO` when section 7 has no unresolved blockers and `SMK-21`..`SMK-23` are verified on physical devices.
 - `NO-GO` if any smoke row regresses to `FAIL`.
 
 ## Signoff
 
 - Checklist owner signoff: `Complete`
-- Date: `2026-04-10`
-- Release status: `Handoff-ready (all SMK rows PASS)`
+- Date: `2026-04-16`
+- Release status: `Core handoff-ready; awaiting final device push verification for SMK-21..SMK-23`

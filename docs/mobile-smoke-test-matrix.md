@@ -1,8 +1,8 @@
 # Mobile Smoke Test Matrix (Phase 3)
 
-Last updated: 2026-04-13 (Session 236)
+Last updated: 2026-04-16 (Session 258 doc sync)
 Owner: Mobile stream  
-Status: Core smoke ready - SMK-01 through SMK-20 PASS; SMK-21 through SMK-23 added for message push pipeline verification
+Status: Core smoke ready - SMK-01 through SMK-20 PASS; SMK-21 through SMK-23 remain BLOCKED until physical-device push verification
 
 ## Goal
 
@@ -116,3 +116,12 @@ Mark each item with `PASS`, `FAIL`, or `BLOCKED` and add short notes.
 - Code-path notes:
   - Foreground path now intentionally uses in-app toast without duplicate OS banner when app is open.
   - Background and killed-app tap handlers remain wired through notification response deep-link to `/messages/[id]`.
+
+### Run 6 (2026-04-16, Session 258 docs sync)
+- Result:
+  - No new physical-device execution in this session.
+  - Matrix state is unchanged from Run 5:
+    - `SMK-01`..`SMK-20`: `PASS`
+    - `SMK-21`..`SMK-23`: `BLOCKED` pending device push verification.
+- Notes:
+  - Updated project-level docs (README/AGENTS/implementation plan) to reflect current messaging/push scope.

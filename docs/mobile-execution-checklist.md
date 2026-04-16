@@ -1,6 +1,6 @@
 # Mobile Execution Checklist (Quality-First)
 
-Last updated: 2026-04-13
+Last updated: 2026-04-16
 Owner: Mobile stream
 
 ## Scope Decisions (2026-04-08)
@@ -8,7 +8,7 @@ Owner: Mobile stream
 - [x] DE-SCOPED: Progress/Milestones mobile MVP (internal work-notes pages; not core end-user mobile value).
 - [x] DE-SCOPED: Calendar mobile MVP (internal work-notes usage; low product ROI for mobile scope).
 - [x] DE-SCOPED: Mobile Admin Panel (web-first scope decision; only implement if explicitly requested).
-- [x] DEFERRED: Mobile AI tools/chat (move after core mobile quality baseline is stable).
+- [x] RESOLVED: Mobile AI tools entry point is integrated (post-stabilization), after initial defer decision.
 - [x] DE-SCOPED: Admin QR entry point (no product need for this capstone scope).
 
 ## Priority Order (after mobile standards reassessment)
@@ -221,14 +221,22 @@ Owner: Mobile stream
 
 ## Next Recommended Task
 
-- Proceed with post-MVP mobile sequencing (updated):
-  - 1. Storage foundation for materials/files (shared API contract, validation, R2 object lifecycle).
-  - 2. Mobile uploads: PDF/DOC/image material upload + avatar upload from device.
-  - 3. Transform tools: `note -> PDF` export and `PDF -> note` extraction flow.
-  - 4. Sharing + social messaging entry points after backend social phases are available.
+- Immediate priority:
+  - 1. Execute physical-device verification for `SMK-21`/`SMK-22`/`SMK-23` (foreground/background/killed message push delivery + deep-link behavior).
+- Then continue with post-MVP sequencing:
+  - 2. Storage foundation for materials/files (shared API contract, validation, R2 object lifecycle).
+  - 3. Mobile uploads: PDF/DOC/image material upload + avatar upload from device.
+  - 4. Transform tools: `note -> PDF` export and `PDF -> note` extraction flow.
+  - 5. Sharing + social messaging UX polish on top of existing S0-S3 backend/web scope.
 - Social dependency reference:
   - `docs/social-features-plan.md` (S0 roles/membership, S1 community, S2 mentor Q&A, S3 messaging).
 - Keep accessibility sanity in smoke cadence as a regression-check row (`SMK-20`).
+
+### Doc Sync Update (2026-04-16, Session 258)
+- Synced this checklist with current project scope after README/AGENTS refresh.
+- Confirmed status remains:
+  - Core mobile quality gates (`SMK-01`..`SMK-20`) are PASS.
+  - Push-specific smoke rows (`SMK-21`..`SMK-23`) remain BLOCKED pending physical-device validation.
 
 ### Completed Product Polish Slice (2026-04-10, Session 196)
 - Added a dedicated Settings screen in Profile flow (stack route, no extra bottom tab):
