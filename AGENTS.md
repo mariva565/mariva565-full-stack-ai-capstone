@@ -13,9 +13,10 @@ The old project is at `C:\Users\mariy\Projects\Visual-Studio-Capstone-Project-St
 - **Frontend Web:** Next.js + React + TypeScript + Tailwind CSS + Framer Motion
 - **Backend API:** Next.js API Routes (RESTful)
 - **Database:** Neon serverless PostgreSQL + Drizzle ORM
-- **Auth:** JWT tokens (register, login, logout) + Google OAuth + roles (user, admin)
-- **Mobile:** React Native + Expo
+- **Auth:** JWT tokens (register, login, logout) + Google OAuth + roles (user, mentor, admin)
+- **Mobile:** React Native + Expo + TanStack React Query
 - **AI:** Google Gemini API (chat, summarize, quiz generation)
+- **Realtime & Notifications:** Pusher (web realtime), Browser Notification API, Expo notifications + Expo push tokens
 - **3D/Visuals:** Three.js (landing page scenes)
 - **Storage:** Cloudflare R2 (optional, for file uploads)
 - **Deploy:** Vercel or Netlify
@@ -27,57 +28,63 @@ Monorepo with two apps communicating via REST API:
 ```
 capstone/
 ├── apps/
-│   ├── web/                  ← Next.js (backend API + web client)
+│   ├── web/                          ← Next.js (backend API + web client)
 │   │   ├── app/
-│   │   │   ├── api/          ← RESTful API routes
-│   │   │   ├── register/
-│   │   │   ├── login/
-│   │   │   ├── dashboard/
-│   │   │   ├── courses/[id]/
-│   │   │   ├── modules/[id]/
-│   │   │   ├── materials/[id]/
-│   │   │   ├── calendar/
-│   │   │   ├── progress/
-│   │   │   ├── profile/
-│   │   │   ├── admin/
-│   │   │   ├── how-it-works/
-│   │   │   └── contact/
-│   │   ├── components/       ← UI components (by page + shared ui/)
-│   │   ├── lib/              ← Helpers (auth, db, AI, etc.)
+│   │   │   ├── api/                  ← auth/content/admin/social/messaging routes
+│   │   │   ├── register/ login/ dashboard/
+│   │   │   ├── courses/[id]/ modules/[id]/ materials/[id]/
+│   │   │   ├── community/ mentor-inbox/ messages/
+│   │   │   ├── calendar/ progress/ profile/ admin/ moderation/
+│   │   │   ├── how-it-works/ contact/ forbidden/
+│   │   │   └── page.tsx              ← landing `/`
+│   │   ├── components/               ← UI components (by page + shared ui/)
+│   │   ├── lib/                      ← auth/db/ai/realtime/notifications helpers
 │   │   └── middleware.ts
-│   └── mobile/               ← Expo (React Native mobile client)
-│       └── app/
-│           ├── login.tsx
-│           ├── index.tsx     ← Courses List
-│           └── course/[id].tsx
+│   └── mobile/                       ← Expo (React Native mobile client)
+│       ├── app/
+│       │   ├── (tabs)/               ← courses/community/favorites/profile
+│       │   ├── login.tsx register.tsx settings.tsx
+│       │   ├── course/[id]/ module/[id]/ material/[id]/
+│       │   ├── community/[id].tsx community/new.tsx
+│       │   └── messages/index.tsx messages/[id].tsx
+│       └── lib/                      ← auth/api/query/toast/push hooks
 ├── packages/
-│   └── shared/               ← Shared types, utils, API client
-├── drizzle/                  ← DB schema + migrations
-├── docs/                     ← Documentation
-├── AGENTS.md                 ← This file
+│   └── shared/                       ← Shared types, utils, API client
+├── drizzle/                          ← DB schema + migrations
+├── docs/                             ← Documentation
+├── AGENTS.md                         ← This file
 └── README.md
 ```
 
-## Database Tables (10 tables, Drizzle ORM)
+## Database Tables (19 tables, Drizzle ORM)
 
-- **users** — id, email, name, password_hash, role (user/admin), avatar_url, blocked, created_at
+- **users** — id, email, name, password_hash, role (user/mentor/admin), avatar_url, blocked, created_at
 - **courses** — id, title, description, created_by (FK→users), is_public, status, created_at
 - **modules** — id, course_id (FK→courses), title, description, order_index, created_by (FK→users)
 - **materials** — id, module_id (FK→modules), title, content, material_type, file_url, tags, created_by (FK→users), created_at
 - **favorites** — id, user_id (FK→users), material_id (FK→materials), created_at
+- **ai_tool_outputs** — id, user_id (FK→users), material_id (FK→materials), tool, data (JSON), created_at
 - **milestones** — id, user_id (FK→users), title, description, status, due_date, completed_at, order_index, created_at
 - **events** — id, user_id (FK→users), title, description, date, type, color, course_id (FK→courses), milestone_id (FK→milestones), created_at
 - **activity_logs** — id, user_id (FK→users), action_type, target_id, details (JSON), created_at
 - **oauth_accounts** — id, user_id (FK→users), provider, provider_user_id, provider_email, created_at
-- **ai_tool_outputs** — id, user_id (FK→users), material_id (FK→materials), tool, data (JSON), created_at
+- **course_members** — id, course_id (FK→courses), user_id (FK→users), role, joined_at
+- **posts** — id, author_id (FK→users), title, content, post_type, status, course_id (FK→courses), is_pinned, question_status, created_at, updated_at
+- **comments** — id, post_id (FK→posts), author_id (FK→users), content, created_at
+- **post_likes** — id, post_id (FK→posts), user_id (FK→users), created_at
+- **post_bookmarks** — id, post_id (FK→posts), user_id (FK→users), created_at
+- **conversations** — id, created_at
+- **conversation_members** — id, conversation_id (FK→conversations), user_id (FK→users), joined_at, last_read_at
+- **messages** — id, conversation_id (FK→conversations), sender_id (FK→users), content, created_at
+- **user_push_tokens** — id, user_id (FK→users), token, platform, app_ownership, is_active, created_at, updated_at, last_seen_at
 
 Every schema change MUST use Drizzle migrations. Migration SQL scripts must be committed.
 
-## Web Screens (13 screens, responsive)
+## Web Screens (23 screens, responsive)
 
 | # | Screen | Path | Access |
 |---|---|---|---|
-| 1 | Landing Page | `/` | public |
+| 1 | Landing Page | `/` | public (guest + authenticated) |
 | 2 | How It Works | `/how-it-works` | public |
 | 3 | Contact | `/contact` | public |
 | 4 | Register | `/register` | public |
@@ -86,21 +93,34 @@ Every schema change MUST use Drizzle migrations. Migration SQL scripts must be c
 | 7 | Course Details | `/courses/[id]` | login |
 | 8 | Module Workspace | `/modules/[id]` | login |
 | 9 | Material View/Edit | `/materials/[id]` | login |
-| 10 | Calendar | `/calendar` | login |
-| 11 | Progress | `/progress` | login |
-| 12 | Profile | `/profile` | login |
-| 13 | Admin Panel | `/admin` | admin |
+| 10 | Profile | `/profile` | login |
+| 11 | Public Profile | `/profile/[id]` | login |
+| 12 | Progress | `/progress` | login |
+| 13 | Calendar | `/calendar` | login |
+| 14 | Admin Panel | `/admin` | admin |
+| 15 | Moderation Queue | `/moderation` | admin |
+| 16 | Forbidden (403) | `/forbidden` | public |
+| 17 | Community Feed | `/community` | login |
+| 18 | Community Create | `/community/new` | login |
+| 19 | Community Details | `/community/[id]` | login |
+| 20 | Community Edit | `/community/[id]/edit` | login (author/admin) |
+| 21 | Mentor Inbox | `/mentor-inbox` | mentor/admin |
+| 22 | Messages Inbox | `/messages` | login |
+| 23 | Message Thread | `/messages/[id]` | login |
 
-Additional: `/forbidden` (error page for unauthorized access)
+Additional: `/forbidden` is the unauthorized destination for role-guarded pages. Unauthorized `/admin` access redirects to `/forbidden` via middleware.
+Navigation parity note: navbar `Home` always points to `/` even for authenticated users; authenticated navbar should expose `Dashboard` CTA instead of `Login`/`Register`.
 
-## Mobile Scope (Current, 2026-04-10)
+## Mobile Scope (Current, 2026-04-16)
 
 In-scope mobile product flows:
 1. Auth (`/login`, `/register`)
-2. Courses list + course details
-3. Module workspace + material view/edit
-4. Favorites (pin/unpin + favorites list tab)
-5. Profile (basic account actions)
+2. Courses/modules/materials CRUD
+3. Favorites (pin/unpin + favorites tab)
+4. Community feed + create + details
+5. Direct messaging (inbox + thread)
+6. Push-notification pipeline (messages/comments) with deep-link handlers
+7. Profile + settings basics
 
 Out-of-scope on mobile for this capstone:
 - Progress/Milestones pages (web working pages for development tracking)
@@ -110,6 +130,7 @@ Out-of-scope on mobile for this capstone:
 Current mobile quality-gate status:
 - `SMK-01` through `SMK-20`: PASS
 - `SMK-20` accessibility sanity: PASS (VoiceOver/TalkBack sanity verification completed)
+- `SMK-21` through `SMK-23` (messages push foreground/background/cold-start): BLOCKED in terminal-only runs; requires physical-device validation
 - Sentry telemetry integration: DONE and validated (`SENTRY_TEST_EVENT` received in Sentry Issues, test trigger removed)
 
 ## Key Rules

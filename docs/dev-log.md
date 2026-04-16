@@ -7614,3 +7614,56 @@ Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
 
 **Решения:**
 - Запазихме auth-aware navigation в landing без допълнителни login стъпки за вече аутентикирани потребители.
+
+### Session 257 — README + AGENTS route behavior sync
+
+**Какво направихме:**
+- Синхронизирахме документацията с текущото web поведение за публични/защитени маршрути.
+- В `README.md` обновихме таблицата `Screens`:
+  - `/` е маркиран като публичен за `guest + authenticated`
+  - `/forbidden` е уточнен като auto-redirect destination при unauthorized достъп до `/admin`
+- Добавихме route note в `README.md`, че navbar `Home` винаги води към `/`, а при логнат потребител CTA е `Dashboard` (вместо `Login/Register`).
+- В `AGENTS.md` обновихме същите routing уточнения, за да останат консистентни agent инструкциите с реалното приложение.
+
+**Файлове:**
+- `[MODIFY] README.md`
+- `[MODIFY] AGENTS.md`
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- Документационна синхронизация (без code-path промени).
+
+**Решения:**
+- README и AGENTS остават single source of truth за routing expectations при landing/admin guards.
+
+### Session 258 — README + AGENTS comprehensive refresh (weather, Tiptap, notifications, inbox)
+
+**Какво направихме:**
+- Направихме пълна документационна синхронизация на `README.md` и `AGENTS.md` спрямо текущите функционалности.
+- Обновихме `README.md` за:
+  - актуален обхват на social/messaging (`Social S3` като completed),
+  - актуални web/mobile screen матрици (вкл. `/messages`, `/messages/[id]`, `/moderation`, `/profile/[id]`, mobile community/messages flows),
+  - weather widget в calendar flow,
+  - Tiptap rich-text community flow (create/edit + sanitized render),
+  - notifications/inbox capabilities (browser alerts, mobile push token pipeline, messages inbox/thread),
+  - API endpoint секции без твърдо фиксирани остарели бройки + нова секция `Messaging and Notifications`,
+  - обновени архитектурни и schema метрики (таблици/страници/API route count),
+  - синхронизация на `Key Folders and Files` и v1→v2 comparison метаданни.
+- Обновихме `AGENTS.md` за:
+  - текущ stack (mentor role, realtime/notifications, mobile query/push context),
+  - актуална архитектура и route surface,
+  - актуален списък с 19 DB таблици,
+  - web screens (23) + mobile scope (community, messages, push pipeline),
+  - актуален mobile quality gate статус (`SMK-21`..`SMK-23` като device-blocked).
+
+**Файлове:**
+- `[MODIFY] README.md`
+- `[MODIFY] AGENTS.md`
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- `npm.cmd run check:mojibake` ✅
+
+**Решения:**
+- Премахнахме hardcoded endpoint-count заглавия от README секциите, за да намалим drift при бъдещи API разширения.
+- Оставихме endpoint matrix-а feature-oriented (продуктово-ориентиран), вместо да се опитваме да поддържаме изчерпателен route-by-route dump в README.

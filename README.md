@@ -20,9 +20,9 @@
   <img src="https://img.shields.io/badge/Status-In%20Progress-F59E0B?style=flat-square" alt="Status in progress" />
   <img src="https://img.shields.io/badge/Commits-75%2B-22C55E?style=flat-square" alt="75 plus commits" />
   <img src="https://img.shields.io/badge/TypeScript-Strict%20Mode-6366F1?style=flat-square" alt="TypeScript strict mode" />
-  <img src="https://img.shields.io/badge/Tables-14-8B5CF6?style=flat-square" alt="14 database tables" />
-  <img src="https://img.shields.io/badge/API-49%20endpoints-06B6D4?style=flat-square" alt="49 API endpoints" />
-  <img src="https://img.shields.io/badge/Web-19%20pages-6366F1?style=flat-square" alt="19 web pages" />
+  <img src="https://img.shields.io/badge/Tables-19-8B5CF6?style=flat-square" alt="19 database tables" />
+  <img src="https://img.shields.io/badge/API-57%20routes-06B6D4?style=flat-square" alt="57 API routes" />
+  <img src="https://img.shields.io/badge/Web-23%20pages-6366F1?style=flat-square" alt="23 web pages" />
   <img src="https://img.shields.io/badge/Mobile-React%20Query%20Cache-8B5CF6?style=flat-square" alt="mobile react query cache" />
 </p>
 
@@ -31,7 +31,7 @@
   <a href="#database-schema"><img src="https://img.shields.io/badge/DB-Schema%20Diagram-6366F1?style=flat-square" alt="DB schema diagram" /></a>
   <a href="#user-roles"><img src="https://img.shields.io/badge/Roles-User%20%2B%20Admin-06B6D4?style=flat-square" alt="User roles" /></a>
   <a href="#demo-walkthrough"><img src="https://img.shields.io/badge/Demo-Walkthrough-8B5CF6?style=flat-square" alt="Demo walkthrough" /></a>
-  <a href="#api-endpoints-37"><img src="https://img.shields.io/badge/API-Endpoints-6366F1?style=flat-square" alt="API endpoints" /></a>
+  <a href="#api-endpoints"><img src="https://img.shields.io/badge/API-Endpoints-6366F1?style=flat-square" alt="API endpoints" /></a>
 </p>
 
 ---
@@ -66,7 +66,7 @@ The app is a personal **Learning Management System (LMS)** — a structured elec
 | Phase | Scope | Status |
 |---|---|---|
 | Phase 0 | Monorepo bootstrap (npm workspaces) | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
-| Phase 1 | DB schema + Drizzle migrations (10 tables) | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
+| Phase 1 | DB schema + Drizzle migrations (19 tables) | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
 | Phase 2 | Auth (JWT + Google OAuth + role guards) | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
 | Phase 3 | Courses / modules / materials CRUD + favorites | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
 | Phase 4 | Profile + milestones + calendar + progress tracking | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
@@ -77,6 +77,7 @@ The app is a personal **Learning Management System (LMS)** — a structured elec
 | Social S0 | Roles (user / mentor / admin) + Course Membership | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
 | Social S1 | Community Board — posts, comments, likes, bookmarks, moderation | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
 | Social S2 | Ask Mentor — Q&A workflow with Mentor Inbox | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
+| Social S3 | Messaging + notifications (web inbox/chat, mobile inbox/thread, browser + mobile push) | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
 | Phase 9 | File storage (Cloudflare R2 — PDF upload, export) | ![Planned](https://img.shields.io/badge/Planned-64748B?style=flat-square) |
 | Phase 10 | Deployment (Vercel/Netlify) | ![Planned](https://img.shields.io/badge/Planned-64748B?style=flat-square) |
 
@@ -94,8 +95,8 @@ The app is a personal **Learning Management System (LMS)** — a structured elec
 graph TB
     subgraph CLIENT["Client Layer"]
         direction LR
-        WEB["<b>Next.js Web App</b><br/>React 19 + TypeScript<br/>Tailwind CSS + Three.js<br/>14 pages"]
-        MOBILE["<b>Expo Mobile App</b><br/>React Native<br/>Android / iOS<br/>13+ screens"]
+        WEB["<b>Next.js Web App</b><br/>React 19 + TypeScript<br/>Tailwind CSS + Three.js<br/>23 pages"]
+        MOBILE["<b>Expo Mobile App</b><br/>React Native<br/>Android / iOS<br/>20+ screens"]
     end
 
     subgraph SERVER["Server Layer — Next.js API Routes"]
@@ -112,10 +113,10 @@ graph TB
     end
 
     subgraph DATA["Data Layer"]
-        DB[("Neon PostgreSQL<br/><i>Serverless — EU region</i><br/>10 tables + relationships")]
+        DB[("Neon PostgreSQL<br/><i>Serverless — EU region</i><br/>19 tables + relationships")]
     end
 
-    WEB -->|"REST API<br/>37 endpoints"| SERVER
+    WEB -->|"REST API<br/>57 routes"| SERVER
     MOBILE -->|"REST API<br/>same backend"| SERVER
     SERVER --> ORM
     ORM --> DB
@@ -140,10 +141,10 @@ graph TB
 | Layer | Technology |
 |---|---|
 | Frontend Web | Next.js 15 + React 19 + TypeScript (strict) + Tailwind CSS |
-| Backend API | Next.js API Routes — 37 RESTful endpoints |
+| Backend API | Next.js API Routes — core + social + messaging route groups |
 | Database | Neon PostgreSQL (serverless) + Drizzle ORM + SQL migrations |
 | Auth | Custom JWT (jose, HS256, httpOnly cookies) + Google OAuth |
-| Mobile | React Native + Expo SDK 54 + TanStack React Query + AsyncStorage persistence |
+| Mobile | React Native + Expo SDK 54 + TanStack React Query + AsyncStorage persistence + Expo notifications |
 | Monorepo | npm workspaces (`apps/web`, `apps/mobile`, `packages/shared`) |
 
 ---
@@ -254,7 +255,9 @@ sequenceDiagram
 | Create, edit, delete materials (text, link, file) | `/materials/[id]` |
 | Bookmark materials as favorites | Any material card |
 | Track progress with milestones | `/progress` |
-| Plan with calendar events | `/calendar` |
+| Plan with calendar events + weather widget | `/calendar` |
+| Use Community rich-text posting (Tiptap) | `/community/new`, `/community/[id]/edit` |
+| Read and write direct messages | `/messages`, `/messages/[id]` |
 | Edit profile and avatar | `/profile` |
 
 ### Mentor (role: `mentor`)
@@ -288,7 +291,7 @@ Admin cannot delete themselves or change their own role (self-protection enforce
 
 ## Database Schema
 
-10 tables with foreign key relationships, cascade deletes, and unique constraints (minimum required: 4):
+Current schema includes 19 tables with foreign key relationships, cascade deletes, and unique constraints.
 
 ```mermaid
 erDiagram
@@ -464,6 +467,12 @@ erDiagram
     users ||--o{ post_bookmarks : saves
 ```
 
+Additional messaging/push tables in the current schema:
+- `conversations`
+- `conversation_members`
+- `messages`
+- `user_push_tokens`
+
 ### Table Descriptions
 
 | # | Table | Purpose | Key relationships |
@@ -482,16 +491,20 @@ erDiagram
 | 12 | `posts` | Community Board posts (discussions, questions, resources, articles) | Linked to author and optionally to a course; supports pinning + moderation |
 | 13 | `comments` | Flat comment threads on posts | Belongs to post (cascade delete); linked to author |
 | 14 | `post_likes` / `post_bookmarks` | Social interactions on posts | Unique (post_id, user_id) prevents duplicates |
+| 15 | `conversations` | Direct-message conversation containers | Referenced by conversation members + message history |
+| 16 | `conversation_members` | Membership + unread cursor (`last_read_at`) per conversation | Unique (conversation_id, user_id) prevents duplicates |
+| 17 | `messages` | Message history for conversations | Indexed by (conversation_id, created_at) for fast thread reads |
+| 18 | `user_push_tokens` | Device push token registry for mobile notifications | Tracks active Expo tokens by user and platform |
 
 ---
 
 ## Screens
 
-### Web — 19 pages
+### Web — 23 pages
 
 | # | Route | Description | Auth |
 |---|---|---|---|
-| 1 | `/` | Landing page with animated hero and feature sections | Public |
+| 1 | `/` | Landing page with animated hero and feature sections | Public (guest + authenticated) |
 | 2 | `/how-it-works` | Feature overview with visual explanations | Public |
 | 3 | `/contact` | Contact form | Public |
 | 4 | `/register` | User registration | Public |
@@ -502,14 +515,20 @@ erDiagram
 | 9 | `/materials/[id]` | Material view and edit (text, link, file) | Protected |
 | 10 | `/profile` | Edit name, avatar upload | Protected |
 | 11 | `/progress` | Milestones tracker with status workflow | Protected |
-| 12 | `/calendar` | Calendar with events (deadlines, reminders, exams) | Protected |
+| 12 | `/calendar` | Calendar with events + weather widget (current/hourly/3-day) | Protected |
 | 13 | `/admin` | Admin panel — users, materials, moderation, activity logs | Admin only |
-| 14 | `/forbidden` | 403 access denied page | Auto-redirect |
+| 14 | `/forbidden` | 403 access denied page | Auto-redirect from unauthorized `/admin` access |
 | 15 | `/community` | Community Feed — posts list with search, type filter, Load More | Protected |
-| 16 | `/community/new` | Create Post — type, course, title, content | Protected |
-| 17 | `/community/[id]` | Post Details — full content, comments, like/bookmark actions | Protected |
-| 18 | `/community/[id]/edit` | Edit Post — author or admin only | Protected |
+| 16 | `/community/new` | Create post — Tiptap rich text + type/course metadata | Protected |
+| 17 | `/community/[id]` | Post details — sanitized rich content, comments, like/bookmark actions | Protected |
+| 18 | `/community/[id]/edit` | Edit post — Tiptap rich text (author or admin) | Protected |
 | 19 | `/mentor-inbox` | Mentor Inbox — questions from own courses with status management | Mentor / Admin |
+| 20 | `/messages` | Direct messages inbox (unread indicators) | Protected |
+| 21 | `/messages/[id]` | Direct message thread (real-time updates) | Protected |
+| 22 | `/moderation` | Moderation queue shortcut page | Admin only |
+| 23 | `/profile/[id]` | Public profile view + start direct message | Protected |
+
+Route note: `Home` in the navbar always leads to `/` (landing), including for authenticated users; when authenticated, the landing navbar shows a `Dashboard` CTA instead of `Login`/`Register`.
 
 ### Mobile — current flows
 
@@ -518,16 +537,24 @@ erDiagram
 | 1 | Login | Email/password authentication against the same API |
 | 2 | Register | Account creation from mobile |
 | 3 | Courses (tab) | Course list with create/edit/delete actions |
-| 4 | Profile (tab) | Profile details + edit name + logout |
-| 5 | Create Course | Add a new course |
-| 6 | Course Detail | Manage modules inside a selected course |
-| 7 | Edit Course | Update course title/description |
-| 8 | Add Module | Create module in a course |
-| 9 | Module Workspace | Manage materials with search/type filters |
-| 10 | Edit Module | Update module title/description |
-| 11 | Add Material | Create note/link/file/video material |
-| 12 | Material Detail | View material content, tags, and URL/file link |
-| 13 | Edit Material | Update material content/type/tags/url |
+| 4 | Community (tab) | Feed with filters/search + inbox CTA + new post CTA |
+| 5 | Favorites (tab) | Pinned materials list with quick navigation |
+| 6 | Profile (tab) | Profile details + edit name + logout |
+| 7 | Create Course | Add a new course |
+| 8 | Course Detail | Manage modules inside a selected course |
+| 9 | Edit Course | Update course title/description |
+| 10 | Add Module | Create module in a course |
+| 11 | Module Workspace | Manage materials with search/type filters |
+| 12 | Edit Module | Update module title/description |
+| 13 | Add Material | Create note/link/file/video material |
+| 14 | Material Detail | View material content, tags, and URL/file link |
+| 15 | Edit Material | Update material content/type/tags/url |
+| 16 | Community Post Details | Read rich content + comments + direct message CTA |
+| 17 | Community Create Post | Create post with type/course selectors |
+| 18 | Messages Inbox | Conversation list with unread state and pull-to-refresh |
+| 19 | Message Thread | 1:1 thread with send + auto refetch + unread sync |
+| 20 | Settings | Theme/debug/support actions |
+| 21 | AI Tools (Material) | Mobile material AI tools entry point |
 
 The mobile app connects to the **same Next.js backend** — no separate API needed.
 
@@ -546,6 +573,7 @@ The mobile app connects to the **same Next.js backend** — no separate API need
 - Smoke suite status:
   - `SMK-01` through `SMK-20`: PASS
   - Accessibility sanity (`SMK-20`) verified in a dedicated VoiceOver/TalkBack pass
+  - `SMK-21` through `SMK-23` (messages push foreground/background/cold-start): BLOCKED in terminal-only runs; requires physical-device validation
 - Telemetry status:
   - Sentry integrated in mobile bootstrap + auth lifecycle + API error capture.
   - Manual validation complete: `SENTRY_TEST_EVENT` received in Sentry Issues.
@@ -558,9 +586,11 @@ The mobile app connects to the **same Next.js backend** — no separate API need
 
 ---
 
-## API Endpoints (37)
+## API Endpoints
 
-### Auth (8 endpoints)
+Grouped by feature domain. This matrix tracks the main product-facing routes used by web/mobile clients.
+
+### Auth
 
 | Method | Endpoint | Description |
 |---|---|---|
@@ -569,11 +599,11 @@ The mobile app connects to the **same Next.js backend** — no separate API need
 | `POST` | `/api/auth/logout` | Clear auth cookie |
 | `GET` | `/api/auth/me` | Get current user profile |
 | `PUT` | `/api/auth/me` | Update profile (name, etc.) |
-| `PUT` | `/api/auth/password` | Change password |
-| `POST` | `/api/auth/avatar` | Upload avatar image |
+| `POST` | `/api/auth/password` | Change password |
+| `POST/DELETE` | `/api/auth/avatar` | Upload or remove avatar image |
 | `POST` | `/api/auth/google` | Google OAuth login |
 
-### Content CRUD (8 endpoints)
+### Content CRUD
 
 | Method | Endpoint | Description |
 |---|---|---|
@@ -585,34 +615,34 @@ The mobile app connects to the **same Next.js backend** — no separate API need
 | `GET/POST` | `/api/modules/[id]/materials` | List / create materials for module |
 | `GET/PUT/DELETE` | `/api/materials/[id]` | Material by id |
 
-### Features (7 endpoints)
+### Features
 
 | Method | Endpoint | Description |
 |---|---|---|
 | `GET` | `/api/favorites` | List user's bookmarked materials |
 | `POST/DELETE` | `/api/favorites` | Add / remove favorite |
 | `GET/POST` | `/api/milestones` | List / create milestones |
-| `GET/PUT/DELETE` | `/api/milestones/[id]` | Milestone by id |
+| `PATCH/DELETE` | `/api/milestones/[id]` | Milestone by id |
 | `GET/POST` | `/api/events` | List / create calendar events |
-| `GET/PUT/DELETE` | `/api/events/[id]` | Event by id |
+| `PATCH/DELETE` | `/api/events/[id]` | Event by id |
 | `GET` | `/api/dashboard` | Aggregated stats (courses, materials, favorites count) |
 
-### AI Tools (3 endpoints)
+### AI Tools
 
 | Method | Endpoint | Description |
 |---|---|---|
 | `POST` | `/api/ai/chat` | Gemini-powered chat about material content |
 | `POST` | `/api/ai/tools` | AI analysis tools (summarize, quiz, explain) |
-| `GET/POST/DELETE` | `/api/materials/[id]/ai-outputs` | Saved AI results per material |
+| `GET/POST` | `/api/materials/[id]/ai-outputs` | Saved AI results per material |
 
-### Ask Mentor — Social S2 (2 endpoints)
+### Ask Mentor — Social S2
 
 | Method | Endpoint | Description |
 |---|---|---|
 | `GET` | `/api/mentor/questions` | List questions from mentored courses (mentor/admin); supports `?status=` filter |
 | `PUT` | `/api/posts/[id]/answer-status` | Change `question_status` (open / answered / closed) — mentor of the course or admin |
 
-### Community Board — Social S1 (12 endpoints)
+### Community Board — Social S1
 
 | Method | Endpoint | Description |
 |---|---|---|
@@ -629,7 +659,18 @@ The mobile app connects to the **same Next.js backend** — no separate API need
 | `PUT` | `/api/admin/posts/[id]` | Approve / hide / pin post (admin only) |
 | `DELETE` | `/api/admin/posts/[id]` | Hard delete post (admin only) |
 
-### Admin (11 endpoints)
+### Messaging and Notifications
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET/POST` | `/api/conversations` | List user conversations / start or reuse a 1:1 conversation |
+| `GET/POST` | `/api/conversations/[id]/messages` | Fetch thread history / send message (with unread updates + push trigger) |
+| `POST` | `/api/pusher/auth` | Authorize private Pusher subscription channels |
+| `GET` | `/api/notifications/comments` | Poll new comments on authored posts (since timestamp) |
+| `POST` | `/api/mobile/push-token` | Register/update Expo push token for current user |
+| `GET` | `/api/ping` | DB warm-up endpoint used before mobile mutation flows |
+
+### Admin
 
 | Method | Endpoint | Description |
 |---|---|---|
@@ -679,7 +720,7 @@ The mobile app connects to the **same Next.js backend** — no separate API need
 4. **Module** — open the module, add materials (text note, link)
 5. **Favorites** — bookmark a material, see it highlighted
 6. **Progress** — go to `/progress`, create a milestone, change its status
-7. **Calendar** — go to `/calendar`, create an event (deadline, exam, reminder)
+7. **Calendar** — go to `/calendar`, create an event and expand the weather widget (current + hourly + 3-day)
 8. **Profile** — go to `/profile`, change your name and upload an avatar
 
 ### As a Community Member
@@ -687,10 +728,12 @@ The mobile app connects to the **same Next.js backend** — no separate API need
 1. **Community Feed** — go to `/community`, browse posts
 2. **Filter** — use type filter (Discussion / Question / Resource / Article) or search bar
 3. **Load More** — server-side pagination, 20 posts per page
-4. **New Post** — click "New Post", choose type, optionally link to a course
-5. **Post Details** — open a post, read comments, like ♥ or bookmark 🔖
+4. **New Post** — click "New Post", choose type, optionally link to a course, and write with Tiptap rich text
+5. **Post Details** — open a post, read rich content/comments, like or bookmark
 6. **Add Comment** — write a comment, press Post
 7. **Edit / Delete** — available on your own posts
+8. **Direct Message** — use "Send message" from post/profile and continue in `/messages`
+9. **Alerts** — enable browser alerts from navbar (`Enable Alerts`) for new messages/comments
 
 ### As a Mentor
 
@@ -717,10 +760,12 @@ The mobile app connects to the **same Next.js backend** — no separate API need
 1. **Connect** phone via USB (see [Quick Setup](#-quick-setup))
 2. **Login** — same credentials as web
 3. **Courses tab** — browse courses, pull-to-refresh, open CRUD actions
-4. **Course Detail** — manage modules, add/edit/delete
-5. **Module Workspace** — manage materials with search/type filters
-6. **Material Detail** — open links/files and verify tags/content
-7. **Profile tab** — edit user name and logout
+4. **Community tab** — browse/filter posts, open details, create post
+5. **Messages inbox** — open `/messages`, verify unread indicators
+6. **Message thread** — open a conversation and send/receive messages
+7. **Module Workspace** — manage materials with search/type filters
+8. **Material Detail** — open links/files and verify tags/content
+9. **Profile tab** — edit user name and logout
 
 ---
 
@@ -740,7 +785,7 @@ studyhub-v2/
 ├── apps/
 │   ├── web/                          # Next.js web app + API backend
 │   │   ├── app/
-│   │   │   ├── api/                  # 37 REST API endpoints
+│   │   │   ├── api/                  # Core + social + messaging API routes
 │   │   │   │   ├── auth/             #   register, login, logout, me, password, avatar, google
 │   │   │   │   ├── courses/          #   CRUD + nested modules
 │   │   │   │   ├── modules/          #   CRUD + nested materials
@@ -764,6 +809,10 @@ studyhub-v2/
 │   │   │   ├── admin/                # Admin panel
 │   │   │   ├── how-it-works/         # Landing info page
 │   │   │   ├── contact/              # Contact page
+│   │   │   ├── community/            # Community feed + details + create/edit
+│   │   │   ├── mentor-inbox/         # Mentor Q&A inbox
+│   │   │   ├── messages/             # Direct message inbox + thread
+│   │   │   ├── moderation/           # Admin moderation queue shortcut
 │   │   │   └── forbidden/            # 403 page
 │   │   ├── components/               # Reusable UI components
 │   │   │   ├── ui/                   #   Base components (buttons, cards, modals, etc.)
@@ -790,8 +839,14 @@ studyhub-v2/
 │       ├── app/
 │       │   ├── _layout.tsx           #   Root layout + auth provider
 │       │   ├── login.tsx             #   Login screen
-│       │   ├── index.tsx             #   Courses list screen
-│       │   └── course/[id].tsx       #   Course detail screen
+│       │   ├── register.tsx          #   Register screen
+│       │   ├── (tabs)/               #   Courses, Community, Favorites, Profile tabs
+│       │   ├── course/[id]/          #   Course details + edit + add module
+│       │   ├── module/[id]/          #   Module workspace + edit + add material
+│       │   ├── material/[id]/        #   Material detail/edit + AI tools
+│       │   ├── community/            #   Mobile community details + create
+│       │   ├── messages/             #   Inbox + thread
+│       │   └── settings.tsx          #   Settings screen
 │       └── lib/
 │           └── auth-context.tsx      #   Auth state management
 │
@@ -799,7 +854,7 @@ studyhub-v2/
 │   └── shared/                       # Shared TypeScript types/utils
 │
 ├── drizzle/
-│   ├── schema.ts                     # All 10 table definitions
+│   ├── schema.ts                     # All 19 table definitions
 │   └── migrations/                   # SQL migration files (committed)
 │
 ├── docs/
@@ -911,8 +966,8 @@ npm run dev:mobile:usb
 | Frontend | Vanilla JS + Bootstrap | React + Next.js + TypeScript + Tailwind |
 | Backend | Supabase (BaaS) | Next.js API Routes (custom) |
 | Auth | Supabase Auth (GoTrue) | Custom JWT + Google OAuth |
-| Database | Supabase PostgreSQL (6 tables) | Neon PostgreSQL + Drizzle ORM (14 tables) |
-| Mobile | None | React Native + Expo + tabs/CRUD flows + persisted React Query cache |
+| Database | Supabase PostgreSQL (6 tables) | Neon PostgreSQL + Drizzle ORM (19 tables) |
+| Mobile | None | React Native + Expo + tabs/CRUD/community/messages + push-ready notifications |
 | File structure | Single app, monolithic files | Monorepo + modular components (<300 LOC each)† |
 | Deployment | Netlify + Vercel (dual) | Planned: Vercel |
 | Security | RLS + CSP + MFA (partial) | JWT guards + middleware + role-based endpoints |
