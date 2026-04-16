@@ -153,51 +153,52 @@ graph TB
 
 ```mermaid
 sequenceDiagram
-    participant U as User
-    participant F as Frontend (Web / Mobile)
-    participant M as Middleware
-    participant A as API Route
-    participant D as Database
+    participant U as "User"
+    participant F as "Frontend (Web and Mobile)"
+    participant M as "Middleware"
+    participant A as "API Route"
+    participant D as "Database"
 
     Note over U,D: Registration
-    U->>F: Fills register form
+    U->>F: Submit register form
     F->>A: POST /api/auth/register
-    A->>A: Hash password (bcryptjs)
-    A->>D: INSERT user
-    A->>A: Sign JWT (jose, HS256, 7d expiry)
-    A-->>F: Set httpOnly cookie "token"
+    A->>A: Hash password with bcryptjs
+    A->>D: Insert user
+    A->>A: Sign JWT with jose HS256 (7d)
+    A-->>F: Set httpOnly token cookie
     F-->>U: Redirect to /dashboard
 
     Note over U,D: Login
-    U->>F: Fills login form
+    U->>F: Submit login form
     F->>A: POST /api/auth/login
-    A->>D: SELECT user by email
+    A->>D: Select user by email
     A->>A: Verify password hash
     A->>A: Sign JWT
-    A-->>F: Set httpOnly cookie "token"
+    A-->>F: Set httpOnly token cookie
     F-->>U: Redirect to /dashboard
 
     Note over U,D: Protected Route Access
     U->>F: Navigates to /dashboard
     F->>M: Request with cookie
     M->>M: Verify JWT from cookie
-    alt Valid token
+    alt Token valid
         M-->>A: Forward request
         A->>A: requireAuth() extracts user
         A->>D: Query data
         A-->>F: Return response
-    else Invalid / expired / missing
+    else Token missing, invalid, or expired
         M-->>F: Redirect to /login
     end
 
-    Note over U,D: Admin-Only Access
+    Note over U,D: Admin-only access
     U->>F: Navigates to /admin
+    F->>M: Request /admin with cookie
     M->>M: Verify JWT + check role
-    alt role === admin
+    alt Role is admin
         M-->>A: Forward request
         A->>A: requireAdmin()
         A-->>F: Return admin data
-    else role !== admin
+    else Role is not admin
         M-->>F: Redirect to /forbidden
     end
 ```

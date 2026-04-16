@@ -7705,3 +7705,23 @@ Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
 **Решения:**
 - Държим implementation-plan-а като hybrid документ: original MVP baseline + актуален live status snapshot, за да не се губи traceability към assignment изискванията.
 - За mobile release комуникация използваме `CONDITIONAL GO`, докато `SMK-21..23` не минат физически device pass.
+
+### Session 260 — README Mermaid auth flow render compatibility fix
+
+**Какво направихме:**
+- Поправихме Mermaid sequence diagram-а в `README.md` (`Authentication Flow`), който fail-ваше в GitHub rich display.
+- Направихме диаграмата по-съвместима с GitHub renderer:
+  - quoted participant labels,
+  - опростени `alt/else` condition текстове (без `===` / `!==`),
+  - по-safe message формулировки за line parsing.
+- Добавихме липсващ explicit hop `F->>M` в admin access секцията за по-ясен request path.
+
+**Файлове:**
+- `[MODIFY] README.md`
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- `npm.cmd run check:mojibake` ✅
+
+**Решения:**
+- За Mermaid диаграми в README използваме syntax, който е доказано стабилен за GitHub renderer (quoted aliases + plain-text conditions), за да избегнем runtime render errors.
