@@ -239,7 +239,9 @@
 
 ---
 
-## Група G — Console cleanup в API routes (1 commit, optional)
+## Група G — Console cleanup в API routes ~~(1 commit, optional)~~
+
+> **ПРОПУСНАТА** — `console.error` остава. Вариант Б (logger без Sentry) само заглушава грешките в production без да ги логва — по-лошо от сегашното. Sentry за web (`@sentry/nextjs`) не е в scope за capstone дедлайна.
 
 **Commit message:** `refactor: replace console.error with structured error handling in API routes`
 
