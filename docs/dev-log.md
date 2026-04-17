@@ -7805,3 +7805,28 @@ Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
 **Решения:**
 - Запазихме feature-а изолиран в нови route-ове и нова UI страница, за да минимизираме regression риск към вече валидираните AI потоци.
 - Използвахме Gemini само като optional rephraser и само при multi-result ambiguity, за да остане заявката quota-conscious.
+
+### Session 264 — Material Finder manual QA + production BUILD_ID recovery + README sync
+
+**Какво направихме:**
+- При стартиране на production preview (`next start`) възникна грешка `production-start-no-build-id`.
+- Диагностицирахме, че `apps/web/.next` съществува, но липсва `apps/web/.next/BUILD_ID`.
+- Изпълнихме нов production build за web и потвърдихме наличен `BUILD_ID`.
+- Направихме manual QA проверка за новия `Material Finder` flow; потребителска валидация: feature-ът работи коректно и пази резултатите в текущата UI сесия.
+- Синхронизирахме `README.md` с новия feature scope:
+  - добавена web страница `/dashboard/material-finder`
+  - добавени API endpoints `/api/materials/search` и `/api/assistant/material-finder`
+  - обновена AI env бележка за Gemini route coverage
+
+**Файлове:**
+- `[MODIFY] README.md`
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- `npm.cmd run build:web` ✅
+- `Test-Path apps/web/.next/BUILD_ID` → `True` ✅
+- Manual smoke confirmation (user): `Material Finder` работи и пази резултатите в текущата сесия ✅
+
+**Решения:**
+- Не добавяме допълнителни code-path промени след QA, понеже текущата имплементация е стабилна.
+- За local production preview държим flow-а `build:web` → `prod:web:skip-build` при повторни стартове.

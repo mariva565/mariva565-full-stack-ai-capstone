@@ -501,7 +501,7 @@ Additional messaging/push tables in the current schema:
 
 ## Screens
 
-### Web — 23 pages
+### Web — 24 pages
 
 | # | Route | Description | Auth |
 |---|---|---|---|
@@ -528,6 +528,7 @@ Additional messaging/push tables in the current schema:
 | 21 | `/messages/[id]` | Direct message thread (real-time updates) | Protected |
 | 22 | `/moderation` | Moderation queue shortcut page | Admin only |
 | 23 | `/profile/[id]` | Public profile view + start direct message | Protected |
+| 24 | `/dashboard/material-finder` | Isolated material finder assistant (search-first + optional Gemini phrasing) | Protected |
 
 Route note: `Home` in the navbar always leads to `/` (landing), including for authenticated users; when authenticated, the landing navbar shows a `Dashboard` CTA instead of `Login`/`Register`.
 
@@ -634,6 +635,8 @@ Grouped by feature domain. This matrix tracks the main product-facing routes use
 |---|---|---|
 | `POST` | `/api/ai/chat` | Gemini-powered chat about material content |
 | `POST` | `/api/ai/tools` | AI analysis tools (summarize, quiz, explain) |
+| `GET` | `/api/materials/search?q=...` | Search current user's materials (title/content/tags) with ranked top matches |
+| `POST` | `/api/assistant/material-finder` | Isolated material finder assistant (search-first, Gemini optional for phrasing) |
 | `GET/POST` | `/api/materials/[id]/ai-outputs` | Saved AI results per material |
 
 ### Ask Mentor — Social S2
@@ -892,8 +895,9 @@ cp .env.example .env
 
 ### AI env note (Gemini)
 
-- The web AI routes (`/api/ai/chat`, `/api/ai/tools`) read `GEMINI_API_KEY` from `apps/web/.env` in local development.
+- The web AI routes (`/api/ai/chat`, `/api/ai/tools`, `/api/assistant/material-finder`) read `GEMINI_API_KEY` from `apps/web/.env` in local development.
 - The root `.env` may still be empty for `GEMINI_API_KEY` without breaking local web AI, as long as `apps/web/.env` is configured.
+- `material-finder` keeps working in template mode even when Gemini phrasing is unavailable.
 - For production, set `GEMINI_API_KEY` in your deployment environment variables (Vercel/Netlify).
 
 ### Mobile telemetry env note (Sentry)
