@@ -32,14 +32,14 @@ export function RegisterForm() {
 
       <RegisterFormHeader />
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-3">
         {error && (
           <div className="rounded-2xl border border-red-200 bg-red-50 p-3.5 text-sm text-red-700 dark:border-red-800/50 dark:bg-red-900/30 dark:text-red-300">
             {error}
           </div>
         )}
 
-        <div className="space-y-3.5">
+        <div className="space-y-2.5">
           <AuthIconField
             id="name"
             type="text"
@@ -62,7 +62,7 @@ export function RegisterForm() {
             onChange={(event) => setEmail(event.target.value)}
           />
 
-          <div className="space-y-1.5">
+          <div className="space-y-1">
             <AuthIconField
               id="password"
               type="password"
@@ -75,7 +75,7 @@ export function RegisterForm() {
               onChange={(event) => setPassword(event.target.value)}
             />
 
-            <p className="px-1 text-right text-[0.72rem] leading-5 text-slate-500 dark:text-slate-400">
+            <p className="px-1 text-right text-[0.68rem] leading-3.5 text-slate-500 dark:text-slate-400">
               Minimum 6 characters for the current backend. A longer password is
               still the better choice.
             </p>
@@ -85,14 +85,14 @@ export function RegisterForm() {
         <button
           type="submit"
           disabled={loading}
-          className="auth-btn auth-btn-register"
+          className="auth-btn auth-btn-compact auth-btn-register"
         >
           {loading ? "Creating account..." : "Create Account"}
         </button>
 
-        <AuthSectionDivider label="OR" />
+        <AuthSectionDivider label="OR" compact />
 
-        <AuthGoogleSignIn onError={handleGoogleError} variant="login" />
+        <AuthGoogleSignIn onError={handleGoogleError} variant="login" compact />
       </form>
     </>
   );

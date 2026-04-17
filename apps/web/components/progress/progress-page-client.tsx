@@ -14,6 +14,7 @@ import { useProgressPageState } from "./use-progress-page-state";
 import { ConfirmModal } from "../ui/confirm-modal";
 import { Toast } from "../ui/toast";
 import { FILTER_EMPTY_MESSAGE } from "../../lib/progress";
+import { PageBackgroundShell } from "../layout/page-background-shell";
 
 type ProgressPageClientProps = {
   initialData: ProgressData;
@@ -53,7 +54,8 @@ export function ProgressPageClient({ initialData }: ProgressPageClientProps) {
 
   return (
     <>
-      <div className="font-rubik mx-auto max-w-6xl px-4 py-8 sm:px-6">
+      <PageBackgroundShell contentClassName="max-w-6xl px-4 py-8 sm:px-6">
+        <div className="font-rubik">
         <Link
           href="/dashboard"
           className="mb-4 inline-flex items-center gap-1 text-sm text-slate-500 transition-colors hover:text-brand-700 dark:text-slate-400 dark:hover:text-cyan-200"
@@ -126,7 +128,8 @@ export function ProgressPageClient({ initialData }: ProgressPageClientProps) {
             addBusy={ideaBusy}
           />
         </div>
-      </div>
+        </div>
+      </PageBackgroundShell>
 
       <ConfirmModal
         isOpen={deleteId !== null}

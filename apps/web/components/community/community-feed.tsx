@@ -3,6 +3,12 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { getProfileInitials } from "@/lib/profile";
+import { PageBackgroundShell } from "../layout/page-background-shell";
+import {
+  PREMIUM_DARK_BUTTON,
+  PREMIUM_DARK_CARD_BG,
+  PREMIUM_DARK_INPUT,
+} from "../layout/premium-dark-styles";
 
 type Post = {
   id: number;
@@ -75,7 +81,7 @@ function PostCard({ post, currentUserId, onLike }: {
   const authorProfileHref = getProfileHref(post.authorId, currentUserId);
 
   return (
-    <div className={`group relative rounded-2xl border bg-white/80 p-5 shadow-sm backdrop-blur-sm transition-all hover:-translate-y-0.5 hover:shadow-md dark:bg-slate-900/60 dark:border-slate-700/60 ${post.isPinned ? "border-brand-300 dark:border-brand-700/60" : "border-slate-200/80"}`}>
+    <div className={`group relative rounded-2xl border bg-white/80 p-5 shadow-sm backdrop-blur-sm transition-all hover:-translate-y-0.5 hover:shadow-md dark:border-slate-700/60 ${PREMIUM_DARK_CARD_BG} ${post.isPinned ? "border-brand-300 dark:border-brand-700/60" : "border-slate-200/80"}`}>
       {post.isPinned && (
         <span className="absolute right-4 top-4 text-xs font-bold text-brand-500 dark:text-brand-400">Pinned</span>
       )}
@@ -106,7 +112,7 @@ function PostCard({ post, currentUserId, onLike }: {
             {post.courseTitle && (
               <>
                 <span>|</span>
-                <span className="rounded-full bg-slate-100 px-2 py-0.5 text-slate-600 dark:bg-slate-800 dark:text-slate-400">
+                <span className="rounded-full bg-slate-100 px-2 py-0.5 text-slate-600 dark:bg-slate-800/80 dark:text-slate-300">
                   {post.courseTitle}
                 </span>
               </>
@@ -149,7 +155,7 @@ function PostCard({ post, currentUserId, onLike }: {
           <div className="mt-3 flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
             <button
               onClick={() => onLike(post.id)}
-              className={`flex items-center gap-1.5 rounded-full px-2 py-1 transition hover:bg-slate-100 dark:hover:bg-slate-800 ${post.isLiked ? "text-rose-500 dark:text-rose-400" : ""}`}
+              className={`flex items-center gap-1.5 rounded-full px-2 py-1 transition hover:bg-slate-100 dark:hover:bg-white/5 ${post.isLiked ? "text-rose-500 dark:text-rose-400" : ""}`}
             >
               <svg className="h-4 w-4" fill={post.isLiked ? "currentColor" : "none"} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
@@ -157,7 +163,7 @@ function PostCard({ post, currentUserId, onLike }: {
               <span>{post.likeCount}</span>
             </button>
 
-            <Link href={`/community/${post.id}`} className="flex items-center gap-1.5 rounded-full px-2 py-1 transition hover:bg-slate-100 dark:hover:bg-slate-800">
+            <Link href={`/community/${post.id}`} className="flex items-center gap-1.5 rounded-full px-2 py-1 transition hover:bg-slate-100 dark:hover:bg-white/5">
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 9.75a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 01.778-.332 48.294 48.294 0 005.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
               </svg>
@@ -239,7 +245,7 @@ export function CommunityFeed({ currentUser }: { currentUser: { id: number; role
   }
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
+    <PageBackgroundShell contentClassName="max-w-3xl px-4 py-8 sm:px-6">
       {/* Header */}
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
@@ -268,13 +274,13 @@ export function CommunityFeed({ currentUser }: { currentUser: { id: number; role
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search posts..."
-          className="flex-1 rounded-xl border border-slate-200 bg-white/80 px-4 py-2.5 text-sm shadow-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-400 dark:border-slate-700 dark:bg-slate-900/60 dark:text-white"
+          className={`flex-1 rounded-xl border border-slate-200 bg-white/80 px-4 py-2.5 text-sm shadow-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-400 dark:border-cyan-400/10 ${PREMIUM_DARK_INPUT}`}
           suppressHydrationWarning
         />
         <select
           value={filterType}
           onChange={(e) => setFilterType(e.target.value)}
-          className="rounded-xl border border-slate-200 bg-white/80 px-4 py-2.5 text-sm shadow-sm dark:border-slate-700 dark:bg-slate-900/60 dark:text-white"
+          className={`rounded-xl border border-slate-200 bg-white/80 px-4 py-2.5 text-sm shadow-sm dark:border-cyan-400/10 ${PREMIUM_DARK_INPUT}`}
         >
           <option value="">All types</option>
           <option value="discussion">Discussion</option>
@@ -288,11 +294,11 @@ export function CommunityFeed({ currentUser }: { currentUser: { id: number; role
       {loading && posts.length === 0 ? (
         <div className="space-y-4">
           {[...Array(5)].map((_, i) => (
-            <div key={i} className="h-36 animate-pulse rounded-2xl bg-slate-100 dark:bg-slate-800" />
+            <div key={i} className={`h-36 animate-pulse rounded-2xl bg-slate-100 dark:border dark:border-slate-800/80 ${PREMIUM_DARK_CARD_BG}`} />
           ))}
         </div>
       ) : posts.length === 0 ? (
-        <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-slate-300 py-20 dark:border-slate-700">
+        <div className={`flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-slate-300 py-20 dark:border-slate-700/80 ${PREMIUM_DARK_CARD_BG}`}>
           <svg className="h-10 w-10 text-slate-300 dark:text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
           </svg>
@@ -314,7 +320,7 @@ export function CommunityFeed({ currentUser }: { currentUser: { id: number; role
           <button
             onClick={loadMore}
             disabled={loading}
-            className="rounded-xl border border-slate-200 bg-white px-6 py-2.5 text-sm font-semibold text-slate-600 shadow-sm transition hover:bg-slate-50 disabled:opacity-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300"
+            className={`rounded-xl border border-slate-200 bg-white px-6 py-2.5 text-sm font-semibold text-slate-600 shadow-sm transition hover:bg-slate-50 disabled:opacity-50 dark:border-slate-700/60 ${PREMIUM_DARK_BUTTON}`}
           >
             {loading ? "Loading..." : "Load more"}
           </button>
@@ -333,6 +339,6 @@ export function CommunityFeed({ currentUser }: { currentUser: { id: number; role
           </svg>
         </button>
       )}
-    </div>
+    </PageBackgroundShell>
   );
 }

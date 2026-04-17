@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -53,6 +54,7 @@ function BrandMark() {
 
 export function NavbarClient({ initialUser }: NavbarClientProps) {
   const pathname = usePathname();
+  const headerRef = useRef<HTMLElement | null>(null);
   const user = initialUser;
   const {
     unreadCount: messagesUnreadCount,
@@ -62,6 +64,31 @@ export function NavbarClient({ initialUser }: NavbarClientProps) {
     notificationPermission,
     requestNotificationPermission,
   } = useWebMessagesNotifications(user?.id, pathname);
+
+  useEffect(() => {
+    if (PUBLIC_PATHS.includes(pathname)) return;
+
+    const header = headerRef.current;
+    if (!header) return;
+
+    const syncHeight = () => {
+      document.documentElement.style.setProperty("--app-navbar-height", `${header.offsetHeight}px`);
+    };
+
+    syncHeight();
+
+    const observer = new ResizeObserver(() => {
+      syncHeight();
+    });
+
+    observer.observe(header);
+    window.addEventListener("resize", syncHeight);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", syncHeight);
+    };
+  }, [pathname]);
 
   if (PUBLIC_PATHS.includes(pathname)) {
     return null;
@@ -108,7 +135,7 @@ export function NavbarClient({ initialUser }: NavbarClientProps) {
     user?.role === "mentor" ? "Mentor" : "Student";
 
   return (
-    <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/80 backdrop-blur-xl dark:border-cyan-400/10 dark:bg-[linear-gradient(180deg,rgba(2,8,22,0.94)_0%,rgba(3,11,28,0.88)_100%)]">
+    <header ref={headerRef} className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/80 backdrop-blur-xl dark:border-cyan-400/10 dark:bg-[linear-gradient(180deg,rgba(2,8,22,0.94)_0%,rgba(3,11,28,0.88)_100%)]">
       <nav className="font-poppins mx-auto max-w-6xl px-4 py-3 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-2">
           <div className="flex flex-wrap items-start justify-between gap-3">

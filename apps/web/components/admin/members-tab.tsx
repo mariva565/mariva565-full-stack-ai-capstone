@@ -7,6 +7,11 @@ import { Toast, type ToastTone } from "../ui/toast";
 import { SkeletonTable } from "./skeleton-table";
 import { Pagination } from "./pagination";
 import { useAdminContext } from "./admin-context";
+import {
+  PREMIUM_DARK_BUTTON,
+  PREMIUM_DARK_CARD_BG,
+  PREMIUM_DARK_INPUT,
+} from "../layout/premium-dark-styles";
 
 type Membership = {
   id: number;
@@ -132,13 +137,13 @@ export function MembersTab() {
   return (
     <>
       {/* Add membership form */}
-      <div className="mb-6 rounded-2xl border border-slate-200 bg-white/60 p-4 dark:border-slate-700 dark:bg-slate-800/40">
+      <div className={`mb-6 rounded-2xl border border-slate-200 bg-white/60 p-4 dark:border-slate-700/60 ${PREMIUM_DARK_CARD_BG}`}>
         <h3 className="mb-3 text-sm font-semibold text-slate-700 dark:text-slate-200">Add Membership</h3>
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-[1fr_1fr_auto_auto]">
           <select
             value={addCourseId}
             onChange={(e) => setAddCourseId(e.target.value)}
-            className="min-w-0 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white"
+            className={`min-w-0 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm dark:border-cyan-400/10 ${PREMIUM_DARK_INPUT}`}
           >
             <option value="">Select course…</option>
             {courses.map((c) => (
@@ -148,7 +153,7 @@ export function MembersTab() {
           <select
             value={addUserId}
             onChange={(e) => setAddUserId(e.target.value)}
-            className="min-w-0 truncate rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white"
+            className={`min-w-0 truncate rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm dark:border-cyan-400/10 ${PREMIUM_DARK_INPUT}`}
           >
             <option value="">Select user…</option>
             {users.map((u) => (
@@ -158,7 +163,7 @@ export function MembersTab() {
           <select
             value={addRole}
             onChange={(e) => setAddRole(e.target.value)}
-            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white"
+            className={`rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm dark:border-cyan-400/10 ${PREMIUM_DARK_INPUT}`}
           >
             <option value="student">student</option>
             <option value="mentor">mentor</option>
@@ -181,7 +186,7 @@ export function MembersTab() {
           <select
             value={courseFilter}
             onChange={(e) => setCourseFilter(e.target.value)}
-            className="min-w-0 flex-1 sm:max-w-[200px] rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white"
+            className={`min-w-0 flex-1 sm:max-w-[200px] rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-sm dark:border-cyan-400/10 ${PREMIUM_DARK_INPUT}`}
           >
             <option value="">All courses</option>
             {courses.map((c) => (
@@ -195,7 +200,7 @@ export function MembersTab() {
       {/* Mobile cards */}
       <div className="md:hidden space-y-3">
         {paged.map((m) => (
-          <div key={m.id} className="rounded-2xl border border-slate-200 bg-white/60 p-4 dark:border-slate-700 dark:bg-slate-800/40">
+          <div key={m.id} className={`rounded-2xl border border-slate-200 bg-white/60 p-4 dark:border-slate-700/60 ${PREMIUM_DARK_CARD_BG}`}>
             <div className="flex items-start justify-between gap-2">
               <div>
                 <p className="font-semibold text-slate-900 dark:text-white">{m.userName}</p>
@@ -213,7 +218,7 @@ export function MembersTab() {
       </div>
 
       {/* Desktop table */}
-      <div className="hidden md:block overflow-x-auto">
+      <div className={`hidden overflow-x-auto rounded-2xl border border-slate-200/80 bg-white/60 p-4 shadow-sm md:block dark:border-slate-700/60 ${PREMIUM_DARK_CARD_BG}`}>
         <table className="w-full text-left text-sm">
           <thead>
             <tr className="border-b border-slate-200 dark:border-slate-700">
@@ -226,7 +231,7 @@ export function MembersTab() {
           </thead>
           <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
             {paged.map((m) => (
-              <tr key={m.id}>
+              <tr key={m.id} className="transition-colors hover:bg-slate-50/60 dark:hover:bg-white/5">
                 <td className="py-3">
                   <p className="font-medium text-slate-900 dark:text-white">{m.userName}</p>
                   <p className="text-xs text-slate-500">{m.userEmail}</p>
@@ -278,7 +283,7 @@ function MemberRoleBadge({ role, busy, onClick }: { role: string; busy: boolean;
       className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold transition-colors disabled:opacity-50 ${
         isMentor
           ? "bg-brand-100 text-brand-700 hover:bg-brand-200 dark:bg-brand-500/20 dark:text-brand-100 dark:hover:bg-brand-500/30"
-          : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600"
+          : `bg-slate-100 text-slate-600 hover:bg-slate-200 dark:border dark:border-slate-700/60 ${PREMIUM_DARK_BUTTON}`
       }`}
     >
       <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

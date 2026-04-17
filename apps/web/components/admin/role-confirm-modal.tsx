@@ -1,5 +1,7 @@
 "use client";
 
+import { PREMIUM_DARK_MODAL_BG } from "../layout/premium-dark-styles";
+
 type RoleConfirmModalProps = {
   isOpen: boolean;
   userName: string;
@@ -19,7 +21,7 @@ export function RoleConfirmModal({ isOpen, userName, currentRole, busy, onConfir
       <div
         role="dialog"
         aria-modal="true"
-        className="w-full max-w-sm rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-slate-700 dark:bg-slate-900"
+        className={`w-full max-w-sm rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-cyan-400/10 ${PREMIUM_DARK_MODAL_BG}`}
       >
         <div className="flex flex-col items-center text-center">
           <div className={`flex h-12 w-12 items-center justify-center rounded-full ${isGranting ? "bg-brand-100 dark:bg-brand-500/20" : "bg-red-100 dark:bg-red-500/20"}`}>

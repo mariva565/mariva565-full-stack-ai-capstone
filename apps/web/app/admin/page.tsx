@@ -10,13 +10,20 @@ import { SettingsModal } from "../../components/admin/settings-modal";
 import { ViewAsFilter } from "../../components/admin/view-as-filter";
 import { OverviewTab } from "../../components/admin/overview-tab";
 import { SkeletonTable } from "../../components/admin/skeleton-table";
+import { PageBackgroundShell } from "../../components/layout/page-background-shell";
+import {
+  PREMIUM_DARK_BUTTON,
+  PREMIUM_DARK_CARD_BG,
+  PREMIUM_DARK_INPUT,
+  PREMIUM_DARK_PANEL_BG,
+} from "../../components/layout/premium-dark-styles";
 
 const UsersTab     = dynamic(() => import("../../components/admin/users-tab").then((m) => m.UsersTab), { loading: () => <SkeletonTable rows={5} columns={6} />, ssr: false });
 const MaterialsTab = dynamic(() => import("../../components/admin/materials-tab").then((m) => m.MaterialsTab), { loading: () => <SkeletonTable rows={5} columns={7} />, ssr: false });
 const CoursesTab   = dynamic(() => import("../../components/admin/courses-tab").then((m) => m.CoursesTab), { loading: () => <SkeletonTable rows={5} columns={7} />, ssr: false });
 const ModulesTab   = dynamic(() => import("../../components/admin/modules-tab").then((m) => m.ModulesTab), { loading: () => <SkeletonTable rows={5} columns={6} />, ssr: false });
 const ActivityTab  = dynamic(() => import("../../components/admin/activity-tab").then((m) => m.ActivityTab), { loading: () => <SkeletonTable rows={5} columns={5} />, ssr: false });
-const NetworkMapTab = dynamic(() => import("../../components/admin/network-map-tab").then((m) => m.NetworkMapTab), { loading: () => <div className="h-[500px] animate-pulse rounded-xl bg-slate-100 dark:bg-slate-800" />, ssr: false });
+const NetworkMapTab = dynamic(() => import("../../components/admin/network-map-tab").then((m) => m.NetworkMapTab), { loading: () => <div className={`h-[500px] animate-pulse rounded-xl bg-slate-100 dark:border dark:border-slate-800/80 ${PREMIUM_DARK_CARD_BG}`} />, ssr: false });
 const MembersTab    = dynamic(() => import("../../components/admin/members-tab").then((m) => m.MembersTab), { loading: () => <SkeletonTable rows={5} columns={5} />, ssr: false });
 const PostsTab      = dynamic(() => import("../../components/admin/posts-tab").then((m) => m.PostsTab), { loading: () => <SkeletonTable rows={5} columns={6} />, ssr: false });
 
@@ -29,7 +36,8 @@ function AdminContent() {
   const { searchQuery, setSearchQuery } = useAdminContext();
 
   return (
-    <div className="mx-auto max-w-7xl overflow-x-hidden px-4 py-8 sm:px-6 lg:px-8">
+    <PageBackgroundShell contentClassName="max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="overflow-x-hidden">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -44,7 +52,7 @@ function AdminContent() {
           <button
             type="button"
             onClick={() => setShowSettings(true)}
-            className="rounded-xl border border-slate-200 bg-white/50 p-2.5 text-slate-500 shadow-sm backdrop-blur-md transition-all hover:bg-white hover:text-primary-600 hover:shadow-md dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-primary-400"
+            className={`rounded-xl border border-slate-200 bg-white/50 p-2.5 text-slate-500 shadow-sm backdrop-blur-md transition-all hover:bg-white hover:text-primary-600 hover:shadow-md dark:border-cyan-400/10 dark:text-slate-300 dark:hover:text-primary-300 ${PREMIUM_DARK_BUTTON}`}
             title="Settings"
           >
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -70,7 +78,7 @@ function AdminContent() {
           <select
             value={activeTab}
             onChange={(e) => setActiveTab(e.target.value as Tab)}
-            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+            className={`w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm dark:border-cyan-400/10 ${PREMIUM_DARK_INPUT}`}
           >
             {TABS.map((tab) => (
               <option key={tab} value={tab}>{tab}</option>
@@ -79,7 +87,7 @@ function AdminContent() {
         </div>
 
         {/* Desktop tab bar */}
-        <div className="hidden sm:flex gap-1 overflow-x-auto border-b border-slate-200 hide-scrollbar dark:border-slate-700">
+        <div className="hidden gap-1 overflow-x-auto border-b border-slate-200 hide-scrollbar dark:border-cyan-400/10 sm:flex">
           {TABS.map((tab) => (
             <button
               type="button"
@@ -113,7 +121,7 @@ function AdminContent() {
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             exit={{ opacity: 0, y: -10, filter: "blur(4px)" }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="rounded-[2rem] border border-white/20 bg-white/40 p-8 shadow-glass backdrop-blur-xl dark:border-white/10 dark:bg-slate-900/40"
+            className={`rounded-[2rem] border border-white/20 bg-white/40 p-8 shadow-glass backdrop-blur-xl dark:border-cyan-400/10 ${PREMIUM_DARK_PANEL_BG}`}
           >
             {activeTab === "Overview" && <OverviewTab />}
             {activeTab === "Users" && <UsersTab />}
@@ -129,7 +137,8 @@ function AdminContent() {
       </div>
 
       <SettingsModal isOpen={showSettings} onClose={() => setShowSettings(false)} />
-    </div>
+      </div>
+    </PageBackgroundShell>
   );
 }
 
@@ -140,4 +149,3 @@ export default function AdminPage() {
     </AdminProvider>
   );
 }
-

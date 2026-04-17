@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { readErrorMessage } from "../../lib/http";
+import { PREMIUM_DARK_INPUT, PREMIUM_DARK_MODAL_BG } from "../layout/premium-dark-styles";
 
 type EntityType = "material" | "course" | "module";
 
@@ -66,7 +67,7 @@ export function EditModal({ isOpen, entityType, entity, onClose, onSaved }: Edit
       <div
         role="dialog"
         aria-modal="true"
-        className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-slate-700 dark:bg-slate-900"
+        className={`w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-cyan-400/10 ${PREMIUM_DARK_MODAL_BG}`}
       >
         <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
           Edit {entityType}
@@ -80,7 +81,7 @@ export function EditModal({ isOpen, entityType, entity, onClose, onSaved }: Edit
               required
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-slate-600 dark:bg-slate-800 dark:text-white"
+              className={`mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-cyan-400/10 ${PREMIUM_DARK_INPUT}`}
             />
           </div>
 
@@ -91,7 +92,7 @@ export function EditModal({ isOpen, entityType, entity, onClose, onSaved }: Edit
                 rows={3}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-slate-600 dark:bg-slate-800 dark:text-white"
+                className={`mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-cyan-400/10 ${PREMIUM_DARK_INPUT}`}
               />
             </div>
           )}
@@ -104,7 +105,7 @@ export function EditModal({ isOpen, entityType, entity, onClose, onSaved }: Edit
                 min={0}
                 value={orderIndex}
                 onChange={(e) => setOrderIndex(parseInt(e.target.value, 10) || 0)}
-                className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-slate-600 dark:bg-slate-800 dark:text-white"
+                className={`mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-cyan-400/10 ${PREMIUM_DARK_INPUT}`}
               />
             </div>
           )}

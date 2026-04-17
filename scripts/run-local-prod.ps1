@@ -8,18 +8,45 @@ $port = 3002
 function Stop-ListenerOnPort {
   param([int]$TargetPort)
 
+  $pids = @()
+
   $listeners = Get-NetTCPConnection -LocalPort $TargetPort -State Listen -ErrorAction SilentlyContinue
-  if (-not $listeners) {
+  if ($listeners) {
+    $pids += $listeners | Select-Object -ExpandProperty OwningProcess -Unique
+  }
+
+  # Fallback for environments where Get-NetTCPConnection does not return listeners reliably.
+  $netstatPids = netstat -ano |
+    Select-String -Pattern "LISTENING\s+(\d+)\s*$" |
+    ForEach-Object {
+      $parts = $_.Line.Trim() -split '\s+'
+      if ($parts.Length -lt 5) {
+        return
+      }
+
+      $localAddress = $parts[1]
+      $state = $parts[3]
+      $owningProcess = $parts[4]
+      if ($state -eq "LISTENING" -and $localAddress -like "*:$TargetPort" -and $owningProcess -match '^\d+$') {
+        [int]$owningProcess
+      }
+    }
+
+  if ($netstatPids) {
+    $pids += $netstatPids
+  }
+
+  $pids = @($pids | Sort-Object -Unique)
+  if (-not $pids -or $pids.Count -eq 0) {
     return
   }
 
-  $pids = $listeners | Select-Object -ExpandProperty OwningProcess -Unique
-  foreach ($pid in $pids) {
+  foreach ($processId in $pids) {
     try {
-      Stop-Process -Id $pid -Force -ErrorAction Stop
-      Write-Host "Stopped stale process $pid on port $TargetPort"
+      Stop-Process -Id $processId -Force -ErrorAction Stop
+      Write-Host "Stopped stale process $processId on port $TargetPort"
     } catch {
-      Write-Warning "Could not stop process $pid on port $TargetPort. Close it manually and retry."
+      Write-Warning "Could not stop process $processId on port $TargetPort. Close it manually and retry."
       throw
     }
   }

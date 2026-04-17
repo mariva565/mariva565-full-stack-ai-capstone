@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { PREMIUM_DARK_CARD_BG } from "../layout/premium-dark-styles";
 
 type ActivityData = { day: string; value: number };
 
@@ -29,7 +30,7 @@ export function ActivityChart() {
 
   if (loading) {
     return (
-      <div className="flex h-[328px] w-full items-center justify-center rounded-3xl border border-white/20 bg-white/50 shadow-glass backdrop-blur-md dark:border-white/10 dark:bg-slate-800/50">
+      <div className={`flex h-[328px] w-full items-center justify-center rounded-3xl border border-white/20 bg-white/50 shadow-glass backdrop-blur-md dark:border-slate-700/60 ${PREMIUM_DARK_CARD_BG}`}>
         <div className="flex flex-col items-center gap-4">
           <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary-500 border-t-transparent" />
           <p className="text-sm font-bold text-slate-500 animate-pulse">Loading live stats...</p>
@@ -40,7 +41,7 @@ export function ActivityChart() {
 
   if (error || data.length === 0) {
     return (
-      <div className="flex h-[328px] w-full items-center justify-center rounded-3xl border border-white/20 bg-white/50 shadow-glass backdrop-blur-md dark:border-white/10 dark:bg-slate-800/50">
+      <div className={`flex h-[328px] w-full items-center justify-center rounded-3xl border border-white/20 bg-white/50 shadow-glass backdrop-blur-md dark:border-slate-700/60 ${PREMIUM_DARK_CARD_BG}`}>
         <p className="text-sm font-bold text-slate-500 italic">No activity data available yet.</p>
       </div>
     );
@@ -56,7 +57,7 @@ export function ActivityChart() {
     .join(" ");
 
   return (
-    <div className="rounded-3xl border border-white/20 bg-white/50 p-8 shadow-glass backdrop-blur-md dark:border-white/10 dark:bg-slate-800/50">
+    <div className={`rounded-3xl border border-white/20 bg-white/50 p-8 shadow-glass backdrop-blur-md dark:border-slate-700/60 ${PREMIUM_DARK_CARD_BG}`}>
       <div className="flex items-center justify-between mb-8">
         <div>
           <h3 className="text-xl font-bold text-slate-900 dark:text-white font-shantell tracking-tight">System Activity</h3>

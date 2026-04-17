@@ -1,41 +1,80 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { buildWeatherData } from "./weather-data";
+import type { WeatherData } from "./weather-types";
 
-export interface WeatherCurrent {
-  temperature: number;
-  apparentTemperature: number;
-  humidity: number;
-  windSpeed: number;
-  weatherCode: number;
-}
-
-export interface WeatherDay {
-  date: string;
-  maxTemp: number;
-  minTemp: number;
-  weatherCode: number;
-  precipProbability: number;
-  windSpeed: number;
-}
-
-export interface WeatherHour {
-  time: string;
-  temperature: number;
-  weatherCode: number;
-  precipProbability: number;
-  windSpeed: number;
-}
-
-export interface WeatherData {
-  current: WeatherCurrent;
-  forecast: WeatherDay[];
-  hourly: WeatherHour[];
-  cityName: string;
-}
+export type {
+  WeatherCurrent,
+  WeatherDay,
+  WeatherHour,
+  WeatherData,
+} from "./weather-types";
 
 export type WeatherStatus = "idle" | "locating" | "loading" | "ready" | "denied" | "error";
+
 const CLOCK_TICK_MS = 60_000;
+const STORAGE_KEY = "studyhub-weather-city";
+
+function saveCity(lat: number, lon: number, label?: string) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ lat, lon, label }));
+  } catch { /* quota exceeded or SSR — ignore */ }
+}
+
+function loadSavedCity(): { lat: number; lon: number; label?: string } | null {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as { lat?: number; lon?: number; label?: string };
+    if (typeof parsed.lat === "number" && typeof parsed.lon === "number") {
+      return { lat: parsed.lat, lon: parsed.lon, label: parsed.label };
+    }
+    return null;
+  } catch { return null; }
+}
+
+const GEOLOCATION_OPTIONS: PositionOptions = {
+  enableHighAccuracy: false,
+  timeout: 20_000,
+  maximumAge: 300_000,
+};
+
+function hasGeolocationSupport() {
+  return typeof navigator !== "undefined" && "geolocation" in navigator;
+}
+
+function requestCurrentPosition(options: PositionOptions = GEOLOCATION_OPTIONS) {
+  return new Promise<GeolocationPosition>((resolve, reject) => {
+    if (!hasGeolocationSupport()) {
+      reject(new Error("Geolocation is not available."));
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(resolve, reject, options);
+  });
+}
+
+async function getGeolocationPermissionStatus() {
+  if (typeof navigator === "undefined" || !("permissions" in navigator)) {
+    return null;
+  }
+
+  try {
+    return await navigator.permissions.query({ name: "geolocation" as PermissionName });
+  } catch {
+    return null;
+  }
+}
+
+function getGeolocationErrorCode(error: unknown) {
+  if (typeof error !== "object" || error === null || !("code" in error)) {
+    return null;
+  }
+
+  const { code } = error as { code?: unknown };
+  return typeof code === "number" ? code : null;
+}
 
 export function useWeather() {
   const [now, setNow] = useState<Date>(() => new Date());
@@ -43,9 +82,8 @@ export function useWeather() {
   const [status, setStatus] = useState<WeatherStatus>("idle");
   const [error, setError] = useState("");
   const lastCoordsRef = useRef<{ lat: number; lon: number; label?: string } | null>(null);
-  const initialised = useRef(false);
+  const locationRequestInFlightRef = useRef(false);
 
-  // Live clock (minute-level updates to avoid unnecessary renders)
   useEffect(() => {
     const syncNow = () => setNow(new Date());
     const delayToNextMinute = CLOCK_TICK_MS - (Date.now() % CLOCK_TICK_MS);
@@ -64,96 +102,27 @@ export function useWeather() {
     };
   }, []);
 
-  // Auto-geolocation on mount
-  useEffect(() => {
-    if (initialised.current) return;
-    initialised.current = true;
-    if (typeof navigator === "undefined" || !navigator.geolocation) {
-      setStatus("denied");
-      return;
-    }
-    setStatus("locating");
-    navigator.geolocation.getCurrentPosition(
-      ({ coords }) => void loadWeather(coords.latitude, coords.longitude),
-      (err) => {
-        // PERMISSION_DENIED (1) → truly denied; other codes → retriable error
-        if (err.code === 1) {
-          setStatus("denied");
-        } else {
-          setError("Could not get your location. Try again or enter a city.");
-          setStatus("error");
-        }
-      },
-      { timeout: 12000, maximumAge: 60000 },
-    );
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  async function loadWeather(lat: number, lon: number, label?: string) {
+  async function loadWeather(lat: number, lon: number, label?: string, persist = false) {
     lastCoordsRef.current = { lat, lon, label };
+    if (persist) saveCity(lat, lon, label);
     setStatus("loading");
     setError("");
+
     try {
-      const res = await fetch(
+      const response = await fetch(
         `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}` +
           `&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m,apparent_temperature` +
           `&hourly=temperature_2m,weather_code,wind_speed_10m,precipitation_probability` +
           `&daily=weather_code,temperature_2m_max,temperature_2m_min,wind_speed_10m_max,precipitation_probability_max` +
           `&temperature_unit=celsius&wind_speed_unit=kmh&timezone=auto&forecast_days=4`,
       );
-      if (!res.ok) throw new Error("API error");
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const w = (await res.json()) as Record<string, any>;
+      if (!response.ok) {
+        throw new Error("Weather API error");
+      }
 
-      const cityName =
-        label ??
-        (() => {
-          const tz = String(w.timezone ?? "");
-          return tz.split("/").pop()?.replace(/_/g, " ") ?? "";
-        })();
-
-      const cur = w.current as Record<string, number>;
-      const hrly = w.hourly as Record<string, number[]>;
-      const daily = w.daily as Record<string, (string | number)[]>;
-
-      const curTime = new Date(String(w.current_weather_time ?? cur.time ?? ""));
-      const hrlyTimes = hrly.time as unknown as string[];
-      const si = Math.max(
-        0,
-        hrlyTimes.findIndex((t) => new Date(t) >= curTime),
-      );
-
-      const hourly: WeatherHour[] = hrlyTimes.slice(si, si + 24).map((time, i) => ({
-        time,
-        temperature: Math.round(hrly.temperature_2m[si + i] ?? 0),
-        weatherCode: hrly.weather_code[si + i] ?? 0,
-        precipProbability: hrly.precipitation_probability[si + i] ?? 0,
-        windSpeed: Math.round(hrly.wind_speed_10m[si + i] ?? 0),
-      }));
-
-      const dailyTimes = daily.time as string[];
-      const forecast: WeatherDay[] = dailyTimes.slice(1, 4).map((date, i) => ({
-        date,
-        maxTemp: Math.round((daily.temperature_2m_max[i + 1] as number) ?? 0),
-        minTemp: Math.round((daily.temperature_2m_min[i + 1] as number) ?? 0),
-        weatherCode: (daily.weather_code[i + 1] as number) ?? 0,
-        precipProbability: Math.round((daily.precipitation_probability_max[i + 1] as number) ?? 0),
-        windSpeed: Math.round((daily.wind_speed_10m_max[i + 1] as number) ?? 0),
-      }));
-
-      setData({
-        current: {
-          temperature: Math.round(cur.temperature_2m ?? 0),
-          apparentTemperature: Math.round(cur.apparent_temperature ?? 0),
-          humidity: cur.relative_humidity_2m ?? 0,
-          windSpeed: Math.round(cur.wind_speed_10m ?? 0),
-          weatherCode: cur.weather_code ?? 0,
-        },
-        forecast,
-        hourly,
-        cityName,
-      });
+      const weather = await response.json();
+      setData(buildWeatherData(weather, label));
       setStatus("ready");
     } catch {
       setError("Could not load weather data.");
@@ -161,23 +130,115 @@ export function useWeather() {
     }
   }
 
+  async function locateUser() {
+    if (locationRequestInFlightRef.current) {
+      return;
+    }
+
+    if (!hasGeolocationSupport()) {
+      setError("");
+      setStatus("denied");
+      return;
+    }
+
+    locationRequestInFlightRef.current = true;
+    setError("");
+    setStatus("locating");
+
+    try {
+      const { coords } = await requestCurrentPosition();
+      await loadWeather(coords.latitude, coords.longitude);
+    } catch (locationError) {
+      if (getGeolocationErrorCode(locationError) === 1) {
+        setError("");
+        setStatus("denied");
+      } else {
+        setError("Could not get your location. Try again or enter a city.");
+        setStatus("error");
+      }
+    } finally {
+      locationRequestInFlightRef.current = false;
+    }
+  }
+
+  useEffect(() => {
+    let active = true;
+    let permissionStatus: PermissionStatus | null = null;
+
+    const handlePermissionChange = () => {
+      if (!active || permissionStatus?.state !== "granted") {
+        return;
+      }
+
+      void locateUser();
+    };
+
+    async function initGeolocation() {
+      const saved = loadSavedCity();
+      if (saved) {
+        void loadWeather(saved.lat, saved.lon, saved.label);
+        return;
+      }
+
+      if (!hasGeolocationSupport()) {
+        setError("");
+        setStatus("denied");
+        return;
+      }
+
+      permissionStatus = await getGeolocationPermissionStatus();
+      if (!active) {
+        return;
+      }
+
+      if (permissionStatus?.state === "denied") {
+        setError("");
+        setStatus("denied");
+        return;
+      }
+
+      permissionStatus?.addEventListener("change", handlePermissionChange);
+      void locateUser();
+    }
+
+    void initGeolocation();
+
+    return () => {
+      active = false;
+      permissionStatus?.removeEventListener("change", handlePermissionChange);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   async function searchCity(name: string) {
-    if (!name.trim()) return;
+    if (!name.trim()) {
+      return;
+    }
+
     setStatus("loading");
     setError("");
+
     try {
-      const res = await fetch(
+      const response = await fetch(
         `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(name)}&count=1&language=en&format=json`,
       );
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const geo = (await res.json()) as { results?: Array<{ latitude: number; longitude: number; name: string; country: string }> };
-      if (!geo.results?.length) {
+      const geocoding = (await response.json()) as {
+        results?: Array<{
+          latitude: number;
+          longitude: number;
+          name: string;
+          country: string;
+        }>;
+      };
+
+      if (!geocoding.results?.length) {
         setError("City not found.");
         setStatus("denied");
         return;
       }
-      const { latitude, longitude, name: found, country } = geo.results[0];
-      await loadWeather(latitude, longitude, `${found}, ${country}`);
+
+      const { latitude, longitude, name: found, country } = geocoding.results[0];
+      await loadWeather(latitude, longitude, `${found}, ${country}`, true);
     } catch {
       setError("Search failed.");
       setStatus("error");
@@ -190,23 +251,8 @@ export function useWeather() {
       void loadWeather(last.lat, last.lon, last.label);
       return;
     }
-    if (typeof navigator === "undefined" || !navigator.geolocation) {
-      setStatus("denied");
-      return;
-    }
-    setStatus("locating");
-    navigator.geolocation.getCurrentPosition(
-      ({ coords }) => void loadWeather(coords.latitude, coords.longitude),
-      (err) => {
-        if (err.code === 1) {
-          setStatus("denied");
-        } else {
-          setError("Could not get your location. Try again or enter a city.");
-          setStatus("error");
-        }
-      },
-      { timeout: 12000, maximumAge: 60000 },
-    );
+
+    void locateUser();
   }
 
   return { now, data, status, error, searchCity, retryLocation };

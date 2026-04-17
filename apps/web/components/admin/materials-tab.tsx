@@ -14,6 +14,7 @@ import { Pagination } from "./pagination";
 import { ExportButton } from "./export-button";
 import { SkeletonTable } from "./skeleton-table";
 import { AdminMobileCard } from "./admin-mobile-card";
+import { PREMIUM_DARK_CARD_BG } from "../layout/premium-dark-styles";
 
 type AdminMaterial = {
   id: number;
@@ -131,7 +132,7 @@ export function MaterialsTab() {
       </div>
 
       {/* Desktop table view */}
-      <div className="hidden md:block overflow-x-auto">
+      <div className={`hidden overflow-x-auto rounded-2xl border border-slate-200/80 bg-white/60 p-4 shadow-sm md:block dark:border-slate-700/60 ${PREMIUM_DARK_CARD_BG}`}>
         <table className="w-full text-left text-sm">
           <thead>
             <tr className="border-b border-slate-200 dark:border-slate-700">
@@ -154,7 +155,7 @@ export function MaterialsTab() {
           </thead>
           <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
             {paged.map((mat) => (
-              <tr key={mat.id} className={bulk.isSelected(mat.id) ? "bg-brand-50/50 dark:bg-brand-500/5" : ""}>
+              <tr key={mat.id} className={`transition-colors hover:bg-slate-50/60 dark:hover:bg-white/5 ${bulk.isSelected(mat.id) ? "bg-brand-50/50 dark:bg-brand-500/5" : ""}`}>
                 <td className="py-3">
                   <input
                     type="checkbox"

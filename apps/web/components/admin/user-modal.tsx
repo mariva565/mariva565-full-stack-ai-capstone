@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { readErrorMessage } from "../../lib/http";
 import { getPasswordStrength, isStrongPassword, PASSWORD_POLICY_MESSAGE } from "../../lib/password-validation";
+import { PREMIUM_DARK_INPUT, PREMIUM_DARK_MODAL_BG } from "../layout/premium-dark-styles";
 
 type UserData = {
   id: number;
@@ -89,7 +90,7 @@ export function UserModal({ isOpen, user, onClose, onSaved }: UserModalProps) {
       <div
         role="dialog"
         aria-modal="true"
-        className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-slate-700 dark:bg-slate-900"
+        className={`w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-cyan-400/10 ${PREMIUM_DARK_MODAL_BG}`}
       >
         <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
           {isEdit ? "Edit User" : "Create User"}
@@ -103,7 +104,7 @@ export function UserModal({ isOpen, user, onClose, onSaved }: UserModalProps) {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-slate-600 dark:bg-slate-800 dark:text-white"
+              className={`mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-cyan-400/10 ${PREMIUM_DARK_INPUT}`}
             />
           </div>
 
@@ -114,7 +115,7 @@ export function UserModal({ isOpen, user, onClose, onSaved }: UserModalProps) {
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-slate-600 dark:bg-slate-800 dark:text-white"
+              className={`mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-cyan-400/10 ${PREMIUM_DARK_INPUT}`}
             />
           </div>
 
@@ -128,7 +129,7 @@ export function UserModal({ isOpen, user, onClose, onSaved }: UserModalProps) {
                 required={!isEdit}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 pr-10 text-sm text-slate-900 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-slate-600 dark:bg-slate-800 dark:text-white"
+                className={`w-full rounded-lg border border-slate-300 bg-white px-3 py-2 pr-10 text-sm text-slate-900 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-cyan-400/10 ${PREMIUM_DARK_INPUT}`}
               />
               <button
                 type="button"
@@ -162,7 +163,7 @@ export function UserModal({ isOpen, user, onClose, onSaved }: UserModalProps) {
             <select
               value={role}
               onChange={(e) => setRole(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-slate-600 dark:bg-slate-800 dark:text-white"
+              className={`mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-cyan-400/10 ${PREMIUM_DARK_INPUT}`}
             >
               <option value="user">User</option>
               <option value="admin">Administrator</option>

@@ -5,6 +5,7 @@ import { useAdminContext } from "./admin-context";
 import { AdminHero } from "./hero/AdminHero";
 import { ActivityChart } from "./activity-chart";
 import { StatsCards } from "./stats-cards";
+import { PREMIUM_DARK_BUTTON, PREMIUM_DARK_CARD_BG } from "../layout/premium-dark-styles";
 
 export function OverviewTab() {
   const { viewAsFilter } = useAdminContext();
@@ -54,7 +55,7 @@ export function OverviewTab() {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.6 }}
-                className="rounded-3xl border border-white/20 bg-white/50 p-6 shadow-glass backdrop-blur-md dark:border-white/10 dark:bg-slate-800/50"
+                className={`rounded-3xl border border-white/20 bg-white/50 p-6 shadow-glass backdrop-blur-md dark:border-slate-700/60 ${PREMIUM_DARK_CARD_BG}`}
               >
                 <div className="flex items-center justify-between mb-4">
                   <h4 className="font-bold text-slate-900 dark:text-white">Moderation Queue</h4>
@@ -72,7 +73,7 @@ export function OverviewTab() {
                     <span className="rounded-full bg-blue-500 px-2 py-0.5 text-xs font-black text-white">3</span>
                   </div>
                 </div>
-                <button className="mt-6 w-full py-3 rounded-2xl bg-indigo-500/10 text-indigo-600 border border-indigo-500/20 font-bold text-sm transition-colors hover:bg-indigo-500/20">
+                <button className={`mt-6 w-full rounded-2xl border border-indigo-500/20 bg-indigo-500/10 py-3 text-sm font-bold text-indigo-600 transition-colors hover:bg-indigo-500/20 dark:border-slate-700/60 ${PREMIUM_DARK_BUTTON}`}>
                   Process Queue
                 </button>
               </motion.div>
@@ -81,7 +82,7 @@ export function OverviewTab() {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.8 }}
-                className="rounded-3xl border border-white/20 bg-primary-500/5 p-6 shadow-glass backdrop-blur-md dark:border-primary-500/10"
+                className={`rounded-3xl border border-white/20 bg-primary-500/5 p-6 shadow-glass backdrop-blur-md dark:border-primary-500/10 ${PREMIUM_DARK_CARD_BG}`}
               >
                 <div className="flex items-center justify-between mb-2">
                   <h4 className="font-bold text-slate-900 dark:text-white">Storage Usage</h4>
@@ -104,7 +105,7 @@ export function OverviewTab() {
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          className="rounded-3xl border border-slate-200/60 bg-white/50 p-8 text-center shadow-glass backdrop-blur-md dark:border-white/10 dark:bg-slate-800/40"
+          className={`rounded-3xl border border-slate-200/60 bg-white/50 p-8 text-center shadow-glass backdrop-blur-md dark:border-slate-700/60 ${PREMIUM_DARK_CARD_BG}`}
         >
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary-500/10">
             <svg className="h-8 w-8 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>

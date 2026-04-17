@@ -2,6 +2,11 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import { PageBackgroundShell } from "../layout/page-background-shell";
+import {
+  PREMIUM_DARK_BUTTON,
+  PREMIUM_DARK_CARD_BG,
+} from "../layout/premium-dark-styles";
 
 type Question = {
   id: number;
@@ -80,7 +85,7 @@ export function MentorInbox() {
   const questions = filter ? allQuestions.filter((q) => q.questionStatus === filter) : allQuestions;
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6">
+    <PageBackgroundShell contentClassName="max-w-4xl px-4 py-8 sm:px-6">
       {/* Header */}
       <div className="mb-8">
         <h1 className="font-shantell text-3xl font-black tracking-tight bg-v1-gradient bg-clip-text text-transparent">
@@ -100,7 +105,7 @@ export function MentorInbox() {
             className={`rounded-xl border p-3 text-center transition ${
               filter === s
                 ? Q_STATUS_COLORS[s]
-                : "border-slate-200 bg-white hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900/60"
+                : `border-slate-200 bg-white hover:bg-slate-50 dark:border-slate-700/60 ${PREMIUM_DARK_CARD_BG}`
             }`}
           >
             <p className="text-2xl font-black text-slate-800 dark:text-white">{counts[s]}</p>
@@ -113,11 +118,11 @@ export function MentorInbox() {
       {loading ? (
         <div className="space-y-3">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="h-28 animate-pulse rounded-2xl bg-slate-100 dark:bg-slate-800" />
+            <div key={i} className={`h-28 animate-pulse rounded-2xl bg-slate-100 dark:border dark:border-slate-800/80 ${PREMIUM_DARK_CARD_BG}`} />
           ))}
         </div>
       ) : questions.length === 0 ? (
-        <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-slate-300 py-20 dark:border-slate-700">
+        <div className={`flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-slate-300 py-20 dark:border-slate-700/80 ${PREMIUM_DARK_CARD_BG}`}>
           <svg className="h-10 w-10 text-slate-300 dark:text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" />
           </svg>
@@ -135,7 +140,7 @@ export function MentorInbox() {
           {questions.map((q) => (
             <div
               key={q.id}
-              className={`rounded-2xl border bg-white/80 p-5 shadow-sm backdrop-blur-sm transition dark:bg-slate-900/60 ${
+              className={`rounded-2xl border bg-white/80 p-5 shadow-sm backdrop-blur-sm transition ${PREMIUM_DARK_CARD_BG} ${
                 q.questionStatus === "open"
                   ? "border-amber-200 dark:border-amber-800/60"
                   : "border-slate-200/80 dark:border-slate-700/60"
@@ -151,7 +156,7 @@ export function MentorInbox() {
                     {q.courseTitle && (
                       <>
                         <span>·</span>
-                        <span className="rounded-full bg-slate-100 px-2 py-0.5 dark:bg-slate-800">{q.courseTitle}</span>
+                        <span className="rounded-full bg-slate-100 px-2 py-0.5 dark:bg-slate-800/80">{q.courseTitle}</span>
                       </>
                     )}
                   </div>
@@ -191,7 +196,7 @@ export function MentorInbox() {
                       <button
                         disabled={updating === q.id}
                         onClick={() => setStatus(q.id, "closed")}
-                        className="rounded-lg bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-500 transition hover:bg-slate-200 disabled:opacity-50 dark:bg-slate-800 dark:text-slate-400"
+                        className={`rounded-lg bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-500 transition hover:bg-slate-200 disabled:opacity-50 dark:border dark:border-slate-700/60 ${PREMIUM_DARK_BUTTON}`}
                       >
                         Close
                       </button>
@@ -212,6 +217,6 @@ export function MentorInbox() {
           ))}
         </div>
       )}
-    </div>
+    </PageBackgroundShell>
   );
 }

@@ -1,8 +1,15 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
-import { useRouter } from "next/navigation";
 import Pusher from "pusher-js";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { PageBackgroundShell } from "../layout/page-background-shell";
+import {
+  PREMIUM_DARK_CARD_BG,
+  PREMIUM_DARK_ICON_SURFACE,
+  PREMIUM_DARK_INPUT,
+  PREMIUM_DARK_PANEL_BG,
+} from "../layout/premium-dark-styles";
 
 type Message = {
   id: number;
@@ -13,7 +20,11 @@ type Message = {
   senderAvatar: string | null;
 };
 
-type OtherUser = { id: number; name: string; avatarUrl: string | null };
+type OtherUser = {
+  id: number;
+  name: string;
+  avatarUrl: string | null;
+};
 
 type Props = {
   conversationId: number;
@@ -35,6 +46,7 @@ function Avatar({
     .join("")
     .toUpperCase()
     .slice(0, 2);
+
   if (avatarUrl) {
     return (
       <img
@@ -44,12 +56,31 @@ function Avatar({
       />
     );
   }
+
   return (
     <div
       className={`w-${size} h-${size} rounded-full flex items-center justify-center flex-shrink-0 bg-gradient-to-br from-brand-500 via-fuchsia-500 to-cyan-400 text-white font-bold text-xs`}
     >
       {initials}
     </div>
+  );
+}
+
+function EmptyThreadIcon() {
+  return (
+    <svg
+      className="h-7 w-7 text-slate-400 dark:text-slate-500"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={1.8}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"
+      />
+    </svg>
   );
 }
 
@@ -63,7 +94,6 @@ export function ChatWindow({ conversationId, currentUserId }: Props) {
   const bottomRef = useRef<HTMLDivElement>(null);
   const shellRef = useRef<HTMLDivElement>(null);
 
-  // Fit container to remaining viewport height below the navbar
   useEffect(() => {
     const el = shellRef.current;
     if (!el) return;
@@ -78,12 +108,10 @@ export function ChatWindow({ conversationId, currentUserId }: Props) {
     return () => window.removeEventListener("resize", recalc);
   }, []);
 
-  // Scroll to bottom when messages change
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Load message history + other user info
   const loadMessages = useCallback(async () => {
     try {
       const res = await fetch(`/api/conversations/${conversationId}/messages`);
@@ -91,9 +119,12 @@ export function ChatWindow({ conversationId, currentUserId }: Props) {
         router.replace("/messages");
         return;
       }
+
       const data = await res.json();
       setMessages(data.messages ?? []);
-      if (data.other) setOtherUser(data.other);
+      if (data.other) {
+        setOtherUser(data.other);
+      }
     } finally {
       setLoading(false);
     }
@@ -103,7 +134,6 @@ export function ChatWindow({ conversationId, currentUserId }: Props) {
     loadMessages();
   }, [loadMessages]);
 
-  // Pusher real-time subscription
   useEffect(() => {
     const pusherKey = process.env.NEXT_PUBLIC_PUSHER_KEY;
     const pusherCluster = process.env.NEXT_PUBLIC_PUSHER_CLUSTER;
@@ -118,7 +148,6 @@ export function ChatWindow({ conversationId, currentUserId }: Props) {
 
     channel.bind("new-message", (data: Message) => {
       setMessages((prev) => {
-        // Avoid duplicates (in case sender already sees the message)
         if (prev.some((m) => m.id === data.id)) return prev;
         return [...prev, data];
       });
@@ -147,7 +176,6 @@ export function ChatWindow({ conversationId, currentUserId }: Props) {
 
       if (res.ok) {
         const msg = await res.json();
-        // Add sender's own message immediately (Pusher won't echo back to sender)
         setMessages((prev) => {
           if (prev.some((m) => m.id === msg.id)) return prev;
           return [
@@ -183,128 +211,129 @@ export function ChatWindow({ conversationId, currentUserId }: Props) {
   }
 
   return (
-    <div ref={shellRef} className="bg-slate-50 dark:bg-slate-950 flex flex-col px-4 py-3 overflow-hidden">
-      <div className="max-w-2xl w-full mx-auto flex flex-col flex-1 min-h-0 bg-white/90 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-sm overflow-hidden">
-      {/* Header */}
-      <div className="flex items-center gap-3 px-4 py-3 border-b border-slate-200/80 dark:border-slate-700/60 flex-shrink-0">
-        <button
-          onClick={() => router.back()}
-          className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 dark:hover:text-slate-200 dark:hover:bg-slate-800 transition-colors flex-shrink-0"
-          aria-label="Back"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
-        {otherUser && (
-          <Avatar name={otherUser.name} avatarUrl={otherUser.avatarUrl} size={8} />
-        )}
-        <span className="font-shantell font-bold text-slate-900 dark:text-white">
-          {otherUser ? otherUser.name : "Chat"}
-        </span>
-      </div>
-
-      {/* Messages — flex column anchored to bottom */}
-      <div className="flex-1 min-h-0 overflow-y-auto">
-        <div className="flex flex-col justify-end min-h-full px-4 py-4 gap-4">
-          {loading ? (
-            <div className="flex flex-col gap-3">
-              {[...Array(5)].map((_, i) => (
-                <div
-                  key={i}
-                  className={`flex gap-3 ${i % 2 === 0 ? "" : "flex-row-reverse"}`}
-                >
-                  <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800 animate-pulse flex-shrink-0" />
-                  <div className="h-10 w-48 rounded-2xl bg-slate-200 dark:bg-slate-800 animate-pulse" />
-                </div>
-              ))}
-            </div>
-          ) : messages.length === 0 ? (
-            <div className="text-center py-16">
-              <div className="w-14 h-14 rounded-2xl bg-white/80 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/60 shadow-sm flex items-center justify-center text-2xl mx-auto mb-3">
-                👋
-              </div>
-              <p className="text-sm text-slate-500 dark:text-slate-400">Say hello to {otherUser?.name ?? "them"}!</p>
-            </div>
-          ) : (
-            messages.map((msg) => {
-              const isOwn = msg.senderId === currentUserId;
-              return (
-                <div
-                  key={msg.id}
-                  className={`flex gap-3 ${isOwn ? "flex-row-reverse" : ""}`}
-                >
-                  {!isOwn && (
-                    <Avatar
-                      name={msg.senderName}
-                      avatarUrl={msg.senderAvatar}
-                      size={8}
-                    />
-                  )}
-                  <div
-                    className={`max-w-xs lg:max-w-md ${isOwn ? "items-end" : "items-start"} flex flex-col gap-1`}
-                  >
-                    {!isOwn && (
-                      <span className="text-xs text-slate-500 dark:text-slate-400 ml-1">
-                        {msg.senderName}
-                      </span>
-                    )}
-                    <div
-                      className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed shadow-sm ${
-                        isOwn
-                          ? "bg-v1-gradient text-white rounded-tr-sm"
-                          : "bg-white/90 dark:bg-slate-800/80 text-slate-900 dark:text-white border border-slate-200/80 dark:border-slate-700/60 rounded-tl-sm backdrop-blur-sm"
-                      }`}
-                    >
-                      {msg.content}
-                    </div>
-                    <span className="text-xs text-slate-400 dark:text-slate-500 mx-1">
-                      {formatTime(msg.createdAt)}
-                    </span>
-                  </div>
-                </div>
-              );
-            })
-          )}
-          <div ref={bottomRef} />
-        </div>
-      </div>
-
-      {/* Input */}
-      <div className="px-4 py-3 border-t border-slate-200/80 dark:border-slate-700/60 flex-shrink-0">
-        <div className="flex items-end gap-2">
-          <textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Type a message… (Enter to send)"
-            rows={1}
-            className="flex-1 resize-none rounded-xl px-4 py-2.5 text-sm bg-slate-100/80 dark:bg-slate-800/80 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 border border-slate-200/80 dark:border-slate-700/60 focus:outline-none focus:ring-2 focus:ring-brand-400 dark:focus:ring-brand-500 transition-shadow"
-            style={{ minHeight: "42px", maxHeight: "120px" }}
-          />
-          <button
-            onClick={sendMessage}
-            disabled={!input.trim() || sending}
-            className="flex-shrink-0 w-10 h-10 rounded-xl bg-v1-gradient disabled:opacity-40 disabled:cursor-not-allowed transition-all hover:-translate-y-0.5 hover:shadow-md flex items-center justify-center"
-            aria-label="Send"
-          >
-            <svg
-              className="w-5 h-5 text-white"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+    <PageBackgroundShell contentClassName="max-w-4xl px-4 py-4 sm:px-6 lg:px-8">
+      <div ref={shellRef} className="flex flex-col overflow-hidden">
+        <div className={`mx-auto flex w-full max-w-2xl min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white/90 shadow-sm backdrop-blur-xl dark:border-slate-700/60 ${PREMIUM_DARK_PANEL_BG}`}>
+          <div className="flex flex-shrink-0 items-center gap-3 border-b border-slate-200/80 px-4 py-3 dark:border-slate-700/60">
+            <button
+              onClick={() => router.back()}
+              className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+              aria-label="Back"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            {otherUser ? (
+              <Avatar name={otherUser.name} avatarUrl={otherUser.avatarUrl} size={8} />
+            ) : null}
+            <span className="font-shantell font-bold text-slate-900 dark:text-white">
+              {otherUser ? otherUser.name : "Chat"}
+            </span>
+          </div>
+
+          <div className="min-h-0 flex-1 overflow-y-auto">
+            <div className="flex min-h-full flex-col justify-end gap-4 px-4 py-4">
+              {loading ? (
+                <div className="flex flex-col gap-3">
+                  {[...Array(5)].map((_, i) => (
+                    <div
+                      key={i}
+                      className={`flex gap-3 ${i % 2 === 0 ? "" : "flex-row-reverse"}`}
+                    >
+                      <div className="h-8 w-8 flex-shrink-0 rounded-full bg-slate-200 animate-pulse dark:bg-slate-800/80" />
+                      <div className={`h-10 w-48 rounded-2xl bg-slate-200 animate-pulse ${PREMIUM_DARK_CARD_BG}`} />
+                    </div>
+                  ))}
+                </div>
+              ) : messages.length === 0 ? (
+                <div className="py-16 text-center">
+                  <div className={`mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl border border-slate-200/80 bg-white/80 shadow-sm dark:border-slate-700/60 ${PREMIUM_DARK_ICON_SURFACE}`}>
+                    <EmptyThreadIcon />
+                  </div>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                    Say hello to {otherUser?.name ?? "them"}!
+                  </p>
+                </div>
+              ) : (
+                messages.map((msg) => {
+                  const isOwn = msg.senderId === currentUserId;
+                  return (
+                    <div
+                      key={msg.id}
+                      className={`flex gap-3 ${isOwn ? "flex-row-reverse" : ""}`}
+                    >
+                      {!isOwn ? (
+                        <Avatar
+                          name={msg.senderName}
+                          avatarUrl={msg.senderAvatar}
+                          size={8}
+                        />
+                      ) : null}
+                      <div
+                        className={`flex max-w-xs flex-col gap-1 lg:max-w-md ${isOwn ? "items-end" : "items-start"}`}
+                      >
+                        {!isOwn ? (
+                          <span className="ml-1 text-xs text-slate-500 dark:text-slate-400">
+                            {msg.senderName}
+                          </span>
+                        ) : null}
+                        <div
+                          className={`rounded-2xl px-4 py-2.5 text-sm leading-relaxed shadow-sm ${
+                            isOwn
+                              ? "rounded-tr-sm bg-v1-gradient text-white"
+                              : `rounded-tl-sm border border-slate-200/80 bg-white/90 text-slate-900 backdrop-blur-sm dark:border-slate-700/60 dark:text-white ${PREMIUM_DARK_CARD_BG}`
+                          }`}
+                        >
+                          {msg.content}
+                        </div>
+                        <span className="mx-1 text-xs text-slate-400 dark:text-slate-500">
+                          {formatTime(msg.createdAt)}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+              <div ref={bottomRef} />
+            </div>
+          </div>
+
+          <div className="flex-shrink-0 border-t border-slate-200/80 px-4 py-3 dark:border-slate-700/60">
+            <div className="flex items-end gap-2">
+              <textarea
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Type a message... (Enter to send)"
+                rows={1}
+                className={`flex-1 resize-none rounded-xl border border-slate-200/80 bg-slate-100/80 px-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 transition-shadow focus:outline-none focus:ring-2 focus:ring-brand-400 dark:border-cyan-400/10 dark:focus:ring-brand-500 ${PREMIUM_DARK_INPUT}`}
+                style={{ minHeight: "42px", maxHeight: "120px" }}
               />
-            </svg>
-          </button>
+              <button
+                onClick={sendMessage}
+                disabled={!input.trim() || sending}
+                className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-v1-gradient transition-all hover:-translate-y-0.5 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-40"
+                aria-label="Send"
+              >
+                <svg
+                  className="h-5 w-5 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
-      </div>
-    </div>
+    </PageBackgroundShell>
   );
 }

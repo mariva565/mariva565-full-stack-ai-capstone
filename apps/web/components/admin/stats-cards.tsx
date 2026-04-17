@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 import { useAnimatedCounter } from "./use-animated-counter";
+import { PREMIUM_DARK_CARD_BG } from "../layout/premium-dark-styles";
 
 type Stats = { users: number; courses: number; modules: number; materials: number };
 
@@ -60,7 +61,7 @@ function StatCard({ label, icon, gradient, value }: {
   const display = useAnimatedCounter(value);
 
   return (
-    <div className="group relative overflow-hidden rounded-2xl border border-white/20 bg-white/70 p-5 shadow-glass backdrop-blur-xl transition-all duration-300 hover:scale-[1.03] hover:shadow-v1-glow dark:border-slate-700/50 dark:bg-slate-800/70">
+    <div className={`group relative overflow-hidden rounded-2xl border border-white/20 bg-white/70 p-5 shadow-glass backdrop-blur-xl transition-all duration-300 hover:scale-[1.03] hover:shadow-v1-glow dark:border-slate-700/50 ${PREMIUM_DARK_CARD_BG}`}>
       <div className="flex items-center gap-4">
         <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${gradient} text-white shadow-lg`}>
           {icon}

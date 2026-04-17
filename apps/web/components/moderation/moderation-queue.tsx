@@ -10,6 +10,12 @@ import {
 import { useModerationQueue } from "./use-moderation-queue";
 import { timeAgo } from "./moderation-queue.utils";
 import type { ModerationRole } from "./moderation-queue.types";
+import { PageBackgroundShell } from "../layout/page-background-shell";
+import {
+  PREMIUM_DARK_BUTTON,
+  PREMIUM_DARK_CARD_BG,
+  PREMIUM_DARK_INPUT,
+} from "../layout/premium-dark-styles";
 
 type ModerationQueueProps = {
   role: ModerationRole;
@@ -55,7 +61,7 @@ function StatusCards({
         <p className="text-xs font-semibold uppercase tracking-wide text-emerald-700 dark:text-emerald-300">Approved</p>
         <p className="mt-1 text-2xl font-black text-emerald-800 dark:text-emerald-200">{approved}</p>
       </div>
-      <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-700 dark:bg-slate-800/60">
+      <div className={`rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-700/60 ${PREMIUM_DARK_CARD_BG}`}>
         <p className="text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">Hidden</p>
         <p className="mt-1 text-2xl font-black text-slate-800 dark:text-slate-200">{hidden}</p>
       </div>
@@ -65,12 +71,8 @@ function StatusCards({
 
 export function ModerationQueue({ role, embedded = false }: ModerationQueueProps) {
   const state = useModerationQueue(role);
-  const containerClassName = embedded
-    ? "space-y-4"
-    : "mx-auto max-w-6xl space-y-5 px-4 py-8 sm:px-6";
-
-  return (
-    <div className={containerClassName}>
+  const content = (
+    <div className={embedded ? "space-y-4" : "space-y-5"}>
       {!embedded ? (
         <QueueHeader role={role} pendingRatioLabel={state.pendingRatioLabel} />
       ) : null}
@@ -81,7 +83,7 @@ export function ModerationQueue({ role, embedded = false }: ModerationQueueProps
         hidden={state.statusCounts.hidden}
       />
 
-      <div className="flex flex-wrap items-center gap-2 rounded-xl border border-slate-200 bg-white/80 p-3 dark:border-slate-700 dark:bg-slate-900/60">
+      <div className={`flex flex-wrap items-center gap-2 rounded-xl border border-slate-200 bg-white/80 p-3 dark:border-slate-700/60 ${PREMIUM_DARK_CARD_BG}`}>
         {STATUS_FILTERS.map((filter) => (
           <button
             key={filter.value}
@@ -90,7 +92,7 @@ export function ModerationQueue({ role, embedded = false }: ModerationQueueProps
             className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
               state.statusFilter === filter.value
                 ? "bg-brand-500 text-white"
-                : "border border-slate-200 text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+                : `border border-slate-200 text-slate-600 hover:bg-slate-50 dark:border-slate-700/60 ${PREMIUM_DARK_BUTTON}`
             }`}
           >
             {filter.label}
@@ -101,7 +103,7 @@ export function ModerationQueue({ role, embedded = false }: ModerationQueueProps
           value={state.searchInput}
           onChange={(event) => state.setSearchInput(event.target.value)}
           placeholder="Search title, content, author, course..."
-          className="ml-auto w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-400 sm:w-80 dark:border-slate-700 dark:bg-slate-950/60 dark:text-slate-200"
+          className={`ml-auto w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-400 sm:w-80 dark:border-cyan-400/10 ${PREMIUM_DARK_INPUT}`}
         />
       </div>
 
@@ -114,11 +116,11 @@ export function ModerationQueue({ role, embedded = false }: ModerationQueueProps
       {state.loading ? (
         <div className="space-y-3">
           {[...Array(4)].map((_, index) => (
-            <div key={index} className="h-40 animate-pulse rounded-2xl bg-slate-100 dark:bg-slate-800" />
+            <div key={index} className={`h-40 animate-pulse rounded-2xl bg-slate-100 dark:border dark:border-slate-800/80 ${PREMIUM_DARK_CARD_BG}`} />
           ))}
         </div>
       ) : state.posts.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-slate-300 py-16 text-center text-sm text-slate-500 dark:border-slate-700 dark:text-slate-400">
+        <div className={`rounded-2xl border border-dashed border-slate-300 py-16 text-center text-sm text-slate-500 dark:border-slate-700/80 dark:text-slate-400 ${PREMIUM_DARK_CARD_BG}`}>
           No posts match the current moderation filters.
         </div>
       ) : (
@@ -126,7 +128,7 @@ export function ModerationQueue({ role, embedded = false }: ModerationQueueProps
           {state.posts.map((post) => (
             <div
               key={post.id}
-              className={`rounded-2xl border bg-white/80 p-4 shadow-sm backdrop-blur-sm dark:bg-slate-900/60 ${
+              className={`rounded-2xl border bg-white/80 p-4 shadow-sm backdrop-blur-sm ${PREMIUM_DARK_CARD_BG} ${
                 post.status === "pending"
                   ? "border-amber-200 dark:border-amber-900/50"
                   : "border-slate-200 dark:border-slate-700"
@@ -155,7 +157,7 @@ export function ModerationQueue({ role, embedded = false }: ModerationQueueProps
                     </span>
                     <span className="text-slate-500 dark:text-slate-400">{post.authorName}</span>
                     {post.courseTitle ? (
-                      <span className="rounded-full bg-slate-100 px-2 py-0.5 text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+                      <span className="rounded-full bg-slate-100 px-2 py-0.5 text-slate-600 dark:bg-slate-800/80 dark:text-slate-300">
                         {post.courseTitle}
                       </span>
                     ) : null}
@@ -180,7 +182,7 @@ export function ModerationQueue({ role, embedded = false }: ModerationQueueProps
                     <button
                       type="button"
                       onClick={() => state.setPostStatus(post.id, "hidden")}
-                      className="rounded-lg bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600 transition hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
+                      className={`rounded-lg bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600 transition hover:bg-slate-200 dark:border dark:border-slate-700/60 ${PREMIUM_DARK_BUTTON}`}
                     >
                       Hide
                     </button>
@@ -216,7 +218,7 @@ export function ModerationQueue({ role, embedded = false }: ModerationQueueProps
             type="button"
             onClick={() => void state.loadMore()}
             disabled={state.loadingMore}
-            className="rounded-xl border border-slate-200 bg-white px-5 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:opacity-60 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
+            className={`rounded-xl border border-slate-200 bg-white px-5 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:opacity-60 dark:border-slate-700/60 ${PREMIUM_DARK_BUTTON}`}
           >
             {state.loadingMore ? "Loading..." : "Load more"}
           </button>
@@ -240,5 +242,10 @@ export function ModerationQueue({ role, embedded = false }: ModerationQueueProps
       />
     </div>
   );
-}
 
+  if (embedded) {
+    return content;
+  }
+
+  return <PageBackgroundShell contentClassName="max-w-6xl px-4 py-8 sm:px-6">{content}</PageBackgroundShell>;
+}

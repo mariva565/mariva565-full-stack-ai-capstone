@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 :root {
+  --app-navbar-height: 8rem;
   /* ===== PRIMARY PALETTE (Purple/Indigo) ===== */
   --primary-50: #f5f3ff;
   --primary-100: #ede9fe;
@@ -81,6 +82,10 @@
     background: var(--bg-gradient);
     color: var(--text-main);
     @apply antialiased min-h-screen;
+  }
+
+  .page-shell-fill-viewport {
+    min-height: calc(100dvh - var(--app-navbar-height, 8rem));
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -532,6 +537,10 @@
   @apply relative w-full overflow-hidden rounded-[24px] py-3 px-6 text-white font-semibold transition-all duration-300;
   background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-700) 100%);
   box-shadow: 0 10px 25px -5px rgba(139, 92, 246, 0.3);
+}
+
+.auth-btn-compact {
+  @apply py-2.5;
 }
 
 .auth-btn:hover:not(:disabled) {

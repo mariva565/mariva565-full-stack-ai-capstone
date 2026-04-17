@@ -1,5 +1,7 @@
 "use client";
 
+import { PREMIUM_DARK_BUTTON } from "../layout/premium-dark-styles";
+
 type PaginationProps = {
   currentPage: number;
   totalItems: number;
@@ -26,7 +28,7 @@ export function Pagination({ currentPage, totalItems, itemsPerPage, onPageChange
           type="button"
           disabled={currentPage <= 1}
           onClick={() => onPageChange(currentPage - 1)}
-          className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-700"
+          className={`rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700/60 ${PREMIUM_DARK_BUTTON}`}
         >
           Previous
         </button>
@@ -39,7 +41,7 @@ export function Pagination({ currentPage, totalItems, itemsPerPage, onPageChange
           type="button"
           disabled={currentPage >= totalPages}
           onClick={() => onPageChange(currentPage + 1)}
-          className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-700"
+          className={`rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700/60 ${PREMIUM_DARK_BUTTON}`}
         >
           Next
         </button>

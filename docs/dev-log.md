@@ -6548,6 +6548,7 @@ Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
 
 **Verification:**
 - `npm.cmd run typecheck:web` ✅
+- `npm.cmd run build:web` ✅
 - `npm.cmd run typecheck:mobile` ✅
 
 **Решения:**
@@ -7939,3 +7940,223 @@ Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
 **Решения:**
 - Приложихме минимална, целева промяна само по confirm-discard пътя, без да закачаме други екрани/модали, за да намалим regression риск.
 - Избрахме shared provider подход, за да избегнем дублиране на modal state във всички форми, които ползват `useConfirmDiscard`.
+
+### Session 269 — Auth visual parity: signature background for login/register + register card viewport fit
+
+**Какво направихме:**
+- Уеднаквихме `login/register` фонa със signature dashboard атмосферата:
+  - в `auth-layout` заменихме предишния auth background с dashboard-style layered gradients и glow blobs (light + dark варианти).
+- Направихме `register` варианта по-компактен, за да се събира на една страница без излишен вертикален page scroll:
+  - по-малък card padding и max width за `register` варианта в `auth-layout`;
+  - по-малък register mascot (`AuthCardMascot`) и по-компактни вертикални отстояния в `register` header/form;
+  - леки compact корекции на auth полетата (`AuthIconField`) и Google sign-in бутона за да намалим общата височина.
+
+**Файлове:**
+- `[MODIFY] apps/web/components/auth/auth-layout.tsx`
+- `[MODIFY] apps/web/components/auth/auth-mascot.tsx`
+- `[MODIFY] apps/web/components/auth/register-form-header.tsx`
+- `[MODIFY] apps/web/components/auth/register-form.tsx`
+- `[MODIFY] apps/web/components/auth/auth-icon-field.tsx`
+- `[MODIFY] apps/web/components/auth/auth-google-sign-in.tsx`
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- `npm.cmd run typecheck:web` ✅
+
+**Решения:**
+- Запазихме auth visual identity (glassmorphism + mascot), но преместихме сцената към signature dashboard background за по-добра навигационна визуална консистентност.
+- Използвахме low-risk, CSS-first размерни корекции вместо structural refactor на auth формите.
+
+### Session 270 — Local prod startup fix on Windows (`$PID` variable conflict + reliable port cleanup)
+
+**Какво направихме:**
+- Поправихме `run-local-prod.ps1`, който хвърляше:
+  - `Cannot overwrite variable PID because it is read-only or constant.`
+- Причина: `foreach ($pid in $pids)` конфликт с PowerShell automatic variable `$PID`.
+- Смeнихме loop променливата към безопасно име (`$processId`) и обновихме съобщенията.
+- Добавихме fallback логика за cleanup на порт:
+  - запазихме `Get-NetTCPConnection` проверката;
+  - добавихме `netstat -ano` fallback за среди, в които listener-ите не се връщат надеждно от `Get-NetTCPConnection`.
+
+**Файлове:**
+- `[MODIFY] scripts/run-local-prod.ps1`
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- `powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/run-local-prod.ps1 -SkipBuild`:
+  - `Stopped stale process <pid> on port 3002` ✅
+  - Next.js server start на `http://localhost:3002` ✅
+
+**Решения:**
+- Избрахме минимална, backward-compatible промяна в startup script-а, без да пипаме npm script names/flow (`prod:web`, `prod:web:skip-build`).
+
+### Session 271 — Shared page background shell rollout for dashboard-adjacent screens
+
+**Какво направихме:**
+- Добавихме нов shared wrapper `PageBackgroundShell`, който централизира signature dashboard background-а (light/dark gradient layers + glow blobs).
+- Прекарахме съществуващия `DashboardPageShell` през новия shared wrapper, така че dashboard да остане source of truth за този page background pattern.
+- Rollout-нахме фона към следните web екрани:
+  - `Community` feed
+  - `Progress`
+  - `Messages` inbox
+  - `Messages` thread
+  - `Mentor Inbox`
+  - `Moderation` page
+- При `Moderation` запазихме `embedded` режима без background shell, за да не счупим вложената употреба в admin контекста.
+- При `Messages` screens премахнахме старите flat page backgrounds и вързахме съдържанието към новия shell, без промяна на messaging flow логиката.
+
+**Файлове:**
+- `[ADD] apps/web/components/layout/page-background-shell.tsx`
+- `[MODIFY] apps/web/components/dashboard/dashboard-page-shell.tsx`
+- `[MODIFY] apps/web/components/community/community-feed.tsx`
+- `[MODIFY] apps/web/components/progress/progress-page-client.tsx`
+- `[MODIFY] apps/web/components/messages/messages-inbox.tsx`
+- `[MODIFY] apps/web/components/messages/chat-window.tsx`
+- `[MODIFY] apps/web/components/mentor/mentor-inbox.tsx`
+- `[MODIFY] apps/web/components/moderation/moderation-queue.tsx`
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- `npm.cmd run typecheck:web` ✅
+
+**Решения:**
+- Избрахме shell-based rollout вместо копиране на gradient markup във всяка страница, за да държим визуалната консистентност централизирана и future-safe.
+- Запазихме page-specific widths/layouts и пипнахме само outer wrappers, за да сведем regression риска до минимум.
+
+### Session 272 — Register auth card compact pass for tighter single-screen fit
+
+**Какво направихме:**
+- Направихме втори, по-фин compact pass само за `register`, за да съберем формата още малко без да свиваме излишно `login`.
+- Намалихме:
+  - `register` card padding и width в `auth-layout`;
+  - inline mascot size/margins в `auth-mascot`;
+  - header spacing и badge/title sizing в `register-form-header`;
+  - form spacing, helper text, CTA button height и divider/google section height в `register-form`.
+- Добавихме compact support за:
+  - `AuthSectionDivider`
+  - `AuthGoogleSignIn`
+  - compact button utility (`auth-btn-compact`)
+
+**Файлове:**
+- `[MODIFY] apps/web/components/auth/auth-layout.tsx`
+- `[MODIFY] apps/web/components/auth/auth-mascot.tsx`
+- `[MODIFY] apps/web/components/auth/register-form-header.tsx`
+- `[MODIFY] apps/web/components/auth/auth-section-divider.tsx`
+- `[MODIFY] apps/web/components/auth/auth-google-sign-in.tsx`
+- `[MODIFY] apps/web/components/auth/register-form.tsx`
+- `[MODIFY] apps/web/app/globals.css`
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- `npm.cmd run typecheck:web` ✅
+
+**Решения:**
+- Оставихме compact промените register-specific, за да не вкарваме излишна visual regression в `login`.
+
+### Session 273 — Dark mode visual parity pass for community, messaging, moderation, and admin
+
+**Какво направихме:**
+- Направихме premium dark-mode pass за по-късно добавените web екрани, за да се доближат визуално до dashboard / progress вместо да стоят на flat slate-800/900 surfaces.
+- Добавихме shared dark surface tokens в premium-dark-styles.ts и ги вързахме към:
+  - Community feed cards, filters, empty/loading states;
+  - Messages inbox + thread shell, message bubbles, empty/loading states;
+  - Mentor Inbox cards, stats toggles, empty/loading states;
+  - Moderation filters, cards, load-more/search controls, empty/loading states.
+- Разширихме parity pass-а и към Admin Panel:
+  - вързахме страницата към PageBackgroundShell;
+  - обновихме dark shell-а, tabs, settings/search/filter controls и modals;
+  - освежихме overview/stat/activity cards;
+  - добавихме по-премиум dark table/card containers за Users, Materials, Courses, Modules, Members.
+- Запазихме съществуващата логика и data flow; промените са visual/theming-only.
+
+**Файлове:**
+- [ADD] apps/web/components/layout/premium-dark-styles.ts
+- [MODIFY] apps/web/components/community/community-feed.tsx
+- [MODIFY] apps/web/components/messages/messages-inbox.tsx
+- [MODIFY] apps/web/components/messages/chat-window.tsx
+- [MODIFY] apps/web/components/mentor/mentor-inbox.tsx
+- [MODIFY] apps/web/components/moderation/moderation-queue.tsx
+- [MODIFY] apps/web/app/admin/page.tsx
+- [MODIFY] apps/web/components/admin/search-bar.tsx
+- [MODIFY] apps/web/components/admin/view-as-filter.tsx
+- [MODIFY] apps/web/components/admin/export-button.tsx
+- [MODIFY] apps/web/components/admin/pagination.tsx
+- [MODIFY] apps/web/components/admin/bulk-action-toolbar.tsx
+- [MODIFY] apps/web/components/admin/admin-mobile-card.tsx
+- [MODIFY] apps/web/components/admin/edit-modal.tsx
+- [MODIFY] apps/web/components/admin/role-confirm-modal.tsx
+- [MODIFY] apps/web/components/admin/settings-modal.tsx
+- [MODIFY] apps/web/components/admin/user-modal.tsx
+- [MODIFY] apps/web/components/admin/overview-tab.tsx
+- [MODIFY] apps/web/components/admin/stats-cards.tsx
+- [MODIFY] apps/web/components/admin/activity-chart.tsx
+- [MODIFY] apps/web/components/admin/users-tab.tsx
+- [MODIFY] apps/web/components/admin/materials-tab.tsx
+- [MODIFY] apps/web/components/admin/courses-tab.tsx
+- [MODIFY] apps/web/components/admin/modules-tab.tsx
+- [MODIFY] apps/web/components/admin/members-tab.tsx
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- npm.cmd run typecheck:web ✅
+- npm.cmd run build:web ✅
+
+**Решения:**
+- Използвахме shared theme tokens вместо copy-paste на отделни dark gradients, за да държим по-лесно последващите visual корекции в синхрон.
+- Admin-ът мина през същия background/surface език като dashboard / progress, но без да сменяме API contracts или interaction flow.
+### Session 274 — Viewport fill fix for PageBackgroundShell under sticky navbar
+
+**Какво направихме:**
+- Оправихме визуалната хоризонтална „лента“ под по-къси shell-based страници като Messages, където page background-ът свършваше преди края на viewport-а.
+- Добавихме глобален viewport-fill utility за PageBackgroundShell, който запълва оставащата височина под sticky navbar-а.
+- Накарахме navbar-а да измерва реалната си височина и да я записва в CSS variable (--app-navbar-height) чрез ResizeObserver, за да работи коректно и при wrap/resize.
+- Вързахме PageBackgroundShell към новия utility, така че fix-ът да важи и за останалите shell-based screens, не само за Messages.
+
+**Файлове:**
+- [MODIFY] apps/web/components/layout/page-background-shell.tsx
+- [MODIFY] apps/web/components/navbar-client.tsx
+- [MODIFY] apps/web/app/globals.css
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- npm.cmd run typecheck:web ✅
+- npm.cmd run build:web ✅
+
+**Решения:**
+- Избрахме централен fix през navbar height variable + shared shell utility, вместо page-specific hacks само за Messages, за да избегнем подобни артефакти и на други кратки страници.
+
+## 2026-04-17
+### Session 275 — Weather widget geolocation recovery after granted permission
+
+**Какво направихме:**
+- Проследихме weather widget flow-а end-to-end в `calendar` sidebar-а:
+  - `WeatherWidget` ползва `useWeather`;
+  - geolocation + Open-Meteo weather/geocoding заявките са изцяло client-side;
+  - проблемът не беше в server route или API contract mismatch.
+- Установихме root cause в geolocation flow-а:
+  - hook-ът правеше еднократен `navigator.geolocation.getCurrentPosition(...)` опит с агресивен `timeout: 12000`;
+  - не слушаше за permission state промяна към `granted`;
+  - при `TIMEOUT` / `POSITION_UNAVAILABLE` показваше `Could not get your location...` и оставаше в `error/denied` state, дори когато browser permission вече е grant-нат.
+- Направихме минимален fix само в `apps/web/components/calendar/use-weather.ts`:
+  - изнесохме geolocation request-а в shared helper path;
+  - добавихме по-надеждни geolocation options: `timeout: 20000`, `maximumAge: 300000`, `enableHighAccuracy: false`;
+  - добавихме `navigator.permissions.query({ name: "geolocation" })` check + listener за transition към `granted`, който re-triggers location request-а;
+  - добавихме in-flight guard за да избегнем дублирани geolocation заявки при React dev/permission-change сценарии;
+  - чистим stale error state при `denied`/нов location attempt.
+- За да останем в project guardrail-а `max 300 lines per file`, изнесохме weather response shaping/type helper-ите в малки companion файлове без промяна на widget UI поведението.
+- Запазихме manual city fallback-а непроменен като UX и API flow:
+  - city search продължава да минава през Open-Meteo geocoding API;
+  - `Use my location` и manual entry остават същите от гледна точка на UI.
+
+**Файлове:**
+- [MODIFY] apps/web/components/calendar/use-weather.ts
+- [ADD] apps/web/components/calendar/weather-data.ts
+- [ADD] apps/web/components/calendar/weather-types.ts
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd run typecheck:web` ✅
+
+**Решения:**
+- Запазихме fix-а локализиран в weather hook-а вместо да преправяме widget UI или да добавяме server proxy, защото проблемът е в browser geolocation lifecycle-а.
+- Permission-listener + по-толерантни geolocation options адресират реалния happy path (`granted -> detect location -> load weather`) без да пипат manual city fallback-а.

@@ -34,15 +34,21 @@ const SPEECH_SPARKLES = [
 ] as const;
 
 export function AuthCardMascot({ variant }: { variant: AuthVariant }) {
+  const sizeClass =
+    variant === "register"
+      ? "h-[72px] w-[72px] sm:h-[84px] sm:w-[84px]"
+      : "h-[96px] w-[96px] sm:h-[110px] sm:w-[110px]";
+  const marginClass = variant === "register" ? "mb-2.5 sm:mb-3" : "mb-4 sm:mb-5";
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.5 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.5, delay: 0.2, type: "spring", stiffness: 200 }}
-      className="relative z-10 mx-auto mb-4 flex justify-center sm:mb-5"
+      className={`relative z-10 mx-auto flex justify-center ${marginClass}`}
     >
       <div
-        className={`group h-[96px] w-[96px] overflow-hidden rounded-[1.5rem] border-4 border-white/80 transition-all duration-300 hover:-translate-y-1 hover:scale-[1.05] sm:h-[110px] sm:w-[110px] ${CARD_GLOW_CLASS[variant]}`}
+        className={`group overflow-hidden rounded-[1.5rem] border-4 border-white/80 transition-all duration-300 hover:-translate-y-1 hover:scale-[1.05] ${sizeClass} ${CARD_GLOW_CLASS[variant]}`}
       >
         <Image
           src={CARD_MASCOT_SRC[variant]}

@@ -42,8 +42,8 @@ export function AuthIconField({
         {label}
       </label>
 
-      <div className="flex items-center gap-3 rounded-[1.35rem] border border-white/60 bg-white/80 px-4 py-2.5 shadow-sm backdrop-blur-sm transition duration-200 focus-within:-translate-y-px focus-within:border-brand-400 focus-within:bg-white focus-within:shadow-[0_0_0_4px_rgba(99,102,241,0.15)] dark:border-white/10 dark:bg-slate-800/80 dark:focus-within:border-brand-400 dark:focus-within:bg-slate-800 dark:focus-within:shadow-[0_0_0_4px_rgba(99,102,241,0.2)]">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-brand-100 via-fuchsia-50 to-cyan-50 text-brand-700 dark:from-brand-500/20 dark:via-fuchsia-500/10 dark:to-cyan-500/10 dark:text-brand-100">
+      <div className="flex items-center gap-3 rounded-[1.35rem] border border-white/60 bg-white/80 px-4 py-2 shadow-sm backdrop-blur-sm transition duration-200 focus-within:-translate-y-px focus-within:border-brand-400 focus-within:bg-white focus-within:shadow-[0_0_0_4px_rgba(99,102,241,0.15)] dark:border-white/10 dark:bg-slate-800/80 dark:focus-within:border-brand-400 dark:focus-within:bg-slate-800 dark:focus-within:shadow-[0_0_0_4px_rgba(99,102,241,0.2)]">
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-brand-100 via-fuchsia-50 to-cyan-50 text-brand-700 dark:from-brand-500/20 dark:via-fuchsia-500/10 dark:to-cyan-500/10 dark:text-brand-100">
           {icon}
         </span>
 
@@ -67,7 +67,7 @@ export function AuthIconField({
             aria-pressed={isPasswordVisible}
             onMouseDown={(event) => event.preventDefault()}
             onClick={() => setIsPasswordVisible((current) => !current)}
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-slate-500 transition hover:bg-slate-100 hover:text-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400/60 dark:text-slate-400 dark:hover:bg-slate-700/70 dark:hover:text-brand-100"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-slate-500 transition hover:bg-slate-100 hover:text-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400/60 dark:text-slate-400 dark:hover:bg-slate-700/70 dark:hover:text-brand-100"
           >
             {isPasswordVisible ? <EyeOffIcon /> : <EyeIcon />}
           </button>

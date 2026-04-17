@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { PREMIUM_DARK_CARD_BG } from "../layout/premium-dark-styles";
 
 type MetaField = {
   label: string;
@@ -38,7 +39,7 @@ export function AdminMobileCard({
 }: AdminMobileCardProps) {
   return (
     <div
-      className={`rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition dark:border-slate-700 dark:bg-slate-900 ${
+      className={`rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition dark:border-slate-700/60 ${PREMIUM_DARK_CARD_BG} ${
         dimmed ? "opacity-60" : ""
       } ${checked ? "border-brand-300 bg-brand-50/40 dark:border-brand-500/30 dark:bg-brand-500/5" : ""}`}
     >

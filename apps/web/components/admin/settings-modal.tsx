@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useAdminContext } from "./admin-context";
+import { PREMIUM_DARK_INPUT, PREMIUM_DARK_MODAL_BG } from "../layout/premium-dark-styles";
 
 type SettingsModalProps = {
   isOpen: boolean;
@@ -42,7 +43,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
       <div
         role="dialog"
         aria-modal="true"
-        className="w-full max-w-sm rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-slate-700 dark:bg-slate-900"
+        className={`w-full max-w-sm rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-cyan-400/10 ${PREMIUM_DARK_MODAL_BG}`}
       >
         <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Settings</h2>
 
@@ -55,7 +56,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
             <select
               value={itemsPerPage}
               onChange={(e) => setItemsPerPage(Number(e.target.value))}
-              className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-slate-600 dark:bg-slate-800 dark:text-white"
+              className={`mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-cyan-400/10 ${PREMIUM_DARK_INPUT}`}
             >
               {PAGE_OPTIONS.map((n) => (
                 <option key={n} value={n}>{n}</option>

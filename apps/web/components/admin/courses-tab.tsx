@@ -14,6 +14,7 @@ import { Pagination } from "./pagination";
 import { ExportButton } from "./export-button";
 import { SkeletonTable } from "./skeleton-table";
 import { AdminMobileCard } from "./admin-mobile-card";
+import { PREMIUM_DARK_CARD_BG } from "../layout/premium-dark-styles";
 
 type AdminCourse = {
   id: number;
@@ -131,7 +132,7 @@ export function CoursesTab() {
       </div>
 
       {/* Desktop table view */}
-      <div className="hidden md:block overflow-x-auto">
+      <div className={`hidden overflow-x-auto rounded-2xl border border-slate-200/80 bg-white/60 p-4 shadow-sm md:block dark:border-slate-700/60 ${PREMIUM_DARK_CARD_BG}`}>
         <table className="w-full text-left text-sm">
           <thead>
             <tr className="border-b border-slate-200 dark:border-slate-700">
@@ -148,7 +149,7 @@ export function CoursesTab() {
           </thead>
           <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
             {paged.map((course) => (
-              <tr key={course.id} className={bulk.isSelected(course.id) ? "bg-brand-50/50 dark:bg-brand-500/5" : ""}>
+              <tr key={course.id} className={`transition-colors hover:bg-slate-50/60 dark:hover:bg-white/5 ${bulk.isSelected(course.id) ? "bg-brand-50/50 dark:bg-brand-500/5" : ""}`}>
                 <td className="py-3">
                   <input type="checkbox" checked={bulk.isSelected(course.id)} onChange={() => bulk.toggle(course.id)} className="rounded border-slate-300 dark:border-slate-600" />
                 </td>

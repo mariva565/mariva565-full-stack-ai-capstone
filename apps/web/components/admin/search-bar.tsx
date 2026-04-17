@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useCallback } from "react";
+import { PREMIUM_DARK_INPUT } from "../layout/premium-dark-styles";
 
 type SearchBarProps = {
   value: string;
@@ -35,7 +36,7 @@ export function SearchBar({ value, onChange, resultCount }: SearchBarProps) {
         placeholder="Search..."
         spellCheck={false}
         suppressHydrationWarning
-        className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-10 pr-10 text-sm text-slate-900 placeholder-slate-400 transition-colors focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:placeholder-slate-500"
+        className={`w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-10 pr-10 text-sm text-slate-900 placeholder-slate-400 transition-colors focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-cyan-400/10 ${PREMIUM_DARK_INPUT}`}
       />
 
       {value && (
