@@ -31,11 +31,13 @@ export const courses = pgTable("courses", {
   description: text("description"),
   createdBy: integer("created_by")
     .notNull()
-    .references(() => users.id),
+    .references(() => users.id, { onDelete: "cascade" }),
   isPublic: boolean("is_public").notNull().default(false),
   status: varchar("status", { length: 20 }).notNull().default("draft"), // 'draft' | 'published'
   createdAt: timestamp("created_at").notNull().defaultNow(),
-});
+}, (table) => [
+  index("courses_created_by_idx").on(table.createdBy),
+]);
 
 // ─── 3. modules ─────────────────────────────────────────────
 export const modules = pgTable("modules", {
@@ -48,7 +50,7 @@ export const modules = pgTable("modules", {
   orderIndex: integer("order_index").notNull().default(0),
   createdBy: integer("created_by")
     .notNull()
-    .references(() => users.id),
+    .references(() => users.id, { onDelete: "cascade" }),
 });
 
 // ─── 4. materials ───────────────────────────────────────────
@@ -66,7 +68,7 @@ export const materials = pgTable("materials", {
   tags: text("tags"), // comma-separated or JSON string
   createdBy: integer("created_by")
     .notNull()
-    .references(() => users.id),
+    .references(() => users.id, { onDelete: "cascade" }),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
@@ -146,8 +148,7 @@ export const events = pgTable("events", {
 export const activityLogs = pgTable("activity_logs", {
   id: serial("id").primaryKey(),
   userId: integer("user_id")
-    .notNull()
-    .references(() => users.id),
+    .references(() => users.id, { onDelete: "set null" }),
   actionType: varchar("action_type", { length: 50 }).notNull(), // 'login' | 'create_course' | ...
   targetId: integer("target_id"),
   details: jsonb("details"),
@@ -176,7 +177,7 @@ export const courseMembers = pgTable(
 // ─── 10. posts ──────────────────────────────────────────────
 export const posts = pgTable("posts", {
   id: serial("id").primaryKey(),
-  authorId: integer("author_id").notNull().references(() => users.id),
+  authorId: integer("author_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   title: varchar("title", { length: 255 }).notNull(),
   content: text("content").notNull(),
   postType: varchar("post_type", { length: 20 }).notNull().default("discussion"), // 'discussion' | 'question' | 'resource' | 'article'
@@ -186,16 +187,21 @@ export const posts = pgTable("posts", {
   questionStatus: varchar("question_status", { length: 20 }), // NULL | 'open' | 'answered' | 'closed'
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
+}, (table) => [
+  index("posts_author_id_idx").on(table.authorId),
+  index("posts_course_id_idx").on(table.courseId),
+]);
 
 // ─── 11. comments ───────────────────────────────────────────
 export const comments = pgTable("comments", {
   id: serial("id").primaryKey(),
   postId: integer("post_id").notNull().references(() => posts.id, { onDelete: "cascade" }),
-  authorId: integer("author_id").notNull().references(() => users.id),
+  authorId: integer("author_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   content: text("content").notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
-});
+}, (table) => [
+  index("comments_author_id_idx").on(table.authorId),
+]);
 
 // ─── 12. post_likes ─────────────────────────────────────────
 export const postLikes = pgTable(
@@ -263,7 +269,7 @@ export const messages = pgTable(
       .references(() => conversations.id, { onDelete: "cascade" }),
     senderId: integer("sender_id")
       .notNull()
-      .references(() => users.id),
+      .references(() => users.id, { onDelete: "cascade" }),
     content: text("content").notNull(),
     createdAt: timestamp("created_at").notNull().defaultNow(),
   },

@@ -27,6 +27,23 @@
 
 ---
 
+## 2026-04-18
+
+### Сесия — Audit Fix Plan: Групи A и B
+
+**Какво направихме (Група A — DB Integrity):**
+- Добавен `{ onDelete: "cascade" }` на 6 FK-та: `courses.createdBy`, `modules.createdBy`, `materials.createdBy`, `posts.authorId`, `comments.authorId`, `messages.senderId`
+- Добавен `{ onDelete: "set null" }` + махнат `.notNull()` за `activityLogs.userId` (audit trail оцелява при изтрит потребител)
+- Добавени индекси: `courses_created_by_idx`, `posts_author_id_idx`, `posts_course_id_idx`, `comments_author_id_idx`
+- Обновен `root/package.json`: `drizzle-kit ^0.12.8` → `^0.30.6` (стария беше несъвместим с `drizzle-orm@0.45.2`)
+- Генерирана migration `0006_pretty_leper_queen.sql` и push-ната към Neon ✅
+
+**Какво направихме (Група B — Security Headers):**
+- Добавени security headers в `apps/web/next.config.ts`: `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `X-DNS-Prefetch-Control`, `Permissions-Policy`
+- `tsc --noEmit` — минава чисто ✅
+
+---
+
 ## 2026-03-27
 
 ### Сесия 1 (вечер)
