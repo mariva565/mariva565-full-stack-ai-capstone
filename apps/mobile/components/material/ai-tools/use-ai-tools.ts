@@ -28,7 +28,7 @@ export function useAiTools(materialId: number) {
       const content = materialQuery.data?.material?.content;
       if (!content) throw new Error("No content to analyze");
       
-      const response = await apiFetch<{ tool: ToolName; data: any }>("/api/ai/tools", {
+      const response = await apiFetch<ToolResult>("/api/ai/tools", {
         method: "POST",
         body: { tool, content },
         timeoutMs: 25000, // Generation can take a while

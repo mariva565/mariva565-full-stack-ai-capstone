@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { and, desc, eq, ilike, inArray, or, sql } from "drizzle-orm";
+import { and, desc, eq, ilike, inArray, or, sql, type SQL } from "drizzle-orm";
 import { db } from "../../../../lib/db";
 import { posts, users, courses } from "../../../../../../drizzle/schema";
 import { requireAuth, requireMentor } from "../../../../lib/api-utils";
@@ -70,7 +70,7 @@ export async function GET(request: NextRequest) {
   const offset = (page - 1) * limit;
   const searchCondition = buildSearchCondition(search);
 
-  let scopeCondition: any = undefined;
+  let scopeCondition: SQL | undefined = undefined;
   if (auth.user.role === "mentor") {
     const mentorCourseIds = await getMentoredCourseIds(auth.user.sub);
     if (mentorCourseIds.length === 0) {

@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, type ViewStyle, type TextStyle } from "react-native";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { useTheme } from "../../lib/app-preferences";
 
@@ -8,9 +8,20 @@ function stripHtml(html: string): string {
   return html.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
 }
 
+type PostCardData = {
+  authorName?: string;
+  createdAt: string;
+  postType: string;
+  title: string;
+  content: string;
+  isLiked: boolean;
+  likeCount: number;
+  commentCount: number;
+};
+
 type PostCardProps = {
-  post: any;
-  styles: any;
+  post: PostCardData;
+  styles: Record<string, ViewStyle | TextStyle>;
   onPress?: () => void;
   onLike?: () => void;
 };

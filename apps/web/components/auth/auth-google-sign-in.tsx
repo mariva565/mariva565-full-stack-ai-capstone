@@ -36,8 +36,8 @@ export function AuthGoogleSignIn({
       }
 
       router.replace("/dashboard");
-    } catch (err: any) {
-      onError(err.message || "Something went wrong with Google sign-in.");
+    } catch (err: unknown) {
+      onError(err instanceof Error ? err.message : "Something went wrong with Google sign-in.");
       setIsLoading(false);
     }
   }
