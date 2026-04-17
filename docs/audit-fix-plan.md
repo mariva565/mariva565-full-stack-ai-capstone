@@ -26,50 +26,32 @@
 
 Файл: `drizzle/schema.ts`
 
-- [ ] **Линия 34** — `courses.createdBy`: добави `{ onDelete: "cascade" }`
+- [x] **Линия 34** — `courses.createdBy`: добави `{ onDelete: "cascade" }`
   ```typescript
   .references(() => users.id, { onDelete: "cascade" })
   ```
-- [ ] **Линия 51** — `modules.createdBy`: добави `{ onDelete: "cascade" }`
-- [ ] **Линия 69** — `materials.createdBy`: добави `{ onDelete: "cascade" }`
-- [ ] **Линия 150** — `activityLogs.userId`: добави `{ onDelete: "set null" }`
+- [x] **Линия 51** — `modules.createdBy`: добави `{ onDelete: "cascade" }`
+- [x] **Линия 69** — `materials.createdBy`: добави `{ onDelete: "cascade" }`
+- [x] **Линия 150** — `activityLogs.userId`: добави `{ onDelete: "set null" }`
   - ВНИМАНИЕ: за set null трябва да махнеш `.notNull()` от тази колона (линия 148-149)
   - Activity logs трябва да оцелеят при delete на user (audit trail)
-- [ ] **Линия 179** — `posts.authorId`: добави `{ onDelete: "cascade" }`
-- [ ] **Линия 195** — `comments.authorId`: добави `{ onDelete: "cascade" }`
-- [ ] **Линия 266** — `messages.senderId`: добави `{ onDelete: "cascade" }`
+- [x] **Линия 179** — `posts.authorId`: добави `{ onDelete: "cascade" }`
+- [x] **Линия 195** — `comments.authorId`: добави `{ onDelete: "cascade" }`
+- [x] **Линия 266** — `messages.senderId`: добави `{ onDelete: "cascade" }`
 
 ### A2. Добави индекси на често филтрирани FK колони
 
 Файл: `drizzle/schema.ts`
 
-- [ ] `courses` — добави index на `createdBy`:
-  ```typescript
-  // Промени courses table definition да включва index callback:
-  export const courses = pgTable("courses", { ... }, (table) => [
-    index("courses_created_by_idx").on(table.createdBy),
-  ]);
-  ```
-- [ ] `posts` — добави index на `authorId` и `courseId`:
-  ```typescript
-  // Добави третия аргумент (callback) към pgTable:
-  (table) => [
-    index("posts_author_id_idx").on(table.authorId),
-    index("posts_course_id_idx").on(table.courseId),
-  ]
-  ```
-- [ ] `comments` — добави index на `authorId`:
-  ```typescript
-  (table) => [
-    index("comments_author_id_idx").on(table.authorId),
-  ]
-  ```
+- [x] `courses` — добави index на `createdBy`
+- [x] `posts` — добави index на `authorId` и `courseId`
+- [x] `comments` — добави index на `authorId`
 
 ### A3. Генерирай migration
 
-- [ ] Изпълни `npx drizzle-kit generate` от root
-- [ ] Провери генерирания SQL файл в `drizzle/migrations/`
-- [ ] Push-ни към Neon: `npx drizzle-kit push`
+- [x] Изпълни `npx drizzle-kit generate` от root
+- [x] Провери генерирания SQL файл в `drizzle/migrations/`
+- [x] Push-ни към Neon: `npx drizzle-kit push`
 
 ---
 
@@ -79,7 +61,7 @@
 
 Файл: `apps/web/next.config.ts`
 
-- [ ] Добави `headers()` конфигурация:
+- [x] Добави `headers()` конфигурация:
   ```typescript
   import type { NextConfig } from "next";
   import path from "path";
