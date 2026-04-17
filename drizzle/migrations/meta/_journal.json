@@ -43,6 +43,13 @@
       "when": 1775482058416,
       "tag": "0005_supreme_mesmero",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1776466181233,
+      "tag": "0006_pretty_leper_queen",
+      "breakpoints": true
     }
   ]
 }
