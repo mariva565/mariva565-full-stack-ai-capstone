@@ -228,14 +228,14 @@
 
 **Commit message:** `chore: align dependency versions across monorepo`
 
-- [ ] Уеднакви `drizzle-kit` — махни от `apps/mobile/package.json` (mobile не ползва drizzle-kit директно)
+- [x] Уеднакви `drizzle-kit` — махни от `apps/mobile/package.json` (mobile не ползва drizzle-kit директно)
   - Root и web да използват една и съща версия (предпочитаме по-новата `^0.18.1`)
-- [ ] Уеднакви TypeScript — всички на `~5.8.3` или всички на `~5.9.2`
+- [x] Уеднакви TypeScript — всички на `~5.8.3` или всички на `~5.9.2`
   - Препоръка: `~5.8.3` (по-стабилна, по-малко рискове)
-- [ ] Премести `framer-motion` и `three` от root `package.json` в `apps/web/package.json` devDependencies → dependencies
+- [x] Премести `framer-motion` и `three` от root `package.json` в `apps/web/package.json` devDependencies → dependencies
   - Провери дали web вече ги има — ако да, просто махни от root
-- [ ] `npm install` от root за regenerate lock file
-- [ ] Провери build: `npm run dev:web` стартира без грешки
+- [x] `npm install` от root за regenerate lock file
+- [x] Провери build: `tsc --noEmit` минава чисто ✅
 
 ---
 

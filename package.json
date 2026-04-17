@@ -33,12 +33,7 @@
     "react-dom": "19.1.0",
     "@types/react": "~19.1.10"
   },
-  "dependencies": {
-    "framer-motion": "^12.38.0",
-    "three": "^0.183.2"
-  },
   "devDependencies": {
-    "@types/three": "^0.183.1",
     "drizzle-kit": "^0.30.6"
   }
 }

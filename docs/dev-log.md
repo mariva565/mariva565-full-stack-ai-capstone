@@ -50,6 +50,15 @@
 - Добавени security headers в `apps/web/next.config.ts`: `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `X-DNS-Prefetch-Control`, `Permissions-Policy`
 - `tsc --noEmit` — минава чисто ✅
 
+### Сесия — Audit Fix Plan: Група F
+
+**Какво направихме (Група F — Dependency cleanup):**
+- Root `package.json`: премахнати `framer-motion` и `three` от `dependencies`; `@types/three` от `devDependencies` — web вече ги декларира сам
+- `apps/web/package.json`: добавени `three: "^0.183.2"` (dependencies) и `@types/three: "^0.183.1"` (devDependencies); `drizzle-kit ^0.18.1` → `^0.30.6` (align с root); `typescript "5.8.3"` → `"~5.8.3"`
+- `apps/mobile/package.json`: премахнат `drizzle-kit "0.12.8"` (mobile не ползва drizzle директно); `typescript "~5.9.2"` → `"~5.8.3"`
+- `npm install` от root — lock file обновен ✅
+- `tsc --noEmit` — чисто ✅
+
 ### Сесия — Audit Fix Plan: Група E
 
 **Какво направихме (Група E — Inline styles cleanup):**

@@ -28,7 +28,6 @@
     "@tanstack/react-query-persist-client": "^5.96.2",
     "babel-preset-expo": "~54.0.10",
     "color": "^4.2.3",
-    "drizzle-kit": "0.12.8",
     "expo": "~54.0.33",
     "expo-application": "~6.1.5",
     "expo-auth-session": "^6.2.1",
@@ -55,6 +54,6 @@
   },
   "devDependencies": {
     "@types/react": "~19.1.10",
-    "typescript": "~5.9.2"
+    "typescript": "~5.8.3"
   }
 }
