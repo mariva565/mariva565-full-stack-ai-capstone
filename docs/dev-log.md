@@ -7746,3 +7746,27 @@ Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
 
 **Решения:**
 - Избрахме minimal patch вместо голям rewrite на `AGENTS.md`, за да подобрим scoping и decision quality без да направим агентите по-тромави.
+
+## 2026-04-17
+
+### Session 262 — Safe Expo EAS build profiles for mobile monorepo
+
+**Какво направихме:**
+- Добавихме минимален `apps/mobile/eas.json` за Expo EAS build конфигурация, без промени по runtime кода на приложението.
+- Дефинирахме три базови build профила:
+  - `development` — development client + internal distribution
+  - `preview` — internal distribution, с Android `apk` build за по-лесно инсталиране и BrowserStack/App Live testing
+  - `production` — празен production profile като безопасна база за бъдещи store builds
+- Потвърдихме по Expo docs, че в monorepo `eas.json` трябва да стои до `package.json` на самото Expo app, тоест в `apps/mobile/`.
+
+**Файлове:**
+- `[ADD] apps/mobile/eas.json`
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- JSON syntax validation for `apps/mobile/eas.json` ✅
+- Expo runtime files (`app.json`, `package.json`, navigation, push logic) not modified ✅
+
+**Решения:**
+- Избрахме минимална и безопасна конфигурация по Expo default patterns, за да не рискуваме нова Expo startup/regression ситуация.
+- Не добавяхме EAS submit, secrets или platform-specific signing настройки на този етап; това остава за по-късно, когато започнем реални preview/store builds.
