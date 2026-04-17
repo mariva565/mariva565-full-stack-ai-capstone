@@ -7770,3 +7770,38 @@ Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
 **Решения:**
 - Избрахме минимална и безопасна конфигурация по Expo default patterns, за да не рискуваме нова Expo startup/regression ситуация.
 - Не добавяхме EAS submit, secrets или platform-specific signing настройки на този етап; това остава за по-късно, когато започнем реални preview/store builds.
+
+### Session 263 — Isolated material finder assistant (search-first, quota-conscious)
+
+**Какво направихме:**
+- Добавихме нов reusable search helper `apps/web/lib/material-search.ts` за търсене само в материали на текущия потребител (`materials.created_by = auth.user.sub`).
+- Имплементирахме token extraction без LLM (quoted phrases + meaningful tokens + stop-word филтър), DB-level candidate филтър и ranking логика:
+  - phrase/exact match > loose token match
+  - title > tags > content
+- Добавихме snippet builder около първия релевантен match и ограничихме резултатите до top 3.
+- Добавихме нов изолиран API route `GET /api/materials/search?q=...` с auth guard, входна валидация и compact JSON резултат.
+- Добавихме нов изолиран assistant route `POST /api/assistant/material-finder`:
+  - винаги започва със search helper (без Gemini guess)
+  - връща plain template reply при `0` резултата
+  - връща plain template reply при очевиден top result
+  - извиква Gemini само при няколко plausible резултата за phrasing, без history и без full content
+  - при Gemini call се подава само compact structured context: title, snippet, module, course, url
+- Добавихме нова защитена страница `/dashboard/material-finder` с минимален chat-like UI, използваща само новия assistant route.
+- Добавихме нискорисков dashboard entry button (`Material Finder`) в hero секцията без промени по съществуващия глобален chatbot flow (`/api/ai/chat`, `/api/ai/tools`).
+
+**Файлове:**
+- `[ADD] apps/web/lib/material-search.ts`
+- `[ADD] apps/web/app/api/materials/search/route.ts`
+- `[ADD] apps/web/app/api/assistant/material-finder/route.ts`
+- `[ADD] apps/web/components/material-finder/material-finder-client.tsx`
+- `[ADD] apps/web/app/dashboard/material-finder/page.tsx`
+- `[MODIFY] apps/web/components/dashboard/dashboard-hero.tsx`
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- `npm.cmd run typecheck:web` ✅
+- Manual runtime sanity checks (browser/API calls) не са изпълнени в тази сесия.
+
+**Решения:**
+- Запазихме feature-а изолиран в нови route-ове и нова UI страница, за да минимизираме regression риск към вече валидираните AI потоци.
+- Използвахме Gemini само като optional rephraser и само при multi-result ambiguity, за да остане заявката quota-conscious.

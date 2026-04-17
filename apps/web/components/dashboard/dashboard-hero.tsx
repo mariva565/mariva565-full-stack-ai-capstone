@@ -103,6 +103,14 @@ function HeroActions({ showCreateForm, onToggleCreateForm }: HeroActionsProps) {
       >
         {showCreateForm ? "Close form" : "+ Create Course"}
       </DashboardActionButton>
+
+      <DashboardActionButton
+        href="/dashboard/material-finder"
+        size="md"
+        variant="secondary"
+      >
+        Material Finder
+      </DashboardActionButton>
     </div>
   );
 }
