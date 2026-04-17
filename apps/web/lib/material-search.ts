@@ -1,62 +1,30 @@
-import { and, desc, eq, ilike, or } from "drizzle-orm";
+﻿import { and, desc, eq, ilike, or } from "drizzle-orm";
 
 import { courses, materials, modules } from "../../../drizzle/schema";
 import { db } from "./db";
+import {
+  COLLAPSE_WHITESPACE_REGEX,
+  HTML_TAG_REGEX,
+  MAX_PHRASE_COUNT,
+  MAX_QUERY_LENGTH,
+  MAX_TOKEN_COUNT,
+  QUOTED_SEGMENT_REGEX,
+  RESULT_LIMIT,
+  SEARCH_ROW_LIMIT,
+  SNIPPET_LENGTH,
+  SNIPPET_PADDING,
+  STOP_WORDS,
+  TOKEN_REGEX,
+} from "./material-search.constants";
+import type {
+  MaterialSearchCandidate,
+  MaterialSearchRanked,
+  MaterialSearchResult,
+  MaterialSearchTerms,
+} from "./material-search.types";
 import { parseTags } from "./materials";
 
-const MAX_QUERY_LENGTH = 220;
-const MAX_TOKEN_COUNT = 8;
-const MAX_PHRASE_COUNT = 4;
-const SEARCH_ROW_LIMIT = 60;
-const RESULT_LIMIT = 3;
-const SNIPPET_LENGTH = 160;
-const SNIPPET_PADDING = 46;
-
-const QUOTED_SEGMENT_REGEX = /"([^"]+)"|'([^']+)'|„([^“]+)“|“([^”]+)”/g;
-const TOKEN_REGEX = /[\p{L}\p{N}#+-]{2,}/gu;
-const COLLAPSE_WHITESPACE_REGEX = /\s+/g;
-const HTML_TAG_REGEX = /<[^>]+>/g;
-
-const STOP_WORDS = new Set([
-  "a", "an", "and", "are", "as", "at", "be", "by", "for", "from", "how", "i", "in",
-  "is", "it", "me", "my", "of", "on", "or", "that", "the", "this", "to", "was",
-  "what", "where", "which", "with", "you", "your",
-  "аз", "ако", "в", "във", "вече", "го", "да", "до", "е", "за", "и", "из", "или",
-  "как", "къде", "ли", "ме", "ми", "може", "можеш", "на", "не", "някъде", "по", "с",
-  "са", "се", "си", "съм", "със", "ти", "това", "то", "той", "тя", "че",
-  "material", "materials", "find", "search", "finder", "намери", "търси",
-  "материал", "материали",
-]);
-
-type MaterialSearchTerms = {
-  normalizedQuery: string;
-  tokens: string[];
-  phrases: string[];
-};
-
-type MaterialSearchCandidate = {
-  id: number;
-  title: string;
-  content: string | null;
-  tags: string | null;
-  createdAt: Date | string;
-  moduleTitle: string;
-  courseTitle: string;
-};
-
-export type MaterialSearchResult = {
-  id: number;
-  title: string;
-  moduleTitle: string;
-  courseTitle: string;
-  snippet: string;
-  score: number;
-  url: string;
-};
-
-type MaterialSearchRanked = MaterialSearchResult & {
-  createdAtTime: number;
-};
+export type { MaterialSearchResult } from "./material-search.types";
 
 function toLowerCollapsed(value: string) {
   return value.toLowerCase().replace(COLLAPSE_WHITESPACE_REGEX, " ").trim();
@@ -318,3 +286,4 @@ export async function searchUserMaterials(userId: number, rawQuery: string) {
 
   return rankCandidates(candidates, terms);
 }
+

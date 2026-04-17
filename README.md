@@ -973,11 +973,13 @@ npm run dev:mobile:usb
 | Auth | Supabase Auth (GoTrue) | Custom JWT + Google OAuth |
 | Database | Supabase PostgreSQL (6 tables) | Neon PostgreSQL + Drizzle ORM (19 tables) |
 | Mobile | None | React Native + Expo + tabs/CRUD/community/messages + push-ready notifications |
-| File structure | Single app, monolithic files | Monorepo + modular components (<300 LOC each)† |
+| File structure | Single app, monolithic files | Monorepo + modular components (<300 LOC each)* |
 | Deployment | Netlify + Vercel (dual) | Planned: Vercel |
 | Security | RLS + CSP + MFA (partial) | JWT guards + middleware + role-based endpoints |
 
-> **†** Two files intentionally exceed 300 lines. `chat-widget.tsx` (494 lines) contains a `<style jsx global>` block with all FAB animation keyframes — extracting it into a sub-component creates a render-timing risk where the floating button loses its styles at certain lifecycle moments; the correct fix (moving to `globals.css`) was evaluated and deferred as low-priority. `material-form-screen.tsx` (395 lines) co-locates 8 tightly related sub-components for a single form screen — all individual functions are under 60 lines and splitting across files would increase navigation cost without improving readability. All other source files remain under 300 lines. No inline styles exist outside of cases where a dynamic runtime value (scroll progress, cursor position, Framer Motion spring) cannot be expressed as a static Tailwind class.
+> **\*** Three files intentionally exceed 300 lines by design: `chat-widget.tsx` (494), `material-form-screen.tsx` (395), and `hero-3d.tsx` (310). Each has a known lifecycle/styling coupling where forced splitting has higher regression risk than immediate value.
+>
+> Temporary risk-managed 300+ exceptions are also documented and intentionally deferred to a dedicated refactor cycle: `community-feed.tsx`, `post-details.tsx`, `milestone-timeline-item.tsx`, `chat-window.tsx`, `use-web-messages-notifications.ts`, and `drizzle/schema.ts`. These files are currently kept intact because they combine real-time/event-heavy behavior or centralized schema contracts where incremental split work can destabilize active flows without broader regression coverage.
 
 ---
 

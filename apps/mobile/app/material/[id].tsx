@@ -1,169 +1,35 @@
-import { useCallback } from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  RefreshControl,
-  Linking,
-} from "react-native";
-import { useFocusEffect } from "@react-navigation/native";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+﻿import { RefreshControl, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { apiFetch, getUserFriendlyError } from "../../lib/api";
+
 import { useTheme, useThemedStyles } from "../../lib/app-preferences";
+import { getMaterialTypeConfig, splitTags } from "../../lib/material-utils";
 import { NetworkBanner } from "../../components/network-banner";
 import { RequestState } from "../../components/request-state";
-import {
-  addFavorite,
-  appendOptimisticFavorite,
-  fetchFavorites,
-  isFavoriteMaterial,
-  removeFavorite,
-  removeOptimisticFavorite,
-} from "../../lib/favorites";
-import { useToast } from "../../lib/toast-context";
-import { getMaterialTypeConfig, splitTags } from "../../lib/material-utils";
-import { useIsOffline } from "../../lib/network";
-import { invalidateFavoritesList, queryKeys } from "../../lib/query-keys";
-import type { FavoriteItem, Material } from "../../lib/studyhub-types";
-import { makeMaterialScreenStyles } from "../../components/material/material-screen.styles";
 import { MaterialScreenSkeleton } from "../../components/material/material-screen-skeleton";
-
-type MaterialDetailResponse = {
-  material: Material & {
-    createdAt: string;
-  };
-  module: {
-    id: number;
-    title: string;
-  };
-  course: {
-    id: number;
-    title: string;
-  };
-};
+import { makeMaterialScreenStyles } from "../../components/material/material-screen.styles";
+import { useMaterialScreen } from "../../components/material/use-material-screen";
 
 export default function MaterialScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const routeId = String(id);
   const router = useRouter();
-  const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  const offline = useIsOffline();
   const { colors } = useTheme();
   const styles = useThemedStyles(makeMaterialScreenStyles);
   const heroGradient = [colors.brandDeep, colors.brandPrimary] as const;
 
-  const materialQuery = useQuery({
-    queryKey: queryKeys.materials.detail(routeId),
-    queryFn: async () => {
-      return apiFetch<MaterialDetailResponse>(`/api/materials/${routeId}`, {
-        cache: false,
-      });
-    },
-  });
-
-  const favoritesQuery = useQuery({
-    queryKey: queryKeys.favorites.lists(),
-    queryFn: fetchFavorites,
-  });
-
-  const toggleFavoriteMutation = useMutation({
-    mutationFn: async ({ materialId, isPinned }: { materialId: number; isPinned: boolean }) => {
-      if (isPinned) {
-        await removeFavorite(materialId);
-        return { isPinned: false };
-      }
-
-      await addFavorite(materialId);
-      return { isPinned: true };
-    },
-    onMutate: async ({ materialId, isPinned }) => {
-      await queryClient.cancelQueries({ queryKey: queryKeys.favorites.lists() });
-      const previousFavorites =
-        queryClient.getQueryData<FavoriteItem[]>(queryKeys.favorites.lists()) ?? [];
-
-      if (isPinned) {
-        queryClient.setQueryData<FavoriteItem[]>(
-          queryKeys.favorites.lists(),
-          removeOptimisticFavorite(previousFavorites, materialId)
-        );
-      } else if (materialQuery.data) {
-        queryClient.setQueryData<FavoriteItem[]>(
-          queryKeys.favorites.lists(),
-          appendOptimisticFavorite(previousFavorites, materialQuery.data)
-        );
-      }
-
-      return { previousFavorites };
-    },
-    onError: (error, _variables, context) => {
-      if (context?.previousFavorites) {
-        queryClient.setQueryData(queryKeys.favorites.lists(), context.previousFavorites);
-      }
-      showToast(getUserFriendlyError(error, "Could not update favorites"), "error");
-    },
-    onSuccess: ({ isPinned }) => {
-      showToast(isPinned ? "Material pinned." : "Material unpinned.", "success", {
-        haptic: isPinned ? "default" : "destructive",
-      });
-    },
-    onSettled: async () => {
-      await invalidateFavoritesList(queryClient);
-    },
-  });
-
-  useFocusEffect(
-    useCallback(() => {
-      void Promise.all([
-        queryClient.invalidateQueries({ queryKey: queryKeys.materials.detail(routeId) }),
-        queryClient.invalidateQueries({ queryKey: queryKeys.favorites.lists() }),
-      ]);
-    }, [queryClient, routeId])
-  );
-
-  const materialData = materialQuery.data ?? null;
-  const material = materialData?.material ?? null;
-  const isPinned = material ? isFavoriteMaterial(favoritesQuery.data, material.id) : false;
-  const loading = materialQuery.isPending && !material;
-  const refreshing = materialQuery.isRefetching && !materialQuery.isPending;
-  const error = materialQuery.error
-    ? getUserFriendlyError(materialQuery.error, "Failed to load material")
-    : "";
-
-  async function handleOpenUrl() {
-    if (!material?.fileUrl) {
-      return;
-    }
-
-    try {
-      const supported = await Linking.canOpenURL(material.fileUrl);
-      if (!supported) {
-        showToast("This URL cannot be opened on your device", "error");
-        return;
-      }
-      await Linking.openURL(material.fileUrl);
-    } catch {
-      showToast("Could not open this link", "error");
-    }
-  }
-
-  async function handleToggleFavorite() {
-    if (!material || toggleFavoriteMutation.isPending) {
-      return;
-    }
-
-    try {
-      await toggleFavoriteMutation.mutateAsync({
-        materialId: material.id,
-        isPinned,
-      });
-    } catch {
-      // Error toast is handled in mutation callbacks.
-    }
-  }
+  const {
+    material,
+    loading,
+    refreshing,
+    error,
+    offline,
+    isPinned,
+    toggleFavoriteBusy,
+    openMaterialUrl,
+    toggleFavorite,
+    refresh,
+  } = useMaterialScreen(routeId);
 
   if (loading) {
     return (
@@ -183,9 +49,7 @@ export default function MaterialScreen() {
           title={offline ? "You are offline" : "Could not load material"}
           subtitle={offline ? "Reconnect to load this material." : error || "Material not found"}
           actionLabel="Retry"
-          onAction={() => {
-            void materialQuery.refetch();
-          }}
+          onAction={refresh}
           accessibilityLabel={
             offline ? "Retry loading material while offline" : "Retry loading material"
           }
@@ -203,9 +67,7 @@ export default function MaterialScreen() {
       refreshControl={
         <RefreshControl
           refreshing={refreshing}
-          onRefresh={() => {
-            void materialQuery.refetch();
-          }}
+          onRefresh={refresh}
           tintColor={colors.brandPrimary}
         />
       }
@@ -230,9 +92,9 @@ export default function MaterialScreen() {
         <TouchableOpacity
           style={[styles.pinBtn, isPinned ? styles.pinBtnDanger : styles.pinBtnNeutral]}
           onPress={() => {
-            void handleToggleFavorite();
+            void toggleFavorite();
           }}
-          disabled={toggleFavoriteMutation.isPending}
+          disabled={toggleFavoriteBusy}
           accessibilityRole="button"
           accessibilityLabel={
             isPinned ? "Unpin material from favorites" : "Pin material to favorites"
@@ -240,7 +102,7 @@ export default function MaterialScreen() {
           accessibilityHint="Toggles quick access state in Favorites tab"
         >
           <Text style={styles.pinBtnText} maxFontSizeMultiplier={1.2}>
-            {toggleFavoriteMutation.isPending
+            {toggleFavoriteBusy
               ? "Updating..."
               : isPinned
                 ? "Unpin from Favorites"
@@ -248,6 +110,7 @@ export default function MaterialScreen() {
           </Text>
         </TouchableOpacity>
       </LinearGradient>
+
       {offline ? (
         <View style={styles.offlineBannerWrap}>
           <NetworkBanner message="Showing last synced material data until connection is restored." />
@@ -265,7 +128,9 @@ export default function MaterialScreen() {
       {material.fileUrl ? (
         <TouchableOpacity
           style={styles.linkCard}
-          onPress={handleOpenUrl}
+          onPress={() => {
+            void openMaterialUrl();
+          }}
           activeOpacity={0.7}
           accessibilityRole="button"
           accessibilityLabel={
@@ -291,7 +156,7 @@ export default function MaterialScreen() {
           accessibilityLabel="Open AI Study Tools"
         >
           <Text style={styles.aiToolsBtnText} maxFontSizeMultiplier={1.2}>
-            ✨ AI Study Tools
+            вњЁ AI Study Tools
           </Text>
         </TouchableOpacity>
       ) : null}

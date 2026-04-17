@@ -7,50 +7,15 @@ import { apiFetch, getUserFriendlyError } from "../../lib/api";
 import { invalidateCourseQueries, queryKeys } from "../../lib/query-keys";
 import type { Course, Module } from "../../lib/studyhub-types";
 import { useToast } from "../../lib/toast-context";
+import type {
+  ConfirmCopy,
+  ConfirmDialogState,
+  ConfirmTarget,
+  CourseDetailsViewModel,
+  CourseFetchState,
+} from "./course-details-screen.types";
 
-type ConfirmTarget = { type: "course" } | { type: "module"; module: Module } | null;
-
-type ConfirmCopy = {
-  title: string;
-  message: string;
-};
-
-type CourseFetchState = {
-  course: Course | null;
-  modules: Module[];
-  loading: boolean;
-  refreshing: boolean;
-  error: string;
-  refresh: () => void;
-};
-
-type ConfirmDialogState = {
-  confirmVisible: boolean;
-  confirmTitle: string;
-  confirmMessage: string;
-  openDeleteCourse: () => void;
-  openDeleteModule: (module: Module) => void;
-  closeConfirm: () => void;
-  confirmDelete: () => void;
-};
-
-export type CourseDetailsViewModel = {
-  routeId: string;
-  course: Course | null;
-  modules: Module[];
-  loading: boolean;
-  refreshing: boolean;
-  error: string;
-  confirmVisible: boolean;
-  confirmTitle: string;
-  confirmMessage: string;
-  retry: () => void;
-  refresh: () => void;
-  openDeleteCourse: () => void;
-  openDeleteModule: (module: Module) => void;
-  confirmDelete: () => void;
-  closeConfirm: () => void;
-};
+export type { CourseDetailsViewModel } from "./course-details-screen.types";
 
 function useCourseQuery(routeId: string) {
   return useQuery({

@@ -7858,3 +7858,84 @@ Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
 **Решения:**
 - Използвахме минимални, нискорискови промени с директен ефект върху локалното натоварване, без промяна на API контракти и без засягане на auth/data flows.
 - Запазихме корекциите, защото намаляват dev-time heat/CPU риск и не вкарват функционални регресии според typecheck валидацията.
+
+### Session 266 — Monolith audit follow-up: document `hero-3d.tsx` as intentional 300+ exception
+
+**Какво направихме:**
+- Потвърдихме, че `apps/web/components/home/hero-3d.tsx` е 310 lines и е трети умишлен 300+ файл по проектна преценка (има предходни dev-log бележки да се пази като „sensitive“ Three.js блок).
+- Синхронизирахме README section-а за file-size policy:
+  - updated footnote marker от dagger към `*` за по-лесна plain-text четимост;
+  - променихме текста от „Two files“ към „Three files“;
+  - добавихме `hero-3d.tsx` с кратка техническа причина (Three.js lifecycle + cleanup risk при форсирано split-ване).
+
+**Файлове:**
+- `[MODIFY] README.md`
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- Документационен sync; runtime/code behavior не е променян.
+
+**Решения:**
+- Запазихме `hero-3d.tsx` като explicit documented exception, за да няма фалшиви нарушения в бъдещи monolith audits.
+
+### Session 267 — Monolith policy sync: medium-risk files documented, low-risk files refactored below 300
+
+**Какво направихме:**
+- Синхронизирахме README line-limit policy с реалния статус:
+  - оставихме explicit note за 3-те core intentional exceptions (`chat-widget.tsx`, `material-form-screen.tsx`, `hero-3d.tsx`);
+  - добавихме отделен risk-managed списък за medium-risk 300+ файлове, които се оставят над лимита засега поради регресионен риск (`community-feed.tsx`, `post-details.tsx`, `milestone-timeline-item.tsx`, `chat-window.tsx`, `use-web-messages-notifications.ts`, `drizzle/schema.ts`).
+- Рефакторирахме low-risk нарушителите под 300 lines без промяна на behavior:
+  - `apps/mobile/components/community/create-post-screen.tsx`: изнесохме style factory в нов `create-post-screen.styles.ts`;
+  - `apps/mobile/components/course-details/use-course-details-screen.ts`: изнесохме view-model/confirm state типовете в нов `course-details-screen.types.ts`;
+  - `apps/mobile/app/material/[id].tsx`: изнесохме query/mutation/favorites/open-url логиката в нов `components/material/use-material-screen.ts` hook;
+  - `apps/web/lib/material-search.ts`: изнесохме constants/regex/stop-words и types в `material-search.constants.ts` и `material-search.types.ts`.
+- Потвърдихме, че refactored low-risk файловете са под лимита:
+  - `create-post-screen.tsx` → 191
+  - `use-course-details-screen.ts` → 269
+  - `app/material/[id].tsx` → 180
+  - `material-search.ts` → 289
+
+**Файлове:**
+- `[MODIFY] README.md`
+- `[MODIFY] apps/mobile/components/community/create-post-screen.tsx`
+- `[ADD] apps/mobile/components/community/create-post-screen.styles.ts`
+- `[MODIFY] apps/mobile/components/course-details/use-course-details-screen.ts`
+- `[ADD] apps/mobile/components/course-details/course-details-screen.types.ts`
+- `[MODIFY] apps/mobile/app/material/[id].tsx`
+- `[ADD] apps/mobile/components/material/use-material-screen.ts`
+- `[MODIFY] apps/web/lib/material-search.ts`
+- `[ADD] apps/web/lib/material-search.constants.ts`
+- `[ADD] apps/web/lib/material-search.types.ts`
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- `npm.cmd run typecheck:web` ✅
+- `npm.cmd run typecheck:mobile` ✅
+
+**Решения:**
+- Medium-risk 300+ файловете са оставени без split в тази сесия, за да избегнем непланирани regressions в real-time/community/messaging потоци.
+- Приоритетно изпълнихме само low-risk extraction-и, които намаляват монолитността без промяна на API контрактите и потребителския flow.
+
+### Session 268 — Mobile web confirm fallback with custom modal (без `window.alert/confirm`)
+
+**Какво направихме:**
+- Добавихме нов глобален confirm dialog provider за mobile app shell (`ConfirmDialogProvider`), който рендерира reusable `ConfirmModal` и предоставя promise-based `confirm(...)` API.
+- Вързахме provider-а в `apps/mobile/app/_layout.tsx`, така че dialog-ът да е достъпен от hooks/екрани в цялото приложение.
+- Обновихме `useConfirmDiscard`:
+  - native (`iOS`/`Android`) продължава да използва `Alert.alert(...)`;
+  - web fallback вече използва custom modal чрез `confirm(...)` вместо `window.alert/window.confirm`.
+- Запазихме съществуващия unsaved-changes flow (continue/cancel) без промяна в навигационната логика.
+- Направихме малък вътрешен refactor в `use-confirm-discard.ts` (helper функции), за да остане в рамките на project guardrail-а `max 60 lines per function`.
+
+**Файлове:**
+- `[ADD] apps/mobile/lib/confirm-dialog-context.tsx`
+- `[MODIFY] apps/mobile/app/_layout.tsx`
+- `[MODIFY] apps/mobile/lib/use-confirm-discard.ts`
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- `cd apps/mobile && npm.cmd run typecheck` ✅
+
+**Решения:**
+- Приложихме минимална, целева промяна само по confirm-discard пътя, без да закачаме други екрани/модали, за да намалим regression риск.
+- Избрахме shared provider подход, за да избегнем дублиране на modal state във всички форми, които ползват `useConfirmDiscard`.

@@ -7,6 +7,7 @@ import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client
 import * as Sentry from "@sentry/react-native";
 import { AuthProvider, useAuth } from "../lib/auth-context";
 import { AppPreferencesProvider, useTheme } from "../lib/app-preferences";
+import { ConfirmDialogProvider } from "../lib/confirm-dialog-context";
 import { ToastProvider } from "../lib/toast-context";
 import { BRAND_FONT_FAMILY, BRAND_FONT_SOURCE } from "../lib/brand-font";
 import { COLORS } from "../lib/colors";
@@ -110,7 +111,9 @@ function RootLayout() {
         <AppPreferencesProvider>
           <AuthProvider>
             <ToastProvider>
-              <AuthGate />
+              <ConfirmDialogProvider>
+                <AuthGate />
+              </ConfirmDialogProvider>
             </ToastProvider>
           </AuthProvider>
         </AppPreferencesProvider>
