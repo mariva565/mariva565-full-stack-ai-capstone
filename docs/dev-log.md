@@ -50,6 +50,18 @@
 - Добавени security headers в `apps/web/next.config.ts`: `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `X-DNS-Prefetch-Control`, `Permissions-Policy`
 - `tsc --noEmit` — минава чисто ✅
 
+### Сесия — Audit Fix Plan: Група E
+
+**Какво направихме (Група E — Inline styles cleanup):**
+- `Navbar.tsx`: glow div → `bg-[radial-gradient(...)] blur-[12px]`; gradient text span → `bg-gradient-to-br from-[#8b5cf6] to-[#ec4899] bg-clip-text text-transparent`
+- `not-found-client.tsx`: float animation → `animate-[float_4s_ease-in-out_infinite]` в className; maskImage → Tailwind arbitrary `[mask-image:...] [-webkit-mask-image:...]`
+- `forbidden-client.tsx`: float animation на div → className; pulseGlow animation + maskImage на Image → всичко в className
+- `cta-banner.tsx`: фиксиран gradient на wrapper div → `bg-gradient-to-br from-[#8b5cf6] to-[#ec4899]`; button gradient + boxShadow → Tailwind arbitrary values
+- `how-it-works-hero.tsx`: section background gradient + backgroundColor → `bg-[#0f172a] bg-[linear-gradient(...)]`
+- `add-material-fab.tsx`: conditional rotate transform → `rotate-45` / `rotate-0` в className
+- `progress-bar.tsx`: `width: ${pct}%` — оставен като inline style (runtime стойност) ✅
+- `tsc --noEmit` — чисто ✅
+
 ---
 
 ## 2026-03-27

@@ -33,10 +33,7 @@ export function HomeCtaBanner() {
         className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8"
       >
         <div
-          className="relative overflow-hidden rounded-3xl px-8 py-16 text-center sm:px-16"
-          style={{
-            background: "linear-gradient(135deg, #8b5cf6, #ec4899)",
-          }}
+          className="relative overflow-hidden rounded-3xl px-8 py-16 text-center sm:px-16 bg-gradient-to-br from-[#8b5cf6] to-[#ec4899]"
         >
           {/* Decorative elements */}
           <div
@@ -63,12 +60,7 @@ export function HomeCtaBanner() {
                 href="/register"
                 onMouseMove={handleBtnMouseMove}
                 onMouseLeave={handleBtnMouseLeave}
-                className="inline-flex items-center gap-2 rounded-full px-8 py-4 text-base font-semibold text-white shadow-lg transition-all duration-200"
-                style={{
-                  background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #06b6d4 100%)",
-                  backgroundSize: "200% 200%",
-                  boxShadow: "0 10px 30px rgba(99, 102, 241, 0.4)",
-                }}
+                className="inline-flex items-center gap-2 rounded-full px-8 py-4 text-base font-semibold text-white transition-all duration-200 bg-[linear-gradient(135deg,#6366f1_0%,#8b5cf6_50%,#06b6d4_100%)] [background-size:200%_200%] shadow-[0_10px_30px_rgba(99,102,241,0.4)]"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
                   <path fillRule="evenodd" d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z" clipRule="evenodd" />

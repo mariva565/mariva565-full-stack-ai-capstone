@@ -27,9 +27,8 @@ export function ForbiddenClient() {
 
       <div className="relative z-10 mx-auto w-[90%] max-w-[600px] text-center">
         {/* Robot Guard Container */}
-        <div 
-          className="mx-auto mb-8 h-64 w-64 [perspective:1000px]"
-          style={{ animation: !prefersReduced ? "float 6s ease-in-out infinite" : undefined }}
+        <div
+          className={`mx-auto mb-8 h-64 w-64 [perspective:1000px] ${!prefersReduced ? "animate-[float_6s_ease-in-out_infinite]" : ""}`}
         >
           <Image 
             src="/assets/v1/robot-403.png" 
@@ -37,12 +36,7 @@ export function ForbiddenClient() {
             width={256} 
             height={256} 
             priority
-            className="h-full w-full rounded-full object-cover mix-blend-darken drop-shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:rotate-2 hover:scale-105 dark:mix-blend-normal dark:opacity-90"
-            style={{
-              animation: !prefersReduced ? "pulseGlow 4s infinite" : undefined,
-              maskImage: "radial-gradient(circle closest-side, black 70%, transparent 100%)",
-              WebkitMaskImage: "radial-gradient(circle closest-side, black 70%, transparent 100%)"
-            }}
+            className={`h-full w-full rounded-full object-cover mix-blend-darken drop-shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:rotate-2 hover:scale-105 dark:mix-blend-normal dark:opacity-90 [mask-image:radial-gradient(circle_closest-side,black_70%,transparent_100%)] [-webkit-mask-image:radial-gradient(circle_closest-side,black_70%,transparent_100%)] ${!prefersReduced ? "animate-[pulseGlow_4s_infinite]" : ""}`}
           />
         </div>
         

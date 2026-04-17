@@ -43,20 +43,11 @@ export function Navbar({ isAuthenticated = false }: NavbarProps) {
             />
             {/* Mascot glow on hover */}
             <div
-              className="absolute inset-[-8px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-[400ms] z-[1] pointer-events-none"
-              style={{
-                background: "radial-gradient(circle, rgba(99,102,241,0.25) 0%, rgba(129,140,248,0.15) 40%, transparent 70%)",
-                filter: "blur(12px)",
-              }}
+              className="absolute inset-[-8px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-[400ms] z-[1] pointer-events-none bg-[radial-gradient(circle,rgba(99,102,241,0.25)_0%,rgba(129,140,248,0.15)_40%,transparent_70%)] blur-[12px]"
             />
           </div>
           <span
-            className="text-[1.6rem] font-shantell font-bold transition-all duration-300 group-hover:-translate-y-0.5 group-hover:scale-105"
-            style={{
-              background: "linear-gradient(135deg, #8b5cf6, #ec4899)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-            }}
+            className="text-[1.6rem] font-shantell font-bold transition-all duration-300 group-hover:-translate-y-0.5 group-hover:scale-105 bg-gradient-to-br from-[#8b5cf6] to-[#ec4899] bg-clip-text text-transparent"
           >
             Study Hub
           </span>

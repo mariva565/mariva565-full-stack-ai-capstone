@@ -49,20 +49,14 @@ export function NotFoundClient() {
           <div className="absolute left-1/2 top-1/2 -z-10 h-full w-full -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand-400/20 blur-[50px] dark:bg-brand-500/30"></div>
 
           <div
-            className="flex h-full w-full items-center justify-center"
-            style={{ animation: !prefersReduced ? "float 4s ease-in-out infinite" : undefined }}
+            className={`flex h-full w-full items-center justify-center ${!prefersReduced ? "animate-[float_4s_ease-in-out_infinite]" : ""}`}
           >
-            <Image 
-              src="/assets/images/404-robot.png" 
-              alt="Premium Lost Robot Mascot" 
-              width={260} 
-              height={260} 
-              className="max-w-none mix-blend-darken dark:mix-blend-normal dark:opacity-90"
-              style={{
-                // Smoothly fade out the harsh square edges of the generated image
-                WebkitMaskImage: "radial-gradient(circle closest-side, black 65%, transparent 100%)",
-                maskImage: "radial-gradient(circle closest-side, black 65%, transparent 100%)",
-              }}
+            <Image
+              src="/assets/images/404-robot.png"
+              alt="Premium Lost Robot Mascot"
+              width={260}
+              height={260}
+              className="max-w-none mix-blend-darken dark:mix-blend-normal dark:opacity-90 [mask-image:radial-gradient(circle_closest-side,black_65%,transparent_100%)] [-webkit-mask-image:radial-gradient(circle_closest-side,black_65%,transparent_100%)]"
               priority
             />
           </div>

@@ -56,11 +56,7 @@ export function HowItWorksHero() {
   return (
     <section
       ref={ref}
-      className="relative isolate flex min-h-[60vh] flex-col justify-center overflow-clip px-4 py-24 lg:py-32"
-      style={{
-        background: "linear-gradient(135deg, rgba(99, 102, 241, 0.95) 0%, rgba(139, 92, 246, 0.9) 50%, rgba(6, 182, 212, 0.85) 100%)",
-        backgroundColor: "#0f172a"
-      }}
+      className="relative isolate flex min-h-[60vh] flex-col justify-center overflow-clip px-4 py-24 lg:py-32 bg-[#0f172a] bg-[linear-gradient(135deg,rgba(99,102,241,0.95)_0%,rgba(139,92,246,0.9)_50%,rgba(6,182,212,0.85)_100%)]"
     >
       {/* Full-width background stars */}
       <HeroStars />

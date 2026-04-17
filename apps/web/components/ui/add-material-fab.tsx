@@ -45,8 +45,7 @@ export function AddMaterialFab({ active, onClick }: AddMaterialFabProps) {
       }`}
     >
       <span
-        className="text-2xl font-light leading-none transition-transform duration-300"
-        style={{ transform: active ? "rotate(45deg)" : "rotate(0deg)" }}
+        className={`text-2xl font-light leading-none transition-transform duration-300 ${active ? "rotate-45" : "rotate-0"}`}
       >
         +
       </span>

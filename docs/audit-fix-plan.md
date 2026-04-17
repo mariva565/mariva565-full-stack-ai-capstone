@@ -206,13 +206,13 @@
 
 **Приоритетни файлове (по-лесните замени):**
 
-- [ ] `apps/web/components/layout/Navbar.tsx` — 2 inline styles
-- [ ] `apps/web/components/not-found/not-found-client.tsx` — 2 inline styles
-- [ ] `apps/web/components/forbidden/forbidden-client.tsx` — 2 inline styles
-- [ ] `apps/web/components/home/cta-banner.tsx` — 2 inline styles
-- [ ] `apps/web/components/how-it-works/how-it-works-hero.tsx` — 2 inline styles
-- [ ] `apps/web/components/progress/progress-bar.tsx` — 1 inline style (вероятно динамичен width — `style={{ width: \`${pct}%\` }}` → `style={{ width }}` е OK за runtime стойности)
-- [ ] `apps/web/components/ui/add-material-fab.tsx` — 1 inline style
+- [x] `apps/web/components/layout/Navbar.tsx` — 2 inline styles
+- [x] `apps/web/components/not-found/not-found-client.tsx` — 2 inline styles
+- [x] `apps/web/components/forbidden/forbidden-client.tsx` — 2 inline styles
+- [x] `apps/web/components/home/cta-banner.tsx` — 2 inline styles
+- [x] `apps/web/components/how-it-works/how-it-works-hero.tsx` — 2 inline styles
+- [x] `apps/web/components/progress/progress-bar.tsx` — runtime `width: ${pct}%` → оставен като inline style ✅
+- [x] `apps/web/components/ui/add-material-fab.tsx` — 1 inline style
 
 **Допустими изключения (runtime-динамични):**
 - `progress-bar.tsx` — динамичен `width` процент → OK да остане
