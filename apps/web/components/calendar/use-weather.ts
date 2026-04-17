@@ -35,6 +35,7 @@ export interface WeatherData {
 }
 
 export type WeatherStatus = "idle" | "locating" | "loading" | "ready" | "denied" | "error";
+const CLOCK_TICK_MS = 60_000;
 
 export function useWeather() {
   const [now, setNow] = useState<Date>(() => new Date());
@@ -44,10 +45,23 @@ export function useWeather() {
   const lastCoordsRef = useRef<{ lat: number; lon: number; label?: string } | null>(null);
   const initialised = useRef(false);
 
-  // Live clock — 1 s tick
+  // Live clock (minute-level updates to avoid unnecessary renders)
   useEffect(() => {
-    const id = setInterval(() => setNow(new Date()), 1000);
-    return () => clearInterval(id);
+    const syncNow = () => setNow(new Date());
+    const delayToNextMinute = CLOCK_TICK_MS - (Date.now() % CLOCK_TICK_MS);
+    let intervalId: ReturnType<typeof setInterval> | null = null;
+
+    const timeoutId = window.setTimeout(() => {
+      syncNow();
+      intervalId = window.setInterval(syncNow, CLOCK_TICK_MS);
+    }, delayToNextMinute);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+      if (intervalId !== null) {
+        window.clearInterval(intervalId);
+      }
+    };
   }, []);
 
   // Auto-geolocation on mount

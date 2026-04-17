@@ -7830,3 +7830,31 @@ Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
 **Решения:**
 - Не добавяме допълнителни code-path промени след QA, понеже текущата имплементация е стабилна.
 - За local production preview държим flow-а `build:web` → `prod:web:skip-build` при повторни стартове.
+
+### Session 265 — Performance hot-path audit + targeted heat reduction fixes
+
+**Какво направихме:**
+- Направихме целеви performance преглед за потенциални loop/cleanup проблеми в `web` и `mobile` (таймери, polling, `requestAnimationFrame`, listener cleanup).
+- Потвърдихме, че няма открит безкраен loop от типа missing-cleanup в прегледаните high-risk hooks/компоненти.
+- Намалихме Metro watcher overhead за mobile dev на Windows:
+  - в `apps/mobile/metro.config.js` премахнахме `workspaceRoot/node_modules` от `watchFolders`;
+  - оставихме watch само към `packages/shared` (когато папката съществува), докато `nodeModulesPaths` остава изрично конфигуриран за резолвинг.
+- Намалихме излишни ререндери в weather widget:
+  - в `apps/web/components/calendar/use-weather.ts` сменихме live clock от 1s update към minute-aligned update (`60_000ms`);
+  - в `apps/web/components/calendar/weather-widget.tsx` премахнахме seconds от визуализацията на часовника, за да съвпада с новия update cadence.
+- По изрично потребителско решение оставихме и трите локални промени в работното дърво.
+
+**Файлове:**
+- `[MODIFY] apps/mobile/metro.config.js`
+- `[MODIFY] apps/web/components/calendar/use-weather.ts`
+- `[MODIFY] apps/web/components/calendar/weather-widget.tsx`
+- `[MODIFY] docs/dev-log.md`
+
+**Verification:**
+- `npm.cmd run typecheck:web` ✅
+- `npm.cmd run typecheck:mobile` ✅
+- Runtime observation: активни dev процеси на `:8081` (Expo/Metro) и `:3002` (web dev server) — очаквано за текуща dev среда.
+
+**Решения:**
+- Използвахме минимални, нискорискови промени с директен ефект върху локалното натоварване, без промяна на API контракти и без засягане на auth/data flows.
+- Запазихме корекциите, защото намаляват dev-time heat/CPU риск и не вкарват функционални регресии според typecheck валидацията.

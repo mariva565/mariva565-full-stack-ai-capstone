@@ -11,9 +11,7 @@ const sharedPackageRoot = path.resolve(workspaceRoot, 'packages/shared');
 const config = getSentryExpoConfig(projectRoot);
 
 // 1. Watch only required workspace folders to avoid Windows watcher overload/timeouts.
-const watchFolders = fs.existsSync(sharedPackageRoot) ? [sharedPackageRoot] : [];
-watchFolders.push(path.resolve(workspaceRoot, 'node_modules'));
-config.watchFolders = watchFolders;
+config.watchFolders = fs.existsSync(sharedPackageRoot) ? [sharedPackageRoot] : [];
 // 2. Let Metro know where to resolve packages and in what order
 config.resolver.nodeModulesPaths = [
   path.resolve(projectRoot, 'node_modules'),
