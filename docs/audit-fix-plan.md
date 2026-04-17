@@ -184,17 +184,17 @@
 
 **Commit message:** `fix(types): replace any with proper TypeScript types`
 
-- [ ] `apps/web/components/auth/auth-google-sign-in.tsx:39`
+- [x] `apps/web/components/auth/auth-google-sign-in.tsx:39`
   - `catch (err: any)` → `catch (err: unknown)`, после `err instanceof Error ? err.message : "..."`
-- [ ] `apps/mobile/components/community/post-card.tsx:12-13`
-  - `post: any` → import и използвай `Post` тип от shared или дефинирай локално
-  - `styles: any` → `styles: ReturnType<typeof StyleSheet.create>` или конкретен тип
-- [ ] `apps/mobile/components/material/ai-tools/use-ai-tools.ts:31`
-  - `data: any` → дефинирай union type `SummaryResult | QuizResult | FlashcardsResult`
-- [ ] `apps/web/app/api/admin/posts/route.ts:73`
-  - `let scopeCondition: any` → `let scopeCondition: SQL | undefined` (import `SQL` from `drizzle-orm`)
-- [ ] `apps/web/components/community/post-details.tsx:17`
-  - `require("dompurify") as any` — добави `// eslint-disable` коментар или типизирай с `typeof import("dompurify")`
+- [x] `apps/mobile/components/community/post-card.tsx:12-13`
+  - `post: any` → локален `PostCardData` тип с всички използвани полета
+  - `styles: any` → `Record<string, ViewStyle | TextStyle>`
+- [x] `apps/mobile/components/material/ai-tools/use-ai-tools.ts:31`
+  - `data: any` → `apiFetch<ToolResult>` (типът вече е импортиран)
+- [x] `apps/web/app/api/admin/posts/route.ts:73`
+  - `let scopeCondition: any` → `let scopeCondition: SQL | undefined`
+- [x] `apps/web/components/community/post-details.tsx:17`
+  - вече има `// eslint-disable-next-line @typescript-eslint/no-explicit-any` ✅
 
 ---
 

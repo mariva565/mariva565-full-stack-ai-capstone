@@ -38,6 +38,14 @@
 - Обновен `root/package.json`: `drizzle-kit ^0.12.8` → `^0.30.6` (стария беше несъвместим с `drizzle-orm@0.45.2`)
 - Генерирана migration `0006_pretty_leper_queen.sql` и push-ната към Neon ✅
 
+**Какво направихме (Група D — TypeScript any → proper types):**
+- `auth-google-sign-in.tsx`: `catch (err: any)` → `catch (err: unknown)` + instanceof guard
+- `post-card.tsx` (mobile): `post: any` → локален `PostCardData` тип; `styles: any` → `Record<string, ViewStyle | TextStyle>`
+- `use-ai-tools.ts`: `apiFetch<{ data: any }>` → `apiFetch<ToolResult>`
+- `admin/posts/route.ts`: `scopeCondition: any` → `SQL | undefined` (drizzle-orm)
+- `post-details.tsx`: вече има eslint-disable коментар ✅
+- `tsc --noEmit` — чисто ✅
+
 **Какво направихме (Група B — Security Headers):**
 - Добавени security headers в `apps/web/next.config.ts`: `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `X-DNS-Prefetch-Control`, `Permissions-Policy`
 - `tsc --noEmit` — минава чисто ✅
