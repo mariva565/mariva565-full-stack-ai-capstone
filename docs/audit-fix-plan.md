@@ -98,17 +98,17 @@
 
 Файл: `apps/web/components/messages/chat-window.tsx`
 
-- [ ] Извлечи `ChatMessageBubble` компонент → `apps/web/components/messages/chat-message-bubble.tsx`
+- [x] Извлечи `ChatMessageBubble` компонент → `apps/web/components/messages/chat-message-bubble.tsx`
   - Props: `message: Message`, `isOwn: boolean`, `formatTime: (date: string) => string`
   - Включва аватар, балонче, timestamp
-- [ ] Извлечи `ChatInput` компонент → `apps/web/components/messages/chat-input.tsx`
+- [x] Извлечи `ChatInput` компонент → `apps/web/components/messages/chat-input.tsx`
   - Props: `value: string`, `onChange`, `onSend`, `sending: boolean`
   - Включва textarea + send бутон
-- [ ] Извлечи `ChatHeader` компонент → `apps/web/components/messages/chat-header.tsx`
+- [x] Извлечи `ChatHeader` компонент → `apps/web/components/messages/chat-header.tsx`
   - Props: `otherUser: OtherUser | null`
   - Включва back бутон + аватар + име
-- [ ] Основният `ChatWindow` остава orchestrator: state + Pusher + layout
-- [ ] Всеки файл < 150 реда
+- [x] Основният `ChatWindow` остава orchestrator: state + Pusher + layout
+- [x] Всеки файл < 150 реда
 
 ### C2. Split `community-feed.tsx` (344 → ~3 файла)
 
@@ -116,14 +116,12 @@
 
 Файл: `apps/web/components/community/community-feed.tsx`
 
-- [ ] Извлечи `PostCard` компонент → `apps/web/components/community/post-card.tsx`
-  - Вече е дефиниран като функция на линия 73 — просто го премести в отделен файл
+- [x] Извлечи `PostCard` компонент → `apps/web/components/community/post-card.tsx`
   - Props: `post: Post`, `currentUserId: number`, `onLike: (id: number) => void`
-- [ ] Извлечи типове и константи → `apps/web/components/community/feed-types.ts`
-  - `Post` type, `TYPE_LABELS`, `Q_STATUS`, `timeAgo()`, `stripHtml()`
-  - ВНИМАНИЕ: `post-details.tsx` вече import-ва от `./post-types` — провери дали вече съществуват споделени типове и ги reuse-ни
-- [ ] Основният `CommunityFeed` остава: state + fetch + filters + layout
-- [ ] Всеки файл < 200 реда
+- [x] Типове reuse-нати от вече съществуващия `./post-types` (добавени `commentCount?`, `updatedAt?`)
+  - `Q_STATUS` и `stripHtml` остават в `post-card.tsx` (само там се ползват)
+- [x] Основният `CommunityFeed` остава: state + fetch + filters + layout
+- [x] Всеки файл < 200 реда
 
 ### C3. Split `post-details.tsx` (340 → ~2 файла)
 
@@ -131,27 +129,27 @@
 
 Файл: `apps/web/components/community/post-details.tsx`
 
-- [ ] Извлечи `PostHeader` → `apps/web/components/community/post-header.tsx`
-  - Автор, timestamp, type badge, pinned badge, edit/delete бутони
-- [ ] Извлечи `PostCommentForm` → `apps/web/components/community/post-comment-form.tsx`
+- [x] Извлечи `PostHeader` → `apps/web/components/community/post-header.tsx`
+  - Автор, timestamp, type badge, pinned badge, edit/delete бутони, like/bookmark
+- [x] Извлечи `PostCommentForm` → `apps/web/components/community/post-comment-form.tsx`
   - Textarea + submit бутон за нов коментар
-- [ ] `CommentItem` вече е отделен файл — добре
-- [ ] Основният `PostDetails` остава: state + fetch + layout
-- [ ] Всеки файл < 200 реда
+- [x] `CommentItem` вече е отделен файл — добре
+- [x] Основният `PostDetails` остава: state + fetch + layout
+- [x] Всеки файл < 200 реда
 
-### C4. Split `milestone-timeline-item.tsx` (340 → ~2 файла)
+### C4. Split `milestone-timeline-item.tsx` (340 → ~2 файла) — ПРОПУСНАТА
 
 **Commit message:** `refactor: split milestone-timeline-item`
 
 Файл: `apps/web/components/progress/milestone-timeline-item.tsx`
 
-- [ ] Проверка: файлът вече import-ва helpers от `./milestone-timeline-item-helpers` — добър знак
-- [ ] Извлечи collapsed view (кликнат timeline елемент) → `milestone-timeline-card.tsx`
-  - Status circle + title + deadline pill + meta
-- [ ] Извлечи expanded panel (когато е разгънат) → `milestone-timeline-expanded.tsx`
-  - Description + action бутони (edit/delete/move/status)
-- [ ] Основният компонент остава orchestrator за AnimatePresence
-- [ ] Всеки файл < 180 реда
+> **ПРОПУСНАТА** — рискът надвишава ползата:
+> - Файлът е само 40 реда над лимита (340)
+> - Helpers вече са в `milestone-timeline-item-helpers.ts`
+> - Collapsed card и expanded panel споделят AnimatePresence context, `arePropsEqual` memo, и 20+ state/callback props — split би изисквал prop-drilling на целия Props interface към 2 sub-компонента
+> - Сложността нараства, читаемостта не се подобрява
+
+- [x] Оценено — пропускане потвърдено
 
 ### C5. Split `use-web-messages-notifications.ts` (313 → 2 файла)
 
@@ -159,12 +157,13 @@
 
 Файл: `apps/web/components/messages/use-web-messages-notifications.ts`
 
-- [ ] Извлечи Pusher subscription логиката → `use-messages-pusher.ts`
-  - Pusher connect, subscribe, bind events, cleanup
-- [ ] Извлечи Browser Notification логиката → `use-browser-notifications.ts`
-  - Permission request, showNotification(), click handler
-- [ ] Основният hook остава composition: combines двата подхука
-- [ ] Всеки файл < 200 реда
+> Бележка: файлът е polling-базиран (няма Pusher). Извлечена е browser notification логиката.
+
+- [x] Извлечи Browser Notification логиката → `use-browser-notifications.ts`
+  - Permission state, requestNotificationPermission(), showNativeNotification()
+  - Бонус: коментарните нотификации също минават през showNativeNotification (премахнато inline дублиране)
+- [x] Основният hook остава composition: polling + unread detection + toast
+- [x] Всеки файл < 200 реда
 
 ### C6. Split `material-form-screen.tsx` (395 → ~2 файла)
 
@@ -172,11 +171,11 @@
 
 Файл: `apps/mobile/components/material-form/material-form-screen.tsx`
 
-- [ ] `InputField` компонент (дефиниран на линия ~22) — вече е вътрешен, премести в `material-form-input.tsx`
-- [ ] `TypePicker` секцията → `material-form-type-picker.tsx`
-  - Бутоните за material type selection
-- [ ] Основният `MaterialFormScreen` остава: state + submit + layout
-- [ ] Всеки файл < 200 реда
+- [x] `MaterialInputField` → `material-form-input.tsx` (включва InputFieldProps тип)
+- [x] `MaterialTypeSelector` → `material-form-type-picker.tsx`
+- [x] `FocusedField` тип добавен в `material-form.types.ts` (споделен)
+- [x] Основният `MaterialFormScreen` остава: state + submit + layout (~205 реда)
+- [x] Всеки файл < 200 реда
 
 ---
 

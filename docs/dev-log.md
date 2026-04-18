@@ -29,6 +29,47 @@
 
 ## 2026-04-18
 
+### Сесия — Audit Fix Plan: Група C (Split монолитни файлове)
+
+**C1 — chat-window.tsx (339 р.) → 4 файла:**
+- `chat-message-bubble.tsx` — `Avatar` + `ChatMessageBubble` (~90 р.)
+- `chat-input.tsx` — `ChatInput` с textarea + send (~55 р.)
+- `chat-header.tsx` — `ChatHeader` с back бутон + аватар (~45 р.)
+- `chat-window.tsx` остава orchestrator: state + Pusher + layout (~155 р.)
+- `tsc --noEmit` ✅
+
+**C2 — community-feed.tsx (344 р.) → 3 файла:**
+- `post-card.tsx` — `PostCard` компонент, `Q_STATUS`, `stripHtml` (~120 р.)
+- `post-types.ts` — добавени `commentCount?` и `updatedAt?` към `Post` тип
+- `community-feed.tsx` остава state + fetch + filters + layout (~140 р.)
+- `tsc --noEmit` ✅
+
+**C3 — post-details.tsx (339 р.) → 3 файла:**
+- `post-header.tsx` — `PostHeader`: автор, мета, type badges, title, content, like/bookmark (~185 р.)
+- `post-comment-form.tsx` — `PostCommentForm`: textarea + submit (~30 р.)
+- `post-details.tsx` остава orchestrator: state + fetch + layout (~130 р.)
+- `tsc --noEmit` ✅
+
+**C4 — milestone-timeline-item.tsx — ПРОПУСНАТА:**
+- Файлът е 340 р. (само 40 над лимита); helpers вече са отделни
+- Split би изисквал 20+ prop-drilling; AnimatePresence context тясно свързан
+- Решение: приемливо изключение, документирано в audit-fix-plan.md
+
+**C5 — use-web-messages-notifications.ts (313 р.) → 2 файла:**
+- `use-browser-notifications.ts` — permission state, requestPermission, showNativeNotification (~80 р.)
+- Основният hook compose-ва подхука; премахнато inline дублиране в comment polling (~195 р.)
+- `tsc --noEmit` ✅
+
+**C6 — material-form-screen.tsx (395 р.) → 3 файла (mobile):**
+- `material-form-input.tsx` — `MaterialInputField` + `InputFieldProps` тип (~60 р.)
+- `material-form-type-picker.tsx` — `MaterialTypeSelector` (~45 р.)
+- `material-form.types.ts` — добавен `FocusedField` тип
+- `material-form-screen.tsx` остава ~205 р.
+
+**Общо: 5 изпълнени, 1 пропусната (C4), 10 нови файла, 6 commit-а**
+
+---
+
 ### Сесия — Audit Fix Plan: Групи A и B
 
 **Какво направихме (Група A — DB Integrity):**
