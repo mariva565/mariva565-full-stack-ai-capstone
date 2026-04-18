@@ -107,7 +107,7 @@ export function CourseWorkspaceHeader({
 
                 <button
                   type="submit"
-                  className="w-full rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 lg:self-start"
+                  className="w-full rounded-2xl bg-[linear-gradient(135deg,#6366f1_0%,#8b5cf6_55%,#06b6d4_100%)] px-5 py-3 text-sm font-semibold text-white shadow-[0_8px_20px_rgba(99,102,241,0.25)] transition hover:brightness-110 hover:shadow-[0_12px_28px_rgba(99,102,241,0.35)] lg:self-start"
                 >
                   Create module
                 </button>

@@ -12,6 +12,7 @@ import { MaterialViewPanel } from "./material-view-panel";
 import { ConfirmModal } from "../ui/confirm-modal";
 import { ScrollToTop } from "../ui/scroll-to-top";
 import { Toast, type ToastTone } from "../ui/toast";
+import { LottieDecoration } from "../ui/lottie-decoration";
 import { WayfindingBreadcrumbs } from "../ui/wayfinding-breadcrumbs";
 import { readErrorMessage } from "../../lib/http";
 import {
@@ -274,6 +275,7 @@ export function MaterialPageClient({
       />
 
       {toast ? <Toast message={toast.message} tone={toast.tone} onClose={() => setToast(null)} /> : null}
+      <LottieDecoration src="https://lottie.host/dacfb550-1576-4e41-a4af-b05f29dfc221/c2x2LftM8d.lottie" />
     </>
   );
 }

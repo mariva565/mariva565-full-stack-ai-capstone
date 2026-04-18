@@ -7,6 +7,7 @@ import { ModuleList } from "./module-list";
 import type { ModuleInfo } from "./module-section";
 import type { CourseDetailsData } from "./types";
 import { ConfirmModal } from "../ui/confirm-modal";
+import { LottieDecoration } from "../ui/lottie-decoration";
 import { Toast, type ToastTone } from "../ui/toast";
 import { readErrorMessage } from "../../lib/http";
 
@@ -224,6 +225,7 @@ export function CourseDetailsClientPage({ initialData }: CourseDetailsClientPage
       />
 
       {toast ? <Toast message={toast.message} tone={toast.tone} onClose={() => setToast(null)} /> : null}
+      <LottieDecoration src="https://lottie.host/0244ae36-77ce-4e7a-b28b-58009c740b44/LKmpHTnJLv.lottie" />
     </>
   );
 }
