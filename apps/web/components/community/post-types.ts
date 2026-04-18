@@ -12,8 +12,9 @@ export type Post = {
   authorName: string;
   authorAvatarUrl: string | null;
   createdAt: string;
-  updatedAt: string;
+  updatedAt?: string;
   likeCount: number;
+  commentCount?: number;
   isLiked: boolean;
   isBookmarked: boolean;
 };
