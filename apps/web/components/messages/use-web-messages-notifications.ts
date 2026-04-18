@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useBrowserNotifications } from "./use-browser-notifications";
 
 type ConversationOtherUser = {
   id: number;
@@ -29,9 +30,6 @@ type IncomingAlert = {
   createdAtTs: number;
 };
 
-const MESSAGES_POLL_INTERVAL_MS = 15000;
-const COMMENTS_POLL_INTERVAL_MS = 20000;
-
 type CommentNotification = {
   commentId: number;
   postId: number;
@@ -39,6 +37,9 @@ type CommentNotification = {
   authorName: string;
   createdAt: string;
 };
+
+const MESSAGES_POLL_INTERVAL_MS = 15000;
+const COMMENTS_POLL_INTERVAL_MS = 20000;
 
 function getActiveConversationId(pathname: string): number | null {
   const match = pathname.match(/^\/messages\/(\d+)$/);
@@ -55,9 +56,7 @@ function getConversationUnreadCount(conversation: ConversationListItem): number 
   return conversation.hasUnread ? 1 : 0;
 }
 
-function buildUnreadMap(
-  conversations: ConversationListItem[]
-): Record<string, number> {
+function buildUnreadMap(conversations: ConversationListItem[]): Record<string, number> {
   const unreadMap: Record<string, number> = {};
   for (const conversation of conversations) {
     unreadMap[String(conversation.id)] = getConversationUnreadCount(conversation);
@@ -74,21 +73,16 @@ function resolveIncomingAlert(
   let latestAlert: IncomingAlert | null = null;
 
   for (const conversation of conversations) {
-    if (activeConversationId === conversation.id) {
-      continue;
-    }
+    if (activeConversationId === conversation.id) continue;
 
-    const conversationIdKey = String(conversation.id);
-    const previousUnread = previousUnreadMap[conversationIdKey] ?? 0;
-    const currentUnread = currentUnreadMap[conversationIdKey] ?? 0;
-    if (currentUnread <= previousUnread) {
-      continue;
-    }
+    const key = String(conversation.id);
+    const previousUnread = previousUnreadMap[key] ?? 0;
+    const currentUnread = currentUnreadMap[key] ?? 0;
+    if (currentUnread <= previousUnread) continue;
 
     const senderName = conversation.other?.name ?? "StudyHub";
     const rawPreview = conversation.lastMessage?.content?.trim() ?? "";
-    const preview =
-      rawPreview.length > 120 ? `${rawPreview.slice(0, 117)}...` : rawPreview;
+    const preview = rawPreview.length > 120 ? `${rawPreview.slice(0, 117)}...` : rawPreview;
     const createdAtTs = Date.parse(conversation.lastMessage?.createdAt ?? "");
     const safeCreatedAtTs = Number.isNaN(createdAtTs) ? Date.now() : createdAtTs;
     const nextAlert: IncomingAlert = {
@@ -110,26 +104,18 @@ export function useWebMessagesNotifications(
   currentUserId: number | undefined,
   pathname: string
 ) {
-  // Start as false on both server and client to avoid hydration mismatch.
-  // Updated in useEffect after hydration.
-  const [notificationsSupported, setNotificationsSupported] = useState(false);
+  const {
+    notificationsSupported,
+    notificationPermission,
+    requestNotificationPermission,
+    showNativeNotification,
+  } = useBrowserNotifications();
+
   const [conversations, setConversations] = useState<ConversationListItem[]>([]);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
-  // Initialize to "denied" on both server and client — synced via useEffect.
-  const [notificationPermission, setNotificationPermission] =
-    useState<NotificationPermission>("denied");
   const previousUnreadRef = useRef<Record<string, number>>({});
   const initializedRef = useRef(false);
   const lastCommentCheckRef = useRef<string>(new Date().toISOString());
-
-  // Sync notificationsSupported and notificationPermission after hydration.
-  useEffect(() => {
-    const supported = typeof window !== "undefined" && "Notification" in window;
-    setNotificationsSupported(supported);
-    if (supported) {
-      setNotificationPermission(window.Notification.permission);
-    }
-  }, []);
 
   useEffect(() => {
     previousUnreadRef.current = {};
@@ -137,55 +123,6 @@ export function useWebMessagesNotifications(
     setConversations([]);
     setToastMessage(null);
   }, [currentUserId]);
-
-  useEffect(() => {
-    if (!notificationsSupported) {
-      return;
-    }
-
-    const syncPermission = () => {
-      setNotificationPermission(window.Notification.permission);
-    };
-    syncPermission();
-    window.addEventListener("focus", syncPermission);
-    return () => {
-      window.removeEventListener("focus", syncPermission);
-    };
-  }, [notificationsSupported]);
-
-  const requestNotificationPermission = useCallback(async () => {
-    if (!notificationsSupported) {
-      setNotificationPermission("denied");
-      return "denied" as const;
-    }
-
-    const permission = await window.Notification.requestPermission();
-    setNotificationPermission(permission);
-    return permission;
-  }, [notificationsSupported]);
-
-  const showNativeMessageNotification = useCallback(
-    (alert: IncomingAlert) => {
-      if (!notificationsSupported || notificationPermission !== "granted") {
-        return false;
-      }
-      if (document.visibilityState === "visible") {
-        return false;
-      }
-
-      const notification = new window.Notification(alert.title, {
-        body: alert.body,
-        tag: `studyhub-message-${alert.conversationId}`,
-      });
-      notification.onclick = () => {
-        window.focus();
-        window.location.href = `/messages/${alert.conversationId}`;
-        notification.close();
-      };
-      return true;
-    },
-    [notificationPermission, notificationsSupported]
-  );
 
   const refreshConversations = useCallback(async () => {
     if (!currentUserId) return;
@@ -208,8 +145,13 @@ export function useWebMessagesNotifications(
           activeConversationId
         );
         if (incomingAlert) {
-          const displayedAsNative = showNativeMessageNotification(incomingAlert);
-          if (!displayedAsNative) {
+          const shown = showNativeNotification({
+            title: incomingAlert.title,
+            body: incomingAlert.body,
+            tag: `studyhub-message-${incomingAlert.conversationId}`,
+            href: `/messages/${incomingAlert.conversationId}`,
+          });
+          if (!shown) {
             setToastMessage(`${incomingAlert.title}: ${incomingAlert.body}`);
           }
         }
@@ -222,7 +164,7 @@ export function useWebMessagesNotifications(
     } catch {
       // Ignore polling/network errors and keep silent background retries.
     }
-  }, [currentUserId, pathname, showNativeMessageNotification]);
+  }, [currentUserId, pathname, showNativeNotification]);
 
   useEffect(() => {
     if (!currentUserId) return;
@@ -254,30 +196,19 @@ export function useWebMessagesNotifications(
       const title = `New comment on "${latest.postTitle}"`;
       const body = `${latest.authorName} commented on your post`;
 
-      const shownAsNative =
-        notificationsSupported &&
-        notificationPermission === "granted" &&
-        document.visibilityState !== "visible" &&
-        (() => {
-          const n = new window.Notification(title, {
-            body,
-            tag: `studyhub-comment-${latest.postId}`,
-          });
-          n.onclick = () => {
-            window.focus();
-            window.location.href = `/community/${latest.postId}`;
-            n.close();
-          };
-          return true;
-        })();
-
-      if (!shownAsNative) {
+      const shown = showNativeNotification({
+        title,
+        body,
+        tag: `studyhub-comment-${latest.postId}`,
+        href: `/community/${latest.postId}`,
+      });
+      if (!shown) {
         setToastMessage(`${title}: ${body}`);
       }
     } catch {
       // Ignore polling errors silently.
     }
-  }, [currentUserId, notificationsSupported, notificationPermission]);
+  }, [currentUserId, showNativeNotification]);
 
   useEffect(() => {
     if (!currentUserId) return;
