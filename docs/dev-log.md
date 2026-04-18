@@ -68,6 +68,17 @@
 
 **Общо: 5 изпълнени, 1 пропусната (C4), 10 нови файла, 6 commit-а**
 
+### Сесия — chat-widget.tsx и hero-3d.tsx (допълнителна оценка по README)
+
+**hero-3d.tsx (310 р.) — ПРОПУСНАТ:**
+- Three.js сцената е един `useEffect` closure — `isAnimating`, camera, renderer, books, shapes споделят scope
+- 10 реда над лимита не оправдават refactor риска
+
+**chat-widget.tsx (494 → 254 р.) — ГОТОВО:**
+- `<style jsx global>` блок (150 реда) преместен в `globals.css` — премахва render-timing coupling риска
+- Helpers (SendIcon, CloseIcon, ThinkingDots, escapeHtml, formatMessage, CopyButton) → `chat-widget-helpers.tsx` (87 р.)
+- `tsc --noEmit` ✅
+
 ---
 
 ### Сесия — Audit Fix Plan: Групи A и B
