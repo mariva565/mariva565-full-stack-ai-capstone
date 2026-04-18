@@ -3,95 +3,18 @@
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
+import {
+  SendIcon,
+  CloseIcon,
+  ThinkingDots,
+  CopyButton,
+  formatMessage,
+} from "./chat-widget-helpers";
 
 type ChatMessage = {
   role: "user" | "model";
   text: string;
 };
-
-function SendIcon() {
-  return (
-    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
-    </svg>
-  );
-}
-
-function CloseIcon() {
-  return (
-    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-    </svg>
-  );
-}
-
-function ThinkingDots() {
-  return (
-    <div className="flex items-center gap-1 px-4 py-3">
-      <span className="h-2 w-2 animate-bounce rounded-full bg-brand-400 [animation-delay:-0.3s]" />
-      <span className="h-2 w-2 animate-bounce rounded-full bg-brand-400 [animation-delay:-0.15s]" />
-      <span className="h-2 w-2 animate-bounce rounded-full bg-brand-400" />
-    </div>
-  );
-}
-
-function escapeHtml(text: string): string {
-  return text
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
-}
-
-function formatMessage(text: string): string {
-  if (text.includes("```")) {
-    const parts = text.split("```");
-    return parts
-      .map((part, i) =>
-        i % 2 === 1
-          ? `<pre class="my-2 overflow-x-auto rounded-lg bg-slate-900 p-3 text-xs text-slate-100 dark:bg-slate-800"><code>${escapeHtml(part)}</code></pre>`
-          : escapeHtml(part).replace(/\n/g, "<br>")
-      )
-      .join("");
-  }
-  return escapeHtml(text)
-    .replace(/`([^`]+)`/g, '<code class="rounded bg-slate-200 px-1.5 py-0.5 text-xs dark:bg-slate-700">$1</code>')
-    .replace(/\n/g, "<br>");
-}
-
-function CopyButton({ text }: { text: string }) {
-  const [copied, setCopied] = useState(false);
-
-  function handleCopy() {
-    navigator.clipboard.writeText(text).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
-  }
-
-  return (
-    <button
-      type="button"
-      onClick={handleCopy}
-      className="mt-1 flex items-center gap-1 rounded-md px-2 py-0.5 text-[0.65rem] text-slate-400 transition hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300"
-    >
-      {copied ? (
-        <>
-          <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-          </svg>
-          Copied!
-        </>
-      ) : (
-        <>
-          <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15.666 3.888A2.25 2.25 0 0013.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 01-.75.75H9.75a.75.75 0 01-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 011.927-.184" />
-          </svg>
-          Copy
-        </>
-      )}
-    </button>
-  );
-}
 
 export function ChatWidget() {
   const pathname = usePathname();
@@ -149,10 +72,7 @@ export function ChatWidget() {
       }
 
       const data = await res.json();
-      setMessages((prev) => [
-        ...prev,
-        { role: "model", text: data.reply },
-      ]);
+      setMessages((prev) => [...prev, { role: "model", text: data.reply }]);
     } catch (err) {
       setMessages((prev) => [
         ...prev,
@@ -169,7 +89,6 @@ export function ChatWidget() {
     }
   }
 
-  // Build FAB state class
   let fabState = "chat-fab--idle";
   if (isReacting) fabState = "chat-fab--reacting";
   else if (isLoading) fabState = "chat-fab--thinking";
@@ -186,10 +105,7 @@ export function ChatWidget() {
           isLanding ? "bottom-6 left-6" : "bottom-6 right-6"
         }`}
       >
-        {/* Aura ring — visible when thinking */}
         <span className="chat-fab__aura" />
-
-        {/* Avatar image */}
         <Image
           src="/assets/v1/AI-icon-1.png"
           alt="AI Assistant"
@@ -214,7 +130,6 @@ export function ChatWidget() {
       >
         {/* Header */}
         <div className="relative flex items-center gap-3 overflow-hidden bg-[linear-gradient(135deg,#6366f1_0%,#8b5cf6_55%,#06b6d4_100%)] px-4 py-3">
-          {/* Header avatar */}
           <div className={`relative shrink-0 ${isLoading ? "chat-header-avatar--thinking" : ""}`}>
             <Image
               src="/assets/v1/AI-icon-3.png"
@@ -264,7 +179,6 @@ export function ChatWidget() {
                   key={i}
                   className={`flex items-end gap-2 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                 >
-                  {/* Bot avatar beside messages */}
                   {msg.role === "model" ? (
                     <Image
                       src="/assets/v1/AI-icon-3.png"
@@ -281,13 +195,9 @@ export function ChatWidget() {
                           ? "rounded-br-md bg-[linear-gradient(135deg,#6366f1,#8b5cf6)] text-white"
                           : "rounded-bl-md border border-slate-200/80 bg-slate-50 text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
                       }`}
-                      dangerouslySetInnerHTML={{
-                        __html: formatMessage(msg.text),
-                      }}
+                      dangerouslySetInnerHTML={{ __html: formatMessage(msg.text) }}
                     />
-                    {msg.role === "model" ? (
-                      <CopyButton text={msg.text} />
-                    ) : null}
+                    {msg.role === "model" ? <CopyButton text={msg.text} /> : null}
                   </div>
                 </div>
               ))}
@@ -339,156 +249,6 @@ export function ChatWidget() {
           </div>
         </div>
       </div>
-
-      {/* All animations */}
-      <style jsx global>{`
-        /* ---- FAB base ---- */
-        .chat-fab {
-          width: 72px;
-          height: 72px;
-          border-radius: 50%;
-          background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 55%, #06b6d4 100%);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          border: none;
-          padding: 0;
-          box-shadow: 0 8px 30px rgba(99, 102, 241, 0.4);
-          transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
-                      box-shadow 0.25s ease;
-          isolation: isolate;
-        }
-        @media (min-width: 640px) {
-          .chat-fab { width: 80px; height: 80px; }
-        }
-        .chat-fab:hover {
-          transform: scale(1.08) rotate(6deg);
-          box-shadow: 0 12px 40px rgba(99, 102, 241, 0.55);
-        }
-
-        /* ---- Avatar image inside FAB ---- */
-        .chat-fab__avatar {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          border-radius: 50%;
-          transition: opacity 0.2s ease, transform 0.3s ease, filter 0.3s ease;
-        }
-        .chat-fab:hover .chat-fab__avatar {
-          filter: saturate(1.1) brightness(1.05);
-        }
-
-        /* ---- Aura ring ---- */
-        .chat-fab__aura {
-          position: absolute;
-          inset: -10px;
-          border-radius: 50%;
-          background: radial-gradient(
-            circle,
-            rgba(99, 102, 241, 0.3) 0%,
-            rgba(139, 92, 246, 0.2) 40%,
-            rgba(6, 182, 212, 0.1) 60%,
-            transparent 75%
-          );
-          opacity: 0;
-          transform: scale(0.85);
-          pointer-events: none;
-          z-index: -1;
-          transition: opacity 0.3s, transform 0.3s;
-        }
-
-        /* ---- State: idle ---- */
-        .chat-fab--idle .chat-fab__avatar {
-          animation: none;
-        }
-
-        /* ---- State: open ---- */
-        .chat-fab--open {
-          transform: scale(0.9);
-          box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
-        }
-        .chat-fab--open .chat-fab__avatar {
-          opacity: 0.6;
-          filter: brightness(1.2);
-        }
-
-        /* ---- State: reacting (click bounce) ---- */
-        .chat-fab--reacting .chat-fab__avatar {
-          animation: fabWake 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .chat-fab--reacting {
-          box-shadow: 0 10px 35px rgba(99, 102, 241, 0.5);
-        }
-
-        /* ---- State: thinking ---- */
-        .chat-fab--thinking .chat-fab__avatar {
-          animation: fabThinkingBob 1s ease-in-out infinite;
-          filter: drop-shadow(0 0 14px rgba(139, 92, 246, 0.45));
-        }
-        .chat-fab--thinking .chat-fab__aura {
-          opacity: 1;
-          animation: auraPulse 1.2s ease-out infinite;
-        }
-
-        /* ---- Header avatar thinking ---- */
-        .chat-header-avatar--thinking img {
-          animation: headerListen 1.3s ease-in-out infinite;
-          filter: drop-shadow(0 6px 14px rgba(99, 102, 241, 0.3));
-        }
-
-        /* ---- Keyframes ---- */
-        @keyframes fabIdleFloat {
-          0%, 100% { transform: translateY(0) scale(1); }
-          50% { transform: translateY(-3px) scale(1.02); }
-        }
-
-        @keyframes fabWake {
-          0% { transform: scale(1) rotate(0deg); }
-          25% { transform: scale(1.12) rotate(-8deg); }
-          50% { transform: scale(1.05) rotate(6deg); }
-          75% { transform: scale(1.08) rotate(-3deg); }
-          100% { transform: scale(1) rotate(0deg); }
-        }
-
-        @keyframes fabThinkingBob {
-          0%, 100% { transform: translateY(0) scale(1); }
-          50% { transform: translateY(-5px) scale(1.04); }
-        }
-
-        @keyframes auraPulse {
-          0% { opacity: 0.5; transform: scale(0.9); }
-          50% { opacity: 0.8; transform: scale(1.15); }
-          100% { opacity: 0; transform: scale(1.3); }
-        }
-
-        @keyframes headerListen {
-          0%, 100% { transform: translateY(0) rotate(0deg); }
-          25% { transform: translateY(-2px) rotate(-3deg); }
-          75% { transform: translateY(1px) rotate(2deg); }
-        }
-
-        @keyframes gentleFloat {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-6px); }
-        }
-
-        @keyframes thinkingBob {
-          0%, 100% { transform: translateY(0) scale(1); }
-          50% { transform: translateY(-3px) scale(1.05); }
-        }
-
-        /* ---- Reduced motion ---- */
-        @media (prefers-reduced-motion: reduce) {
-          .chat-fab,
-          .chat-fab__avatar,
-          .chat-fab__aura,
-          .chat-header-avatar--thinking img {
-            animation: none !important;
-            transition: none !important;
-          }
-        }
-      `}</style>
     </>
   );
 }
