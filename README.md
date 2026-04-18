@@ -977,9 +977,14 @@ npm run dev:mobile:usb
 | Deployment | Netlify + Vercel (dual) | Planned: Vercel |
 | Security | RLS + CSP + MFA (partial) | JWT guards + middleware + role-based endpoints |
 
-> **\*** Three files intentionally exceed 300 lines by design: `chat-widget.tsx` (494), `material-form-screen.tsx` (395), and `hero-3d.tsx` (310). Each has a known lifecycle/styling coupling where forced splitting has higher regression risk than immediate value.
+> **\*** Two files intentionally exceed 300 lines by design: `chat-widget.tsx` (494) and `hero-3d.tsx` (310). Each has a known lifecycle/styling coupling where forced splitting has higher regression risk than immediate value.
 >
-> Temporary risk-managed 300+ exceptions are also documented and intentionally deferred to a dedicated refactor cycle: `community-feed.tsx`, `post-details.tsx`, `milestone-timeline-item.tsx`, `chat-window.tsx`, `use-web-messages-notifications.ts`, and `drizzle/schema.ts`. These files are currently kept intact because they combine real-time/event-heavy behavior or centralized schema contracts where incremental split work can destabilize active flows without broader regression coverage.
+> Three additional files remain above 300 lines with documented justification:
+> - `milestone-timeline-item.tsx` (340): AnimatePresence context + 20+ shared props between collapsed/expanded panels make split counterproductive — helpers are already extracted to `milestone-timeline-item-helpers.ts`.
+> - `drizzle/schema.ts` (324): single-file schema contract — Drizzle cross-file FK references create circular import risk; 24 lines over limit is acceptable for a plain data-definition file with no UI logic.
+> - `material-form-screen.tsx` was 395 lines; split in the April 2026 audit cycle — now ~205 lines ✅
+>
+> All other previously deferred 300+ files (`chat-window.tsx`, `community-feed.tsx`, `post-details.tsx`, `use-web-messages-notifications.ts`) were refactored in the same audit cycle.
 
 ---
 
