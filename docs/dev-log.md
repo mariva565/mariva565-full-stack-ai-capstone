@@ -29,6 +29,21 @@
 
 ## 2026-04-18
 
+### Сесия — Navbar реорганизация
+
+**Файл:** `apps/web/components/navbar-client.tsx` (232 → 243 р.)
+
+**Промени:**
+- `links[]` масивът разделен на `coreLinks` (Home, Dashboard, Progress, Calendar) и `socialLinks` (Community, Messages + role-based)
+- `Profile` линк премахнат от навбара — достъпен само от аватар pill-а горе вдясно
+- `Inbox` → `Mentor Inbox` за яснота
+- Добавен визуален разделител `·` между двете групи (скрит на мобилен)
+- Извлечен `navLinkClass(active)` helper — премахнато дублиране на className string
+- `isActive()` допълнен с exact match за `/mentor-inbox`
+- `tsc --noEmit` ✅ (без нови грешки)
+
+---
+
 ### Сесия — Audit Fix Plan: Група C (Split монолитни файлове)
 
 **C1 — chat-window.tsx (339 р.) → 4 файла:**

@@ -108,25 +108,35 @@ export function NavbarClient({ initialUser }: NavbarClientProps) {
         pathname === "/community/new" ||
         /^\/community\/\d+\/edit$/.test(pathname);
     }
+    if (href === "/mentor-inbox") return pathname === "/mentor-inbox";
     return pathname.startsWith(href);
   }
 
-  const links = [
+  function navLinkClass(active: boolean): string {
+    return `relative rounded-full px-3 py-1.5 text-sm font-medium transition ${
+      active
+        ? "bg-[linear-gradient(135deg,#6366f1_0%,#8b5cf6_55%,#06b6d4_100%)] text-white shadow-[0_12px_30px_rgba(99,102,241,0.22)]"
+        : "text-slate-600 hover:bg-white/70 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-900/60 dark:hover:text-white"
+    }`;
+  }
+
+  const coreLinks = [
     { href: "/", label: "Home" },
     { href: "/dashboard", label: "Dashboard" },
-    { href: "/community", label: "Community" },
     { href: "/progress", label: "Progress" },
     { href: "/calendar", label: "Calendar" },
-    { href: "/profile", label: "Profile" },
   ];
 
-  links.push({ href: "/messages", label: "Messages" });
+  const socialLinks: { href: string; label: string }[] = [
+    { href: "/community", label: "Community" },
+    { href: "/messages", label: "Messages" },
+  ];
   if (user?.role === "mentor" || user?.role === "admin") {
-    links.push({ href: "/mentor-inbox", label: "Inbox" });
-    links.push({ href: "/moderation", label: "Moderation" });
+    socialLinks.push({ href: "/mentor-inbox", label: "Mentor Inbox" });
+    socialLinks.push({ href: "/moderation", label: "Moderation" });
   }
   if (user?.role === "admin") {
-    links.push({ href: "/admin", label: "Admin" });
+    socialLinks.push({ href: "/admin", label: "Admin" });
   }
 
   const userInitials = getProfileInitials(user?.name ?? "Study Hub");
@@ -202,16 +212,17 @@ export function NavbarClient({ initialUser }: NavbarClientProps) {
           </div>
 
           <div className="flex flex-wrap items-center gap-2 lg:justify-end">
-            {links.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`relative rounded-full px-3 py-1.5 text-sm font-medium transition ${
-                  isActive(link.href)
-                    ? "bg-[linear-gradient(135deg,#6366f1_0%,#8b5cf6_55%,#06b6d4_100%)] text-white shadow-[0_12px_30px_rgba(99,102,241,0.22)]"
-                    : "text-slate-600 hover:bg-white/70 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-900/60 dark:hover:text-white"
-                }`}
-              >
+            {coreLinks.map((link) => (
+              <Link key={link.href} href={link.href} className={navLinkClass(isActive(link.href))}>
+                {link.label}
+              </Link>
+            ))}
+
+            {/* Visual separator between core and social groups */}
+            <span className="hidden text-slate-300 dark:text-slate-600 sm:inline" aria-hidden="true">·</span>
+
+            {socialLinks.map((link) => (
+              <Link key={link.href} href={link.href} className={navLinkClass(isActive(link.href))}>
                 {link.label}
                 {link.href === "/messages" && messagesUnreadCount > 0 ? (
                   <span className="absolute -right-1 -top-1 min-w-5 rounded-full border border-white bg-rose-500 px-1.5 text-center text-[10px] font-bold leading-4 text-white dark:border-slate-950">
