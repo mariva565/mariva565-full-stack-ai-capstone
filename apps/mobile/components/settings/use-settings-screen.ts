@@ -65,7 +65,7 @@ function useAccountActions(
   showToast: ReturnType<typeof useToast>["showToast"]
 ) {
   const openProfileEditor = useCallback(() => {
-    router.replace("/(tabs)/profile?edit=1");
+    router.replace({ pathname: "/profile", params: { edit: "1" } });
   }, [router]);
 
   const handleLogout = useCallback(() => {
@@ -86,7 +86,7 @@ function usePreferenceActions(
       if (value === preferences.themeMode) {
         return;
       }
-      // Live theme update — no reload needed; React context propagates the change immediately.
+      // Live theme update - no reload needed; React context propagates the change immediately.
       preferences.setThemeMode(value);
     },
     [preferences]

@@ -8273,3 +8273,43 @@ Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
 **Решения:**
 - Запазихме fix-а локализиран в weather hook-а вместо да преправяме widget UI или да добавяме server proxy, защото проблемът е в browser geolocation lifecycle-а.
 - Permission-listener + по-толерантни geolocation options адресират реалния happy path (`granted -> detect location -> load weather`) без да пипат manual city fallback-а.
+
+## 2026-04-18
+### Session 276 — Safe mobile route cleanup for profile navigation
+
+**Какво направихме:**
+- Направихме нискорисково route cleanup само за mobile profile navigation, без да местим файлове и без да променяме user-facing route имената.
+- Подменихме вътрешните `/(tabs)/profile` навигации с чистия path `/profile`, за да не адресираме route group-а директно в кода.
+- Запазихме същия behavior за `edit=1` и `handoffUserId` query параметрите чрез object-based `router.push` / `router.replace`.
+- Оправихме и mojibake артефакт в comment в `use-settings-screen.ts`, за да остане файлът в чист UTF-8 текст.
+
+**Файлове:**
+- [MODIFY] apps/mobile/app/(tabs)/profile.tsx
+- [MODIFY] apps/mobile/app/profile/[userId].tsx
+- [MODIFY] apps/mobile/components/profile-tab/qr-scanner-screen.tsx
+- [MODIFY] apps/mobile/components/settings/use-settings-screen.ts
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `rg -n "\(tabs\)/profile|/\(tabs\)/profile" apps/mobile` → no matches ✅
+- `npm.cmd run typecheck` ⚠️ fails from pre-existing unrelated mobile community errors in `components/community/community-screen.tsx` and `components/community/post-card.tsx`; no route-cleanup-specific type errors were introduced
+
+**Решения:**
+- Ограничихме промените до safe cleanup на вътрешните navigation targets, вместо да правим по-рисков route refactor на `course/module/material` paths.
+
+### Session 277 — Web middleware matcher parity for protected routes
+
+**Какво направихме:**
+- Разширихме `apps/web/middleware.ts` matcher-а, така че middleware guard-ът да хваща и `community`, `messages`, `mentor-inbox`, и `moderation` route-овете, а не само page-level auth checks.
+- Оставихме user-facing URL-ите и page логиката непроменени; промяната е само в ранното прихващане на protected routes на middleware ниво.
+- Добавихме и base path, и `:path*` варианти за консистентност със съществуващия matcher стил в файла.
+
+**Файлове:**
+- [MODIFY] apps/web/middleware.ts
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd run typecheck:web`
+
+**Решения:**
+- Избрахме matcher-only fix вместо допълнителен auth refactor, защото page-level guards вече пазят страниците; целта тук е parity и по-чист централен routing guard без риск за URL структурата.

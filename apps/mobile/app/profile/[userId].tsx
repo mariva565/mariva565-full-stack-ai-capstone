@@ -19,7 +19,7 @@ export default function ProfileDeepLinkRoute() {
 
   useEffect(() => {
     const handoffValue = normalizedUserId || "invalid";
-    router.replace(`/(tabs)/profile?handoffUserId=${encodeURIComponent(handoffValue)}`);
+    router.replace({ pathname: "/profile", params: { handoffUserId: handoffValue } });
   }, [normalizedUserId, router]);
 
   return (

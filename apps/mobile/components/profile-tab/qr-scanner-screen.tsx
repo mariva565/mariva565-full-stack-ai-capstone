@@ -33,7 +33,7 @@ export function QrScannerScreen({ visible, onClose }: QrScannerScreenProps) {
 
     scannedRef.current = true;
     onClose();
-    router.push(`/(tabs)/profile?handoffUserId=${rawId}` as never);
+    router.push({ pathname: "/profile", params: { handoffUserId: rawId } });
   };
 
   return (

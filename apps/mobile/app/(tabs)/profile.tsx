@@ -32,7 +32,7 @@ export default function ProfileTabRoute() {
     }
 
     viewModel.startEditing();
-    router.replace("/(tabs)/profile");
+    router.replace("/profile");
   }, [
     editParam,
     viewModel.loading,
@@ -57,14 +57,14 @@ export default function ProfileTabRoute() {
 
     if (!/^\d+$/.test(handoffUserId)) {
       showToast("Invalid profile deep link. Opened your profile instead.", "info");
-      router.replace("/(tabs)/profile");
+      router.replace("/profile");
       return;
     }
 
     const scannedUserId = Number(handoffUserId);
     if (scannedUserId === viewModel.profile.id) {
       showToast("Profile deep link opened successfully.", "info");
-      router.replace("/(tabs)/profile");
+      router.replace("/profile");
       return;
     }
 
@@ -85,7 +85,7 @@ export default function ProfileTabRoute() {
           return;
         }
         showToast("Could not open conversation from this QR profile.", "error");
-        router.replace("/(tabs)/profile");
+        router.replace("/profile");
       }
     };
 
