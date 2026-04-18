@@ -30,10 +30,10 @@ function SocialIcon({
   );
 }
 
-export function HowItWorksPage() {
+export function HowItWorksPage({ isAuthenticated = false }: { isAuthenticated?: boolean }) {
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950">
-      <Navbar />
+      <Navbar isAuthenticated={isAuthenticated} />
       <HowItWorksHero />
       <HowItWorksTimeline />
       <HowItWorksGallery />

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { HowItWorksPage } from "@/components/how-it-works/how-it-works-page";
+import { getRequestUserOrNull } from "@/lib/server-auth";
 
 export const metadata: Metadata = {
   title: "How It Works | Study Hub",
@@ -26,14 +27,16 @@ const structuredData = {
   },
 };
 
-export default function Page() {
+export default async function Page() {
+  const user = await getRequestUserOrNull();
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
-      <HowItWorksPage />
+      <HowItWorksPage isAuthenticated={Boolean(user)} />
     </>
   );
 }
