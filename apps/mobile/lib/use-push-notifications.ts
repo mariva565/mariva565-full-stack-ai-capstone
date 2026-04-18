@@ -22,12 +22,13 @@ function isExpoGoRuntime(): boolean {
 }
 
 const IS_EXPO_GO = isExpoGoRuntime();
+const IS_WEB = Platform.OS === "web";
 
-// Lazy require — never import expo-notifications in Expo Go.
+// Lazy require — never import expo-notifications in Expo Go or on web.
 // A static `import * as Notifications` would execute module-level side
 // effects (DevicePushTokenAutoRegistration) before any runtime guard runs.
 type NotificationsModule = typeof import("expo-notifications");
-const Notifications: NotificationsModule | null = IS_EXPO_GO
+const Notifications: NotificationsModule | null = IS_EXPO_GO || IS_WEB
   ? null
   : (require("expo-notifications") as NotificationsModule);
 

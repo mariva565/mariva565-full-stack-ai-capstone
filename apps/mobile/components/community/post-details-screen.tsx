@@ -30,6 +30,7 @@ export function PostDetailsScreen({ postId }: { postId: number }) {
   const queryClient = useQueryClient();
 
   const [newComment, setNewComment] = useState("");
+  const { width } = useWindowDimensions();
 
   const query = useQuery({
     queryKey: ["community", "post", postId],
@@ -100,7 +101,6 @@ export function PostDetailsScreen({ postId }: { postId: number }) {
 
   const { post, comments } = query.data;
   const canMessageAuthor = !!post.authorId && post.authorId !== user?.id;
-  const { width } = useWindowDimensions();
 
   const authorInitials = (post.authorName || "St").substring(0, 2).toUpperCase();
   const timeAgo = new Date(post.createdAt).toLocaleDateString();

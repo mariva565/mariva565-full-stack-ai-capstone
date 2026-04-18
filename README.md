@@ -53,6 +53,8 @@ StudyHub v2 is a full rewrite of [StudyHub v1](https://github.com/mariva565/Test
 
 The app is a personal **Learning Management System (LMS)** — a structured electronic notebook where users organize study materials hierarchically (`Courses -> Modules -> Materials`), track progress with milestones, and plan with a calendar.
 
+Most tools make you choose: Notion gives you flexibility but no structure. Google Classroom gives you structure but no AI. StudyHub brings all three together — a full LMS hierarchy, a social community board with direct messaging, and AI-powered study tools (quiz generation, summarization, smart search) — in a single platform built for learners who want to do more than just take notes.
+
 **Why a rewrite instead of a new concept:**
 - The business logic is personally useful — I actively use StudyHub to organize my own SoftUni notes and plan this capstone.
 - Rebuilding the same domain with a completely different stack creates a direct comparison between two architectural approaches.

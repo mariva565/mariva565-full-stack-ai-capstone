@@ -156,7 +156,7 @@ export default function MaterialScreen() {
           accessibilityLabel="Open AI Study Tools"
         >
           <Text style={styles.aiToolsBtnText} maxFontSizeMultiplier={1.2}>
-            вњЁ AI Study Tools
+            🧪 AI Study Tools
           </Text>
         </TouchableOpacity>
       ) : null}
