@@ -4,38 +4,17 @@ import {
   Platform,
   ScrollView,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
-  type KeyboardTypeOptions,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Stack } from "expo-router";
 
-import { COLORS, GRADIENTS } from "../../lib/colors";
-import { MATERIAL_TYPE_OPTIONS, type MaterialType } from "../../lib/material-utils";
+import { GRADIENTS } from "../../lib/colors";
 import { styles } from "./material-form.styles";
-import type { MaterialFormScreenProps } from "./material-form.types";
-
-type FocusedField = "title" | "content" | "url" | "tags" | null;
-
-type InputFieldProps = {
-  field: Exclude<FocusedField, null>;
-  label: string;
-  value: string;
-  placeholder: string;
-  accessibilityLabel: string;
-  accessibilityHint: string;
-  focusedField: FocusedField;
-  onFocusChange: (field: FocusedField) => void;
-  onChangeText: (value: string) => void;
-  autoFocus?: boolean;
-  multiline?: boolean;
-  numberOfLines?: number;
-  textAlignVertical?: "top" | "center" | "bottom";
-  autoCapitalize?: "none" | "sentences" | "words" | "characters";
-  keyboardType?: KeyboardTypeOptions;
-};
+import type { MaterialFormScreenProps, FocusedField } from "./material-form.types";
+import { MaterialInputField } from "./material-form-input";
+import { MaterialTypeSelector } from "./material-form-type-picker";
 
 function MaterialHeader({ iconText, heading }: { iconText: string; heading: string }) {
   return (
@@ -52,148 +31,6 @@ function ErrorBanner({ message }: { message: string }) {
   return (
     <View style={styles.errorBox} accessible accessibilityRole="alert">
       <Text style={styles.errorText}>{message}</Text>
-    </View>
-  );
-}
-
-function MaterialTypeSelector({
-  materialType,
-  onMaterialTypeChange,
-}: {
-  materialType: MaterialType;
-  onMaterialTypeChange: (value: MaterialType) => void;
-}) {
-  return (
-    <View style={styles.typeRow}>
-      {MATERIAL_TYPE_OPTIONS.map((option) => (
-        <TouchableOpacity
-          key={option.key}
-          style={[
-            styles.typeChip,
-            materialType === option.key && {
-              backgroundColor: option.bg,
-              borderColor: option.color,
-            },
-          ]}
-          onPress={() => onMaterialTypeChange(option.key)}
-          activeOpacity={0.75}
-          accessibilityRole="button"
-          accessibilityLabel={`Select material type ${option.label}`}
-          accessibilityHint="Filters which optional fields are shown"
-          accessibilityState={{ selected: materialType === option.key }}
-        >
-          <Text
-            style={[
-              styles.typeChipIcon,
-              { color: materialType === option.key ? option.color : COLORS.textMuted },
-            ]}
-          >
-            {option.icon}
-          </Text>
-          <Text
-            style={[
-              styles.typeChipLabel,
-              materialType === option.key && { color: option.color, fontWeight: "700" },
-            ]}
-          >
-            {option.label}
-          </Text>
-        </TouchableOpacity>
-      ))}
-    </View>
-  );
-}
-
-function MaterialInputField({
-  field,
-  label,
-  value,
-  placeholder,
-  accessibilityLabel,
-  accessibilityHint,
-  focusedField,
-  onFocusChange,
-  onChangeText,
-  autoFocus,
-  multiline,
-  numberOfLines,
-  textAlignVertical,
-  autoCapitalize,
-  keyboardType,
-}: InputFieldProps) {
-  return (
-    <View style={styles.inputGroup}>
-      <Text style={styles.inputLabel}>{label}</Text>
-      <TextInput
-        style={[
-          styles.input,
-          multiline ? styles.textArea : null,
-          focusedField === field ? styles.inputFocused : null,
-        ]}
-        placeholder={placeholder}
-        placeholderTextColor={COLORS.textMuted}
-        value={value}
-        onChangeText={onChangeText}
-        onFocus={() => onFocusChange(field)}
-        onBlur={() => onFocusChange(null)}
-        autoFocus={autoFocus}
-        multiline={multiline}
-        numberOfLines={numberOfLines}
-        textAlignVertical={textAlignVertical}
-        autoCapitalize={autoCapitalize}
-        keyboardType={keyboardType}
-        accessibilityLabel={accessibilityLabel}
-        accessibilityHint={accessibilityHint}
-      />
-    </View>
-  );
-}
-
-function MaterialFormCard({
-  values,
-  tagsLabel,
-  showUrlField,
-  autoFocusTitle,
-  focusedField,
-  onFocusChange,
-  onTitleChange,
-  onContentChange,
-  onFileUrlChange,
-  onTagsChange,
-  titleAccessibilityHint,
-}: {
-  values: MaterialFormScreenProps["values"];
-  tagsLabel: string;
-  showUrlField: boolean;
-  autoFocusTitle?: boolean;
-  focusedField: FocusedField;
-  onFocusChange: (field: FocusedField) => void;
-  onTitleChange: (value: string) => void;
-  onContentChange: (value: string) => void;
-  onFileUrlChange: (value: string) => void;
-  onTagsChange: (value: string) => void;
-  titleAccessibilityHint: string;
-}) {
-  return (
-    <View style={styles.card}>
-      <MaterialPrimaryFields
-        values={values}
-        focusedField={focusedField}
-        onFocusChange={onFocusChange}
-        onTitleChange={onTitleChange}
-        onContentChange={onContentChange}
-        autoFocusTitle={autoFocusTitle}
-        titleAccessibilityHint={titleAccessibilityHint}
-      />
-      <MaterialMetadataFields
-        values={values}
-        tagsLabel={tagsLabel}
-        showUrlField={showUrlField}
-        focusedField={focusedField}
-        onFocusChange={onFocusChange}
-        onFileUrlChange={onFileUrlChange}
-        onTagsChange={onTagsChange}
-      />
     </View>
   );
 }
@@ -229,7 +66,6 @@ function MaterialPrimaryFields({
         accessibilityLabel="Material title"
         accessibilityHint={titleAccessibilityHint}
       />
-
       <MaterialInputField
         field="content"
         label="Content"
@@ -282,7 +118,6 @@ function MaterialMetadataFields({
           accessibilityHint="Optional link for link or video material types"
         />
       ) : null}
-
       <MaterialInputField
         field="tags"
         label={tagsLabel}
@@ -365,19 +200,26 @@ export function MaterialFormScreen(props: MaterialFormScreenProps) {
           materialType={props.values.materialType}
           onMaterialTypeChange={props.onMaterialTypeChange}
         />
-        <MaterialFormCard
-          values={props.values}
-          tagsLabel={props.tagsLabel ?? "Tags"}
-          showUrlField={props.showUrlField}
-          autoFocusTitle={props.autoFocusTitle}
-          focusedField={focusedField}
-          onFocusChange={setFocusedField}
-          onTitleChange={props.onTitleChange}
-          onContentChange={props.onContentChange}
-          onFileUrlChange={props.onFileUrlChange}
-          onTagsChange={props.onTagsChange}
-          titleAccessibilityHint={props.titleAccessibilityHint}
-        />
+        <View style={styles.card}>
+          <MaterialPrimaryFields
+            values={props.values}
+            focusedField={focusedField}
+            onFocusChange={setFocusedField}
+            onTitleChange={props.onTitleChange}
+            onContentChange={props.onContentChange}
+            autoFocusTitle={props.autoFocusTitle}
+            titleAccessibilityHint={props.titleAccessibilityHint}
+          />
+          <MaterialMetadataFields
+            values={props.values}
+            tagsLabel={props.tagsLabel ?? "Tags"}
+            showUrlField={props.showUrlField}
+            focusedField={focusedField}
+            onFocusChange={setFocusedField}
+            onFileUrlChange={props.onFileUrlChange}
+            onTagsChange={props.onTagsChange}
+          />
+        </View>
         <MaterialFormActions
           loading={props.loading}
           submitLabel={props.submitLabel}

@@ -1,5 +1,7 @@
 import type { MaterialType } from "../../lib/material-utils";
 
+export type FocusedField = "title" | "content" | "url" | "tags" | null;
+
 export type MaterialFormValues = {
   title: string;
   content: string;
