@@ -777,10 +777,7 @@ Grouped by feature domain. This matrix tracks the main product-facing routes use
 
 ## Demo Credentials
 
-| Role | Email | Password |
-|---|---|---|
-| Admin | admin@studyhub.dev | admin123 |
-| User | user@studyhub.dev | user123 |
+Demo credentials will be provided in a separate document submitted alongside the project.
 
 ---
 
