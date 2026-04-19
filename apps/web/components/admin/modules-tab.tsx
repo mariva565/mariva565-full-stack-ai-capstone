@@ -1,7 +1,11 @@
 "use client";
 
-import { useEffect, useState, useRef, useMemo } from "react";
+import { useCallback, useEffect, useState, useRef, useMemo } from "react";
 
+import {
+  dispatchAdminDataChanged,
+  useAdminRefresh,
+} from "./admin-refresh";
 import { readErrorMessage } from "../../lib/http";
 import { ConfirmModal } from "../ui/confirm-modal";
 import { Toast, type ToastTone } from "../ui/toast";
@@ -47,22 +51,25 @@ export function ModulesTab() {
   const bulk = useBulkSelection(pagedIds);
 
   useEffect(() => { setPage(1); }, [searchQuery]);
-  useEffect(() => { fetchModules(); }, []);
+  const fetchModules = useCallback(() => {
+    void (async () => {
+      const res = await fetch("/api/admin/modules");
+      if (res.ok) {
+        const data = await res.json();
+        setModulesList(data.modules || []);
+      }
+      setLoading(false);
+    })();
+  }, []);
+
+  useEffect(() => { fetchModules(); }, [fetchModules]);
+  useAdminRefresh({ onManualRefresh: fetchModules });
 
   useEffect(() => {
     if (headerCheckboxRef.current) {
       headerCheckboxRef.current.indeterminate = bulk.checkboxState === "some";
     }
   }, [bulk.checkboxState]);
-
-  async function fetchModules() {
-    const res = await fetch("/api/admin/modules");
-    if (res.ok) {
-      const data = await res.json();
-      setModulesList(data.modules || []);
-    }
-    setLoading(false);
-  }
 
   async function confirmDeleteModule() {
     if (!moduleToDelete) return;
@@ -72,6 +79,7 @@ export function ModulesTab() {
     if (res.ok) {
       setModulesList((prev) => prev.filter((m) => m.id !== moduleToDelete.id));
       setModuleToDelete(null);
+      dispatchAdminDataChanged();
     } else {
       setToast({ tone: "error", message: await readErrorMessage(res, "Failed to delete module.") });
     }
@@ -89,6 +97,7 @@ export function ModulesTab() {
     if (res.ok) {
       bulk.deselectAll();
       await fetchModules();
+      dispatchAdminDataChanged();
     }
   }
 

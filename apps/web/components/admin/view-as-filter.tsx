@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useAdminRefresh } from "./admin-refresh";
 import { useAdminContext } from "./admin-context";
 import { PREMIUM_DARK_INPUT } from "../layout/premium-dark-styles";
 
@@ -13,8 +14,8 @@ export function ViewAsFilter() {
   const { viewAsFilter, setViewAsFilter } = useAdminContext();
   const [detectedUsers, setDetectedUsers] = useState<FilterUser[]>([]);
 
-  useEffect(() => {
-    fetch("/api/admin/users")
+  const fetchUsers = useCallback(() => {
+    void fetch("/api/admin/users")
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
         if (data?.users) {
@@ -27,6 +28,15 @@ export function ViewAsFilter() {
         }
       });
   }, []);
+
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
+
+  useAdminRefresh({
+    onManualRefresh: fetchUsers,
+    onDataChanged: fetchUsers,
+  });
 
   return (
     <div className="flex items-center gap-2">

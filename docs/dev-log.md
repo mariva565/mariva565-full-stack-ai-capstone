@@ -8343,3 +8343,48 @@ Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
 
 **Решения:**
 - Избрахме screen-focus invalidation вместо глобално намаляване на `staleTime`, за да запазим разумен кеш и да решим конкретно проблема при back navigation в cached Expo Router screens.
+
+### Session 279 — Web admin refresh bus for stats, activity, and manual reload
+
+**Какво направихме:**
+- Добавихме минимален refresh слой за web admin panel-а без React Query refactor:
+  - централен client-side event helper за `manual refresh` и `data changed` сигнали;
+  - header `Refresh` бутон в admin page, който опреснява активния таб/виджети;
+  - mutation табовете emit-ват `data changed` сигнал след успешни admin промени.
+- Вързахме manual refresh listener към tab-овете с client fetch логика:
+  - users;
+  - courses;
+  - materials;
+  - modules;
+  - members;
+  - moderation queue;
+  - view-as filter options.
+- Добавихме lightweight `60s` polling само за overview/activity данните:
+  - stats cards (`/api/admin/stats`);
+  - activity chart (`/api/admin/activity-stats`);
+  - activity logs (`/api/admin/activity-logs?limit=200`).
+- Обновихме modal save flow-овете (`user-modal`, `edit-modal`) да emit-ват admin refresh signal след успешен save, така че overview stats, activity widgets и persistent header controls да не остават stale.
+
+**Файлове:**
+- [ADD] apps/web/components/admin/admin-refresh.ts
+- [MODIFY] apps/web/app/admin/page.tsx
+- [MODIFY] apps/web/components/admin/stats-cards.tsx
+- [MODIFY] apps/web/components/admin/activity-chart.tsx
+- [MODIFY] apps/web/components/admin/activity-tab.tsx
+- [MODIFY] apps/web/components/admin/view-as-filter.tsx
+- [MODIFY] apps/web/components/admin/users-tab.tsx
+- [MODIFY] apps/web/components/admin/courses-tab.tsx
+- [MODIFY] apps/web/components/admin/materials-tab.tsx
+- [MODIFY] apps/web/components/admin/modules-tab.tsx
+- [MODIFY] apps/web/components/admin/members-tab.tsx
+- [MODIFY] apps/web/components/admin/user-modal.tsx
+- [MODIFY] apps/web/components/admin/edit-modal.tsx
+- [MODIFY] apps/web/components/moderation/use-moderation-queue.ts
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd run typecheck:web` ✅
+
+**Решения:**
+- Запазихме fix-а като малък event-driven слой вместо да въвеждаме React Query в целия admin panel, защото табовете и без това се remount-ват при tab switch и по-голям refactor би бил излишен за текущия риск.
+- Polling добавихме само при най-видимите stale зони (`stats` и `activity`), за да получим по-свеж admin UI без излишен шум и без да товарим останалите табове.

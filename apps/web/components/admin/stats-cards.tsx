@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
+import { useAdminRefresh } from "./admin-refresh";
 import { useAnimatedCounter } from "./use-animated-counter";
 import { PREMIUM_DARK_CARD_BG } from "../layout/premium-dark-styles";
 
 type Stats = { users: number; courses: number; modules: number; materials: number };
+const STATS_POLL_MS = 60_000;
 
 /* ── v1 Bootstrap Icons as SVG paths ── */
 
@@ -78,11 +80,23 @@ function StatCard({ label, icon, gradient, value }: {
 export function StatsCards() {
   const [stats, setStats] = useState<Stats>({ users: 0, courses: 0, modules: 0, materials: 0 });
 
-  useEffect(() => {
-    fetch("/api/admin/stats")
+  const fetchStats = useCallback(() => {
+    void fetch("/api/admin/stats")
       .then((r) => (r.ok ? r.json() : null))
-      .then((data) => { if (data) setStats(data); });
+      .then((data) => {
+        if (data) setStats(data);
+      });
   }, []);
+
+  useEffect(() => {
+    fetchStats();
+  }, [fetchStats]);
+
+  useAdminRefresh({
+    onManualRefresh: fetchStats,
+    onDataChanged: fetchStats,
+    pollMs: STATS_POLL_MS,
+  });
 
   return (
     <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">

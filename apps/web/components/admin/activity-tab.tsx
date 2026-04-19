@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
+import { useAdminRefresh } from "./admin-refresh";
 import { useAdminContext } from "./admin-context";
 import { useFilteredData } from "./use-filtered-data";
 import { Pagination } from "./pagination";
@@ -19,6 +20,7 @@ type LogEntry = {
 };
 
 const SEARCHABLE: (keyof LogEntry)[] = ["actionType", "userName", "userEmail"];
+const ACTIVITY_LOGS_POLL_MS = 60_000;
 
 export function ActivityTab() {
   const [logs, setLogs] = useState<LogEntry[]>([]);
@@ -31,18 +33,26 @@ export function ActivityTab() {
 
   useEffect(() => { setPage(1); }, [searchQuery]);
 
-  useEffect(() => {
-    fetchLogs();
+  const fetchLogs = useCallback(() => {
+    void (async () => {
+      const res = await fetch("/api/admin/activity-logs?limit=200");
+      if (res.ok) {
+        const data = await res.json();
+        setLogs(data.logs || []);
+      }
+      setLoading(false);
+    })();
   }, []);
 
-  async function fetchLogs() {
-    const res = await fetch("/api/admin/activity-logs?limit=200");
-    if (res.ok) {
-      const data = await res.json();
-      setLogs(data.logs || []);
-    }
-    setLoading(false);
-  }
+  useEffect(() => {
+    fetchLogs();
+  }, [fetchLogs]);
+
+  useAdminRefresh({
+    onManualRefresh: fetchLogs,
+    onDataChanged: fetchLogs,
+    pollMs: ACTIVITY_LOGS_POLL_MS,
+  });
 
   if (loading) {
     return <SkeletonTable rows={5} columns={5} />;

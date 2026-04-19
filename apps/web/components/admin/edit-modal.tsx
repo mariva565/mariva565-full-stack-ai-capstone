@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { dispatchAdminDataChanged } from "./admin-refresh";
 import { readErrorMessage } from "../../lib/http";
 import { PREMIUM_DARK_INPUT, PREMIUM_DARK_MODAL_BG } from "../layout/premium-dark-styles";
 
@@ -55,6 +56,7 @@ export function EditModal({ isOpen, entityType, entity, onClose, onSaved }: Edit
     setBusy(false);
 
     if (res.ok) {
+      dispatchAdminDataChanged();
       onSaved();
       onClose();
     } else {

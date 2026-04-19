@@ -1,4 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  dispatchAdminDataChanged,
+  useAdminRefresh,
+} from "../admin/admin-refresh";
 import { buildQuery, toErrorMessage, toStatusCounts } from "./moderation-queue.utils";
 import type { ModerationPost, ModerationRole, QueueResponse, StatusCounts } from "./moderation-queue.types";
 
@@ -98,6 +102,12 @@ export function useModerationQueue(role: ModerationRole): QueueState {
     };
   }, [fetchPage]);
 
+  useAdminRefresh({
+    onManualRefresh: () => {
+      void fetchPage(1, false).catch(() => undefined);
+    },
+  });
+
   const loadMore = useCallback(async () => {
     if (loadingMore || !hasMore) return;
     setLoadingMore(true);
@@ -114,6 +124,7 @@ export function useModerationQueue(role: ModerationRole): QueueState {
     async (postId: number, nextStatus: "approved" | "hidden") => {
       setActionId(postId);
       setError(null);
+      let didChange = false;
       try {
         const response = await fetch(`/api/admin/posts/${postId}`, {
           method: "PUT",
@@ -133,10 +144,14 @@ export function useModerationQueue(role: ModerationRole): QueueState {
             )
             .filter((post) => shouldKeepPostForFilter(post, statusFilter))
         );
+        didChange = true;
       } catch (err) {
         setError(toErrorMessage(err, "Moderation update failed."));
       } finally {
         setActionId(null);
+        if (didChange) {
+          dispatchAdminDataChanged();
+        }
         void fetchPage(1, false).catch(() => undefined);
       }
     },
@@ -148,6 +163,7 @@ export function useModerationQueue(role: ModerationRole): QueueState {
       if (!canPin) return;
       setActionId(postId);
       setError(null);
+      let didChange = false;
       try {
         const response = await fetch(`/api/admin/posts/${postId}`, {
           method: "PUT",
@@ -165,10 +181,14 @@ export function useModerationQueue(role: ModerationRole): QueueState {
             post.id === postId ? { ...post, isPinned: !currentPinned } : post
           )
         );
+        didChange = true;
       } catch (err) {
         setError(toErrorMessage(err, "Pin update failed."));
       } finally {
         setActionId(null);
+        if (didChange) {
+          dispatchAdminDataChanged();
+        }
       }
     },
     [canPin]
@@ -179,6 +199,7 @@ export function useModerationQueue(role: ModerationRole): QueueState {
       if (!canDelete) return;
       setActionId(postId);
       setError(null);
+      let didChange = false;
       try {
         const response = await fetch(`/api/admin/posts/${postId}`, {
           method: "DELETE",
@@ -190,10 +211,14 @@ export function useModerationQueue(role: ModerationRole): QueueState {
           throw new Error(payload?.message ?? "Delete failed.");
         }
         setPosts((prev) => prev.filter((post) => post.id !== postId));
+        didChange = true;
       } catch (err) {
         setError(toErrorMessage(err, "Delete failed."));
       } finally {
         setActionId(null);
+        if (didChange) {
+          dispatchAdminDataChanged();
+        }
         void fetchPage(1, false).catch(() => undefined);
       }
     },
@@ -231,4 +256,3 @@ export function useModerationQueue(role: ModerationRole): QueueState {
     deletePost,
   };
 }
-

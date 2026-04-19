@@ -1,7 +1,11 @@
 "use client";
 
-import { useEffect, useState, useRef, useMemo } from "react";
+import { useCallback, useEffect, useState, useRef, useMemo } from "react";
 
+import {
+  dispatchAdminDataChanged,
+  useAdminRefresh,
+} from "./admin-refresh";
 import { readErrorMessage } from "../../lib/http";
 import { ConfirmModal } from "../ui/confirm-modal";
 import { Toast, type ToastTone } from "../ui/toast";
@@ -47,22 +51,25 @@ export function CoursesTab() {
   const bulk = useBulkSelection(pagedIds);
 
   useEffect(() => { setPage(1); }, [searchQuery]);
-  useEffect(() => { fetchCourses(); }, []);
+  const fetchCourses = useCallback(() => {
+    void (async () => {
+      const res = await fetch("/api/admin/courses");
+      if (res.ok) {
+        const data = await res.json();
+        setCourses(data.courses || []);
+      }
+      setLoading(false);
+    })();
+  }, []);
+
+  useEffect(() => { fetchCourses(); }, [fetchCourses]);
+  useAdminRefresh({ onManualRefresh: fetchCourses });
 
   useEffect(() => {
     if (headerCheckboxRef.current) {
       headerCheckboxRef.current.indeterminate = bulk.checkboxState === "some";
     }
   }, [bulk.checkboxState]);
-
-  async function fetchCourses() {
-    const res = await fetch("/api/admin/courses");
-    if (res.ok) {
-      const data = await res.json();
-      setCourses(data.courses || []);
-    }
-    setLoading(false);
-  }
 
   async function confirmDeleteCourse() {
     if (!courseToDelete) return;
@@ -72,6 +79,7 @@ export function CoursesTab() {
     if (res.ok) {
       setCourses((prev) => prev.filter((c) => c.id !== courseToDelete.id));
       setCourseToDelete(null);
+      dispatchAdminDataChanged();
     } else {
       setToast({ tone: "error", message: await readErrorMessage(res, "Failed to delete course.") });
     }
@@ -89,6 +97,7 @@ export function CoursesTab() {
     if (res.ok) {
       bulk.deselectAll();
       await fetchCourses();
+      dispatchAdminDataChanged();
     }
   }
 

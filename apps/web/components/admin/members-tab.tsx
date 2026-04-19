@@ -1,11 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { readErrorMessage } from "../../lib/http";
 import { ConfirmModal } from "../ui/confirm-modal";
 import { Toast, type ToastTone } from "../ui/toast";
 import { SkeletonTable } from "./skeleton-table";
 import { Pagination } from "./pagination";
+import {
+  dispatchAdminDataChanged,
+  useAdminRefresh,
+} from "./admin-refresh";
 import { useAdminContext } from "./admin-context";
 import {
   PREMIUM_DARK_BUTTON,
@@ -49,21 +53,24 @@ export function MembersTab() {
 
   const { searchQuery } = useAdminContext();
 
-  useEffect(() => { fetchAll(); }, []);
-  useEffect(() => { setPage(1); }, [searchQuery, courseFilter]);
+  const fetchAll = useCallback(() => {
+    void (async () => {
+      setLoading(true);
+      const [mRes, cRes, uRes] = await Promise.all([
+        fetch("/api/admin/members"),
+        fetch("/api/admin/courses"),
+        fetch("/api/admin/users"),
+      ]);
+      if (mRes.ok) setMembers((await mRes.json()).members ?? []);
+      if (cRes.ok) setCourses((await cRes.json()).courses ?? []);
+      if (uRes.ok) setUsers((await uRes.json()).users ?? []);
+      setLoading(false);
+    })();
+  }, []);
 
-  async function fetchAll() {
-    setLoading(true);
-    const [mRes, cRes, uRes] = await Promise.all([
-      fetch("/api/admin/members"),
-      fetch("/api/admin/courses"),
-      fetch("/api/admin/users"),
-    ]);
-    if (mRes.ok) setMembers((await mRes.json()).members ?? []);
-    if (cRes.ok) setCourses((await cRes.json()).courses ?? []);
-    if (uRes.ok) setUsers((await uRes.json()).users ?? []);
-    setLoading(false);
-  }
+  useEffect(() => { fetchAll(); }, [fetchAll]);
+  useEffect(() => { setPage(1); }, [searchQuery, courseFilter]);
+  useAdminRefresh({ onManualRefresh: fetchAll });
 
   const filtered = members.filter((m) => {
     if (courseFilter && m.courseId !== parseInt(courseFilter, 10)) return false;
@@ -98,6 +105,7 @@ export function MembersTab() {
       setAddUserId("");
       setAddRole("student");
       await fetchAll();
+      dispatchAdminDataChanged();
     } else {
       setToast({ tone: "error", message: await readErrorMessage(res, "Failed to add membership.") });
     }
@@ -114,6 +122,7 @@ export function MembersTab() {
     setRoleChangeBusy(null);
     if (res.ok) {
       setMembers((prev) => prev.map((x) => (x.id === m.id ? { ...x, role: newRole } : x)));
+      dispatchAdminDataChanged();
     } else {
       setToast({ tone: "error", message: await readErrorMessage(res, "Failed to update role.") });
     }
@@ -127,6 +136,7 @@ export function MembersTab() {
     if (res.ok) {
       setMembers((prev) => prev.filter((m) => m.id !== toDelete.id));
       setToDelete(null);
+      dispatchAdminDataChanged();
     } else {
       setToast({ tone: "error", message: await readErrorMessage(res, "Failed to remove membership.") });
     }

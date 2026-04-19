@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { dispatchAdminDataChanged } from "./admin-refresh";
 import { readErrorMessage } from "../../lib/http";
 import { getPasswordStrength, isStrongPassword, PASSWORD_POLICY_MESSAGE } from "../../lib/password-validation";
 import { PREMIUM_DARK_INPUT, PREMIUM_DARK_MODAL_BG } from "../layout/premium-dark-styles";
@@ -78,6 +79,7 @@ export function UserModal({ isOpen, user, onClose, onSaved }: UserModalProps) {
     setBusy(false);
 
     if (res.ok) {
+      dispatchAdminDataChanged();
       onSaved();
       onClose();
     } else {

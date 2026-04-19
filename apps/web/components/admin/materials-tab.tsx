@@ -1,7 +1,11 @@
 "use client";
 
-import { useEffect, useState, useRef, useMemo } from "react";
+import { useCallback, useEffect, useState, useRef, useMemo } from "react";
 
+import {
+  dispatchAdminDataChanged,
+  useAdminRefresh,
+} from "./admin-refresh";
 import { readErrorMessage } from "../../lib/http";
 import { ConfirmModal } from "../ui/confirm-modal";
 import { Toast, type ToastTone } from "../ui/toast";
@@ -47,22 +51,25 @@ export function MaterialsTab() {
   const bulk = useBulkSelection(pagedIds);
 
   useEffect(() => { setPage(1); }, [searchQuery]);
-  useEffect(() => { fetchMaterials(); }, []);
+  const fetchMaterials = useCallback(() => {
+    void (async () => {
+      const res = await fetch("/api/admin/materials");
+      if (res.ok) {
+        const data = await res.json();
+        setMaterials(data.materials || []);
+      }
+      setLoading(false);
+    })();
+  }, []);
+
+  useEffect(() => { fetchMaterials(); }, [fetchMaterials]);
+  useAdminRefresh({ onManualRefresh: fetchMaterials });
 
   useEffect(() => {
     if (headerCheckboxRef.current) {
       headerCheckboxRef.current.indeterminate = bulk.checkboxState === "some";
     }
   }, [bulk.checkboxState]);
-
-  async function fetchMaterials() {
-    const res = await fetch("/api/admin/materials");
-    if (res.ok) {
-      const data = await res.json();
-      setMaterials(data.materials || []);
-    }
-    setLoading(false);
-  }
 
   async function confirmDeleteMaterial() {
     if (!materialToDelete) return;
@@ -72,6 +79,7 @@ export function MaterialsTab() {
     if (res.ok) {
       setMaterials((prev) => prev.filter((m) => m.id !== materialToDelete.id));
       setMaterialToDelete(null);
+      dispatchAdminDataChanged();
     } else {
       setToast({ tone: "error", message: await readErrorMessage(res, "Failed to delete material.") });
     }
@@ -89,6 +97,7 @@ export function MaterialsTab() {
     if (res.ok) {
       bulk.deselectAll();
       await fetchMaterials();
+      dispatchAdminDataChanged();
     }
   }
 

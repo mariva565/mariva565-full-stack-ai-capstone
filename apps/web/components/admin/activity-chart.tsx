@@ -1,24 +1,27 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAdminRefresh } from "./admin-refresh";
 import { PREMIUM_DARK_CARD_BG } from "../layout/premium-dark-styles";
 
 type ActivityData = { day: string; value: number };
 
 const HEIGHT = 200;
 const WIDTH = 600;
+const ACTIVITY_CHART_POLL_MS = 60_000;
 
 export function ActivityChart() {
   const [data, setData] = useState<ActivityData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
-  useEffect(() => {
-    fetch("/api/admin/activity-stats")
+  const fetchActivityStats = useCallback(() => {
+    void fetch("/api/admin/activity-stats")
       .then((r) => (r.ok ? r.json() : Promise.reject()))
       .then((d) => {
         setData(d);
+        setError(false);
         setLoading(false);
       })
       .catch((err) => {
@@ -27,6 +30,16 @@ export function ActivityChart() {
         setLoading(false);
       });
   }, []);
+
+  useEffect(() => {
+    fetchActivityStats();
+  }, [fetchActivityStats]);
+
+  useAdminRefresh({
+    onManualRefresh: fetchActivityStats,
+    onDataChanged: fetchActivityStats,
+    pollMs: ACTIVITY_CHART_POLL_MS,
+  });
 
   if (loading) {
     return (

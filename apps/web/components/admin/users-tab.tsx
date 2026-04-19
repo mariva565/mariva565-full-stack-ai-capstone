@@ -1,7 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
+import {
+  dispatchAdminDataChanged,
+  useAdminRefresh,
+} from "./admin-refresh";
 import { readErrorMessage } from "../../lib/http";
 import { ConfirmModal } from "../ui/confirm-modal";
 import { Toast, type ToastTone } from "../ui/toast";
@@ -45,16 +49,19 @@ export function UsersTab() {
   const paged = filtered.slice((page - 1) * settings.itemsPerPage, page * settings.itemsPerPage);
 
   useEffect(() => { setPage(1); }, [searchQuery]);
-  useEffect(() => { fetchUsers(); }, []);
+  const fetchUsers = useCallback(() => {
+    void (async () => {
+      const res = await fetch("/api/admin/users");
+      if (res.ok) {
+        const data = await res.json();
+        setUsers(data.users || []);
+      }
+      setLoading(false);
+    })();
+  }, []);
 
-  async function fetchUsers() {
-    const res = await fetch("/api/admin/users");
-    if (res.ok) {
-      const data = await res.json();
-      setUsers(data.users || []);
-    }
-    setLoading(false);
-  }
+  useEffect(() => { fetchUsers(); }, [fetchUsers]);
+  useAdminRefresh({ onManualRefresh: fetchUsers });
 
   async function confirmRoleChange() {
     if (!roleChangeUser) return;
@@ -69,6 +76,7 @@ export function UsersTab() {
     if (res.ok) {
       setUsers((prev) => prev.map((u) => (u.id === roleChangeUser.id ? { ...u, role: newRole } : u)));
       setRoleChangeUser(null);
+      dispatchAdminDataChanged();
     } else {
       const data = await res.json();
       setToast({ tone: "error", message: data.message || "Failed to update role." });
@@ -83,6 +91,7 @@ export function UsersTab() {
     });
     if (res.ok) {
       setUsers((prev) => prev.map((u) => (u.id === user.id ? { ...u, blocked: !user.blocked } : u)));
+      dispatchAdminDataChanged();
     }
   }
 
@@ -94,6 +103,7 @@ export function UsersTab() {
     if (res.ok) {
       setUsers((prev) => prev.filter((u) => u.id !== userToDelete.id));
       setUserToDelete(null);
+      dispatchAdminDataChanged();
     } else {
       setToast({ tone: "error", message: await readErrorMessage(res, "Failed to delete user.") });
     }

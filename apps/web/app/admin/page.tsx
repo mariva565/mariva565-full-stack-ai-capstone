@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 
 import { AnimatePresence, motion } from "framer-motion";
 import { AdminProvider, useAdminContext } from "../../components/admin/admin-context";
+import { dispatchAdminManualRefresh } from "../../components/admin/admin-refresh";
 import { SearchBar } from "../../components/admin/search-bar";
 import { SettingsModal } from "../../components/admin/settings-modal";
 import { ViewAsFilter } from "../../components/admin/view-as-filter";
@@ -49,6 +50,14 @@ function AdminContent() {
           </span>
         </div>
         <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={dispatchAdminManualRefresh}
+            className={`rounded-xl border border-slate-200 bg-white/50 px-3 py-2 text-sm font-semibold text-slate-600 shadow-sm backdrop-blur-md transition-all hover:bg-white hover:text-primary-600 hover:shadow-md dark:border-cyan-400/10 dark:text-slate-200 dark:hover:text-primary-300 ${PREMIUM_DARK_BUTTON}`}
+            title="Refresh active admin data"
+          >
+            Refresh
+          </button>
           <button
             type="button"
             onClick={() => setShowSettings(true)}
