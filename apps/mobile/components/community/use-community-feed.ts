@@ -1,3 +1,4 @@
+import { useFocusEffect } from "@react-navigation/native";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import { apiFetch } from "../../lib/api";
@@ -55,6 +56,12 @@ export function useCommunityFeed() {
       void queryClient.invalidateQueries({ queryKey: ["community", "feed"] });
     }
   });
+
+  useFocusEffect(
+    useCallback(() => {
+      void queryClient.invalidateQueries({ queryKey: ["community", "feed"] });
+    }, [queryClient])
+  );
 
   const refresh = useCallback(() => {
     void query.refetch();

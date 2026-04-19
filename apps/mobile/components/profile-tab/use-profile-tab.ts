@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import {
   useMutation,
   useQuery,
@@ -124,6 +125,12 @@ export function useProfileTab(): ProfileTabViewModel {
   const { showToast } = useToast();
   const profileQuery = useProfileQuery();
   const saveProfileMutation = useSaveProfileMutation(queryClient, showToast);
+
+  useFocusEffect(
+    useCallback(() => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.auth.me() });
+    }, [queryClient])
+  );
 
   const profile = profileQuery.data ?? null;
   const loading = profileQuery.isPending && !profile;

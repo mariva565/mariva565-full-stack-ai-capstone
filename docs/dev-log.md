@@ -8313,3 +8313,33 @@ Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
 
 **Решения:**
 - Избрахме matcher-only fix вместо допълнителен auth refactor, защото page-level guards вече пазят страниците; целта тук е parity и по-чист централен routing guard без риск за URL структурата.
+
+## 2026-04-19
+### Session 278 — Mobile focus refetch guard for stale cached screens
+
+**Какво направихме:**
+- Добавихме focus-triggered refresh поведение за mobile екрани, които често остават cached от Expo Router и могат да покажат стари данни при връщане назад.
+- Интегрирахме `useFocusEffect` + `queryClient.invalidateQueries(...)` в:
+  - community feed (`["community","feed"]`);
+  - community post details (`["community","post", postId]`);
+  - messages inbox (`["messages","inbox"]`);
+  - message thread (`["messages","thread", conversationId]`);
+  - profile tab (`queryKeys.auth.me()`).
+- Оставихме текущите polling/optimistic update механизми непроменени; fix-ът е минимален и насочен само към stale UI след navigation/focus.
+
+**Файлове:**
+- [MODIFY] apps/mobile/components/community/use-community-feed.ts
+- [MODIFY] apps/mobile/components/community/post-details-screen.tsx
+- [MODIFY] apps/mobile/components/messages/use-messages-inbox.ts
+- [MODIFY] apps/mobile/components/messages/use-message-thread.ts
+- [MODIFY] apps/mobile/components/profile-tab/use-profile-tab.ts
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd run typecheck:mobile` ⚠️ fails from pre-existing unrelated mobile community typing issues in:
+  - `apps/mobile/components/community/community-screen.tsx`
+  - `apps/mobile/components/community/post-card.tsx`
+- Новият focus-refetch fix не добавя нови error locations извън вече съществуващите community typing проблеми.
+
+**Решения:**
+- Избрахме screen-focus invalidation вместо глобално намаляване на `staleTime`, за да запазим разумен кеш и да решим конкретно проблема при back navigation в cached Expo Router screens.

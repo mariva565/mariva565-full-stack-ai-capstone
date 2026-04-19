@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, ScrollView, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform, ActivityIndicator, useWindowDimensions } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
@@ -38,6 +39,12 @@ export function PostDetailsScreen({ postId }: { postId: number }) {
       return apiFetch<{ post: Post; comments: Comment[] }>(`/api/posts/${postId}`, { cache: false });
     },
   });
+
+  useFocusEffect(
+    React.useCallback(() => {
+      void queryClient.invalidateQueries({ queryKey: ["community", "post", postId] });
+    }, [postId, queryClient])
+  );
 
   const likeMutation = useMutation({
     mutationFn: async () => {

@@ -1,4 +1,5 @@
 import { useCallback } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiFetch, getUserFriendlyError } from "../../lib/api";
 import type { ConversationThreadResponse } from "./messages.types";
@@ -20,6 +21,18 @@ export function useMessageThread(conversationId: number) {
     enabled: Number.isInteger(conversationId) && conversationId > 0,
     refetchInterval: 15000,
   });
+
+  useFocusEffect(
+    useCallback(() => {
+      if (!Number.isInteger(conversationId) || conversationId <= 0) {
+        return;
+      }
+
+      void queryClient.invalidateQueries({
+        queryKey: getThreadQueryKey(conversationId),
+      });
+    }, [conversationId, queryClient])
+  );
 
   const sendMutation = useMutation({
     mutationFn: async (content: string) =>
