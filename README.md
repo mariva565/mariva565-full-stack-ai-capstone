@@ -290,6 +290,16 @@ Everything a mentor can do, plus:
 
 Admin cannot delete themselves or change their own role (self-protection enforced server-side).
 
+### Platform scope per role
+
+| Role | Web | Mobile |
+|---|---|---|
+| Student (`user`) | Full feature set | Full feature set |
+| Mentor (`mentor`) | Full feature set + Mentor Inbox + moderation actions | Same as student — mentor-specific screens are web-only by design |
+| Admin (`admin`) | Full feature set + Admin Panel (users, members, materials, moderation, activity logs) | Same as student — admin panel is web-only by design |
+
+Mobile is intentionally scoped to the student experience. Mentor and admin workflows require larger tables, bulk actions, and moderation queues that are better suited to a desktop browser; roles are still recognized on mobile (profile badge, telemetry tag) but do not unlock additional UI.
+
 ---
 
 ## Database Schema
@@ -561,6 +571,8 @@ Route note: `Home` in the navbar always leads to `/` (landing), including for au
 | 21 | AI Tools (Material) | Mobile material AI tools entry point |
 
 The mobile app connects to the **same Next.js backend** — no separate API needed.
+
+Mobile intentionally ships only the student-facing flows. Mentor (`/mentor-inbox`) and admin (`/admin`) tooling lives on the web where it fits the UX better. See [Platform scope per role](#platform-scope-per-role) above.
 
 ### Mobile data layer (React Query + apiFetch cache)
 
