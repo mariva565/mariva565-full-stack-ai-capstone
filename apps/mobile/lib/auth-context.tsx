@@ -17,7 +17,7 @@ type User = {
   id: number;
   email: string;
   name: string;
-  role: "user" | "admin";
+  role: "user" | "mentor" | "admin";
 };
 
 type AuthState = {
@@ -42,7 +42,7 @@ function isUserSnapshot(value: unknown): value is User {
     typeof candidate.id === "number" &&
     typeof candidate.email === "string" &&
     typeof candidate.name === "string" &&
-    (candidate.role === "user" || candidate.role === "admin")
+    (candidate.role === "user" || candidate.role === "mentor" || candidate.role === "admin")
   );
 }
 

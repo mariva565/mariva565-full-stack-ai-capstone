@@ -4,7 +4,7 @@ type TelemetryUser = {
   id: number;
   email: string;
   name: string;
-  role: "user" | "admin";
+  role: "user" | "mentor" | "admin";
 };
 
 type TelemetryContext = {
