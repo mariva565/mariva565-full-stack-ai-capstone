@@ -102,14 +102,6 @@ function SignInButton({ viewModel }: LoginScreenProps) {
 function LoginFooter({ viewModel }: LoginScreenProps) {
   return (
     <>
-      <View style={styles.divider}>
-        <View style={styles.dividerLine} />
-        <Text style={styles.dividerText}>demo</Text>
-        <View style={styles.dividerLine} />
-      </View>
-
-      <Text style={styles.hint}>admin@studyhub.dev / admin123</Text>
-
       <TouchableOpacity
         onPress={viewModel.goToRegister}
         style={styles.switchLink}
