@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, TouchableOpacity, type ViewStyle, type TextStyle } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { useTheme } from "../../lib/app-preferences";
 
@@ -9,7 +9,7 @@ function stripHtml(html: string): string {
 }
 
 type PostCardData = {
-  authorName?: string;
+  authorName?: string | null;
   createdAt: string;
   postType: string;
   title: string;
@@ -21,7 +21,7 @@ type PostCardData = {
 
 type PostCardProps = {
   post: PostCardData;
-  styles: Record<string, ViewStyle | TextStyle>;
+  styles: Record<string, any>;
   onPress?: () => void;
   onLike?: () => void;
 };
