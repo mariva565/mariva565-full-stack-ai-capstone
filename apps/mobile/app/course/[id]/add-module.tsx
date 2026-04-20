@@ -13,7 +13,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { LinearGradient } from "expo-linear-gradient";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { apiFetch, ApiError } from "../../../lib/api";
-import { COLORS, GRADIENTS } from "../../../lib/colors";
+import { useTheme, useThemedStyles } from "../../../lib/app-preferences";
+import type { AppColors } from "../../../lib/colors";
 import { invalidateCourseQueries } from "../../../lib/query-keys";
 import { useConfirmDiscard } from "../../../lib/use-confirm-discard";
 
@@ -27,6 +28,9 @@ export default function AddModuleScreen() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [focusedField, setFocusedField] = useState<string | null>(null);
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeAddModuleStyles);
+  const primaryActionGradient = [colors.brandPrimary, colors.brandAccent] as const;
   const isDirty = title.trim().length > 0 || description.trim().length > 0;
   const { allowNextLeave } = useConfirmDiscard({ enabled: isDirty && !loading });
 
@@ -88,7 +92,7 @@ export default function AddModuleScreen() {
             <TextInput
               style={[styles.input, focusedField === "title" && styles.inputFocused]}
               placeholder="e.g. Introduction"
-              placeholderTextColor={COLORS.textMuted}
+              placeholderTextColor={colors.textMuted}
               value={title}
               onChangeText={setTitle}
               onFocus={() => setFocusedField("title")}
@@ -108,7 +112,7 @@ export default function AddModuleScreen() {
                 focusedField === "desc" && styles.inputFocused,
               ]}
               placeholder="What does this module cover?"
-              placeholderTextColor={COLORS.textMuted}
+              placeholderTextColor={colors.textMuted}
               value={description}
               onChangeText={setDescription}
               onFocus={() => setFocusedField("desc")}
@@ -133,7 +137,7 @@ export default function AddModuleScreen() {
             accessibilityHint="Creates the module in this course"
           >
             <LinearGradient
-              colors={GRADIENTS.primaryAction}
+              colors={primaryActionGradient}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
               style={styles.createBtnGradient}
@@ -159,48 +163,50 @@ export default function AddModuleScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLORS.canvas },
-  scrollContent: { padding: 16 },
-  iconContainer: { alignItems: "center", marginVertical: 20 },
-  iconCircle: {
-    width: 64, height: 64, borderRadius: 32,
-    backgroundColor: COLORS.violetSoft,
-    justifyContent: "center", alignItems: "center", marginBottom: 12,
-  },
-  iconText: { fontSize: 20, fontWeight: "800", color: COLORS.brandPrimary },
-  heading: { fontSize: 20, fontWeight: "800", color: COLORS.brandDeep },
-  subheading: { fontSize: 14, color: COLORS.textSecondary, marginTop: 4 },
-  errorBox: {
-    backgroundColor: COLORS.dangerSoftAlt, borderWidth: 1, borderColor: COLORS.dangerBorderSoft,
-    borderRadius: 10, padding: 12, marginBottom: 16,
-  },
-  errorText: { color: COLORS.danger, fontSize: 14, textAlign: "center" },
-  card: {
-    backgroundColor: COLORS.surface, borderRadius: 14, padding: 20,
-    shadowColor: COLORS.brandDeep, shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06, shadowRadius: 8, elevation: 2,
-  },
-  inputGroup: { marginBottom: 16 },
-  inputLabel: {
-    fontSize: 13, fontWeight: "600", color: COLORS.textTertiary,
-    marginBottom: 6, marginLeft: 2,
-  },
-  input: {
-    backgroundColor: COLORS.surfaceSoft, borderWidth: 1.5, borderColor: COLORS.borderMuted,
-    borderRadius: 12, paddingHorizontal: 16, paddingVertical: 14,
-    fontSize: 16, color: COLORS.textPrimary,
-  },
-  textArea: { minHeight: 80, paddingTop: 14 },
-  inputFocused: { borderColor: COLORS.brandPrimary, backgroundColor: COLORS.surfaceHighlight },
-  actions: { marginTop: 20, gap: 12 },
-  createBtn: { borderRadius: 12, overflow: "hidden" },
-  createBtnDisabled: { opacity: 0.6 },
-  createBtnGradient: { paddingVertical: 16, alignItems: "center" },
-  createBtnText: { color: COLORS.textOnBrand, fontSize: 16, fontWeight: "700" },
-  cancelBtn: {
-    borderWidth: 2, borderColor: COLORS.borderMuted, borderRadius: 12,
-    paddingVertical: 14, alignItems: "center",
-  },
-  cancelBtnText: { fontSize: 16, fontWeight: "600", color: COLORS.textSecondary },
-});
+function makeAddModuleStyles(colors: AppColors) {
+  return StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.canvas },
+    scrollContent: { padding: 16 },
+    iconContainer: { alignItems: "center", marginVertical: 20 },
+    iconCircle: {
+      width: 64, height: 64, borderRadius: 32,
+      backgroundColor: colors.violetSoft,
+      justifyContent: "center", alignItems: "center", marginBottom: 12,
+    },
+    iconText: { fontSize: 20, fontWeight: "800", color: colors.brandPrimary },
+    heading: { fontSize: 20, fontWeight: "800", color: colors.textPrimary },
+    subheading: { fontSize: 14, color: colors.textSecondary, marginTop: 4 },
+    errorBox: {
+      backgroundColor: colors.dangerSoftAlt, borderWidth: 1, borderColor: colors.dangerBorderSoft,
+      borderRadius: 10, padding: 12, marginBottom: 16,
+    },
+    errorText: { color: colors.danger, fontSize: 14, textAlign: "center" },
+    card: {
+      backgroundColor: colors.surface, borderRadius: 14, padding: 20,
+      shadowColor: colors.brandDeep, shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.06, shadowRadius: 8, elevation: 2,
+    },
+    inputGroup: { marginBottom: 16 },
+    inputLabel: {
+      fontSize: 13, fontWeight: "600", color: colors.textTertiary,
+      marginBottom: 6, marginLeft: 2,
+    },
+    input: {
+      backgroundColor: colors.surfaceSoft, borderWidth: 1.5, borderColor: colors.borderMuted,
+      borderRadius: 12, paddingHorizontal: 16, paddingVertical: 14,
+      fontSize: 16, color: colors.textPrimary,
+    },
+    textArea: { minHeight: 80, paddingTop: 14 },
+    inputFocused: { borderColor: colors.brandPrimary, backgroundColor: colors.surfaceHighlight },
+    actions: { marginTop: 20, gap: 12 },
+    createBtn: { borderRadius: 12, overflow: "hidden" },
+    createBtnDisabled: { opacity: 0.6 },
+    createBtnGradient: { paddingVertical: 16, alignItems: "center" },
+    createBtnText: { color: colors.textOnBrand, fontSize: 16, fontWeight: "700" },
+    cancelBtn: {
+      borderWidth: 2, borderColor: colors.borderMuted, borderRadius: 12,
+      paddingVertical: 14, alignItems: "center",
+    },
+    cancelBtnText: { fontSize: 16, fontWeight: "600", color: colors.textSecondary },
+  });
+}

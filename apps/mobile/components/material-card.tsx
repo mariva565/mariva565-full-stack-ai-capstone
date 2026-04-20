@@ -1,7 +1,8 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 import { BRAND_FONT_FAMILY } from "../lib/brand-font";
-import { COLORS } from "../lib/colors";
+import { useTheme, useThemedStyles } from "../lib/app-preferences";
+import type { AppColors } from "../lib/colors";
 import { getMaterialTypeConfig, splitTags } from "../lib/material-utils";
 import type { Material } from "../lib/studyhub-types";
 import { EntityActions } from "./entity-actions";
@@ -25,7 +26,9 @@ export function MaterialCard({
   favoriteBusy = false,
   onToggleFavorite,
 }: Props) {
-  const config = getMaterialTypeConfig(material.materialType);
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeMaterialCardStyles);
+  const config = getMaterialTypeConfig(material.materialType, colors);
   const tags = splitTags(material.tags);
 
   return (
@@ -104,71 +107,73 @@ export function MaterialCard({
   );
 }
 
-const styles = StyleSheet.create({
-  card: {
-    paddingVertical: 14,
-    paddingHorizontal: 14,
-    borderRadius: 14,
-    backgroundColor: COLORS.surface,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: COLORS.borderSubtle,
-  },
-  main: { gap: 10 },
-  header: { flexDirection: "row", alignItems: "flex-start", gap: 10 },
-  iconCircle: {
-    width: 32,
-    height: 32,
-    borderRadius: 9,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  iconText: { fontSize: 13, fontWeight: "800" },
-  copyWrap: { flex: 1 },
-  title: {
-    fontSize: 15,
-    lineHeight: 20,
-    color: COLORS.brandDeep,
-    fontFamily: BRAND_FONT_FAMILY,
-  },
-  content: { fontSize: 13, color: COLORS.textSecondary, lineHeight: 19, marginTop: 6 },
-  meta: { fontSize: 13, color: COLORS.textMuted, marginTop: 6 },
-  tagsRow: { flexDirection: "row", flexWrap: "wrap", gap: 6, marginLeft: 42 },
-  footer: {
-    marginTop: 10,
-    paddingTop: 10,
-    borderTopWidth: 1,
-    borderTopColor: COLORS.borderSubtle,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  favoriteBtn: {
-    minWidth: 74,
-    paddingHorizontal: 12,
-    paddingVertical: 7,
-    borderRadius: 8,
-    borderWidth: 1,
-  },
-  favoriteBtnNeutral: {
-    backgroundColor: COLORS.violetSoft,
-    borderColor: COLORS.violetBorder,
-  },
-  favoriteBtnDanger: {
-    backgroundColor: COLORS.dangerSoftAlt,
-    borderColor: COLORS.dangerBorderSoft,
-  },
-  favoriteBtnText: {
-    fontSize: 12,
-    fontWeight: "700",
-    color: COLORS.brandPrimary,
-    textAlign: "center",
-  },
-  tag: {
-    backgroundColor: COLORS.violetSoft,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 6,
-  },
-  tagText: { fontSize: 11, color: COLORS.brandPrimary, fontWeight: "600" },
-});
+function makeMaterialCardStyles(colors: AppColors) {
+  return StyleSheet.create({
+    card: {
+      paddingVertical: 14,
+      paddingHorizontal: 14,
+      borderRadius: 14,
+      backgroundColor: colors.surface,
+      marginBottom: 10,
+      borderWidth: 1,
+      borderColor: colors.borderSubtle,
+    },
+    main: { gap: 10 },
+    header: { flexDirection: "row", alignItems: "flex-start", gap: 10 },
+    iconCircle: {
+      width: 32,
+      height: 32,
+      borderRadius: 9,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    iconText: { fontSize: 13, fontWeight: "800" },
+    copyWrap: { flex: 1 },
+    title: {
+      fontSize: 15,
+      lineHeight: 20,
+      color: colors.textPrimary,
+      fontFamily: BRAND_FONT_FAMILY,
+    },
+    content: { fontSize: 13, color: colors.textSecondary, lineHeight: 19, marginTop: 6 },
+    meta: { fontSize: 13, color: colors.textMuted, marginTop: 6 },
+    tagsRow: { flexDirection: "row", flexWrap: "wrap", gap: 6, marginLeft: 42 },
+    footer: {
+      marginTop: 10,
+      paddingTop: 10,
+      borderTopWidth: 1,
+      borderTopColor: colors.borderSubtle,
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+    },
+    favoriteBtn: {
+      minWidth: 74,
+      paddingHorizontal: 12,
+      paddingVertical: 7,
+      borderRadius: 8,
+      borderWidth: 1,
+    },
+    favoriteBtnNeutral: {
+      backgroundColor: colors.violetSoft,
+      borderColor: colors.violetBorder,
+    },
+    favoriteBtnDanger: {
+      backgroundColor: colors.dangerSoftAlt,
+      borderColor: colors.dangerBorderSoft,
+    },
+    favoriteBtnText: {
+      fontSize: 12,
+      fontWeight: "700",
+      color: colors.brandPrimary,
+      textAlign: "center",
+    },
+    tag: {
+      backgroundColor: colors.violetSoft,
+      paddingHorizontal: 8,
+      paddingVertical: 3,
+      borderRadius: 6,
+    },
+    tagText: { fontSize: 11, color: colors.brandPrimary, fontWeight: "600" },
+  });
+}

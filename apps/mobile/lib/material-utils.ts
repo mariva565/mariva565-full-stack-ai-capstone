@@ -25,6 +25,13 @@ export const MATERIAL_TYPE_OPTIONS = (Object.keys(MATERIAL_TYPE_CONFIG) as Mater
   })
 );
 
+export function getMaterialTypeOptions(colors: AppColors = COLORS) {
+  return (Object.keys(MATERIAL_TYPE_CONFIG) as MaterialType[]).map((key) => ({
+    key,
+    ...getMaterialTypeConfig(key, colors),
+  }));
+}
+
 const URL_MATERIAL_TYPES: ReadonlySet<MaterialType> = new Set(["link", "file", "video"]);
 
 export function isMaterialType(value: string): value is MaterialType {

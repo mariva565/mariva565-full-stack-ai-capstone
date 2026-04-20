@@ -8388,3 +8388,83 @@ Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
 **Решения:**
 - Запазихме fix-а като малък event-driven слой вместо да въвеждаме React Query в целия admin panel, защото табовете и без това се remount-ват при tab switch и по-голям refactor би бил излишен за текущия риск.
 - Polling добавихме само при най-видимите stale зони (`stats` и `activity`), за да получим по-свеж admin UI без излишен шум и без да товарим останалите табове.
+
+### Session 280 — Mobile Expo web shell for browser-safe presentation
+
+**Какво направихме:**
+- Добавихме централен responsive shell за mobile app-а на ниво `apps/mobile/app/_layout.tsx`, така че при `Expo web` приложението да не се разтяга по цялата ширина на браузъра.
+- На широк web viewport app-ът вече се рендерира в центриран framed container с `maxWidth`, radius, border и shadow, а на тесни/mobile viewport-и остава full-bleed mobile layout без допълнителни ограничения.
+- Оставихме routing, auth gate, tabs и screen логиката непроменени; промяната е само presentation-level wrapper около navigator-а.
+- Полирахме auth екраните (`login` / `register`) с `maxWidth` и центриране на картите, за да не изглеждат прекалено широки вътре в browser shell-а.
+
+**Файлове:**
+- [MODIFY] apps/mobile/app/_layout.tsx
+- [MODIFY] apps/mobile/components/login/login-screen.styles.ts
+- [MODIFY] apps/mobile/components/register/register-screen.styles.ts
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd run typecheck:mobile` ✅
+- `expo start --web --port 19006` с `BROWSER=none` стига до `Waiting on http://localhost:19006` ✅
+- Автоматизиран headless screenshot/visual capture остана inconclusive в terminal средата; няма засечен build/layout crash, но няма и надежден финален screenshot за архив ⚠️
+
+**Решения:**
+- Избрахме root-level web shell вместо ad-hoc `maxWidth` fix-ове по десетки screen-и, защото така държим промяната нискорискова, централна и консистентна за целия Expo app.
+- Държахме framed shell-а само за по-широки web viewport-и, за да не променяме усещането на реалните mobile размери и да запазим mobile-first поведението.
+
+### Session 281 — Mobile dark-mode course title contrast fix
+
+**Какво направихме:**
+- Оправихме dark-mode contrast проблема в mobile Courses tab-а, където course title-ите не се четяха върху тъмния card background.
+- Подменихме title color-а в courses list стиловете от `colors.brandDeep` към theme-safe `colors.textPrimary`, така че заглавията да останат четими и в light, и в dark mode.
+- Направихме същата корекция и за `No courses yet` brand title-а в empty state картата, защото имаше същия риск на тъмна тема.
+
+**Файлове:**
+- [MODIFY] apps/mobile/components/courses-list/courses-list.styles.ts
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd run typecheck:mobile` ✅
+
+**Решения:**
+- Запазихме fix-а локализиран само в theme-aware courses list styles, вместо да преправяме компоненти или navigation shell, защото проблемът е чисто contrast/styling bug.
+
+### Session 282 — Mobile live-theme pass for module and material screens
+
+**Какво направихме:**
+- Оправихме mobile dark-mode inconsistency в module/material flow-а, където част от екрани и shared building blocks оставаха заключени към статичния `COLORS` snapshot и не реагираха на theme switch.
+- Прехвърлихме към live theme colors:
+  - course details / modules overview screen;
+  - module workspace screen + loading skeleton;
+  - module cards, material cards, empty state, search bar, type filter chips, entity action buttons;
+  - shared material form screens;
+  - module add/edit forms.
+- Подменихме статичните `GRADIENTS`/`COLORS` usages с `useTheme()` + `useThemedStyles(...)` при route-овете и sections, които се виждат при navigation към modules/materials.
+- Коригирахме и няколко тъмни title цвята (`brandDeep`) към theme-safe text colors, за да не изчезват заглавия върху dark surfaces.
+
+**Файлове:**
+- [MODIFY] apps/mobile/components/course-details/course-details-screen.tsx
+- [MODIFY] apps/mobile/components/course-details/course-details.styles.ts
+- [MODIFY] apps/mobile/components/module-workspace/module-workspace-screen.tsx
+- [MODIFY] apps/mobile/components/module-workspace/module-workspace.styles.ts
+- [MODIFY] apps/mobile/components/module-workspace/module-workspace-skeleton.tsx
+- [MODIFY] apps/mobile/components/module-list-card.tsx
+- [MODIFY] apps/mobile/components/material-card.tsx
+- [MODIFY] apps/mobile/components/empty-state.tsx
+- [MODIFY] apps/mobile/components/search-bar.tsx
+- [MODIFY] apps/mobile/components/type-filter-chips.tsx
+- [MODIFY] apps/mobile/components/entity-actions.tsx
+- [MODIFY] apps/mobile/components/material-form/material-form-screen.tsx
+- [MODIFY] apps/mobile/components/material-form/material-form.styles.ts
+- [MODIFY] apps/mobile/components/material-form/material-form-input.tsx
+- [MODIFY] apps/mobile/components/material-form/material-form-type-picker.tsx
+- [MODIFY] apps/mobile/app/module/[id]/edit.tsx
+- [MODIFY] apps/mobile/app/course/[id]/add-module.tsx
+- [MODIFY] apps/mobile/lib/material-utils.ts
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd run typecheck:mobile` ✅
+
+**Решения:**
+- Избрахме live-theme pass върху засегнатите shared mobile components вместо локален fix само на един screen, защото module/material UX-ът се сглобява от няколко reused building block-а и частичният fix щеше да остави смесен light/dark интерфейс.

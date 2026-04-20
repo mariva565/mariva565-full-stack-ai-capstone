@@ -6,9 +6,9 @@ import { BrandedSpinner } from "../branded-spinner";
 import { ConfirmModal } from "../confirm-modal";
 import { EmptyState } from "../empty-state";
 import { ModuleListCard } from "../module-list-card";
-import { COLORS, GRADIENTS } from "../../lib/colors";
+import { useTheme, useThemedStyles } from "../../lib/app-preferences";
 import type { Module } from "../../lib/studyhub-types";
-import { styles } from "./course-details.styles";
+import { makeCourseDetailsStyles } from "./course-details.styles";
 import {
   useCourseDetailsScreen,
   type CourseDetailsViewModel,
@@ -35,8 +35,11 @@ function CourseHero({
   onEditCourse: (routeId: string) => void;
   onDeleteCourse: () => void;
 }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeCourseDetailsStyles);
+  const heroGradient = [colors.brandDeep, colors.brandPrimary, colors.brandAccent] as const;
   return (
-    <LinearGradient colors={GRADIENTS.heroStrong} style={styles.hero}>
+    <LinearGradient colors={heroGradient} style={styles.hero}>
       <Text style={styles.heroEyebrow}>Course overview</Text>
       <Text style={styles.heroTitle}>{title}</Text>
       {description ? <Text style={styles.heroDesc}>{description}</Text> : null}
@@ -85,6 +88,7 @@ function ModulesSection({
   onEditModule: (moduleId: number) => void;
   onDeleteModule: (module: Module) => void;
 }) {
+  const styles = useThemedStyles(makeCourseDetailsStyles);
   return (
     <>
       <View style={styles.sectionHeader}>
@@ -150,6 +154,7 @@ function CourseDetailsLoading() {
 }
 
 function CourseDetailsError({ error, onRetry }: { error: string; onRetry: () => void }) {
+  const styles = useThemedStyles(makeCourseDetailsStyles);
   return (
     <View style={styles.centered}>
       <Stack.Screen options={{ title: "Error" }} />
@@ -172,6 +177,8 @@ function CourseDetailsContent({
   viewModel: LoadedCourseDetailsViewModel;
 }) {
   const router = useRouter();
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeCourseDetailsStyles);
 
   return (
     <View style={styles.container}>
@@ -181,7 +188,7 @@ function CourseDetailsContent({
           <RefreshControl
             refreshing={viewModel.refreshing}
             onRefresh={viewModel.refresh}
-            tintColor={COLORS.brandPrimary}
+            tintColor={colors.brandPrimary}
           />
         }
       >

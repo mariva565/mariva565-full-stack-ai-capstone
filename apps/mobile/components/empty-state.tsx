@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet } from "react-native";
-import { COLORS } from "../lib/colors";
+import { useThemedStyles } from "../lib/app-preferences";
+import type { AppColors } from "../lib/colors";
 
 type Props = {
   icon: string;
@@ -24,6 +25,7 @@ function resolveEmptyStateIcon(icon: string): string {
 
 export function EmptyState({ icon, title, subtitle }: Props) {
   const resolvedIcon = resolveEmptyStateIcon(icon);
+  const styles = useThemedStyles(makeEmptyStateStyles);
 
   return (
     <View style={styles.container}>
@@ -36,37 +38,39 @@ export function EmptyState({ icon, title, subtitle }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 32,
-    paddingVertical: 40,
-  },
-  iconCircle: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: COLORS.violetSoft,
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  icon: {
-    fontSize: 36,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: COLORS.textStrong,
-    marginBottom: 4,
-    textAlign: "center",
-  },
-  subtitle: {
-    fontSize: 14,
-    color: COLORS.textMuted,
-    textAlign: "center",
-    lineHeight: 20,
-  },
-});
+function makeEmptyStateStyles(colors: AppColors) {
+  return StyleSheet.create({
+    container: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      paddingHorizontal: 32,
+      paddingVertical: 40,
+    },
+    iconCircle: {
+      width: 80,
+      height: 80,
+      borderRadius: 40,
+      backgroundColor: colors.violetSoft,
+      justifyContent: "center",
+      alignItems: "center",
+      marginBottom: 16,
+    },
+    icon: {
+      fontSize: 36,
+    },
+    title: {
+      fontSize: 18,
+      fontWeight: "700",
+      color: colors.textStrong,
+      marginBottom: 4,
+      textAlign: "center",
+    },
+    subtitle: {
+      fontSize: 14,
+      color: colors.textMuted,
+      textAlign: "center",
+      lineHeight: 20,
+    },
+  });
+}

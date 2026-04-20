@@ -1,7 +1,8 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 import { BRAND_FONT_FAMILY } from "../lib/brand-font";
-import { COLORS } from "../lib/colors";
+import { useThemedStyles } from "../lib/app-preferences";
+import type { AppColors } from "../lib/colors";
 import type { Module } from "../lib/studyhub-types";
 import { EntityActions } from "./entity-actions";
 
@@ -14,6 +15,7 @@ type Props = {
 };
 
 export function ModuleListCard({ index, module, onOpen, onEdit, onDelete }: Props) {
+  const styles = useThemedStyles(makeModuleListCardStyles);
   return (
     <View style={styles.card}>
       <TouchableOpacity
@@ -60,54 +62,56 @@ export function ModuleListCard({ index, module, onOpen, onEdit, onDelete }: Prop
   );
 }
 
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: COLORS.surface,
-    marginHorizontal: 16,
-    marginBottom: 12,
-    borderRadius: 14,
-    overflow: "hidden",
-    shadowColor: COLORS.brandDeep,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    elevation: 2,
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    paddingBottom: 14,
-  },
-  numberCircle: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    backgroundColor: COLORS.violetSoft,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  numberText: { fontSize: 14, fontWeight: "800", color: COLORS.brandPrimary },
-  copyWrap: { flex: 1 },
-  title: {
-    fontSize: 16,
-    lineHeight: 21,
-    color: COLORS.brandDeep,
-    fontFamily: BRAND_FONT_FAMILY,
-  },
-  meta: { fontSize: 13, color: COLORS.textSecondary, lineHeight: 19, marginTop: 4 },
-  cta: { fontSize: 12, fontWeight: "700", color: COLORS.brandPrimary },
-  footer: {
-    borderTopWidth: 1,
-    borderTopColor: COLORS.borderSubtle,
-    paddingHorizontal: 16,
-    paddingTop: 12,
-    paddingBottom: 14,
-  },
-  hint: { fontSize: 12, color: COLORS.textSecondary, marginBottom: 10 },
-  actionsWrap: {
-    alignItems: "flex-end",
-  },
-});
+function makeModuleListCardStyles(colors: AppColors) {
+  return StyleSheet.create({
+    card: {
+      backgroundColor: colors.surface,
+      marginHorizontal: 16,
+      marginBottom: 12,
+      borderRadius: 14,
+      overflow: "hidden",
+      shadowColor: colors.brandDeep,
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.06,
+      shadowRadius: 8,
+      elevation: 2,
+    },
+    header: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 12,
+      paddingHorizontal: 16,
+      paddingTop: 16,
+      paddingBottom: 14,
+    },
+    numberCircle: {
+      width: 34,
+      height: 34,
+      borderRadius: 17,
+      backgroundColor: colors.violetSoft,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    numberText: { fontSize: 14, fontWeight: "800", color: colors.brandPrimary },
+    copyWrap: { flex: 1 },
+    title: {
+      fontSize: 16,
+      lineHeight: 21,
+      color: colors.textPrimary,
+      fontFamily: BRAND_FONT_FAMILY,
+    },
+    meta: { fontSize: 13, color: colors.textSecondary, lineHeight: 19, marginTop: 4 },
+    cta: { fontSize: 12, fontWeight: "700", color: colors.brandPrimary },
+    footer: {
+      borderTopWidth: 1,
+      borderTopColor: colors.borderSubtle,
+      paddingHorizontal: 16,
+      paddingTop: 12,
+      paddingBottom: 14,
+    },
+    hint: { fontSize: 12, color: colors.textSecondary, marginBottom: 10 },
+    actionsWrap: {
+      alignItems: "flex-end",
+    },
+  });
+}

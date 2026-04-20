@@ -14,7 +14,8 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { BrandedSpinner } from "../../../components/branded-spinner";
 import { ApiError, apiFetch } from "../../../lib/api";
-import { COLORS, GRADIENTS } from "../../../lib/colors";
+import { useTheme, useThemedStyles } from "../../../lib/app-preferences";
+import type { AppColors } from "../../../lib/colors";
 import { invalidateCourseQueries, invalidateModuleQueries } from "../../../lib/query-keys";
 import { useConfirmDiscard } from "../../../lib/use-confirm-discard";
 
@@ -40,6 +41,9 @@ export default function EditModuleScreen() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [focusedField, setFocusedField] = useState<string | null>(null);
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeEditModuleStyles);
+  const primaryActionGradient = [colors.brandPrimary, colors.brandAccent] as const;
   const isDirty =
     !loading &&
     (title.trim() !== initialForm.title.trim() ||
@@ -135,7 +139,7 @@ export default function EditModuleScreen() {
             <TextInput
               style={[styles.input, focusedField === "title" && styles.inputFocused]}
               placeholder="Module title"
-              placeholderTextColor={COLORS.textMuted}
+              placeholderTextColor={colors.textMuted}
               value={title}
               onChangeText={setTitle}
               onFocus={() => setFocusedField("title")}
@@ -150,7 +154,7 @@ export default function EditModuleScreen() {
             <TextInput
               style={[styles.input, styles.textArea, focusedField === "desc" && styles.inputFocused]}
               placeholder="What does this module cover?"
-              placeholderTextColor={COLORS.textMuted}
+              placeholderTextColor={colors.textMuted}
               value={description}
               onChangeText={setDescription}
               onFocus={() => setFocusedField("desc")}
@@ -174,7 +178,7 @@ export default function EditModuleScreen() {
             accessibilityLabel="Save module changes"
             accessibilityHint="Updates this module and returns to the previous screen"
           >
-            <LinearGradient colors={GRADIENTS.primaryAction} style={styles.saveBtnGradient}>
+            <LinearGradient colors={primaryActionGradient} style={styles.saveBtnGradient}>
               <Text style={styles.saveBtnText}>{saving ? "Saving..." : "Save Changes"}</Text>
             </LinearGradient>
           </TouchableOpacity>
@@ -194,72 +198,74 @@ export default function EditModuleScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLORS.canvas },
-  scrollContent: { padding: 16 },
-  iconContainer: { alignItems: "center", marginVertical: 20 },
-  iconCircle: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: COLORS.violetSoft,
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 12,
-  },
-  iconText: { fontSize: 24, fontWeight: "800", color: COLORS.brandPrimary },
-  heading: { fontSize: 20, fontWeight: "800", color: COLORS.brandDeep },
-  subheading: { fontSize: 14, color: COLORS.textSecondary, marginTop: 4 },
-  errorBox: {
-    backgroundColor: COLORS.dangerSoftAlt,
-    borderWidth: 1,
-    borderColor: COLORS.dangerBorderSoft,
-    borderRadius: 10,
-    padding: 12,
-    marginBottom: 16,
-  },
-  errorText: { color: COLORS.danger, fontSize: 14, textAlign: "center" },
-  card: {
-    backgroundColor: COLORS.surface,
-    borderRadius: 14,
-    padding: 20,
-    shadowColor: COLORS.brandDeep,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    elevation: 2,
-  },
-  inputGroup: { marginBottom: 16 },
-  inputLabel: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: COLORS.textTertiary,
-    marginBottom: 6,
-    marginLeft: 2,
-  },
-  input: {
-    backgroundColor: COLORS.surfaceSoft,
-    borderWidth: 1.5,
-    borderColor: COLORS.borderMuted,
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    fontSize: 16,
-    color: COLORS.textPrimary,
-  },
-  textArea: { minHeight: 100, paddingTop: 14 },
-  inputFocused: { borderColor: COLORS.brandPrimary, backgroundColor: COLORS.surfaceHighlight },
-  actions: { marginTop: 20, gap: 12 },
-  saveBtn: { borderRadius: 12, overflow: "hidden" },
-  disabledBtn: { opacity: 0.6 },
-  saveBtnGradient: { paddingVertical: 16, alignItems: "center" },
-  saveBtnText: { color: COLORS.textOnBrand, fontSize: 16, fontWeight: "700" },
-  cancelBtn: {
-    borderWidth: 2,
-    borderColor: COLORS.borderMuted,
-    borderRadius: 12,
-    paddingVertical: 14,
-    alignItems: "center",
-  },
-  cancelBtnText: { fontSize: 16, fontWeight: "600", color: COLORS.textSecondary },
-});
+function makeEditModuleStyles(colors: AppColors) {
+  return StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.canvas },
+    scrollContent: { padding: 16 },
+    iconContainer: { alignItems: "center", marginVertical: 20 },
+    iconCircle: {
+      width: 64,
+      height: 64,
+      borderRadius: 32,
+      backgroundColor: colors.violetSoft,
+      justifyContent: "center",
+      alignItems: "center",
+      marginBottom: 12,
+    },
+    iconText: { fontSize: 24, fontWeight: "800", color: colors.brandPrimary },
+    heading: { fontSize: 20, fontWeight: "800", color: colors.textPrimary },
+    subheading: { fontSize: 14, color: colors.textSecondary, marginTop: 4 },
+    errorBox: {
+      backgroundColor: colors.dangerSoftAlt,
+      borderWidth: 1,
+      borderColor: colors.dangerBorderSoft,
+      borderRadius: 10,
+      padding: 12,
+      marginBottom: 16,
+    },
+    errorText: { color: colors.danger, fontSize: 14, textAlign: "center" },
+    card: {
+      backgroundColor: colors.surface,
+      borderRadius: 14,
+      padding: 20,
+      shadowColor: colors.brandDeep,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.06,
+      shadowRadius: 8,
+      elevation: 2,
+    },
+    inputGroup: { marginBottom: 16 },
+    inputLabel: {
+      fontSize: 13,
+      fontWeight: "600",
+      color: colors.textTertiary,
+      marginBottom: 6,
+      marginLeft: 2,
+    },
+    input: {
+      backgroundColor: colors.surfaceSoft,
+      borderWidth: 1.5,
+      borderColor: colors.borderMuted,
+      borderRadius: 12,
+      paddingHorizontal: 16,
+      paddingVertical: 14,
+      fontSize: 16,
+      color: colors.textPrimary,
+    },
+    textArea: { minHeight: 100, paddingTop: 14 },
+    inputFocused: { borderColor: colors.brandPrimary, backgroundColor: colors.surfaceHighlight },
+    actions: { marginTop: 20, gap: 12 },
+    saveBtn: { borderRadius: 12, overflow: "hidden" },
+    disabledBtn: { opacity: 0.6 },
+    saveBtnGradient: { paddingVertical: 16, alignItems: "center" },
+    saveBtnText: { color: colors.textOnBrand, fontSize: 16, fontWeight: "700" },
+    cancelBtn: {
+      borderWidth: 2,
+      borderColor: colors.borderMuted,
+      borderRadius: 12,
+      paddingVertical: 14,
+      alignItems: "center",
+    },
+    cancelBtnText: { fontSize: 16, fontWeight: "600", color: colors.textSecondary },
+  });
+}

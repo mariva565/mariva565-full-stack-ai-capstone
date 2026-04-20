@@ -1,6 +1,6 @@
 import { TextInput, Text, View, type KeyboardTypeOptions } from "react-native";
-import { COLORS } from "../../lib/colors";
-import { styles } from "./material-form.styles";
+import { useTheme, useThemedStyles } from "../../lib/app-preferences";
+import { makeMaterialFormStyles } from "./material-form.styles";
 import type { FocusedField } from "./material-form.types";
 
 type InputFieldProps = {
@@ -38,6 +38,8 @@ export function MaterialInputField({
   autoCapitalize,
   keyboardType,
 }: InputFieldProps) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeMaterialFormStyles);
   return (
     <View style={styles.inputGroup}>
       <Text style={styles.inputLabel}>{label}</Text>
@@ -48,7 +50,7 @@ export function MaterialInputField({
           focusedField === field ? styles.inputFocused : null,
         ]}
         placeholder={placeholder}
-        placeholderTextColor={COLORS.textMuted}
+        placeholderTextColor={colors.textMuted}
         value={value}
         onChangeText={onChangeText}
         onFocus={() => onFocusChange(field)}

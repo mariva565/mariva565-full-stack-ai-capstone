@@ -10,13 +10,20 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { Stack } from "expo-router";
 
-import { GRADIENTS } from "../../lib/colors";
-import { styles } from "./material-form.styles";
+import { useTheme, useThemedStyles } from "../../lib/app-preferences";
+import { makeMaterialFormStyles } from "./material-form.styles";
 import type { MaterialFormScreenProps, FocusedField } from "./material-form.types";
 import { MaterialInputField } from "./material-form-input";
 import { MaterialTypeSelector } from "./material-form-type-picker";
 
-function MaterialHeader({ iconText, heading }: { iconText: string; heading: string }) {
+function MaterialHeader({
+  iconText,
+  heading,
+}: {
+  iconText: string;
+  heading: string;
+}) {
+  const styles = useThemedStyles(makeMaterialFormStyles);
   return (
     <View style={styles.iconContainer}>
       <View style={styles.iconCircle}>
@@ -28,6 +35,7 @@ function MaterialHeader({ iconText, heading }: { iconText: string; heading: stri
 }
 
 function ErrorBanner({ message }: { message: string }) {
+  const styles = useThemedStyles(makeMaterialFormStyles);
   return (
     <View style={styles.errorBox} accessible accessibilityRole="alert">
       <Text style={styles.errorText}>{message}</Text>
@@ -155,6 +163,9 @@ function MaterialFormActions({
   onSubmit: () => void;
   onCancel: () => void;
 }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeMaterialFormStyles);
+  const primaryActionGradient = [colors.brandPrimary, colors.brandAccent] as const;
   return (
     <View style={styles.actions}>
       <TouchableOpacity
@@ -166,7 +177,7 @@ function MaterialFormActions({
         accessibilityLabel={submitAccessibilityLabel}
         accessibilityHint={submitAccessibilityHint}
       >
-        <LinearGradient colors={GRADIENTS.primaryAction} style={styles.submitGradient}>
+        <LinearGradient colors={primaryActionGradient} style={styles.submitGradient}>
           <Text style={styles.submitBtnText}>{loading ? loadingLabel : submitLabel}</Text>
         </LinearGradient>
       </TouchableOpacity>
@@ -186,6 +197,7 @@ function MaterialFormActions({
 
 export function MaterialFormScreen(props: MaterialFormScreenProps) {
   const [focusedField, setFocusedField] = useState<FocusedField>(null);
+  const styles = useThemedStyles(makeMaterialFormStyles);
 
   return (
     <KeyboardAvoidingView

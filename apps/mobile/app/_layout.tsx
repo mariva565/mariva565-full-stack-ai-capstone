@@ -1,5 +1,5 @@
 import { Stack, useRouter, useSegments, useRootNavigationState } from "expo-router";
-import { useEffect } from "react";
+import { useEffect, type ReactNode } from "react";
 import { useFonts } from "expo-font";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -11,7 +11,7 @@ import { ConfirmDialogProvider } from "../lib/confirm-dialog-context";
 import { ToastProvider } from "../lib/toast-context";
 import { BRAND_FONT_FAMILY, BRAND_FONT_SOURCE } from "../lib/brand-font";
 import { COLORS } from "../lib/colors";
-import { ActivityIndicator, View } from "react-native";
+import { ActivityIndicator, Platform, StyleSheet, useWindowDimensions, View } from "react-native";
 import {
   queryClient,
   queryPersister,
@@ -22,6 +22,50 @@ import { initializeTelemetry } from "../lib/telemetry";
 import { usePushNotifications } from "../lib/use-push-notifications";
 
 initializeTelemetry();
+
+const WEB_SHELL_BREAKPOINT = 820;
+const WEB_SHELL_MAX_WIDTH = 520;
+
+function AppShell({ children }: { children: ReactNode }) {
+  const { colors } = useTheme();
+  const { width } = useWindowDimensions();
+
+  const useFramedShell = Platform.OS === "web" && width >= WEB_SHELL_BREAKPOINT;
+
+  return (
+    <View
+      style={[
+        styles.shellOuter,
+        {
+          backgroundColor: useFramedShell ? colors.violetSoft : colors.canvas,
+          paddingHorizontal: useFramedShell ? 18 : 0,
+          paddingVertical: useFramedShell ? 18 : 0,
+        },
+      ]}
+    >
+      <View
+        style={[
+          styles.shellInner,
+          { backgroundColor: colors.canvas },
+          useFramedShell && {
+            maxWidth: WEB_SHELL_MAX_WIDTH,
+            borderRadius: 28,
+            overflow: "hidden",
+            borderWidth: 1,
+            borderColor: colors.borderSubtle,
+            shadowColor: colors.shadow,
+            shadowOffset: { width: 0, height: 16 },
+            shadowOpacity: 0.18,
+            shadowRadius: 28,
+            elevation: 12,
+          },
+        ]}
+      >
+        {children}
+      </View>
+    </View>
+  );
+}
 
 function AuthGate() {
   const { user, isLoading } = useAuth();
@@ -48,14 +92,16 @@ function AuthGate() {
 
   if (isLoading) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: colors.brandDeep }}>
-        <ActivityIndicator size="large" color={colors.textOnBrand} />
-      </View>
+      <AppShell>
+        <View style={[styles.centered, { backgroundColor: colors.brandDeep }]}>
+          <ActivityIndicator size="large" color={colors.textOnBrand} />
+        </View>
+      </AppShell>
     );
   }
 
   return (
-    <>
+    <AppShell>
       <StatusBar style="light" backgroundColor={colors.brandDeep} />
       <Stack
         screenOptions={{
@@ -77,7 +123,7 @@ function AuthGate() {
         <Stack.Screen name="settings" options={{ title: "Settings" }} />
         <Stack.Screen name="chat" options={{ presentation: "modal", title: "StudyHub Mentor" }} />
       </Stack>
-    </>
+    </AppShell>
   );
 }
 
@@ -123,3 +169,20 @@ function RootLayout() {
 }
 
 export default Sentry.wrap(RootLayout);
+
+const styles = StyleSheet.create({
+  centered: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  shellOuter: {
+    flex: 1,
+    width: "100%",
+  },
+  shellInner: {
+    flex: 1,
+    width: "100%",
+    alignSelf: "center",
+  },
+});

@@ -1,7 +1,7 @@
 import { Text, TouchableOpacity, View } from "react-native";
-import { COLORS } from "../../lib/colors";
-import { MATERIAL_TYPE_OPTIONS, type MaterialType } from "../../lib/material-utils";
-import { styles } from "./material-form.styles";
+import { useTheme, useThemedStyles } from "../../lib/app-preferences";
+import { getMaterialTypeOptions, type MaterialType } from "../../lib/material-utils";
+import { makeMaterialFormStyles } from "./material-form.styles";
 
 type Props = {
   materialType: MaterialType;
@@ -9,9 +9,12 @@ type Props = {
 };
 
 export function MaterialTypeSelector({ materialType, onMaterialTypeChange }: Props) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeMaterialFormStyles);
+  const options = getMaterialTypeOptions(colors);
   return (
     <View style={styles.typeRow}>
-      {MATERIAL_TYPE_OPTIONS.map((option) => (
+      {options.map((option) => (
         <TouchableOpacity
           key={option.key}
           style={[
@@ -31,7 +34,7 @@ export function MaterialTypeSelector({ materialType, onMaterialTypeChange }: Pro
           <Text
             style={[
               styles.typeChipIcon,
-              { color: materialType === option.key ? option.color : COLORS.textMuted },
+              { color: materialType === option.key ? option.color : colors.textMuted },
             ]}
           >
             {option.icon}

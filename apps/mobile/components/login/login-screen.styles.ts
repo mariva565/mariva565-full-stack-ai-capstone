@@ -4,8 +4,11 @@ import { COLORS } from "../../lib/colors";
 
 export const styles = StyleSheet.create({
   gradient: { flex: 1 },
-  container: { flex: 1, justifyContent: "center", paddingHorizontal: 24 },
+  container: { flex: 1, justifyContent: "center", paddingHorizontal: 24, paddingVertical: 24 },
   card: {
+    width: "100%",
+    maxWidth: 430,
+    alignSelf: "center",
     backgroundColor: COLORS.surface,
     borderRadius: 20,
     padding: 32,

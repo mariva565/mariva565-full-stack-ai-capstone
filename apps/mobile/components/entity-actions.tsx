@@ -1,5 +1,6 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { COLORS } from "../lib/colors";
+import { useThemedStyles } from "../lib/app-preferences";
+import type { AppColors } from "../lib/colors";
 
 type Props = {
   onEdit: () => void;
@@ -16,6 +17,7 @@ export function EntityActions({
   editLabel = "Edit item",
   deleteLabel = "Delete item",
 }: Props) {
+  const styles = useThemedStyles(makeEntityActionsStyles);
   return (
     <View style={[styles.row, compact && styles.compactRow]}>
       <TouchableOpacity
@@ -42,46 +44,48 @@ export function EntityActions({
   );
 }
 
-const styles = StyleSheet.create({
-  row: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    gap: 8,
-    marginTop: 12,
-    alignSelf: "flex-end",
-  },
-  compactRow: {
-    marginTop: 8,
-  },
-  button: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 10,
-    borderWidth: 1,
-  },
-  compactButton: {
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-  },
-  editButton: {
-    backgroundColor: COLORS.violetSoft,
-    borderColor: COLORS.violetBorder,
-  },
-  deleteButton: {
-    backgroundColor: COLORS.dangerSoft,
-    borderColor: COLORS.dangerBorder,
-  },
-  editText: {
-    color: COLORS.violetText,
-    fontSize: 13,
-    fontWeight: "700",
-  },
-  deleteText: {
-    color: COLORS.dangerText,
-    fontSize: 13,
-    fontWeight: "700",
-  },
-  compactText: {
-    fontSize: 12,
-  },
-});
+function makeEntityActionsStyles(colors: AppColors) {
+  return StyleSheet.create({
+    row: {
+      flexDirection: "row",
+      justifyContent: "flex-end",
+      gap: 8,
+      marginTop: 12,
+      alignSelf: "flex-end",
+    },
+    compactRow: {
+      marginTop: 8,
+    },
+    button: {
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+      borderRadius: 10,
+      borderWidth: 1,
+    },
+    compactButton: {
+      paddingHorizontal: 10,
+      paddingVertical: 6,
+    },
+    editButton: {
+      backgroundColor: colors.violetSoft,
+      borderColor: colors.violetBorder,
+    },
+    deleteButton: {
+      backgroundColor: colors.dangerSoft,
+      borderColor: colors.dangerBorder,
+    },
+    editText: {
+      color: colors.violetText,
+      fontSize: 13,
+      fontWeight: "700",
+    },
+    deleteText: {
+      color: colors.dangerText,
+      fontSize: 13,
+      fontWeight: "700",
+    },
+    compactText: {
+      fontSize: 12,
+    },
+  });
+}

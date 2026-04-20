@@ -1,5 +1,6 @@
 import { StyleSheet, TextInput, TouchableOpacity, Text, View } from "react-native";
-import { COLORS } from "../lib/colors";
+import { useTheme, useThemedStyles } from "../lib/app-preferences";
+import type { AppColors } from "../lib/colors";
 
 type Props = {
   value: string;
@@ -8,6 +9,8 @@ type Props = {
 };
 
 export function SearchBar({ value, onChangeText, placeholder = "Search..." }: Props) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeSearchBarStyles);
   return (
     <View style={styles.wrapper}>
       <Text style={styles.icon}>&#x1F50D;</Text>
@@ -16,7 +19,7 @@ export function SearchBar({ value, onChangeText, placeholder = "Search..." }: Pr
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
-        placeholderTextColor={COLORS.textMuted}
+        placeholderTextColor={colors.textMuted}
         autoCapitalize="none"
         autoCorrect={false}
         returnKeyType="search"
@@ -41,32 +44,34 @@ export function SearchBar({ value, onChangeText, placeholder = "Search..." }: Pr
   );
 }
 
-const styles = StyleSheet.create({
-  wrapper: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: COLORS.surface,
-    borderRadius: 12,
-    marginHorizontal: 16,
-    marginTop: 16,
-    paddingHorizontal: 14,
-    paddingVertical: 4,
-    borderWidth: 1,
-    borderColor: COLORS.borderMuted,
-    gap: 8,
-  },
-  icon: {
-    fontSize: 14,
-  },
-  input: {
-    flex: 1,
-    fontSize: 15,
-    color: COLORS.textPrimary,
-    paddingVertical: 10,
-  },
-  clearText: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: COLORS.brandPrimary,
-  },
-});
+function makeSearchBarStyles(colors: AppColors) {
+  return StyleSheet.create({
+    wrapper: {
+      flexDirection: "row",
+      alignItems: "center",
+      backgroundColor: colors.surface,
+      borderRadius: 12,
+      marginHorizontal: 16,
+      marginTop: 16,
+      paddingHorizontal: 14,
+      paddingVertical: 4,
+      borderWidth: 1,
+      borderColor: colors.borderMuted,
+      gap: 8,
+    },
+    icon: {
+      fontSize: 14,
+    },
+    input: {
+      flex: 1,
+      fontSize: 15,
+      color: colors.textPrimary,
+      paddingVertical: 10,
+    },
+    clearText: {
+      fontSize: 13,
+      fontWeight: "600",
+      color: colors.brandPrimary,
+    },
+  });
+}

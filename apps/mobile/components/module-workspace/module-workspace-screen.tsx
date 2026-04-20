@@ -9,11 +9,11 @@ import { NetworkBanner } from "../network-banner";
 import { RequestState } from "../request-state";
 import { SearchBar } from "../search-bar";
 import { TypeFilterChips } from "../type-filter-chips";
-import { COLORS, GRADIENTS } from "../../lib/colors";
+import { useTheme, useThemedStyles } from "../../lib/app-preferences";
 import { useIsOffline } from "../../lib/network";
 import { ModuleWorkspaceSkeleton } from "./module-workspace-skeleton";
 import type { ModuleWorkspaceViewModel } from "./module-workspace.types";
-import { styles } from "./module-workspace.styles";
+import { makeModuleWorkspaceStyles } from "./module-workspace.styles";
 
 type ModuleWorkspaceScreenProps = {
   viewModel: ModuleWorkspaceViewModel;
@@ -73,13 +73,16 @@ function ErrorState({
 }
 
 function ModuleHero({ viewModel }: ModuleHeroProps) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeModuleWorkspaceStyles);
   if (!viewModel.context) {
     return null;
   }
   const { context, materials } = viewModel;
+  const heroGradient = [colors.brandDeep, colors.brandPrimary, colors.brandAccent] as const;
 
   return (
-    <LinearGradient colors={GRADIENTS.heroStrong} style={styles.hero}>
+    <LinearGradient colors={heroGradient} style={styles.hero}>
       <TouchableOpacity
         style={styles.coursePill}
         onPress={viewModel.openCourse}
@@ -134,6 +137,7 @@ function ModuleHero({ viewModel }: ModuleHeroProps) {
 }
 
 function MaterialsSection({ viewModel, offline }: MaterialsSectionProps) {
+  const styles = useThemedStyles(makeModuleWorkspaceStyles);
   const { materials, filteredMaterials } = viewModel;
 
   return (
@@ -222,6 +226,8 @@ function MaterialsSection({ viewModel, offline }: MaterialsSectionProps) {
 
 export function ModuleWorkspaceScreen({ viewModel }: ModuleWorkspaceScreenProps) {
   const offline = useIsOffline();
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeModuleWorkspaceStyles);
 
   if (viewModel.loading) {
     return <LoadingState />;
@@ -238,7 +244,7 @@ export function ModuleWorkspaceScreen({ viewModel }: ModuleWorkspaceScreenProps)
           <RefreshControl
             refreshing={viewModel.refreshing}
             onRefresh={viewModel.refresh}
-            tintColor={COLORS.brandPrimary}
+            tintColor={colors.brandPrimary}
           />
         }
       >

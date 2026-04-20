@@ -12,6 +12,9 @@ export const styles = StyleSheet.create({
     paddingVertical: 40,
   },
   card: {
+    width: "100%",
+    maxWidth: 430,
+    alignSelf: "center",
     backgroundColor: COLORS.surface,
     borderRadius: 20,
     padding: 32,
