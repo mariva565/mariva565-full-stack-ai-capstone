@@ -10,6 +10,7 @@ import { MaterialTypePill } from "./material-type-pill";
 import type { MaterialDetail, MaterialPageData } from "./types";
 import { MaterialViewPanel } from "./material-view-panel";
 import { ConfirmModal } from "../ui/confirm-modal";
+import { ShareModal } from "./share-modal";
 import { ScrollToTop } from "../ui/scroll-to-top";
 import { Toast, type ToastTone } from "../ui/toast";
 import { LottieDecoration } from "../ui/lottie-decoration";
@@ -60,6 +61,7 @@ export function MaterialPageClient({
   const [pinBusy, setPinBusy] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteBusy, setDeleteBusy] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
   const [toast, setToast] = useState<ToastState | null>(null);
 
   function pushToast(message: string, tone: ToastTone) {
@@ -161,6 +163,22 @@ export function MaterialPageClient({
     router.push(`/modules/${moduleInfo.id}/${slugify(moduleInfo.title)}`);
   }
 
+  async function handleShare(recipientEmail: string) {
+    const response = await fetch(`/api/materials/${material.id}/share`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ recipientEmail }),
+    });
+
+    if (!response.ok) {
+      const msg = await readErrorMessage(response, "Could not send share notification.");
+      pushToast(msg, "error");
+    } else {
+      setShowShareModal(false);
+      pushToast("Материалът е споделен успешно.", "success");
+    }
+  }
+
   const normalizedTags = useMemo(() => parseTags(material.tags), [material.tags]);
   const pageTitle = isEditing ? title.trim() || material.title : material.title;
 
@@ -255,6 +273,7 @@ export function MaterialPageClient({
                 onTogglePin={handleTogglePin}
                 onEdit={() => setIsEditing(true)}
                 onDelete={() => setShowDeleteModal(true)}
+                onShare={() => setShowShareModal(true)}
               />
             )}
           </div>
@@ -273,6 +292,14 @@ export function MaterialPageClient({
         onCancel={() => setShowDeleteModal(false)}
         onConfirm={handleDeleteMaterial}
       />
+
+      {showShareModal ? (
+        <ShareModal
+          materialTitle={material.title}
+          onConfirm={handleShare}
+          onClose={() => setShowShareModal(false)}
+        />
+      ) : null}
 
       {toast ? <Toast message={toast.message} tone={toast.tone} onClose={() => setToast(null)} /> : null}
       <LottieDecoration src="https://lottie.host/dacfb550-1576-4e41-a4af-b05f29dfc221/c2x2LftM8d.lottie" />

@@ -34,6 +34,10 @@
     "@types/react": "~19.1.10"
   },
   "devDependencies": {
+    "@types/nodemailer": "^8.0.0",
     "drizzle-kit": "^0.30.6"
+  },
+  "dependencies": {
+    "nodemailer": "^8.0.5"
   }
 }

@@ -15,6 +15,7 @@ type MaterialViewPanelProps = {
   onTogglePin: () => void;
   onEdit: () => void;
   onDelete: () => void;
+  onShare: () => void;
 };
 
 export function MaterialViewPanel({
@@ -29,6 +30,7 @@ export function MaterialViewPanel({
   onTogglePin,
   onEdit,
   onDelete,
+  onShare,
 }: MaterialViewPanelProps) {
   const formattedCreatedAt = new Date(createdAt).toLocaleDateString();
   const normalizedType = normalizeMaterialType(materialType);
@@ -84,6 +86,13 @@ export function MaterialViewPanel({
             className="inline-flex flex-1 items-center justify-center rounded-full bg-[linear-gradient(135deg,#6366f1_0%,#8b5cf6_55%,#06b6d4_100%)] px-4 py-2 text-sm font-semibold text-white shadow-[0_18px_40px_rgba(99,102,241,0.24)] transition hover:-translate-y-0.5 hover:shadow-[0_22px_48px_rgba(99,102,241,0.28)] sm:flex-none"
           >
             Edit material
+          </button>
+          <button
+            type="button"
+            onClick={onShare}
+            className="inline-flex flex-1 items-center justify-center rounded-full border border-brand-200 bg-white/80 px-4 py-2 text-sm font-semibold text-brand-700 transition hover:-translate-y-0.5 hover:bg-brand-50 dark:border-brand-800 dark:bg-slate-900/70 dark:text-brand-300 dark:hover:bg-brand-900/30 sm:flex-none"
+          >
+            Share
           </button>
           <button
             type="button"

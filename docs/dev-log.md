@@ -8625,3 +8625,39 @@ Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
 
 **Решения:**
 - Използвахме отделни generated README previews вместо директно да embed-ваме source screenshots, защото README трябва да изглежда подредено независимо от Paint canvas размера.
+
+### Session 290 — Email sharing за материали (Nodemailer + Gmail SMTP)
+
+**Какво направихме:**
+- Добавихме email нотификации при шерване на материал (note / file / link) към друг регистриран потребител.
+- Sending account: собствен Gmail с App Password (2FA setup еднократно); получателят може да е с всякакъв домейн (Gmail, Outlook, Yahoo). Избран вариант вместо Resend, защото безплатният tier на Resend ограничава до verified sender, а ние нямаме собствен домейн за capstone-а.
+- Нов HTML имейл шаблон с gradient brand цвят, динамичен typeLabel (бележка/файл/линк) и CTA бутон към `/materials/:id`.
+- `ShareModal` компонент с email input и Toast feedback от главния page client.
+- Share бутон в `MaterialViewPanel` — в реда с Edit/Delete.
+
+**Security fixes в review-а:**
+- HTML escape на `senderName` и `materialTitle` в имейла (XSS защита — иначе `<script>` в заглавие или име щеше да се рендерира).
+- URL validation (`isSafeUrl`) — само `http:`/`https:` протоколи се приемат за CTA линка.
+- `Number.isFinite` guard за `materialId` — предотвратява `NaN` при `/api/materials/abc/share`.
+- Type check на `recipientEmail` (string, не само truthy) преди trim/lowercase.
+- Self-share блокиран с 400 `SELF_SHARE` код.
+- `try/catch` около `sendShareNotification` — SMTP грешка връща 502 `EMAIL_FAILED` и лог, не hard crash на route-а.
+- Fallback на `NEXT_PUBLIC_APP_URL` към `http://localhost:3000` ако липсва.
+
+**Файлове:**
+- [ADD] apps/web/lib/email.ts
+- [ADD] apps/web/app/api/materials/[id]/share/route.ts
+- [ADD] apps/web/components/materials/share-modal.tsx
+- [MODIFY] apps/web/components/materials/material-view-panel.tsx
+- [MODIFY] apps/web/components/materials/material-page-client.tsx
+- [MODIFY] .env (SMTP_USER, SMTP_PASS, NEXT_PUBLIC_APP_URL)
+- [MODIFY] package.json (+ nodemailer, + @types/nodemailer)
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npx tsc --project apps/web/tsconfig.json --noEmit` ✅
+
+**Решения:**
+- Оставихме course membership check настрана — останалите material endpoints (`GET /api/materials/[id]`, `material-detail-data.ts`) не проверяват членство в курса, така че share endpoint-ът следва същата конвенция. Ако се въведе strict access control, това ще е project-wide решение.
+- Gmail SMTP вместо Resend, защото Resend free tier иска verified sender domain; App Password flow позволява veлик sending акаунт без собствен домейн.
+- Nodemailer transporter е module-level singleton — connection pool се преизползва между заявки без да се създава нов при всяка.
