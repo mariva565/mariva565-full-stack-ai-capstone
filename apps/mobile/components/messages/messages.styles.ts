@@ -20,7 +20,7 @@ export function makeMessagesStyles(colors: AppColors) {
     headerTitle: {
       fontSize: 22,
       fontWeight: "800",
-      color: colors.textPrimary,
+      color: colors.titlePrimary,
     },
     backButton: {
       width: 36,

@@ -50,7 +50,7 @@ export function AiToolsScreen({ materialId }: { materialId: number }) {
     <ScrollView style={[styles.container, { backgroundColor: colors.canvas }]} contentContainerStyle={styles.content}>
       
       {/* Generate Section */}
-      <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>GENERATE NEW</Text>
+      <Text style={[styles.sectionTitle, { color: colors.titlePrimary }]}>GENERATE NEW</Text>
       {!hasContent ? (
         <Text style={[styles.warningText, { color: colors.textMuted }]}>
           Add text content to this material to generate AI results.
@@ -106,7 +106,7 @@ export function AiToolsScreen({ materialId }: { materialId: number }) {
       ) : null}
 
       {/* Saved Outputs List */}
-      <Text style={[styles.sectionTitle, { color: colors.textPrimary, marginTop: 32 }]}>SAVED RESULTS</Text>
+      <Text style={[styles.sectionTitle, { color: colors.titlePrimary, marginTop: 32 }]}>SAVED RESULTS</Text>
       
       {savedOutputs.length === 0 ? (
         <Text style={[styles.warningText, { color: colors.textMuted }]}>
@@ -117,7 +117,7 @@ export function AiToolsScreen({ materialId }: { materialId: number }) {
           {savedOutputs.map((out) => (
             <View key={out.id} style={[styles.savedCard, { backgroundColor: colors.surface, borderColor: colors.borderMuted }]}>
               <View style={styles.savedCardHeader}>
-                <Text style={[styles.savedCardLabel, { color: colors.brandDeep }]}>
+                <Text style={[styles.savedCardLabel, { color: colors.titlePrimary }]}>
                   {TOOLS.find(x => x.name === out.tool)?.label ?? "AI Result"}
                 </Text>
               </View>

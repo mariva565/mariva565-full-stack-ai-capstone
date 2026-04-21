@@ -1,23 +1,43 @@
 import { Tabs, useRouter } from "expo-router";
-import { StyleSheet, Text as RNText, View, TouchableOpacity, Image } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, Image } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { AntDesign } from "@expo/vector-icons";
-import { COLORS } from "../../lib/colors";
+import { AntDesign, Ionicons } from "@expo/vector-icons";
+import { useTheme } from "../../lib/app-preferences";
 import { useMessagesInbox } from "../../components/messages/use-messages-inbox";
 import { useAuth } from "../../lib/auth-context";
 
 type TabIconProps = {
   name: "book" | "heart" | "team" | "user";
   focused: boolean;
+  activeColor: string;
+  inactiveColor: string;
 };
 
-function TabIcon({ name, focused }: TabIconProps) {
+function TabIcon({ name, focused, activeColor, inactiveColor }: TabIconProps) {
   return (
     <View style={[styles.iconWrap, focused && styles.iconWrapActive]}>
       <AntDesign
         name={name}
         size={18}
-        color={focused ? COLORS.brandPrimary : COLORS.textMuted}
+        color={focused ? activeColor : inactiveColor}
+        accessibilityElementsHidden
+        importantForAccessibility="no"
+      />
+    </View>
+  );
+}
+
+function CoursesTabIcon({
+  focused,
+  activeColor,
+  inactiveColor,
+}: Omit<TabIconProps, "name">) {
+  return (
+    <View style={[styles.iconWrap, focused && styles.iconWrapActive]}>
+      <Ionicons
+        name="school-outline"
+        size={19}
+        color={focused ? activeColor : inactiveColor}
         accessibilityElementsHidden
         importantForAccessibility="no"
       />
@@ -35,14 +55,29 @@ function useInboxUnreadCount(): number {
 export default function TabsLayout() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const { colors } = useTheme();
   const unreadCount = useInboxUnreadCount();
+
+  function renderTabLabel(label: string, focused: boolean) {
+    return (
+      <Text
+        style={[
+          styles.label,
+          { color: focused ? colors.brandPrimary : colors.textMuted },
+        ]}
+        maxFontSizeMultiplier={1.2}
+      >
+        {label}
+      </Text>
+    );
+  }
 
   return (
     <Tabs
       screenOptions={{
-        headerStyle: { backgroundColor: COLORS.brandDeep },
-        headerTintColor: COLORS.textOnBrand,
-        headerTitleStyle: { fontWeight: "700" },
+        headerStyle: { backgroundColor: colors.brandDeep },
+        headerTintColor: colors.textOnBrand,
+        headerTitleStyle: { fontWeight: "700", color: colors.textOnBrand },
         headerShadowVisible: false,
         headerRight: () => (
           <TouchableOpacity 
@@ -60,19 +95,15 @@ export default function TabsLayout() {
         ),
         tabBarHideOnKeyboard: true,
         tabBarStyle: {
-          backgroundColor: COLORS.surface,
+          backgroundColor: colors.surface,
           borderTopWidth: 1,
-          borderTopColor: COLORS.violetSoft,
+          borderTopColor: colors.violetSoft,
           paddingBottom: insets.bottom > 0 ? insets.bottom : 10,
           paddingTop: 10,
           height: 60 + (insets.bottom > 0 ? insets.bottom : 0),
         },
-        tabBarActiveTintColor: COLORS.brandPrimary,
-        tabBarInactiveTintColor: COLORS.textMuted,
-        tabBarLabelStyle: {
-          fontSize: 12,
-          fontWeight: "600",
-        },
+        tabBarActiveTintColor: colors.brandPrimary,
+        tabBarInactiveTintColor: colors.textMuted,
       }}
     >
       <Tabs.Screen
@@ -80,7 +111,14 @@ export default function TabsLayout() {
         options={{
           title: "Courses",
           headerShown: false,
-          tabBarIcon: ({ focused }) => <TabIcon name="book" focused={focused} />,
+          tabBarLabel: ({ focused }) => renderTabLabel("Courses", focused),
+          tabBarIcon: ({ focused }) => (
+            <CoursesTabIcon
+              focused={focused}
+              activeColor={colors.brandPrimary}
+              inactiveColor={colors.textMuted}
+            />
+          ),
         }}
       />
       <Tabs.Screen
@@ -88,7 +126,15 @@ export default function TabsLayout() {
         options={{
           title: "Favorites",
           headerShown: false,
-          tabBarIcon: ({ focused }) => <TabIcon name="heart" focused={focused} />,
+          tabBarLabel: ({ focused }) => renderTabLabel("Favorites", focused),
+          tabBarIcon: ({ focused }) => (
+            <TabIcon
+              name="heart"
+              focused={focused}
+              activeColor={colors.brandPrimary}
+              inactiveColor={colors.textMuted}
+            />
+          ),
         }}
       />
       <Tabs.Screen
@@ -96,7 +142,15 @@ export default function TabsLayout() {
         options={{
           title: "Community",
           headerShown: false,
-          tabBarIcon: ({ focused }) => <TabIcon name="team" focused={focused} />,
+          tabBarLabel: ({ focused }) => renderTabLabel("Community", focused),
+          tabBarIcon: ({ focused }) => (
+            <TabIcon
+              name="team"
+              focused={focused}
+              activeColor={colors.brandPrimary}
+              inactiveColor={colors.textMuted}
+            />
+          ),
           tabBarBadge: unreadCount > 0 ? (unreadCount > 99 ? "99+" : unreadCount) : undefined,
           tabBarBadgeStyle: { backgroundColor: "#ef4444", fontSize: 10 },
         }}
@@ -105,7 +159,15 @@ export default function TabsLayout() {
         name="profile"
         options={{
           title: "Profile",
-          tabBarIcon: ({ focused }) => <TabIcon name="user" focused={focused} />,
+          tabBarLabel: ({ focused }) => renderTabLabel("Profile", focused),
+          tabBarIcon: ({ focused }) => (
+            <TabIcon
+              name="user"
+              focused={focused}
+              activeColor={colors.brandPrimary}
+              inactiveColor={colors.textMuted}
+            />
+          ),
         }}
       />
     </Tabs>
@@ -123,5 +185,9 @@ const styles = StyleSheet.create({
   },
   iconWrapActive: {
     opacity: 1,
+  },
+  label: {
+    fontSize: 12,
+    fontWeight: "600",
   },
 });

@@ -144,7 +144,7 @@ export function makeCoursesListStyles(colors: AppColors) {
     noCoursesTitle: {
       fontSize: 24,
       lineHeight: 32,
-      color: colors.textPrimary,
+      color: colors.titlePrimary,
       fontFamily: BRAND_FONT_FAMILY,
       letterSpacing: 0.2,
     },
@@ -179,7 +179,7 @@ export function makeCoursesListStyles(colors: AppColors) {
     courseTitle: {
       fontSize: 17,
       lineHeight: 22,
-      color: colors.textPrimary,
+      color: colors.titlePrimary,
       fontFamily: BRAND_FONT_FAMILY,
     },
     inlineActions: {

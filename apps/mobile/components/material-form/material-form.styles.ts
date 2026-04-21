@@ -17,7 +17,7 @@ export function makeMaterialFormStyles(colors: AppColors) {
       marginBottom: 10,
     },
     iconText: { fontSize: 24, fontWeight: "700", color: colors.brandPrimary },
-    heading: { fontSize: 20, fontWeight: "800", color: colors.textPrimary },
+    heading: { fontSize: 20, fontWeight: "800", color: colors.titlePrimary },
     errorBox: {
       backgroundColor: colors.dangerSoftAlt,
       borderWidth: 1,

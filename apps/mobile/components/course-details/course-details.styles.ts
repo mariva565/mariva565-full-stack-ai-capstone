@@ -77,7 +77,7 @@ export function makeCourseDetailsStyles(colors: AppColors) {
     sectionTitle: {
       fontSize: 18,
       lineHeight: 24,
-      color: colors.textPrimary,
+      color: colors.titlePrimary,
       fontFamily: BRAND_FONT_FAMILY,
     },
     sectionSubtitle: {

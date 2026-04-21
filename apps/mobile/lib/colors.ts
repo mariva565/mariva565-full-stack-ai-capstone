@@ -20,6 +20,7 @@ const LIGHT_COLORS = {
   borderMuted: "#e2e8f0",
 
   textPrimary: "#0f172a",
+  titlePrimary: "#2e1d7a",
   textSecondary: "#64748b",
   textTertiary: "#475569",
   textStrong: "#334155",
@@ -67,6 +68,7 @@ const DARK_COLORS = {
   borderMuted: "#344362",
 
   textPrimary: "#e7edff",
+  titlePrimary: "#c9bcff",
   textSecondary: "#acb7d3",
   textTertiary: "#98a4c3",
   textStrong: "#d6dff7",

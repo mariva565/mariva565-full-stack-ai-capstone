@@ -132,7 +132,7 @@ function makeMaterialCardStyles(colors: AppColors) {
     title: {
       fontSize: 15,
       lineHeight: 20,
-      color: colors.textPrimary,
+      color: colors.titlePrimary,
       fontFamily: BRAND_FONT_FAMILY,
     },
     content: { fontSize: 13, color: colors.textSecondary, lineHeight: 19, marginTop: 6 },

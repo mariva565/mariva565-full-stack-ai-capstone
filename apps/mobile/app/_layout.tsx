@@ -3,6 +3,11 @@ import { useEffect, type ReactNode } from "react";
 import { useFonts } from "expo-font";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import {
+  DarkTheme as NavigationDarkTheme,
+  DefaultTheme as NavigationDefaultTheme,
+  ThemeProvider,
+} from "@react-navigation/native";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import * as Sentry from "@sentry/react-native";
 import { AuthProvider, useAuth } from "../lib/auth-context";
@@ -74,7 +79,34 @@ function AuthGate() {
   const router = useRouter();
   const navigationState = useRootNavigationState();
   // Live theme: re-renders when mode changes so header and status bar update immediately.
-  const { colors } = useTheme();
+  const { colors, resolvedTheme } = useTheme();
+
+  const navigationTheme =
+    resolvedTheme === "dark"
+      ? {
+          ...NavigationDarkTheme,
+          colors: {
+            ...NavigationDarkTheme.colors,
+            primary: colors.brandPrimary,
+            background: colors.canvas,
+            card: colors.surface,
+            text: colors.textPrimary,
+            border: colors.borderSubtle,
+            notification: colors.dangerAccent,
+          },
+        }
+      : {
+          ...NavigationDefaultTheme,
+          colors: {
+            ...NavigationDefaultTheme.colors,
+            primary: colors.brandPrimary,
+            background: colors.canvas,
+            card: colors.surface,
+            text: colors.textPrimary,
+            border: colors.borderSubtle,
+            notification: colors.dangerAccent,
+          },
+        };
 
   useEffect(() => {
     if (isLoading) return;
@@ -101,29 +133,31 @@ function AuthGate() {
   }
 
   return (
-    <AppShell>
-      <StatusBar style="light" backgroundColor={colors.brandDeep} />
-      <Stack
-        screenOptions={{
-          headerStyle: { backgroundColor: colors.brandDeep },
-          headerTintColor: colors.textOnBrand,
-          headerTitleStyle: { fontWeight: "700" },
-          headerShadowVisible: false,
-          contentStyle: { backgroundColor: colors.canvas },
-        }}
-      >
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="login" options={{ headerShown: false }} />
-        <Stack.Screen name="register" options={{ title: "Register" }} />
-        <Stack.Screen name="profile/[userId]" options={{ headerShown: false }} />
-        <Stack.Screen name="community/[id]" options={{ headerShown: false }} />
-        <Stack.Screen name="community/new" options={{ headerShown: false }} />
-        <Stack.Screen name="messages/index" options={{ headerShown: false }} />
-        <Stack.Screen name="messages/[id]" options={{ headerShown: false }} />
-        <Stack.Screen name="settings" options={{ title: "Settings" }} />
-        <Stack.Screen name="chat" options={{ presentation: "modal", title: "StudyHub Mentor" }} />
-      </Stack>
-    </AppShell>
+    <ThemeProvider value={navigationTheme}>
+      <AppShell>
+        <StatusBar style="light" backgroundColor={colors.brandDeep} />
+        <Stack
+          screenOptions={{
+            headerStyle: { backgroundColor: colors.brandDeep },
+            headerTintColor: colors.textOnBrand,
+            headerTitleStyle: { fontWeight: "700", color: colors.textOnBrand },
+            headerShadowVisible: false,
+            contentStyle: { backgroundColor: colors.canvas },
+          }}
+        >
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="login" options={{ headerShown: false }} />
+          <Stack.Screen name="register" options={{ title: "Register" }} />
+          <Stack.Screen name="profile/[userId]" options={{ headerShown: false }} />
+          <Stack.Screen name="community/[id]" options={{ headerShown: false }} />
+          <Stack.Screen name="community/new" options={{ headerShown: false }} />
+          <Stack.Screen name="messages/index" options={{ headerShown: false }} />
+          <Stack.Screen name="messages/[id]" options={{ headerShown: false }} />
+          <Stack.Screen name="settings" options={{ title: "Settings" }} />
+          <Stack.Screen name="chat" options={{ presentation: "modal", title: "StudyHub Mentor" }} />
+        </Stack>
+      </AppShell>
+    </ThemeProvider>
   );
 }
 

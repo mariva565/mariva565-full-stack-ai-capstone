@@ -8468,3 +8468,58 @@ Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
 
 **Решения:**
 - Избрахме live-theme pass върху засегнатите shared mobile components вместо локален fix само на един screen, защото module/material UX-ът се сглобява от няколко reused building block-а и частичният fix щеше да остави смесен light/dark интерфейс.
+
+## 2026-04-20
+
+### Session 283 — Mobile tabs live-theme header/title color restoration
+
+**Какво направихме:**
+- Оправихме regress-а с тъмния режим в mobile tabs навигацията, при който заглавията/label-ите можеха да останат в неподходящ цвят след theme switch.
+- Подменихме статичния `COLORS` import в `apps/mobile/app/(tabs)/_layout.tsx` с live `useTheme()` цветовете, за да се re-render-ват tab/header стиловете при смяна на темата.
+- Направихме `TabIcon` theme-aware чрез подадени `activeColor`/`inactiveColor` от текущата тема.
+- Добавихме експлицитен `color` в `headerTitleStyle`, за да няма fallback към default черен title при tab header-а.
+
+**Файлове:**
+- [MODIFY] apps/mobile/app/(tabs)/_layout.tsx
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd run typecheck:mobile` ✅
+
+**Решения:**
+- Оставихме fix-а локализиран в tabs layout-а (вместо по отделни таб екрани), защото проблемът е в navigation-level theming и така покриваме всички tab title/label стилове с минимален риск.
+
+### Session 284 — Mobile navigation theme provider and explicit tab labels
+
+**Какво направихме:**
+- Разширихме mobile dark-mode fix-а отвъд tabs layout-а, след като стана ясно, че част от navigation UI вероятно още наследява default light цветове от React Navigation.
+- Добавихме глобален `ThemeProvider` в root mobile layout-а и подадохме navigation theme, изграден от текущите app preference colors за `background`, `card`, `text`, `border`, `primary` и `notification`.
+- Добавихме експлицитен `color` и в root stack `headerTitleStyle`, за да няма черни header titles при native navigation fallback.
+- Подменихме default tab label rendering с custom `tabBarLabel`, който рендерира `Text` с изричен active/inactive theme цвят за всеки таб.
+
+**Файлове:**
+- [MODIFY] apps/mobile/app/_layout.tsx
+- [MODIFY] apps/mobile/app/(tabs)/_layout.tsx
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd run typecheck:mobile` ✅
+
+**Решения:**
+- Използвахме двоен fix (`ThemeProvider` + custom tab labels), защото symptom-ът сочеше, че проблемът не е само в tab layout colors, а и в default navigation theming слоя на Expo Router / React Navigation.
+
+### Session 285 — Mobile Courses tab icon refresh
+
+**Какво направихме:**
+- Подменихме иконката на mobile `Courses` tab-а с по-ясна school/courses иконка, за да се различава по-добре от останалите navigation symbols.
+- Оставихме останалите tab icons непроменени и локализирахме промяната само в `apps/mobile/app/(tabs)/_layout.tsx`.
+
+**Файлове:**
+- [MODIFY] apps/mobile/app/(tabs)/_layout.tsx
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd run typecheck:mobile` ✅
+
+**Решения:**
+- Избрахме `school-outline` glyph за `Courses`, защото е по-разпознаваем като учебен/курсов navigation affordance от предишната generic book icon.

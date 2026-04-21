@@ -145,7 +145,7 @@ export function makeCommunityStyles(colors: AppColors) {
       marginTop: 2,
     },
     cardTitle: {
-      color: colors.textPrimary,
+      color: colors.titlePrimary,
       fontSize: 18,
       fontFamily: BRAND_FONT_FAMILY,
       marginBottom: 8,
@@ -185,7 +185,7 @@ export function makeCommunityStyles(colors: AppColors) {
     emptyTitle: {
       fontSize: 18,
       fontWeight: "600",
-      color: colors.textPrimary,
+      color: colors.titlePrimary,
       marginTop: 16,
     },
     emptySubtitle: {

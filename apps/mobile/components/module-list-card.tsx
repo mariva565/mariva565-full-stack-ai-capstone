@@ -97,7 +97,7 @@ function makeModuleListCardStyles(colors: AppColors) {
     title: {
       fontSize: 16,
       lineHeight: 21,
-      color: colors.textPrimary,
+      color: colors.titlePrimary,
       fontFamily: BRAND_FONT_FAMILY,
     },
     meta: { fontSize: 13, color: colors.textSecondary, lineHeight: 19, marginTop: 4 },

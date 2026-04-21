@@ -122,7 +122,7 @@ export function PostDetailsScreen({ postId }: { postId: number }) {
         <TouchableOpacity onPress={() => router.back()} style={{ paddingRight: 16 }}>
           <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
         </TouchableOpacity>
-        <Text style={{ fontSize: 18, fontWeight: "700", color: colors.textPrimary }}>Post Details</Text>
+        <Text style={{ fontSize: 18, fontWeight: "700", color: colors.titlePrimary }}>Post Details</Text>
       </View>
 
       <ScrollView contentContainerStyle={[styles.list, { paddingBottom: 88 + Math.max(insets.bottom, 12) }]}>

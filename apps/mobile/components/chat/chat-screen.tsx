@@ -36,7 +36,7 @@ export function ChatScreen() {
           style={{ width: 160, height: 160, marginBottom: 8, transform: [{ scale: 1.2 }] }} 
           resizeMode="contain"
         />
-        <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>StudyHub Mentor</Text>
+        <Text style={[styles.emptyTitle, { color: colors.titlePrimary }]}>StudyHub Mentor</Text>
         <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
           Ask me anything about your studies, code, or coursework!
         </Text>

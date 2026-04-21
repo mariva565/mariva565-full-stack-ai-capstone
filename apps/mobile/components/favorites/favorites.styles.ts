@@ -72,7 +72,7 @@ export function makeFavoritesStyles(colors: AppColors) {
       elevation: 2,
     },
     cardMain: { gap: 6 },
-    cardTitle: { fontSize: 16, fontWeight: "700", color: colors.textPrimary },
+    cardTitle: { fontSize: 16, fontWeight: "700", color: colors.titlePrimary },
     cardMeta: { fontSize: 13, color: colors.textSecondary },
     tagsRow: { flexDirection: "row", flexWrap: "wrap", gap: 6, marginTop: 10 },
     tag: {

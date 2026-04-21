@@ -22,7 +22,7 @@ export function makeCreatePostStyles(colors: AppColors) {
     headerTitle: {
       fontSize: 20,
       fontWeight: "800",
-      color: colors.textPrimary,
+      color: colors.titlePrimary,
     },
     backButton: {
       width: 36,

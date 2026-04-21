@@ -213,7 +213,7 @@ function makeEditModuleStyles(colors: AppColors) {
       marginBottom: 12,
     },
     iconText: { fontSize: 24, fontWeight: "800", color: colors.brandPrimary },
-    heading: { fontSize: 20, fontWeight: "800", color: colors.textPrimary },
+    heading: { fontSize: 20, fontWeight: "800", color: colors.titlePrimary },
     subheading: { fontSize: 14, color: colors.textSecondary, marginTop: 4 },
     errorBox: {
       backgroundColor: colors.dangerSoftAlt,

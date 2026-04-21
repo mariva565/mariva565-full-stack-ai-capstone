@@ -32,7 +32,7 @@ export function makeSettingsStyles(colors: AppColors) {
     heroTitle: {
       fontSize: 23,
       fontWeight: "800",
-      color: colors.textPrimary,
+      color: colors.titlePrimary,
     },
     heroMeta: {
       color: colors.textSecondary,
@@ -75,7 +75,7 @@ export function makeSettingsStyles(colors: AppColors) {
     rowTitle: {
       fontSize: 15,
       fontWeight: "700",
-      color: colors.textPrimary,
+      color: colors.titlePrimary,
     },
     rowMeta: {
       color: colors.textSecondary,
