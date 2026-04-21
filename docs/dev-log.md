@@ -8661,3 +8661,20 @@ Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
 - Оставихме course membership check настрана — останалите material endpoints (`GET /api/materials/[id]`, `material-detail-data.ts`) не проверяват членство в курса, така че share endpoint-ът следва същата конвенция. Ако се въведе strict access control, това ще е project-wide решение.
 - Gmail SMTP вместо Resend, защото Resend free tier иска verified sender domain; App Password flow позволява veлик sending акаунт без собствен домейн.
 - Nodemailer transporter е module-level singleton — connection pool се преизползва между заявки без да се създава нов при всяка.
+
+### Session 291 — README mobile demo slot
+
+**Какво направихме:**
+- Добавихме отделна `Mobile Demo` секция в `README.md` под mobile screenshot gallery-то.
+- Оставихме готов placeholder за GitHub `user-attachments` video URL, без `coming soon`/`will be added` copy.
+
+**Файлове:**
+- [MODIFY] README.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd run check:mojibake` ✅
+- README mojibake scan ✅
+
+**Решения:**
+- Използвахме GitHub attachment URL placeholder вместо да commit-ваме 24 MB video файл в repository history.

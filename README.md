@@ -111,6 +111,11 @@ Demo credentials: see [Demo Credentials](#demo-credentials)
   </tr>
 </table>
 
+## Mobile Demo
+
+**Mobile app walkthrough:**  
+`https://github.com/user-attachments/assets/...`
+
 ---
 
 ## About the Project
