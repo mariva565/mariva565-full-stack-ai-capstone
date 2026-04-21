@@ -8549,7 +8549,8 @@ Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
 **Какво направихме:**
 - Добавихме четирите screenshot asset-а за секцията `How It Works` в публичната web assets папка.
 - Вързахме gallery data-та към реалните изображения вместо placeholder `src: null` стойности.
-- Добавихме `Product Preview` screenshot gallery в началото на `README.md`, за да се виждат същите изображения и в GitHub.
+- Добавихме `Product Preview` screenshot gallery в началото на `README.md`, за да се виждат preview изображенията и в GitHub.
+- Генерирахме отделни README thumbnails с еднакъв 1200x675 canvas, за да изглежда gallery-то подредено независимо от оригиналните screenshot пропорции.
 - Запазихме точния case на filenames, за да работят пътищата коректно и при production deploy на case-sensitive filesystem.
 
 **Файлове:**
@@ -8557,6 +8558,10 @@ Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
 - [ADD] apps/web/public/assets/how-it-works/Dashboard_v2_screenshot.png
 - [ADD] apps/web/public/assets/how-it-works/Materials_v2_Screenshot.png
 - [ADD] apps/web/public/assets/how-it-works/Profile_v2_Screenshot.png
+- [ADD] docs/assets/readme/preview-course-workspace.png
+- [ADD] docs/assets/readme/preview-dashboard.png
+- [ADD] docs/assets/readme/preview-materials.png
+- [ADD] docs/assets/readme/preview-profile.png
 - [MODIFY] apps/web/components/how-it-works/content.ts
 - [MODIFY] README.md
 - [MODIFY] docs/dev-log.md
@@ -8567,3 +8572,24 @@ Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
 
 **Решения:**
 - Използвахме съществуващата `apps/web/public/assets/how-it-works/` папка и публични `/assets/how-it-works/...` URL-и, вместо да местим изображенията или да добавяме нов asset loader.
+
+### Session 288 — README top metadata sync
+
+**Какво направихме:**
+- Обновихме README badges за текущото състояние: `Commits 220+`, `API 59 routes`, `Web 24 pages`, `Roles User + Mentor + Admin`.
+- Синхронизирахме същите API/page counts в README architecture diagram-а.
+- Поправихме README ER diagram-а за `users.role`, така че да показва `user | mentor | admin`.
+- Поправихме `docs/implementation-plan.md` users schema summary от `user/admin` към `user/mentor/admin`.
+
+**Файлове:**
+- [MODIFY] README.md
+- [MODIFY] docs/implementation-plan.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd run typecheck:web` ✅
+- `npm.cmd run check:mojibake` ✅
+- README mojibake scan ✅
+
+**Решения:**
+- Използвахме текущите counts от локалния код (`59` `route.ts` API handlers и `24` `page.tsx` routes), вместо да оставяме старите README стойности от предишен етап.

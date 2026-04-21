@@ -102,7 +102,7 @@ capstone/
 
 ### users
 ```text
-id, email, name, password_hash, role (user/admin), avatar_url, created_at
+id, email, name, password_hash, role (user/mentor/admin), avatar_url, created_at
 ```
 
 ### courses

@@ -18,18 +18,18 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/Status-In%20Progress-F59E0B?style=flat-square" alt="Status in progress" />
-  <img src="https://img.shields.io/badge/Commits-75%2B-22C55E?style=flat-square" alt="75 plus commits" />
+  <img src="https://img.shields.io/badge/Commits-220%2B-22C55E?style=flat-square" alt="220 plus commits" />
   <img src="https://img.shields.io/badge/TypeScript-Strict%20Mode-6366F1?style=flat-square" alt="TypeScript strict mode" />
   <img src="https://img.shields.io/badge/Tables-19-8B5CF6?style=flat-square" alt="19 database tables" />
-  <img src="https://img.shields.io/badge/API-57%20routes-06B6D4?style=flat-square" alt="57 API routes" />
-  <img src="https://img.shields.io/badge/Web-23%20pages-6366F1?style=flat-square" alt="23 web pages" />
+  <img src="https://img.shields.io/badge/API-59%20routes-06B6D4?style=flat-square" alt="59 API routes" />
+  <img src="https://img.shields.io/badge/Web-24%20pages-6366F1?style=flat-square" alt="24 web pages" />
   <img src="https://img.shields.io/badge/Mobile-React%20Query%20Cache-8B5CF6?style=flat-square" alt="mobile react query cache" />
 </p>
 
 <p align="center">
   <a href="#system-architecture"><img src="https://img.shields.io/badge/Architecture-System%20Overview-8B5CF6?style=flat-square" alt="Architecture" /></a>
   <a href="#database-schema"><img src="https://img.shields.io/badge/DB-Schema%20Diagram-6366F1?style=flat-square" alt="DB schema diagram" /></a>
-  <a href="#user-roles"><img src="https://img.shields.io/badge/Roles-User%20%2B%20Admin-06B6D4?style=flat-square" alt="User roles" /></a>
+  <a href="#user-roles"><img src="https://img.shields.io/badge/Roles-User%20%2B%20Mentor%20%2B%20Admin-06B6D4?style=flat-square" alt="User, mentor, and admin roles" /></a>
   <a href="#demo-walkthrough"><img src="https://img.shields.io/badge/Demo-Walkthrough-8B5CF6?style=flat-square" alt="Demo walkthrough" /></a>
   <a href="#api-endpoints"><img src="https://img.shields.io/badge/API-Endpoints-6366F1?style=flat-square" alt="API endpoints" /></a>
 </p>
@@ -48,24 +48,24 @@ Demo credentials: see [Demo Credentials](#demo-credentials)
 <table>
   <tr>
     <td width="50%">
-      <img src="apps/web/public/assets/how-it-works/Dashboard_v2_screenshot.png" alt="StudyHub dashboard screenshot" />
+      <img src="docs/assets/readme/preview-dashboard.png" width="100%" alt="StudyHub dashboard screenshot" />
       <br />
       <sub><b>Dashboard</b> - course overview and quick access</sub>
     </td>
     <td width="50%">
-      <img src="apps/web/public/assets/how-it-works/Courses_v2_Screenshot.png" alt="StudyHub course workspace screenshot" />
+      <img src="docs/assets/readme/preview-course-workspace.png" width="100%" alt="StudyHub course workspace screenshot" />
       <br />
       <sub><b>Course workspace</b> - modules and study structure</sub>
     </td>
   </tr>
   <tr>
     <td width="50%">
-      <img src="apps/web/public/assets/how-it-works/Materials_v2_Screenshot.png" alt="StudyHub materials screenshot" />
+      <img src="docs/assets/readme/preview-materials.png" width="100%" alt="StudyHub materials screenshot" />
       <br />
       <sub><b>Materials</b> - organized notes, links, and learning resources</sub>
     </td>
     <td width="50%">
-      <img src="apps/web/public/assets/how-it-works/Profile_v2_Screenshot.png" alt="StudyHub profile screenshot" />
+      <img src="docs/assets/readme/preview-profile.png" width="100%" alt="StudyHub profile screenshot" />
       <br />
       <sub><b>Profile</b> - account details, security, and mobile handoff</sub>
     </td>
@@ -124,7 +124,7 @@ Most tools make you choose: Notion gives you flexibility but no structure. Googl
 graph TB
     subgraph CLIENT["Client Layer"]
         direction LR
-        WEB["<b>Next.js Web App</b><br/>React 19 + TypeScript<br/>Tailwind CSS + Three.js<br/>23 pages"]
+        WEB["<b>Next.js Web App</b><br/>React 19 + TypeScript<br/>Tailwind CSS + Three.js<br/>24 pages"]
         MOBILE["<b>Expo Mobile App</b><br/>React Native<br/>Android / iOS<br/>20+ screens"]
     end
 
@@ -145,7 +145,7 @@ graph TB
         DB[("Neon PostgreSQL<br/><i>Serverless — EU region</i><br/>19 tables + relationships")]
     end
 
-    WEB -->|"REST API<br/>57 routes"| SERVER
+    WEB -->|"REST API<br/>59 routes"| SERVER
     MOBILE -->|"REST API<br/>same backend"| SERVER
     SERVER --> ORM
     ORM --> DB
@@ -340,7 +340,7 @@ erDiagram
         varchar email UK
         varchar name
         text password_hash
-        varchar role "user | admin"
+        varchar role "user | mentor | admin"
         text avatar_url
         timestamp created_at
     }
