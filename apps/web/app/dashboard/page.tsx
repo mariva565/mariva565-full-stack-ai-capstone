@@ -16,6 +16,7 @@ export default async function DashboardPage() {
     <DashboardClientPage
       initialCourses={dashboardData.courses}
       initialFavorites={dashboardData.favorites}
+      initialShared={dashboardData.shared}
       initialModuleCount={dashboardData.moduleCount}
       initialMaterialCount={dashboardData.materialCount}
     />

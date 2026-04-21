@@ -11,7 +11,7 @@ import { useDashboardCourseEditor } from "./use-dashboard-course-editor";
 import { DashboardHero } from "./dashboard-hero";
 import { DashboardPageShell } from "./dashboard-page-shell";
 import { PinnedSidebar } from "./pinned-sidebar";
-import type { DashboardCourse, DashboardData, PinnedMaterial } from "./types";
+import type { DashboardCourse, DashboardData, PinnedMaterial, SharedMaterial } from "./types";
 import { ConfirmModal } from "../ui/confirm-modal";
 import { Toast, type ToastTone } from "../ui/toast";
 import { readErrorMessage } from "../../lib/http";
@@ -19,6 +19,7 @@ import { readErrorMessage } from "../../lib/http";
 type DashboardClientPageProps = {
   initialCourses: DashboardCourse[];
   initialFavorites: PinnedMaterial[];
+  initialShared: SharedMaterial[];
   initialModuleCount: number;
   initialMaterialCount: number;
 };
@@ -42,12 +43,14 @@ function matchesCourse(course: DashboardCourse, search: string, status: CourseSt
 export function DashboardClientPage({
   initialCourses,
   initialFavorites,
+  initialShared,
   initialModuleCount,
   initialMaterialCount,
 }: DashboardClientPageProps) {
   const router = useRouter();
   const [courses, setCourses] = useState<DashboardCourse[]>(initialCourses);
   const [favorites, setFavorites] = useState<PinnedMaterial[]>(initialFavorites);
+  const [shared, setShared] = useState<SharedMaterial[]>(initialShared);
   const [moduleCount, setModuleCount] = useState(initialModuleCount);
   const [materialCount, setMaterialCount] = useState(initialMaterialCount);
   const [creating, setCreating] = useState(false);
@@ -93,6 +96,7 @@ export function DashboardClientPage({
       const data = (await response.json()) as DashboardData;
       setCourses(data.courses);
       setFavorites(data.favorites);
+      setShared(data.shared);
       setModuleCount(data.moduleCount);
       setMaterialCount(data.materialCount);
     } catch {
@@ -232,6 +236,7 @@ export function DashboardClientPage({
 
           <PinnedSidebar
             favorites={favorites}
+            shared={shared}
             searchValue={pinnedSearch}
             activeTag={activeTag}
             onSearchChange={setPinnedSearch}

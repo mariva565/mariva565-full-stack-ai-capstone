@@ -322,3 +322,27 @@ export const oauthAccounts = pgTable(
     ),
   ]
 );
+
+// ─── 18. shared_materials ─────────────────────────────────────
+export const sharedMaterials = pgTable(
+  "shared_materials",
+  {
+    id: serial("id").primaryKey(),
+    materialId: integer("material_id")
+      .notNull()
+      .references(() => materials.id, { onDelete: "cascade" }),
+    sharedWithUserId: integer("shared_with_user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    sharedByUserId: integer("shared_by_user_id")
+      .references(() => users.id, { onDelete: "set null" }),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("shared_materials_material_user_idx").on(
+      table.materialId,
+      table.sharedWithUserId
+    ),
+    index("shared_materials_user_idx").on(table.sharedWithUserId),
+  ]
+);

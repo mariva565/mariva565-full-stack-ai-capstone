@@ -1,6 +1,6 @@
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 
-import { courses, materials, modules } from "../../../drizzle/schema";
+import { courses, materials, modules, sharedMaterials } from "../../../drizzle/schema";
 import type {
   MaterialCourseSummary,
   MaterialDetail,
@@ -16,7 +16,7 @@ function toIsoString(value: Date | string) {
 }
 
 type MaterialDetailResult = {
-  material: MaterialDetail;
+  material: MaterialDetail & { createdBy: number };
   module: MaterialModuleSummary;
   course: MaterialCourseSummary;
 };
@@ -33,6 +33,7 @@ export async function getMaterialDetail(materialId: number): Promise<MaterialDet
         tags: materials.tags,
         createdAt: materials.createdAt,
         moduleId: materials.moduleId,
+        createdBy: materials.createdBy,
       },
       module: {
         id: modules.id,
@@ -75,11 +76,33 @@ export async function getMaterialPageData(
     return null;
   }
 
+  const isOwner = detail.material.createdBy === userId;
+
+  if (!isOwner) {
+    // Check if shared with user
+    const [share] = await db
+      .select()
+      .from(sharedMaterials)
+      .where(
+        and(
+          eq(sharedMaterials.materialId, materialId),
+          eq(sharedMaterials.sharedWithUserId, userId)
+        )
+      )
+      .limit(1);
+
+    if (!share) {
+      return null; // Deny access
+    }
+  }
+
   const pinned = await isMaterialPinned(userId, materialId);
-  const aiOutputs = await listAiToolOutputsForMaterial(userId, materialId);
+  // Only load AI outputs if owner
+  const aiOutputs = isOwner ? await listAiToolOutputsForMaterial(userId, materialId) : [];
 
   return {
     ...detail,
+    isOwner,
     isPinned: pinned,
     aiOutputs,
   };

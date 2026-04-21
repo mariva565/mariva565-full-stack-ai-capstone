@@ -18,9 +18,22 @@ export type PinnedMaterial = {
   courseTitle: string;
 };
 
+export type SharedMaterial = {
+  id: number;
+  title: string;
+  materialType: string;
+  fileUrl: string | null;
+  createdAt: string;
+  sharedAt: string;
+  sharedBy: { email: string | null; name: string | null };
+  context: string;
+  snippet: string | null;
+};
+
 export type DashboardData = {
   courses: DashboardCourse[];
   favorites: PinnedMaterial[];
+  shared: SharedMaterial[];
   moduleCount: number;
   materialCount: number;
 };

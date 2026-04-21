@@ -50,6 +50,13 @@
       "when": 1776466181233,
       "tag": "0006_pretty_leper_queen",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1776779887409,
+      "tag": "0007_fat_menace",
+      "breakpoints": true
     }
   ]
 }

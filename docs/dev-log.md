@@ -8695,3 +8695,18 @@ Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
 
 **Решения:**
 - Оставихме video файла извън git history и използвахме standalone GitHub attachment URL в README.
+
+
+### Session 291 — Shared with Me Functionality
+- **Какво направихме**: Добавена е пълна поддръжка за 'Shared with Me' функционалност, наподобяваща v1.
+  - Добавена `shared_materials` таблица в базата данни чрез Drizzle.
+  - Създадени GET и DELETE endpoints за управление на споделяне.
+  - Добавен таб 'Shared' в Dashboard Quick Access лентата.
+  - Обновен 'Share Modal' с изглед на споделените потребители и възможност за 'Unshare'.
+- **Файлове**:
+  - `drizzle/schema.ts` и миграция
+  - `api/materials/[id]/share/route.ts`, `api/materials/[id]/share/[recipientId]/route.ts`, `api/materials/shared/route.ts`
+  - `lib/dashboard-data.ts`, `components/dashboard/pinned-sidebar.tsx`, `components/dashboard/shared-material-item.tsx`
+  - `components/materials/share-modal.tsx`, `components/materials/material-page-client.tsx`
+- **Verification**: typecheck преминава успешно.
+- **Решения**: Позициониране на 'Shared with Me' до 'Pinned Materials' в таблото като логично място за достъп до бързи материали.

@@ -28,6 +28,7 @@ export type MaterialPageData = {
   material: MaterialDetail;
   module: MaterialModuleSummary;
   course: MaterialCourseSummary;
+  isOwner: boolean;
   isPinned: boolean;
   aiOutputs: SavedAiToolOutput[];
 };
