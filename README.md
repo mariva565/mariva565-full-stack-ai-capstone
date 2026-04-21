@@ -113,12 +113,7 @@ Demo credentials: see [Demo Credentials](#demo-credentials)
 
 ## Mobile Demo
 
-<<<<<<< HEAD
-https://github.com/user-attachments/assets/4af18559-7e62-4ce6-9d9a-f30d5bf6656e
-=======
-**Mobile app walkthrough:**  
-`https://github.com/user-attachments/assets/4af18559-7e62-4ce6-9d9a-f30d5bf6656e`
->>>>>>> 7f230e4453cd94d9abdab12c32f0a32d26275896
+<video src="https://github.com/user-attachments/assets/4af18559-7e62-4ce6-9d9a-f30d5bf6656e" controls width="320"></video>
 
 ---
 
