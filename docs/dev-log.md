@@ -8593,3 +8593,35 @@ Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
 
 **Решения:**
 - Използвахме текущите counts от локалния код (`59` `route.ts` API handlers и `24` `page.tsx` routes), вместо да оставяме старите README стойности от предишен етап.
+
+### Session 289 — README mobile preview screenshots
+
+**Какво направихме:**
+- Обработихме 6 mobile screenshots от `docs/assets/readme/mobile/`, които бяха експортирани от Paint с празен canvas вдясно.
+- Crop-нахме реалния mobile screen area и генерирахме еднакви `640x1280` README preview изображения с phone-style рамка.
+- Добавихме `Mobile Preview` секция в `README.md` с Courses, Favorites, Community, Profile, Settings и QR handoff screenshots.
+- Оставихме оригиналните Paint screenshots като source assets, а README сочи само към обработените preview файлове.
+
+**Файлове:**
+- [ADD] docs/assets/readme/mobile/mobile-community.png
+- [ADD] docs/assets/readme/mobile/mobile-dashboard.png
+- [ADD] docs/assets/readme/mobile/mobile-favorites.png
+- [ADD] docs/assets/readme/mobile/mobile-profile.png
+- [ADD] docs/assets/readme/mobile/mobile-QR-scan.png
+- [ADD] docs/assets/readme/mobile/mobile-settings.png
+- [ADD] docs/assets/readme/preview-mobile-community.png
+- [ADD] docs/assets/readme/preview-mobile-courses.png
+- [ADD] docs/assets/readme/preview-mobile-favorites.png
+- [ADD] docs/assets/readme/preview-mobile-profile.png
+- [ADD] docs/assets/readme/preview-mobile-qr-scan.png
+- [ADD] docs/assets/readme/preview-mobile-settings.png
+- [MODIFY] README.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd run check:mojibake` ✅
+- README mojibake scan ✅
+- Mobile preview image dimensions check: all generated previews are `640x1280` ✅
+
+**Решения:**
+- Използвахме отделни generated README previews вместо директно да embed-ваме source screenshots, защото README трябва да изглежда подредено независимо от Paint canvas размера.

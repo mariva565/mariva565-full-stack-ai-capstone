@@ -72,6 +72,45 @@ Demo credentials: see [Demo Credentials](#demo-credentials)
   </tr>
 </table>
 
+## Mobile Preview
+
+<table>
+  <tr>
+    <td width="33%">
+      <img src="docs/assets/readme/preview-mobile-courses.png" width="100%" alt="StudyHub mobile courses screen" />
+      <br />
+      <sub><b>Courses</b> - mobile course overview</sub>
+    </td>
+    <td width="33%">
+      <img src="docs/assets/readme/preview-mobile-favorites.png" width="100%" alt="StudyHub mobile favorites screen" />
+      <br />
+      <sub><b>Favorites</b> - pinned study materials</sub>
+    </td>
+    <td width="33%">
+      <img src="docs/assets/readme/preview-mobile-community.png" width="100%" alt="StudyHub mobile community screen" />
+      <br />
+      <sub><b>Community</b> - posts and discussions</sub>
+    </td>
+  </tr>
+  <tr>
+    <td width="33%">
+      <img src="docs/assets/readme/preview-mobile-profile.png" width="100%" alt="StudyHub mobile profile screen" />
+      <br />
+      <sub><b>Profile</b> - account and logout</sub>
+    </td>
+    <td width="33%">
+      <img src="docs/assets/readme/preview-mobile-settings.png" width="100%" alt="StudyHub mobile settings screen" />
+      <br />
+      <sub><b>Settings</b> - preferences and theme</sub>
+    </td>
+    <td width="33%">
+      <img src="docs/assets/readme/preview-mobile-qr-scan.png" width="100%" alt="StudyHub mobile QR scan screen" />
+      <br />
+      <sub><b>QR handoff</b> - profile deep link scan</sub>
+    </td>
+  </tr>
+</table>
+
 ---
 
 ## About the Project
