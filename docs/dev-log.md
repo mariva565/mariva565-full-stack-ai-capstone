@@ -8678,3 +8678,20 @@ Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
 
 **Решения:**
 - Използвахме GitHub attachment URL placeholder вместо да commit-ваме 24 MB video файл в repository history.
+
+### Session 292 — README mobile video embed URL
+
+**Какво направихме:**
+- Подменихме `Mobile Demo` placeholder-а в `README.md` с реалния GitHub `user-attachments` video URL.
+- Махнахме backticks/code formatting-а около URL-а, защото GitHub го рендерираше като plain code text вместо като attachment/video preview.
+
+**Файлове:**
+- [MODIFY] README.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd run check:mojibake` ✅
+- README mojibake scan ✅
+
+**Решения:**
+- Оставихме video файла извън git history и използвахме standalone GitHub attachment URL в README.
