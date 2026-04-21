@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { motion } from "framer-motion";
 
 import type { ProfileUser } from "../../lib/profile";
@@ -17,34 +18,10 @@ type ProfilePageClientProps = {
   initialUser: ProfileUser;
 };
 
+type ProfilePageState = ReturnType<typeof useProfilePageState>;
+
 export function ProfilePageClient({ initialUser }: ProfilePageClientProps) {
-  const {
-    user,
-    savingProfile,
-    savingPassword,
-    uploadingAvatar,
-    removingAvatar,
-    toast,
-    name,
-    avatarUrl,
-    currentPassword,
-    newPassword,
-    confirmPassword,
-    avatarPreviewUrl,
-    hasProfileChanges,
-    roleLabel,
-    memberSince,
-    setName,
-    setAvatarUrl,
-    setCurrentPassword,
-    setNewPassword,
-    setConfirmPassword,
-    handleProfileSubmit,
-    handlePasswordSubmit,
-    handleRemoveAvatar,
-    closeToast,
-  } = useProfilePageState({ initialUser });
-  const mobileProductionDeepLink = buildMobileProfileDeepLink(user.id);
+  const profileState = useProfilePageState({ initialUser });
 
   return (
     <>
@@ -60,67 +37,113 @@ export function ProfilePageClient({ initialUser }: ProfilePageClientProps) {
 
         <div className="relative mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
           <ProfilePageHeader />
-
-          <div className="mt-8 grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
-            <motion.div
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.35, ease: "easeOut" }}
-            >
-              <ProfileHeroCard
-                email={user.email}
-                name={name.trim() || user.name}
-                role={user.role}
-                createdAt={user.createdAt}
-                avatarUrl={avatarPreviewUrl}
-                hasUnsavedChanges={hasProfileChanges}
-                avatarBusy={uploadingAvatar || removingAvatar}
-                onClearAvatar={handleRemoveAvatar}
-              />
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.35, delay: 0.08, ease: "easeOut" }}
-              className="space-y-6"
-            >
-              <ProfileDetailsCard
-                name={name}
-                email={user.email}
-                avatarUrl={avatarUrl}
-                roleLabel={roleLabel}
-                memberSince={memberSince}
-                saving={savingProfile}
-                hasChanges={hasProfileChanges}
-                onNameChange={setName}
-                onAvatarUrlChange={setAvatarUrl}
-                onSubmit={handleProfileSubmit}
-              />
-
-              <ProfileSecurityCard
-                currentPassword={currentPassword}
-                newPassword={newPassword}
-                confirmPassword={confirmPassword}
-                saving={savingPassword}
-                onCurrentPasswordChange={setCurrentPassword}
-                onNewPasswordChange={setNewPassword}
-                onConfirmPasswordChange={setConfirmPassword}
-                onSubmit={handlePasswordSubmit}
-              />
-
-              <ProfileQrCard
-                productionDeepLink={mobileProductionDeepLink}
-                userId={user.id}
-              />
-
-              {user.role === "admin" ? <ProfileAdminCard /> : null}
-            </motion.div>
-          </div>
+          <ProfileCardsGrid state={profileState} />
         </div>
       </div>
 
-      {toast ? <Toast message={toast.message} tone={toast.tone} onClose={closeToast} /> : null}
+      {profileState.toast ? (
+        <Toast
+          message={profileState.toast.message}
+          tone={profileState.toast.tone}
+          onClose={profileState.closeToast}
+        />
+      ) : null}
     </>
+  );
+}
+
+function ProfileCardsGrid({ state }: { state: ProfilePageState }) {
+  const secondaryGridClassName =
+    state.user.role === "admin" ? "lg:grid-cols-2 xl:grid-cols-3" : "lg:grid-cols-2";
+
+  return (
+    <div className="mt-8 space-y-6">
+      <ProfilePrimaryCards state={state} />
+      <div className={`grid gap-6 ${secondaryGridClassName}`}>
+        <ProfileSecondaryCards state={state} />
+      </div>
+    </div>
+  );
+}
+
+function ProfilePrimaryCards({ state }: { state: ProfilePageState }) {
+  const name = state.name.trim() || state.user.name;
+
+  return (
+    <div className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
+      <ProfileMotion>
+        <ProfileHeroCard
+          email={state.user.email}
+          name={name}
+          role={state.user.role}
+          createdAt={state.user.createdAt}
+          avatarUrl={state.avatarPreviewUrl}
+          hasUnsavedChanges={state.hasProfileChanges}
+          avatarBusy={state.uploadingAvatar || state.removingAvatar}
+          onClearAvatar={state.handleRemoveAvatar}
+        />
+      </ProfileMotion>
+
+      <ProfileMotion delay={0.08}>
+        <ProfileDetailsCard
+          name={state.name}
+          email={state.user.email}
+          avatarUrl={state.avatarUrl}
+          roleLabel={state.roleLabel}
+          memberSince={state.memberSince}
+          saving={state.savingProfile}
+          hasChanges={state.hasProfileChanges}
+          onNameChange={state.setName}
+          onAvatarUrlChange={state.setAvatarUrl}
+          onSubmit={state.handleProfileSubmit}
+        />
+      </ProfileMotion>
+    </div>
+  );
+}
+
+function ProfileSecondaryCards({ state }: { state: ProfilePageState }) {
+  const mobileProductionDeepLink = buildMobileProfileDeepLink(state.user.id);
+
+  return (
+    <>
+      <ProfileMotion delay={0.16}>
+        <ProfileSecurityCard
+          currentPassword={state.currentPassword}
+          newPassword={state.newPassword}
+          confirmPassword={state.confirmPassword}
+          saving={state.savingPassword}
+          onCurrentPasswordChange={state.setCurrentPassword}
+          onNewPasswordChange={state.setNewPassword}
+          onConfirmPasswordChange={state.setConfirmPassword}
+          onSubmit={state.handlePasswordSubmit}
+        />
+      </ProfileMotion>
+
+      <ProfileMotion delay={0.24}>
+        <ProfileQrCard
+          productionDeepLink={mobileProductionDeepLink}
+          userId={state.user.id}
+        />
+      </ProfileMotion>
+
+      {state.user.role === "admin" ? (
+        <ProfileMotion delay={0.32}>
+          <ProfileAdminCard />
+        </ProfileMotion>
+      ) : null}
+    </>
+  );
+}
+
+function ProfileMotion({ children, delay = 0 }: { children: ReactNode; delay?: number }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 18 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, delay, ease: "easeOut" }}
+    >
+      {children}
+    </motion.div>
   );
 }

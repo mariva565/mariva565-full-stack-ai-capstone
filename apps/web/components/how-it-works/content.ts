@@ -56,22 +56,22 @@ export const TIMELINE_STEPS: TimelineStep[] = [
 
 export const GALLERY_ITEMS: GalleryItem[] = [
   {
-    src: null,
+    src: "/assets/how-it-works/Dashboard_v2_screenshot.png",
     alt: "Dashboard screenshot",
     label: "Табло с курсове",
   },
   {
-    src: null,
+    src: "/assets/how-it-works/Courses_v2_Screenshot.png",
     alt: "Modules screenshot",
     label: "Модули и структура",
   },
   {
-    src: null,
+    src: "/assets/how-it-works/Materials_v2_Screenshot.png",
     alt: "Materials screenshot",
     label: "Учебни материали",
   },
   {
-    src: null,
+    src: "/assets/how-it-works/Profile_v2_Screenshot.png",
     alt: "Profile screenshot",
     label: "Личен профил",
   },

@@ -8523,3 +8523,47 @@ Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
 
 **Решения:**
 - Избрахме `school-outline` glyph за `Courses`, защото е по-разпознаваем като учебен/курсов navigation affordance от предишната generic book icon.
+
+## 2026-04-21
+
+### Session 286 — Web profile two-row card layout
+
+**Какво направихме:**
+- Пренаредихме `/profile` desktop layout-а така, че `Account overview` и `Personal info` да останат на първи ред, а `Security`, `Profile QR link` и admin shortcut-ът да се подреждат на втори ред на широк екран.
+- Премахнахме дясната stacked колона, която оставяше празно място под account card-а и принуждаваше скрол за QR/admin картите.
+- Извадихме profile card grid-а в малки локални компоненти (`ProfileCardsGrid`, primary/secondary groups и shared motion wrapper), за да остане client компонентът по-четим.
+- Запазихме server-first profile data flow-а и променихме само client layout shell-а/Framer Motion wrappers.
+
+**Файлове:**
+- [MODIFY] apps/web/components/profile/profile-page-client.tsx
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd run typecheck:web` ✅
+
+**Решения:**
+- Използвахме отделен secondary grid за долните карти (`lg:grid-cols-2`, `xl:grid-cols-3` за admin), за да използваме хоризонталното пространство без да пипаме API, state management или самите card компоненти.
+
+### Session 287 — How It Works gallery screenshots wired
+
+**Какво направихме:**
+- Добавихме четирите screenshot asset-а за секцията `How It Works` в публичната web assets папка.
+- Вързахме gallery data-та към реалните изображения вместо placeholder `src: null` стойности.
+- Добавихме `Product Preview` screenshot gallery в началото на `README.md`, за да се виждат същите изображения и в GitHub.
+- Запазихме точния case на filenames, за да работят пътищата коректно и при production deploy на case-sensitive filesystem.
+
+**Файлове:**
+- [ADD] apps/web/public/assets/how-it-works/Courses_v2_Screenshot.png
+- [ADD] apps/web/public/assets/how-it-works/Dashboard_v2_screenshot.png
+- [ADD] apps/web/public/assets/how-it-works/Materials_v2_Screenshot.png
+- [ADD] apps/web/public/assets/how-it-works/Profile_v2_Screenshot.png
+- [MODIFY] apps/web/components/how-it-works/content.ts
+- [MODIFY] README.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd run typecheck:web` ✅
+- `npm.cmd run check:mojibake` ✅
+
+**Решения:**
+- Използвахме съществуващата `apps/web/public/assets/how-it-works/` папка и публични `/assets/how-it-works/...` URL-и, вместо да местим изображенията или да добавяме нов asset loader.

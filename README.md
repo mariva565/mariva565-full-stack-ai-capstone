@@ -43,7 +43,34 @@
 
 Demo credentials: see [Demo Credentials](#demo-credentials)
 
-<!-- Screenshots / GIF recordings of real UI will be added after UI polish -->
+## Product Preview
+
+<table>
+  <tr>
+    <td width="50%">
+      <img src="apps/web/public/assets/how-it-works/Dashboard_v2_screenshot.png" alt="StudyHub dashboard screenshot" />
+      <br />
+      <sub><b>Dashboard</b> - course overview and quick access</sub>
+    </td>
+    <td width="50%">
+      <img src="apps/web/public/assets/how-it-works/Courses_v2_Screenshot.png" alt="StudyHub course workspace screenshot" />
+      <br />
+      <sub><b>Course workspace</b> - modules and study structure</sub>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <img src="apps/web/public/assets/how-it-works/Materials_v2_Screenshot.png" alt="StudyHub materials screenshot" />
+      <br />
+      <sub><b>Materials</b> - organized notes, links, and learning resources</sub>
+    </td>
+    <td width="50%">
+      <img src="apps/web/public/assets/how-it-works/Profile_v2_Screenshot.png" alt="StudyHub profile screenshot" />
+      <br />
+      <sub><b>Profile</b> - account details, security, and mobile handoff</sub>
+    </td>
+  </tr>
+</table>
 
 ---
 
