@@ -132,7 +132,7 @@ function AdminContent() {
             transition={{ duration: 0.3, ease: "easeInOut" }}
             className={`rounded-[2rem] border border-white/20 bg-white/40 p-8 shadow-glass backdrop-blur-xl dark:border-cyan-400/10 ${PREMIUM_DARK_PANEL_BG}`}
           >
-            {activeTab === "Overview" && <OverviewTab />}
+            {activeTab === "Overview" && <OverviewTab onNavigateToModeration={() => setActiveTab("Moderation")} />}
             {activeTab === "Users" && <UsersTab />}
             {activeTab === "Materials" && <MaterialsTab />}
             {activeTab === "Courses" && <CoursesTab />}

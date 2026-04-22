@@ -1,15 +1,38 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useAdminContext } from "./admin-context";
 import { AdminHero } from "./hero/AdminHero";
 import { ActivityChart } from "./activity-chart";
 import { StatsCards } from "./stats-cards";
 import { PREMIUM_DARK_BUTTON, PREMIUM_DARK_CARD_BG } from "../layout/premium-dark-styles";
+import { useAdminRefresh } from "./admin-refresh";
 
-export function OverviewTab() {
+type ModerationQueueData = {
+  pendingPosts: number;
+  newUsers: number;
+};
+
+function useModerationQueue() {
+  const [data, setData] = useState<ModerationQueueData | null>(null);
+
+  const fetch_ = () => {
+    void fetch("/api/admin/moderation-queue")
+      .then((r) => r.json())
+      .then((json) => setData(json));
+  };
+
+  useEffect(() => { fetch_(); }, []);
+  useAdminRefresh({ onManualRefresh: fetch_ });
+
+  return data;
+}
+
+export function OverviewTab({ onNavigateToModeration }: { onNavigateToModeration?: () => void }) {
   const { viewAsFilter } = useAdminContext();
   const isGlobalView = viewAsFilter === "all";
+  const queue = useModerationQueue();
 
   return (
     <div className="space-y-8">
@@ -57,24 +80,26 @@ export function OverviewTab() {
                 transition={{ delay: 0.6 }}
                 className={`rounded-3xl border border-white/20 bg-white/50 p-6 shadow-glass backdrop-blur-md dark:border-slate-700/60 ${PREMIUM_DARK_CARD_BG}`}
               >
-                <div className="flex items-center justify-between mb-4">
-                  <h4 className="font-bold text-slate-900 dark:text-white">Moderation Queue</h4>
-                  <span className="rounded-md bg-slate-100 px-1.5 py-0.5 text-[0.65rem] font-black uppercase tracking-wider text-slate-500 dark:bg-slate-700/50 dark:text-slate-400">
-                    Planned
-                  </span>
-                </div>
+                <h4 className="font-bold text-slate-900 dark:text-white mb-4">Moderation Queue</h4>
                 <div className="space-y-4">
                   <div className="flex items-center justify-between p-3 rounded-xl bg-amber-500/10 border border-amber-500/20">
-                    <span className="text-sm font-bold text-amber-700 dark:text-amber-400">Flagged Materials</span>
-                    <span className="rounded-full bg-amber-500 px-2 py-0.5 text-xs font-black text-white">0</span>
+                    <span className="text-sm font-bold text-amber-700 dark:text-amber-400">Pending Posts</span>
+                    <span className="rounded-full bg-amber-500 px-2 py-0.5 text-xs font-black text-white">
+                      {queue?.pendingPosts ?? "—"}
+                    </span>
                   </div>
                   <div className="flex items-center justify-between p-3 rounded-xl bg-blue-500/10 border border-blue-500/20">
-                    <span className="text-sm font-bold text-blue-700 dark:text-blue-400">New User Requests</span>
-                    <span className="rounded-full bg-blue-500 px-2 py-0.5 text-xs font-black text-white">3</span>
+                    <span className="text-sm font-bold text-blue-700 dark:text-blue-400">New Users (7 days)</span>
+                    <span className="rounded-full bg-blue-500 px-2 py-0.5 text-xs font-black text-white">
+                      {queue?.newUsers ?? "—"}
+                    </span>
                   </div>
                 </div>
-                <button className={`mt-6 w-full rounded-2xl border border-indigo-500/20 bg-indigo-500/10 py-3 text-sm font-bold text-indigo-600 transition-colors hover:bg-indigo-500/20 dark:border-slate-700/60 ${PREMIUM_DARK_BUTTON}`}>
-                  Process Queue
+                <button
+                  onClick={onNavigateToModeration}
+                  className={`mt-6 w-full rounded-2xl border border-indigo-500/20 bg-indigo-500/10 py-3 text-sm font-bold text-indigo-600 transition-colors hover:bg-indigo-500/20 dark:border-slate-700/60 ${PREMIUM_DARK_BUTTON}`}
+                >
+                  Go to Moderation
                 </button>
               </motion.div>
 
