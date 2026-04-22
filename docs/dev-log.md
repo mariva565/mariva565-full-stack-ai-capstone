@@ -8794,3 +8794,23 @@ Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
 
 **Решения:**
 - Не добавяме fallback за extension errors, защото не са в app runtime-а; най-чистата проверка е Chrome Incognito/профил без extensions.
+
+### Session 296 — README contact email screenshot
+
+**Какво направихме:**
+- Добавихме `Contact Email Delivery` секция в `README.md`.
+- Включихме redacted Gmail screenshot за реално доставен contact form email.
+- Добавихме `POST /api/contact` в README API endpoint матрицата.
+- Обновихме README API badge-а от `59 routes` на `60 routes`.
+
+**Файлове:**
+- [ADD] docs/assets/readme/contact-email-screenshot.png
+- [MODIFY] README.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- README asset path sanity check ✅
+- `npm.cmd run check:mojibake` ✅
+
+**Решения:**
+- Използваме demo/redacted screenshot с `Demo Student` и `student@example.com`, за да покажем inbox delivery без лични данни.

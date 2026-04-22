@@ -14,21 +14,6 @@ type CourseCardProps = {
   onDelete: (courseId: number) => void;
 };
 
-function formatCourseState(status: string): string {
-  if (status === "published") {
-    return "Published course";
-  }
-
-  return status.charAt(0).toUpperCase() + status.slice(1);
-}
-
-function describeCourseState(status: string): string {
-  if (status === "published") {
-    return "Ready for the published flow.";
-  }
-
-  return "Current course state.";
-}
 
 function CourseCardGlyph() {
   return (
@@ -57,13 +42,6 @@ function CourseCardGlyph() {
 
 function CourseCardComponent({ course, onEdit, onDelete }: CourseCardProps) {
   const courseHref = `/courses/${course.id}/${slugify(course.title)}`;
-  const shouldShowState = course.status !== "draft";
-  const statusTone =
-    course.status === "published"
-      ? "cyan"
-      : course.status === "draft"
-        ? "brand"
-        : "neutral";
 
   return (
     <motion.article
@@ -89,16 +67,6 @@ function CourseCardComponent({ course, onEdit, onDelete }: CourseCardProps) {
                 <span className="dashboard-script-title mt-1 block text-2xl transition duration-300 group-hover:translate-x-0.5">
                   {course.title}
                 </span>
-                {shouldShowState ? (
-                  <div className="mt-3 flex flex-wrap items-center gap-2">
-                    <DashboardPill tone={statusTone}>
-                      {formatCourseState(course.status)}
-                    </DashboardPill>
-                    <span className="text-xs font-medium text-slate-400 dark:text-slate-500">
-                      {describeCourseState(course.status)}
-                    </span>
-                  </div>
-                ) : null}
               </div>
             </div>
           </div>

@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { CourseCard } from "./course-card";
 import { CreateCourseForm } from "./create-course-form";
 import { EditCourseModal } from "./edit-course-modal";
-import { CourseFilters, type CourseStatusFilter } from "./course-filters";
+import { CourseFilters } from "./course-filters";
 import { useDashboardCourseEditor } from "./use-dashboard-course-editor";
 import { DashboardHero } from "./dashboard-hero";
 import { DashboardPageShell } from "./dashboard-page-shell";
@@ -29,15 +29,13 @@ type ToastState = {
   message: string;
 };
 
-function matchesCourse(course: DashboardCourse, search: string, status: CourseStatusFilter): boolean {
+function matchesCourse(course: DashboardCourse, search: string): boolean {
   const normalizedSearch = search.trim().toLowerCase();
-  const matchesSearch =
+  return (
     normalizedSearch.length === 0 ||
     course.title.toLowerCase().includes(normalizedSearch) ||
-    (course.description ?? "").toLowerCase().includes(normalizedSearch);
-
-  const matchesStatus = status === "all" || course.status === status;
-  return matchesSearch && matchesStatus;
+    (course.description ?? "").toLowerCase().includes(normalizedSearch)
+  );
 }
 
 export function DashboardClientPage({
@@ -58,7 +56,7 @@ export function DashboardClientPage({
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [courseSearch, setCourseSearch] = useState("");
-  const [courseStatusFilter, setCourseStatusFilter] = useState<CourseStatusFilter>("all");
+
   const [pinnedSearch, setPinnedSearch] = useState("");
   const [activeTag, setActiveTag] = useState<string | null>(null);
   const [courseToDelete, setCourseToDelete] = useState<number | null>(null);
@@ -159,8 +157,8 @@ export function DashboardClientPage({
   }
 
   const filteredCourses = useMemo(
-    () => courses.filter((course) => matchesCourse(course, courseSearch, courseStatusFilter)),
-    [courseSearch, courseStatusFilter, courses]
+    () => courses.filter((course) => matchesCourse(course, courseSearch)),
+    [courseSearch, courses]
   );
 
 
@@ -191,9 +189,7 @@ export function DashboardClientPage({
           <section>
             <CourseFilters
               searchValue={courseSearch}
-              statusValue={courseStatusFilter}
               onSearchChange={setCourseSearch}
-              onStatusChange={setCourseStatusFilter}
             />
 
             <div className="grid gap-4 sm:grid-cols-2">

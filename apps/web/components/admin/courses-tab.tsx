@@ -31,7 +31,7 @@ type AdminCourse = {
   authorEmail: string;
 };
 
-const SEARCHABLE: (keyof AdminCourse)[] = ["title", "description", "authorName", "status"];
+const SEARCHABLE: (keyof AdminCourse)[] = ["title", "description", "authorName"];
 
 export function CoursesTab() {
   const [courses, setCourses] = useState<AdminCourse[]>([]);
@@ -102,7 +102,7 @@ export function CoursesTab() {
   }
 
   if (loading) {
-    return <SkeletonTable rows={5} columns={7} />;
+    return <SkeletonTable rows={5} columns={6} />;
   }
 
   return (
@@ -110,8 +110,8 @@ export function CoursesTab() {
       <div className="mb-4">
         <ExportButton
           data={filtered as unknown as Record<string, unknown>[]}
-          headers={["Title", "Description", "Author", "Status", "Created"]}
-          keys={["title", "description", "authorName", "status", "createdAt"]}
+          headers={["Title", "Description", "Author", "Created"]}
+          keys={["title", "description", "authorName", "createdAt"]}
           filename="courses"
         />
       </div>
@@ -124,11 +124,7 @@ export function CoursesTab() {
             onCheck={() => bulk.toggle(course.id)}
             title={course.title}
             subtitle={course.authorName}
-            badge={
-              <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${course.status === "published" ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300" : "bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300"}`}>
-                {course.status}
-              </span>
-            }
+            badge={undefined}
             meta={[
               ...(course.description ? [{ label: "Desc", value: <span className="max-w-[160px] truncate block">{course.description}</span> }] : []),
               { label: "Created", value: new Date(course.createdAt).toLocaleDateString() },
@@ -151,7 +147,6 @@ export function CoursesTab() {
               <th className="pb-3 font-medium text-slate-500 dark:text-slate-400">Title</th>
               <th className="pb-3 font-medium text-slate-500 dark:text-slate-400">Description</th>
               <th className="pb-3 font-medium text-slate-500 dark:text-slate-400">Author</th>
-              <th className="pb-3 font-medium text-slate-500 dark:text-slate-400">Status</th>
               <th className="pb-3 font-medium text-slate-500 dark:text-slate-400">Created</th>
               <th className="pb-3 font-medium text-slate-500 dark:text-slate-400">Actions</th>
             </tr>
@@ -165,11 +160,6 @@ export function CoursesTab() {
                 <td className="py-3 font-medium text-slate-900 dark:text-white">{course.title}</td>
                 <td className="py-3 max-w-[200px] truncate text-slate-600 dark:text-slate-400">{course.description || "—"}</td>
                 <td className="py-3 text-slate-600 dark:text-slate-400">{course.authorName}</td>
-                <td className="py-3">
-                  <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${course.status === "published" ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300" : "bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300"}`}>
-                    {course.status}
-                  </span>
-                </td>
                 <td className="py-3 text-slate-500 dark:text-slate-400">{new Date(course.createdAt).toLocaleDateString()}</td>
                 <td className="py-3 flex gap-2">
                   <button onClick={() => setEditingCourse(course)} className="text-xs font-medium text-brand-500 hover:text-brand-700 dark:text-brand-400">Edit</button>

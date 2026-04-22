@@ -21,7 +21,7 @@
   <img src="https://img.shields.io/badge/Commits-220%2B-22C55E?style=flat-square" alt="220 plus commits" />
   <img src="https://img.shields.io/badge/TypeScript-Strict%20Mode-6366F1?style=flat-square" alt="TypeScript strict mode" />
   <img src="https://img.shields.io/badge/Tables-19-8B5CF6?style=flat-square" alt="19 database tables" />
-  <img src="https://img.shields.io/badge/API-59%20routes-06B6D4?style=flat-square" alt="59 API routes" />
+  <img src="https://img.shields.io/badge/API-60%20routes-06B6D4?style=flat-square" alt="60 API routes" />
   <img src="https://img.shields.io/badge/Web-24%20pages-6366F1?style=flat-square" alt="24 web pages" />
   <img src="https://img.shields.io/badge/Mobile-React%20Query%20Cache-8B5CF6?style=flat-square" alt="mobile react query cache" />
 </p>
@@ -71,6 +71,14 @@ Demo credentials: see [Demo Credentials](#demo-credentials)
     </td>
   </tr>
 </table>
+
+## Contact Email Delivery
+
+The public Contact page sends real messages through a server-side Next.js API route. Submitted messages are delivered to the configured contact inbox via Nodemailer/Gmail SMTP, while `Reply-To` is set to the visitor email so admins can respond directly from Gmail.
+
+<p align="center">
+  <img src="docs/assets/readme/contact-email-screenshot.png" width="80%" alt="Gmail inbox showing a StudyHub contact form email delivery" />
+</p>
 
 ## Mobile Preview
 
@@ -671,6 +679,12 @@ Mobile intentionally ships only the student-facing flows. Mentor (`/mentor-inbox
 ## API Endpoints
 
 Grouped by feature domain. This matrix tracks the main product-facing routes used by web/mobile clients.
+
+### Public
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/api/contact` | Send public contact form message via server-side SMTP with visitor `Reply-To` |
 
 ### Auth
 
