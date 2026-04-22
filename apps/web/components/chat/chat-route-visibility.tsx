@@ -8,7 +8,12 @@ const ChatWidget = dynamic(
   { ssr: false }
 );
 
-const HIDDEN_CHAT_ROUTES = new Set(["/login", "/register"]);
+const HIDDEN_CHAT_ROUTES = new Set([
+  "/login",
+  "/register",
+  "/forgot-password",
+  "/reset-password",
+]);
 
 export function ChatRouteVisibility() {
   const pathname = usePathname();

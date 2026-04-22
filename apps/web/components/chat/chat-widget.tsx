@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { usePathname } from "next/navigation";
 import {
   SendIcon,
   CloseIcon,
@@ -17,8 +16,6 @@ type ChatMessage = {
 };
 
 export function ChatWidget() {
-  const pathname = usePathname();
-  const isLanding = pathname === "/";
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -101,9 +98,7 @@ export function ChatWidget() {
         type="button"
         onClick={handleToggle}
         title="Ask AI Assistant"
-        className={`chat-fab group fixed z-[1000] ${fabState} ${
-          isLanding ? "bottom-6 left-6" : "bottom-6 right-6"
-        }`}
+        className={`chat-fab group fixed bottom-6 right-6 z-[1000] ${fabState}`}
       >
         <span className="chat-fab__aura" />
         <Image
@@ -118,11 +113,7 @@ export function ChatWidget() {
 
       {/* Chat window */}
       <div
-        className={`fixed z-[999] flex flex-col overflow-hidden rounded-2xl border border-white/60 bg-white/95 shadow-[0_20px_60px_rgba(15,23,42,0.2)] backdrop-blur-xl transition-all duration-300 dark:border-slate-700 dark:bg-slate-900/95 ${
-          isLanding
-            ? "bottom-24 left-6 sm:bottom-28 sm:left-6"
-            : "bottom-24 right-6 sm:bottom-28 sm:right-6"
-        } ${
+        className={`fixed bottom-24 right-6 z-[999] flex flex-col overflow-hidden rounded-2xl border border-white/60 bg-white/95 shadow-[0_20px_60px_rgba(15,23,42,0.2)] backdrop-blur-xl transition-all duration-300 dark:border-slate-700 dark:bg-slate-900/95 sm:bottom-28 ${
           isOpen
             ? "pointer-events-auto translate-y-0 opacity-100"
             : "pointer-events-none translate-y-4 opacity-0"
