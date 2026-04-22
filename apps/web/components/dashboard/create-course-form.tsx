@@ -78,15 +78,7 @@ function CourseFormFields({
         />
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <p className="text-xs uppercase tracking-[0.22em] text-slate-400 dark:text-slate-500">
-            Quick launch from the dashboard
-          </p>
-          <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">
-            New courses start as draft courses.
-          </p>
-        </div>
+      <div className="flex flex-wrap items-center justify-end gap-3">
         <DashboardActionButton
           type="submit"
           disabled={creating}

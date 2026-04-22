@@ -42,6 +42,13 @@ export const queryKeys = {
     all: ["favorites"] as const,
     lists: () => ["favorites", "list"] as const,
   },
+  sharedMaterials: {
+    all: ["sharedMaterials"] as const,
+    lists: () => ["sharedMaterials", "list"] as const,
+    sharedWith: (materialId: QueryEntityId) =>
+      ["sharedMaterials", "sharedWith", toKeyId(materialId)] as const,
+    sharedByMe: () => ["sharedMaterials", "sharedByMe"] as const,
+  },
 } as const;
 
 async function invalidateCourseStats(queryClient: QueryClient): Promise<void> {

@@ -8,11 +8,7 @@ function toIsoString(value: any) {
   if (!value) return new Date().toISOString();
   if (value instanceof Date) return value.toISOString();
   if (typeof value === "string") return value;
-  try {
-    return new Date(value).toISOString();
-  } catch {
-    return new Date().toISOString();
-  }
+  try { return new Date(value).toISOString(); } catch { return new Date().toISOString(); }
 }
 
 export async function GET(request: NextRequest) {
@@ -20,50 +16,36 @@ export async function GET(request: NextRequest) {
   if ("error" in auth) return auth.error;
 
   try {
-    const sharedRecords = await db
+    const rows = await db
       .select({
-        id: materials.id,
-        title: materials.title,
+        materialId: materials.id,
+        materialTitle: materials.title,
         materialType: materials.materialType,
-        fileUrl: materials.fileUrl,
-        createdAt: materials.createdAt,
         sharedAt: sharedMaterials.createdAt,
-        sharedByEmail: users.email,
-        sharedByName: users.name,
+        recipientEmail: users.email,
+        recipientName: users.name,
         moduleTitle: modules.title,
         courseTitle: courses.title,
-        content: materials.content, // For snippets
       })
       .from(sharedMaterials)
       .innerJoin(materials, eq(sharedMaterials.materialId, materials.id))
-      .innerJoin(users, eq(sharedMaterials.sharedByUserId, users.id))
+      .innerJoin(users, eq(sharedMaterials.sharedWithUserId, users.id))
       .innerJoin(modules, eq(materials.moduleId, modules.id))
       .innerJoin(courses, eq(modules.courseId, courses.id))
-      .where(eq(sharedMaterials.sharedWithUserId, auth.user.sub))
+      .where(eq(sharedMaterials.sharedByUserId, auth.user.sub))
       .orderBy(desc(sharedMaterials.createdAt));
 
-    const formatted = sharedRecords.map((r) => ({
-      id: r.id,
-      title: r.title,
+    const formatted = rows.map((r) => ({
+      materialId: r.materialId,
+      materialTitle: r.materialTitle,
       materialType: r.materialType,
-      fileUrl: r.fileUrl,
-      createdAt: toIsoString(r.createdAt),
       sharedAt: toIsoString(r.sharedAt),
-      sharedBy: {
-        email: r.sharedByEmail,
-        name: r.sharedByName,
-      },
+      sharedWith: { email: r.recipientEmail, name: r.recipientName },
       context: `${r.courseTitle} / ${r.moduleTitle}`,
-      snippet:
-        r.content
-          ? r.content.length > 80
-            ? r.content.substring(0, 80) + "..."
-            : r.content
-          : null,
     }));
 
-    return NextResponse.json({ shared: formatted });
+    return NextResponse.json({ sharedByMe: formatted });
   } catch (e: any) {
-    return NextResponse.json({ error: e.message || String(e), stack: e.stack }, { status: 500 });
+    return NextResponse.json({ error: e.message || String(e) }, { status: 500 });
   }
 }

@@ -6,7 +6,7 @@
   "scripts": {
     "start": "set EXPO_NO_DEPENDENCY_VALIDATION=1&& expo start",
     "dev:mobile:tunnel": "set EXPO_NO_DEPENDENCY_VALIDATION=1&& expo start --tunnel -c",
-    "dev:mobile:lan": "set EXPO_NO_DEPENDENCY_VALIDATION=1&& expo start --host lan -c",
+    "dev:mobile:lan": "set EXPO_NO_DEPENDENCY_VALIDATION=1&& expo start --host lan",
     "usb:reverse": "node ./scripts/usb-reverse.js",
     "dev:mobile:usb": "npm run usb:reverse && set EXPO_NO_DEPENDENCY_VALIDATION=1&& expo start --localhost -c",
     "android:usb": "npm run usb:reverse && set EXPO_NO_DEPENDENCY_VALIDATION=1&& expo start --localhost --android -c",

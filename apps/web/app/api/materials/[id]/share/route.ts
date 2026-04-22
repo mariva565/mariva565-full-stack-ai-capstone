@@ -100,27 +100,16 @@ export async function POST(request: NextRequest, { params }: Ctx) {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
   const materialUrl = `${appUrl}/materials/${materialId}`;
 
-  try {
-    await sendShareNotification({
-      to: recipient.email,
-      senderName,
-      materialTitle: material.title,
-      materialType: material.materialType as
-        | "note"
-        | "file"
-        | "link"
-        | "material",
-      materialUrl,
-    });
-  } catch (error) {
-    console.error("Share notification failed:", error);
-    // Even if email fails, UI-based sharing succeeded.
-    // Return a warning or just consider it success with caveat.
-    return NextResponse.json(
-      { code: "EMAIL_FAILED", message: "Material shared, but email notification failed" },
-      { status: 502 }
-    );
-  }
+  // Fire-and-forget — email failure never blocks the share action
+  sendShareNotification({
+    to: recipient.email,
+    senderName,
+    materialTitle: material.title,
+    materialType: material.materialType as "note" | "file" | "link" | "material",
+    materialUrl,
+  }).catch((err) => {
+    console.error("Share notification failed:", err);
+  });
 
   return NextResponse.json({ success: true });
 }

@@ -124,9 +124,9 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="favorites"
         options={{
-          title: "Favorites",
+          title: "My Shelf",
           headerShown: false,
-          tabBarLabel: ({ focused }) => renderTabLabel("Favorites", focused),
+          tabBarLabel: ({ focused }) => renderTabLabel("My Shelf", focused),
           tabBarIcon: ({ focused }) => (
             <TabIcon
               name="heart"

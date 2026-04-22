@@ -18,11 +18,14 @@ import { NetworkBanner } from "../../components/network-banner";
 import { RequestState } from "../../components/request-state";
 import { getUserFriendlyError } from "../../lib/api";
 import { fetchFavorites, removeFavorite, removeOptimisticFavorite } from "../../lib/favorites";
+import { fetchSharedMaterials, fetchSharedByMe } from "../../lib/share";
 import { splitTags } from "../../lib/material-utils";
 import { useIsOffline } from "../../lib/network";
 import { invalidateFavoritesList, queryKeys } from "../../lib/query-keys";
 import type { FavoriteItem } from "../../lib/studyhub-types";
 import { useToast } from "../../lib/toast-context";
+import { SharedMaterialCard } from "../../components/favorites/shared-material-card";
+import { SharedByMeCard } from "../../components/favorites/shared-by-me-card";
 import {
   makeFavoritesStyles,
   type FavoritesStyles,
@@ -131,10 +134,25 @@ export default function FavoritesTabScreen() {
   const styles = useThemedStyles(makeFavoritesStyles);
   const heroGradient = [colors.brandDeep, colors.brandPrimary] as const;
   const [busyMaterialId, setBusyMaterialId] = useState<number | null>(null);
+  
+  const [activeTab, setActiveTab] = useState<"pinned" | "shared" | "sharedByMe">("pinned");
 
   const favoritesQuery = useQuery({
     queryKey: queryKeys.favorites.lists(),
     queryFn: fetchFavorites,
+    staleTime: 30_000,
+  });
+
+  const sharedQuery = useQuery({
+    queryKey: queryKeys.sharedMaterials.lists(),
+    queryFn: fetchSharedMaterials,
+    staleTime: 60_000,
+  });
+
+  const sharedByMeQuery = useQuery({
+    queryKey: queryKeys.sharedMaterials.sharedByMe(),
+    queryFn: fetchSharedByMe,
+    staleTime: 60_000,
   });
 
   const removeFavoriteMutation = useMutation({
@@ -170,15 +188,30 @@ export default function FavoritesTabScreen() {
     },
   });
 
+  const isPinnedTab = activeTab === "pinned";
+  const isSharedWithMeTab = activeTab === "shared";
+  const isSharedByMeTab = activeTab === "sharedByMe";
+
   const favorites = favoritesQuery.data ?? [];
-  const loading = favoritesQuery.isPending && favorites.length === 0;
-  const refreshing = favoritesQuery.isRefetching && !favoritesQuery.isPending;
-  const error = favoritesQuery.error
-    ? getUserFriendlyError(favoritesQuery.error, "Failed to load favorites")
+  const sharedMaterials = sharedQuery.data ?? [];
+  const sharedByMeItems = sharedByMeQuery.data ?? [];
+
+  const activeQuery = isPinnedTab ? favoritesQuery : isSharedWithMeTab ? sharedQuery : sharedByMeQuery;
+  const dataList = isPinnedTab ? favorites : isSharedWithMeTab ? sharedMaterials : sharedByMeItems;
+
+  const loading = activeQuery.isPending && dataList.length === 0;
+  const refreshing = activeQuery.isRefetching && !activeQuery.isPending;
+  const error = activeQuery.error
+    ? getUserFriendlyError(
+        activeQuery.error,
+        isPinnedTab ? "Failed to load favorites" : isSharedWithMeTab ? "Failed to load shared materials" : "Failed to load shared by me"
+      )
     : "";
 
   useFocusEffect(
     useCallback(() => {
+      // Only invalidate favorites — they change when user pins/unpins on other screens.
+      // Shared queries have staleTime and refetch via pull-to-refresh.
       void queryClient.invalidateQueries({ queryKey: queryKeys.favorites.lists() });
     }, [queryClient])
   );
@@ -192,23 +225,19 @@ export default function FavoritesTabScreen() {
       <RequestState
         icon="Offline"
         title="You are offline"
-        subtitle="Reconnect to load your latest favorites."
+        subtitle="Reconnect to load your latest shelf items."
         actionLabel="Retry"
-        onAction={() => {
-          void favoritesQuery.refetch();
-        }}
-        accessibilityLabel="Retry loading favorites while offline"
+        onAction={() => void activeQuery.refetch()}
+        accessibilityLabel="Retry loading items while offline"
       />
     ) : (
       <RequestState
         icon="Error"
-        title="Could not load favorites"
+        title="Could not load items"
         subtitle={error}
         actionLabel="Retry"
-        onAction={() => {
-          void favoritesQuery.refetch();
-        }}
-        accessibilityLabel="Retry loading favorites"
+        onAction={() => void activeQuery.refetch()}
+        accessibilityLabel="Retry loading items"
       />
     );
   }
@@ -217,75 +246,127 @@ export default function FavoritesTabScreen() {
     <View style={styles.container}>
       <LinearGradient colors={heroGradient} style={styles.hero}>
         <RNText style={styles.heroTitle} maxFontSizeMultiplier={1.3}>
-          Favorites
+          My Shelf
         </RNText>
-        {favorites.length > 0 ? (
-          <View style={styles.heroPinnedBadge}>
-            <RNText style={styles.heroPinnedText} maxFontSizeMultiplier={1.2}>
-              {favorites.length} {favorites.length === 1 ? "material pinned" : "materials pinned"}
+        
+        <View style={styles.tabsWrap}>
+          <TouchableOpacity
+            style={[styles.tabBtn, activeTab === "pinned" && styles.tabBtnActive]}
+            onPress={() => setActiveTab("pinned")}
+            activeOpacity={0.8}
+            accessibilityRole="tab"
+          >
+            <RNText style={[styles.tabBtnText, activeTab === "pinned" && styles.tabBtnTextActive]}>
+              Pinned
             </RNText>
-          </View>
-        ) : null}
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.tabBtn, activeTab === "shared" && styles.tabBtnActive]}
+            onPress={() => setActiveTab("shared")}
+            activeOpacity={0.8}
+            accessibilityRole="tab"
+          >
+            <RNText style={[styles.tabBtnText, activeTab === "shared" && styles.tabBtnTextActive]}>
+              Shared with me
+            </RNText>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.tabBtn, activeTab === "sharedByMe" && styles.tabBtnActive]}
+            onPress={() => setActiveTab("sharedByMe")}
+            activeOpacity={0.8}
+            accessibilityRole="tab"
+          >
+            <RNText style={[styles.tabBtnText, activeTab === "sharedByMe" && styles.tabBtnTextActive]}>
+              Shared by me
+            </RNText>
+          </TouchableOpacity>
+        </View>
       </LinearGradient>
 
       {offline ? (
         <View style={styles.offlineBannerWrap}>
-          <NetworkBanner message="Showing last synced favorites until connection is restored." />
+          <NetworkBanner message="Showing last synced items until connection is restored." />
         </View>
       ) : null}
 
-      {favorites.length === 0 ? (
+      {dataList.length === 0 ? (
         offline ? (
           <RequestState
             icon="Offline"
-            title="No offline favorites yet"
-            subtitle="Reconnect and pin materials to keep quick access items here."
+            title="No offline items yet"
+            subtitle="Reconnect to keep quick access items here."
             actionLabel="Retry"
-            onAction={() => {
-              void favoritesQuery.refetch();
-            }}
-            accessibilityLabel="Retry syncing favorites"
+            onAction={() => void activeQuery.refetch()}
+            accessibilityLabel="Retry syncing items"
           />
         ) : (
           <EmptyState
-            icon="Heart"
-            title="No favorites yet"
-            subtitle="Pin materials from the material screen for quick access."
+            icon={isPinnedTab ? "Heart" : "ChatGroup"}
+            title={
+              isPinnedTab ? "No favorites yet" :
+              isSharedWithMeTab ? "Nothing shared with you" :
+              "You haven't shared anything yet"
+            }
+            subtitle={
+              isPinnedTab ? "Pin materials from the material screen for quick access." :
+              isSharedWithMeTab ? "Curate materials shared from your peers here." :
+              "Share a material from the material screen to see it here."
+            }
           />
         )
       ) : (
         <FlatList
-          data={favorites}
-          keyExtractor={(item) => String(item.id)}
+          data={dataList as any}
+          keyExtractor={(item: any) =>
+            isPinnedTab ? String(item.id) :
+            isSharedWithMeTab ? String(item.sharedAt) + String(item.id) :
+            String(item.sharedAt) + String(item.materialId) + (item.sharedWith?.email ?? "")
+          }
           contentContainerStyle={styles.list}
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
-              onRefresh={() => {
-                void favoritesQuery.refetch();
-              }}
+              onRefresh={() => void activeQuery.refetch()}
               tintColor={colors.brandPrimary}
             />
           }
-          renderItem={({ item }) => (
-            <FavoriteCard
-              item={item}
-              busy={busyMaterialId === item.materialId}
-              onOpenMaterial={() =>
-                router.push({ pathname: "/material/[id]", params: { id: item.materialId } })
-              }
-              onOpenModule={() =>
-                router.push({ pathname: "/module/[id]", params: { id: item.moduleId } })
-              }
-              onOpenCourse={() =>
-                router.push({ pathname: "/course/[id]", params: { id: item.courseId } })
-              }
-              onUnpin={() => {
-                removeFavoriteMutation.mutate(item.materialId);
-              }}
-              styles={styles}
-            />
-          )}
+          renderItem={({ item }) =>
+            isPinnedTab ? (
+              <FavoriteCard
+                item={item as FavoriteItem}
+                busy={busyMaterialId === (item as FavoriteItem).materialId}
+                onOpenMaterial={() =>
+                  router.push({ pathname: "/material/[id]", params: { id: (item as FavoriteItem).materialId } })
+                }
+                onOpenModule={() =>
+                  router.push({ pathname: "/module/[id]", params: { id: (item as FavoriteItem).moduleId } })
+                }
+                onOpenCourse={() =>
+                  router.push({ pathname: "/course/[id]", params: { id: (item as FavoriteItem).courseId } })
+                }
+                onUnpin={() => {
+                  removeFavoriteMutation.mutate((item as FavoriteItem).materialId);
+                }}
+                styles={styles}
+              />
+            ) : isSharedWithMeTab ? (
+              <SharedMaterialCard
+                item={item as any}
+                onOpenMaterial={() =>
+                  router.push({ pathname: "/material/[id]", params: { id: (item as any).id } })
+                }
+                styles={styles}
+              />
+            ) : (
+              <SharedByMeCard
+                item={item as any}
+                onOpenMaterial={() =>
+                  router.push({ pathname: "/material/[id]", params: { id: (item as any).materialId } })
+                }
+                styles={styles}
+              />
+            )
+          }
         />
       )}
     </View>

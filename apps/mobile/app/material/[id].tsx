@@ -1,4 +1,6 @@
-﻿import { RefreshControl, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { useState } from "react";
+import { RefreshControl, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import Svg, { Path } from "react-native-svg";
 import { LinearGradient } from "expo-linear-gradient";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 
@@ -9,6 +11,7 @@ import { RequestState } from "../../components/request-state";
 import { MaterialScreenSkeleton } from "../../components/material/material-screen-skeleton";
 import { makeMaterialScreenStyles } from "../../components/material/material-screen.styles";
 import { useMaterialScreen } from "../../components/material/use-material-screen";
+import { ShareBottomSheet } from "../../components/material/share-bottom-sheet";
 
 export default function MaterialScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -17,6 +20,7 @@ export default function MaterialScreen() {
   const { colors } = useTheme();
   const styles = useThemedStyles(makeMaterialScreenStyles);
   const heroGradient = [colors.brandDeep, colors.brandPrimary] as const;
+  const [showShareSheet, setShowShareSheet] = useState(false);
 
   const {
     material,
@@ -89,27 +93,63 @@ export default function MaterialScreen() {
         <Text style={styles.heroDate} maxFontSizeMultiplier={1.2}>
           {new Date(material.createdAt).toLocaleDateString()}
         </Text>
-        <TouchableOpacity
-          style={[styles.pinBtn, isPinned ? styles.pinBtnDanger : styles.pinBtnNeutral]}
-          onPress={() => {
-            void toggleFavorite();
-          }}
-          disabled={toggleFavoriteBusy}
-          accessibilityRole="button"
-          accessibilityLabel={
-            isPinned ? "Unpin material from favorites" : "Pin material to favorites"
-          }
-          accessibilityHint="Toggles quick access state in Favorites tab"
-        >
-          <Text style={styles.pinBtnText} maxFontSizeMultiplier={1.2}>
-            {toggleFavoriteBusy
-              ? "Updating..."
-              : isPinned
-                ? "Unpin from Favorites"
-                : "Pin to Favorites"}
-          </Text>
-        </TouchableOpacity>
+        <View style={styles.heroActions}>
+          <TouchableOpacity
+            style={[styles.pinBtn, isPinned ? styles.pinBtnDanger : styles.pinBtnNeutral]}
+            onPress={() => {
+              void toggleFavorite();
+            }}
+            disabled={toggleFavoriteBusy}
+            accessibilityRole="button"
+            accessibilityLabel={
+              isPinned ? "Unpin material from favorites" : "Pin material to favorites"
+            }
+            accessibilityHint="Toggles quick access state in My Shelf tab"
+          >
+            <Text style={styles.pinBtnText} maxFontSizeMultiplier={1.2}>
+              {toggleFavoriteBusy
+                ? "Updating..."
+                : isPinned
+                  ? "Unpin from Shelf"
+                  : "Pin to Shelf"}
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.shareBtn}
+            onPress={() => setShowShareSheet(true)}
+            accessibilityRole="button"
+            accessibilityLabel="Share material"
+            accessibilityHint="Opens share settings"
+          >
+            <Svg width={15} height={15} viewBox="0 0 24 24" fill="none">
+              <Path
+                d="M8 12v7a1 1 0 001 1h6a1 1 0 001-1v-7"
+                stroke={colors.textOnBrand}
+                strokeWidth={2.2}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <Path
+                d="M12 15V3M8 7l4-4 4 4"
+                stroke={colors.textOnBrand}
+                strokeWidth={2.2}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </Svg>
+            <Text style={styles.shareBtnText} maxFontSizeMultiplier={1.2}>
+              Share
+            </Text>
+          </TouchableOpacity>
+        </View>
       </LinearGradient>
+
+      <ShareBottomSheet 
+        visible={showShareSheet} 
+        onClose={() => setShowShareSheet(false)} 
+        materialId={Number(routeId)} 
+      />
 
       {offline ? (
         <View style={styles.offlineBannerWrap}>

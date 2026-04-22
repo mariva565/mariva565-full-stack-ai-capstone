@@ -4,8 +4,15 @@ import type { DashboardData } from "../components/dashboard/types";
 import { db } from "./db";
 import { getFavoriteItems } from "./favorites-data";
 
-function toIsoString(value: Date | string) {
-  return typeof value === "string" ? value : value.toISOString();
+function toIsoString(value: any) {
+  if (!value) return new Date().toISOString();
+  if (value instanceof Date) return value.toISOString();
+  if (typeof value === "string") return value;
+  try {
+    return new Date(value).toISOString();
+  } catch {
+    return new Date().toISOString();
+  }
 }
 
 export async function getDashboardData(userId: number): Promise<DashboardData> {
@@ -52,8 +59,8 @@ export async function getDashboardData(userId: number): Promise<DashboardData> {
     title: r.title,
     materialType: r.materialType,
     fileUrl: r.fileUrl,
-    createdAt: r.createdAt.toISOString(),
-    sharedAt: r.sharedAt.toISOString(),
+    createdAt: toIsoString(r.createdAt),
+    sharedAt: toIsoString(r.sharedAt),
     sharedBy: {
       email: r.sharedByEmail,
       name: r.sharedByName,

@@ -8710,3 +8710,38 @@ Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
   - `components/materials/share-modal.tsx`, `components/materials/material-page-client.tsx`
 - **Verification**: typecheck преминава успешно.
 - **Решения**: Позициониране на 'Shared with Me' до 'Pinned Materials' в таблото като логично място за достъп до бързи материали.
+
+
+### Session 292 — Mobile App Share Functionality
+- **Какво направихме**: Имплементирана е функционалност за споделяне на материали в мобилното приложение, което носи паритет (визуален и логически) с уеб версията.
+  - Добавен нов React Query клиент (share-queries / lib/share.ts) за управление на share endpoints.
+  - Създаден UI слой: `ShareBottomSheet.tsx`, съдържащ email input и списък със споделени потребители (с опция Unshare).
+  - Рефакторинг на таба `Favorites` в `My Shelf` с добавен сегментиран контролер за Pinned и Shared материали.
+  - Добавен бутон 'Share' в екрана за преглед на материал. 
+- **Файлове**:
+  - `apps/mobile/lib/share.ts`, `apps/mobile/lib/query-keys.ts`
+  - `apps/mobile/app/(tabs)/favorites.tsx`, `apps/mobile/components/favorites/shared-material-card.tsx`
+  - `apps/mobile/app/material/[id].tsx`, `apps/mobile/components/material/material-screen.styles.ts`
+  - `apps/mobile/components/material/share-bottom-sheet.tsx`
+- **Verification**: `typecheck:mobile` завърши успешно.
+
+## 2026-04-21
+
+### Session 293 — Dashboard create-course cleanup notes
+
+**Какво направихме:**
+- Премахнахме паразитните helper бележки под формата за създаване на курс в Dashboard:
+  - `Quick launch from the dashboard`
+  - `New courses start as draft courses.`
+- Запазихме поведението на формата и CTA бутона без функционални промени.
+- Подравнихме action реда с `Create Course` бутона вдясно след премахването на текста.
+
+**Файлове:**
+- [MODIFY] apps/web/components/dashboard/create-course-form.tsx
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd run typecheck:web` ✅
+
+**Решения:**
+- Премахнахме изцяло бележките вместо замяна с нов copy, защото заявката е за чистене на остатъчни/временни подсказки в UI.

@@ -113,6 +113,36 @@ export function makeFavoritesStyles(colors: AppColors) {
       opacity: 0.7,
     },
     unpinBtnText: { color: colors.dangerText, fontSize: 12, fontWeight: "700" },
+    tabsWrap: {
+      flexDirection: "row",
+      paddingHorizontal: 20,
+      paddingTop: 10,
+      paddingBottom: 4,
+      gap: 12,
+    },
+    tabBtn: {
+      paddingVertical: 8,
+      paddingHorizontal: 16,
+      borderRadius: 100,
+      backgroundColor: "rgba(255,255,255,0.1)",
+    },
+    tabBtnActive: {
+      backgroundColor: colors.surface,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 2,
+    },
+    tabBtnText: {
+      color: "rgba(255,255,255,0.7)",
+      fontWeight: "600",
+      fontSize: 14,
+    },
+    tabBtnTextActive: {
+      color: colors.brandPrimary,
+      fontWeight: "700",
+    },
   });
 }
 

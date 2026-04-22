@@ -3,7 +3,7 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-$port = 3002
+$port = 3000
 
 function Stop-ListenerOnPort {
   param([int]$TargetPort)

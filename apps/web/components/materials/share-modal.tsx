@@ -43,15 +43,17 @@ export function ShareModal({ materialId, materialTitle, onConfirm, onClose }: Sh
     e.preventDefault();
     if (!email.trim()) return;
     setBusy(true);
-    await onConfirm(email.trim());
-    // Refresh shares after successful share
-    const res = await fetch(`/api/materials/${materialId}/share`);
-    if (res.ok) {
-      const data = await res.json();
-      setSharedUsers(data.shares || []);
+    try {
+      await onConfirm(email.trim());
+      const res = await fetch(`/api/materials/${materialId}/share`);
+      if (res.ok) {
+        const data = await res.json();
+        setSharedUsers(data.shares || []);
+      }
+      setEmail("");
+    } finally {
+      setBusy(false);
     }
-    setEmail("");
-    setBusy(false);
   }
 
   async function handleUnshare(recipientId: number) {
