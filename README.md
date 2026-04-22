@@ -20,9 +20,9 @@
   <img src="https://img.shields.io/badge/Status-In%20Progress-F59E0B?style=flat-square" alt="Status in progress" />
   <img src="https://img.shields.io/badge/Commits-220%2B-22C55E?style=flat-square" alt="220 plus commits" />
   <img src="https://img.shields.io/badge/TypeScript-Strict%20Mode-6366F1?style=flat-square" alt="TypeScript strict mode" />
-  <img src="https://img.shields.io/badge/Tables-19-8B5CF6?style=flat-square" alt="19 database tables" />
-  <img src="https://img.shields.io/badge/API-60%20routes-06B6D4?style=flat-square" alt="60 API routes" />
-  <img src="https://img.shields.io/badge/Web-24%20pages-6366F1?style=flat-square" alt="24 web pages" />
+  <img src="https://img.shields.io/badge/Tables-20-8B5CF6?style=flat-square" alt="20 database tables" />
+  <img src="https://img.shields.io/badge/API-62%20routes-06B6D4?style=flat-square" alt="62 API routes" />
+  <img src="https://img.shields.io/badge/Web-26%20pages-6366F1?style=flat-square" alt="26 web pages" />
   <img src="https://img.shields.io/badge/Mobile-React%20Query%20Cache-8B5CF6?style=flat-square" alt="mobile react query cache" />
 </p>
 
@@ -189,10 +189,10 @@ graph TB
     end
 
     subgraph DATA["Data Layer"]
-        DB[("Neon PostgreSQL<br/><i>Serverless — EU region</i><br/>19 tables + relationships")]
+        DB[("Neon PostgreSQL<br/><i>Serverless — EU region</i><br/>20 tables + relationships")]
     end
 
-    WEB -->|"REST API<br/>59 routes"| SERVER
+    WEB -->|"REST API<br/>61 routes"| SERVER
     MOBILE -->|"REST API<br/>same backend"| SERVER
     SERVER --> ORM
     ORM --> DB
@@ -587,7 +587,7 @@ Additional messaging/push tables in the current schema:
 
 ## Screens
 
-### Web — 24 pages
+### Web — 26 pages
 
 | # | Route | Description | Auth |
 |---|---|---|---|
@@ -596,25 +596,27 @@ Additional messaging/push tables in the current schema:
 | 3 | `/contact` | Contact form | Public |
 | 4 | `/register` | User registration | Public |
 | 5 | `/login` | Login (email/password + Google OAuth) | Public |
-| 6 | `/dashboard` | Course cards + aggregated stats | Protected |
-| 7 | `/courses/[id]` | Course detail — modules list with CRUD | Protected |
-| 8 | `/modules/[id]` | Module detail — materials list with CRUD | Protected |
-| 9 | `/materials/[id]` | Material view and edit (text, link, file) | Protected |
-| 10 | `/profile` | Edit name, avatar upload | Protected |
-| 11 | `/progress` | Milestones tracker with status workflow | Protected |
-| 12 | `/calendar` | Calendar with events + weather widget (current/hourly/3-day) | Protected |
-| 13 | `/admin` | Admin panel — users, materials, moderation, activity logs | Admin only |
-| 14 | `/forbidden` | 403 access denied page | Auto-redirect from unauthorized `/admin` access |
-| 15 | `/community` | Community Feed — posts list with search, type filter, Load More | Protected |
-| 16 | `/community/new` | Create post — Tiptap rich text + type/course metadata | Protected |
-| 17 | `/community/[id]` | Post details — sanitized rich content, comments, like/bookmark actions | Protected |
-| 18 | `/community/[id]/edit` | Edit post — Tiptap rich text (author or admin) | Protected |
-| 19 | `/mentor-inbox` | Mentor Inbox — questions from own courses with status management | Mentor / Admin |
-| 20 | `/messages` | Direct messages inbox (unread indicators) | Protected |
-| 21 | `/messages/[id]` | Direct message thread (real-time updates) | Protected |
-| 22 | `/moderation` | Moderation queue shortcut page | Admin only |
-| 23 | `/profile/[id]` | Public profile view + start direct message | Protected |
-| 24 | `/dashboard/material-finder` | Isolated material finder assistant (search-first + optional Gemini phrasing) | Protected |
+| 6 | `/forgot-password` | Request a password reset link by email | Public |
+| 7 | `/reset-password` | Set a new password using a one-hour reset token | Public (token in URL) |
+| 8 | `/dashboard` | Course cards + aggregated stats | Protected |
+| 9 | `/courses/[id]` | Course detail — modules list with CRUD | Protected |
+| 10 | `/modules/[id]` | Module detail — materials list with CRUD | Protected |
+| 11 | `/materials/[id]` | Material view and edit (text, link, file) | Protected |
+| 12 | `/profile` | Edit name, avatar upload | Protected |
+| 13 | `/progress` | Milestones tracker with status workflow | Protected |
+| 14 | `/calendar` | Calendar with events + weather widget (current/hourly/3-day) | Protected |
+| 15 | `/admin` | Admin panel — users, materials, moderation, activity logs | Admin only |
+| 16 | `/forbidden` | 403 access denied page | Auto-redirect from unauthorized `/admin` access |
+| 17 | `/community` | Community Feed — posts list with search, type filter, Load More | Protected |
+| 18 | `/community/new` | Create post — Tiptap rich text + type/course metadata | Protected |
+| 19 | `/community/[id]` | Post details — sanitized rich content, comments, like/bookmark actions | Protected |
+| 20 | `/community/[id]/edit` | Edit post — Tiptap rich text (author or admin) | Protected |
+| 21 | `/mentor-inbox` | Mentor Inbox — questions from own courses with status management | Mentor / Admin |
+| 22 | `/messages` | Direct messages inbox (unread indicators) | Protected |
+| 23 | `/messages/[id]` | Direct message thread (real-time updates) | Protected |
+| 24 | `/moderation` | Moderation queue shortcut page | Admin only |
+| 25 | `/profile/[id]` | Public profile view + start direct message | Protected |
+| 26 | `/dashboard/material-finder` | Isolated material finder assistant (search-first + optional Gemini phrasing) | Protected |
 
 Route note: `Home` in the navbar always leads to `/` (landing), including for authenticated users; when authenticated, the landing navbar shows a `Dashboard` CTA instead of `Login`/`Register`.
 
@@ -695,7 +697,9 @@ Grouped by feature domain. This matrix tracks the main product-facing routes use
 | `POST` | `/api/auth/logout` | Clear auth cookie |
 | `GET` | `/api/auth/me` | Get current user profile |
 | `PUT` | `/api/auth/me` | Update profile (name, etc.) |
-| `POST` | `/api/auth/password` | Change password |
+| `POST` | `/api/auth/password` | Change password (authenticated) |
+| `POST` | `/api/auth/password-reset/request` | Request password reset email (anti-enumeration: always 200) |
+| `POST` | `/api/auth/password-reset/confirm` | Set new password using one-hour reset token |
 | `POST/DELETE` | `/api/auth/avatar` | Upload or remove avatar image |
 | `POST` | `/api/auth/google` | Google OAuth login |
 
@@ -1105,7 +1109,6 @@ The Load More pattern was chosen over numbered pagination for the Community Feed
 |---|---|---|
 | Cloudflare R2 Storage | Upload PDFs and documents, avatar file storage | Planned |
 | Sharing & Permissions | Share materials/notes between users with access control | Planned |
-| Forgot Password | Email-based password reset flow with secure tokens | Planned |
 | Deployment | Live production deploy on Vercel/Netlify | Final phase |
 
 ---

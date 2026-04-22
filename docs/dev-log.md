@@ -8832,6 +8832,31 @@ Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
 - `tsc --noEmit` ✅
 - Manual smoke предстои след merge — ползвателят ще пусне `node scripts/run-migration.mjs drizzle/migrations/0011_password_reset_tokens.sql` срещу Neon, после `npm run build && npm start`.
 
+### Сесия 298 — Forgot-password polish + chat widget UX
+
+**Какво направихме:**
+- Smoke test на forgot-password flow разкри 2 проблема:
+  1. ABV email клиент автоматично пренаписваше `http://localhost:3000` → `https://...` в HTML link, което чупеше отварянето локално (`ERR_SSL_PROTOCOL_ERROR`).
+  2. След reset, навигация към `/login?reset=success` правеше `router.replace("/login")` в `useEffect` едновременно с form submit — Next.js navigation race-ваше с POST-а и потребителят не можеше да login без refresh.
+- Допълнително UX: chat widget се появяваше на reset страниците (нямаше нужда) и на landing беше отляво (припокриване с "Open Dashboard" CTA).
+
+**Променени файлове:**
+- [MODIFY] apps/web/components/auth/use-login-form.ts — `router.replace("/login")` → `window.history.replaceState({}, "", "/login")` (чисти URL без Next.js navigation race)
+- [MODIFY] apps/web/lib/email.ts — добавен `text:` plain-text body в `sendPasswordResetEmail` с raw URL за copy-paste при rewrite
+- [MODIFY] apps/web/components/chat/chat-route-visibility.tsx — `/forgot-password` и `/reset-password` добавени в `HIDDEN_CHAT_ROUTES`
+- [MODIFY] apps/web/components/chat/chat-widget.tsx — премахната `isLanding` специална логика; widget винаги е `bottom-6 right-6`. ScrollToTop FAB на landing е на `bottom-44 right-6` — stack-ват се вертикално с 152px gap.
+- [MODIFY] README.md — `Forgot Password` отбелязан като shipped (премахнат от Planned), 2 нови auth endpoints в API таблицата, +2 web pages (count 24 → 26), tables 19 → 20, API routes 60 → 62
+- [MODIFY] docs/dev-log.md — този запис
+
+**Решения:**
+- За email rewrite не правим server-side workaround. В production URL ще е реален домейн с https → проблемът изчезва. Plain text fallback в имейла дава copy-paste alternative за локално.
+- За navigation race: `window.history.replaceState` е безопасен — не trigger-ва React re-render, само update-ва URL bar-а. `searchParams` остава stale (което е ОК — toast-ът се показва веднъж и приключва).
+- Chat widget на landing вече се stack-ва с ScrollToTop FAB-а (chat на `bottom-6`, scroll-up на `bottom-44`); FAB е ~80px → 72px чист gap.
+
+**Verification:**
+- `tsc --noEmit` ✅
+- Manual smoke: повторен reset с парола `Test2025!` → directly login без refresh ✅
+
 ### Session 296 — README contact email screenshot
 
 **Какво направихме:**
