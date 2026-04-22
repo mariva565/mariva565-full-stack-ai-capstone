@@ -50,9 +50,9 @@ export function useLoginForm(): LoginFormState {
         tone: "success",
         message: "Password updated. Sign in with your new password.",
       });
-      router.replace("/login");
+      window.history.replaceState({}, "", "/login");
     }
-  }, [searchParams, router]);
+  }, [searchParams]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();

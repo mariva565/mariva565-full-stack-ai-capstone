@@ -125,8 +125,10 @@ export async function sendPasswordResetEmail({
   resetUrl,
 }: PasswordResetEmailParams) {
   const { smtpUser } = getSmtpConfig();
-  const safeName = escapeHtml(cleanHeaderValue(name, "there"));
-  const safeUrl = isSafeUrl(resetUrl) ? escapeHtml(resetUrl) : "#";
+  const cleanName = cleanHeaderValue(name, "there");
+  const safeName = escapeHtml(cleanName);
+  const cleanResetUrl = isSafeUrl(resetUrl) ? resetUrl : "";
+  const safeUrl = cleanResetUrl ? escapeHtml(cleanResetUrl) : "#";
   const ttlLabel =
     PASSWORD_RESET_TTL_HOURS === 1
       ? "1 hour"
@@ -136,6 +138,16 @@ export async function sendPasswordResetEmail({
     from: { name: "StudyHub", address: smtpUser },
     to,
     subject: "Reset your StudyHub password",
+    text: `Hi ${cleanName},
+
+We received a request to reset the password for your StudyHub account.
+
+Open this link in your browser to set a new password:
+${cleanResetUrl}
+
+This link expires in ${ttlLabel}.
+
+If you didn't request this, you can safely ignore this email. Your password will not change.`,
     html: `
       <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
         <h2 style="color: #6d28d9;">StudyHub</h2>
