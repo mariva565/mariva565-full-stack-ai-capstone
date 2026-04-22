@@ -2,11 +2,11 @@
 
 import type { FormEvent } from "react";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { readErrorMessage } from "@/lib/http";
 import type { ToastTone } from "../ui/toast";
 
-type PlannedFeature = "google" | "password-reset";
+type PlannedFeature = "google";
 
 type ToastState = {
   message: string;
@@ -27,16 +27,13 @@ type LoginFormState = {
   handlePlannedFeatureClick: (feature: PlannedFeature) => void;
 };
 
-function buildPlannedFeatureMessage(feature: PlannedFeature): string {
-  if (feature === "password-reset") {
-    return "Password reset is postponed until the base JWT auth flow is fully stabilized.";
-  }
-
+function buildPlannedFeatureMessage(_feature: PlannedFeature): string {
   return "Google sign-in will be added after we wire provider callbacks and account linking on the new backend.";
 }
 
 export function useLoginForm(): LoginFormState {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -46,6 +43,16 @@ export function useLoginForm(): LoginFormState {
   useEffect(() => {
     router.prefetch("/dashboard");
   }, [router]);
+
+  useEffect(() => {
+    if (searchParams.get("reset") === "success") {
+      setToast({
+        tone: "success",
+        message: "Password updated. Sign in with your new password.",
+      });
+      router.replace("/login");
+    }
+  }, [searchParams, router]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();

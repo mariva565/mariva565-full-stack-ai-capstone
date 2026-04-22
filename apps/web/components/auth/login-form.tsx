@@ -1,5 +1,7 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+import { Suspense } from "react";
 import { Toast } from "../ui/toast";
 import { AuthIconField } from "./auth-icon-field";
 import { EmailIcon, LockIcon } from "./auth-icons";
@@ -7,7 +9,8 @@ import { LoginFormActions } from "./login-form-actions";
 import { LoginFormHeader } from "./login-form-header";
 import { useLoginForm } from "./use-login-form";
 
-export function LoginForm() {
+function LoginFormInner() {
+  const router = useRouter();
   const {
     email,
     password,
@@ -19,7 +22,6 @@ export function LoginForm() {
     closeToast,
     handleSubmit,
     handleGoogleError,
-    handlePlannedFeatureClick,
   } = useLoginForm();
 
   return (
@@ -66,10 +68,18 @@ export function LoginForm() {
         </button>
 
         <LoginFormActions
-          onForgotPassword={() => handlePlannedFeatureClick("password-reset")}
+          onForgotPassword={() => router.push("/forgot-password")}
           onGoogleError={handleGoogleError}
         />
       </form>
     </>
+  );
+}
+
+export function LoginForm() {
+  return (
+    <Suspense>
+      <LoginFormInner />
+    </Suspense>
   );
 }

@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer";
+import { PASSWORD_RESET_TTL_HOURS } from "./password-reset";
 
 type SmtpConfig = {
   smtpUser: string;
@@ -106,6 +107,54 @@ export async function sendShareNotification({
         ">Open material</a>
         <p style="margin-top: 24px; color: #888; font-size: 0.85em;">
           You are receiving this message because a StudyHub user shared a material with you.
+        </p>
+      </div>
+    `,
+  });
+}
+
+export interface PasswordResetEmailParams {
+  to: string;
+  name: string;
+  resetUrl: string;
+}
+
+export async function sendPasswordResetEmail({
+  to,
+  name,
+  resetUrl,
+}: PasswordResetEmailParams) {
+  const { smtpUser } = getSmtpConfig();
+  const safeName = escapeHtml(cleanHeaderValue(name, "there"));
+  const safeUrl = isSafeUrl(resetUrl) ? escapeHtml(resetUrl) : "#";
+  const ttlLabel =
+    PASSWORD_RESET_TTL_HOURS === 1
+      ? "1 hour"
+      : `${PASSWORD_RESET_TTL_HOURS} hours`;
+
+  await transporter.sendMail({
+    from: { name: "StudyHub", address: smtpUser },
+    to,
+    subject: "Reset your StudyHub password",
+    html: `
+      <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+        <h2 style="color: #6d28d9;">StudyHub</h2>
+        <p>Hi <strong>${safeName}</strong>,</p>
+        <p>We received a request to reset the password for your StudyHub account. Click the button below to set a new password.</p>
+        <a href="${safeUrl}" style="
+          display: inline-block;
+          margin-top: 16px;
+          padding: 10px 20px;
+          background: #6d28d9;
+          color: white;
+          border-radius: 8px;
+          text-decoration: none;
+        ">Reset password</a>
+        <p style="margin-top: 24px; color: #555; font-size: 0.9em;">
+          This link expires in <strong>${ttlLabel}</strong>.
+        </p>
+        <p style="margin-top: 8px; color: #888; font-size: 0.85em;">
+          If you didn&apos;t request this, you can safely ignore this email. Your password will not change.
         </p>
       </div>
     `,

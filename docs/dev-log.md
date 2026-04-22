@@ -8795,6 +8795,43 @@ Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
 **Решения:**
 - Не добавяме fallback за extension errors, защото не са в app runtime-а; най-чистата проверка е Chrome Incognito/профил без extensions.
 
+### Сесия 297 — #32 Forgot-password reset flow
+
+**Какво направихме:**
+- Добавихме пълен self-serve forgot-password flow: заявка на reset link → email → смяна на парола.
+- Reusнахме съществуващия Nodemailer/Gmail SMTP transporter в `lib/email.ts` за `sendPasswordResetEmail`.
+- Reusнахме `bcryptjs` `hashPassword` от `lib/auth.ts`.
+
+**Нови файлове:**
+- [ADD] drizzle/migrations/0011_password_reset_tokens.sql — нова таблица с FK cascade към users
+- [ADD] apps/web/lib/password-reset.ts — TTL = 1 час, rate limit 3/час, SHA-256 token hashing
+- [ADD] apps/web/app/api/auth/password-reset/request/route.ts — anti-enumeration, винаги 200 OK
+- [ADD] apps/web/app/api/auth/password-reset/confirm/route.ts — валидира token, обновява парола
+- [ADD] apps/web/app/forgot-password/page.tsx
+- [ADD] apps/web/components/auth/forgot-password-form.tsx
+- [ADD] apps/web/components/auth/use-forgot-password-form.ts
+- [ADD] apps/web/app/reset-password/page.tsx
+- [ADD] apps/web/components/auth/reset-password-form.tsx (Suspense wrapper за `useSearchParams`)
+
+**Променени файлове:**
+- [MODIFY] drizzle/schema.ts — добавена `passwordResetTokens` table (с user_id FK cascade, expires_at/user_id индекси)
+- [MODIFY] apps/web/lib/email.ts — нова `sendPasswordResetEmail` функция, ttlLabel динамично от `PASSWORD_RESET_TTL_HOURS`
+- [MODIFY] apps/web/components/auth/use-login-form.ts — премахнат "password-reset" placeholder; добавено четене на `?reset=success` query param с success toast
+- [MODIFY] apps/web/components/auth/login-form.tsx — `onForgotPassword` сега навигира към `/forgot-password`; добавен Suspense wrapper за `useSearchParams`
+
+**Решения:**
+- Token се hash-ва (SHA-256, hex) преди DB save — никога не съхраняваме plaintext. Plaintext-ът живее само в email URL-а.
+- Anti-enumeration: `/request` endpoint винаги връща 200 OK независимо дали имейлът съществува, дали user-ът е блокиран, или дали е rate-limit-нат.
+- Rate limit: in-memory `Map<email, timestamps[]>` — 3 заявки/час за същия имейл. Trim-ва стари entries при всяко обращение, не нужда от cleanup интервал.
+- TTL = 1 час, изведен като константа `PASSWORD_RESET_TTL_HOURS` за да е лесно да се промени и автоматично да се отрази в email текста.
+- Google OAuth users: всички наши Google акаунти имат random hashed password (виж `app/api/auth/google/route.ts`), така че `!user.passwordHash` проверката не ги изключва. Това е приемливо — Google users могат да си зададат истинска парола чрез reset flow и да ползват и двата метода едновременно.
+- `NextResponse.json({ ok: true })` се връща като нова инстанция всеки път (`okResponse()` helper) — НЕ като споделен модул-level singleton (body stream щеше да се consume-не на първия request).
+- Reset URL ползва `process.env.APP_URL ?? "http://localhost:3000"` — production deploy ще иска APP_URL в env.
+
+**Verification:**
+- `tsc --noEmit` ✅
+- Manual smoke предстои след merge — ползвателят ще пусне `node scripts/run-migration.mjs drizzle/migrations/0011_password_reset_tokens.sql` срещу Neon, после `npm run build && npm start`.
+
 ### Session 296 — README contact email screenshot
 
 **Какво направихме:**

@@ -323,6 +323,25 @@ export const oauthAccounts = pgTable(
   ]
 );
 
+// ─── 19. password_reset_tokens ──────────────────────────────────
+export const passwordResetTokens = pgTable(
+  "password_reset_tokens",
+  {
+    id: serial("id").primaryKey(),
+    userId: integer("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    tokenHash: text("token_hash").notNull().unique(),
+    expiresAt: timestamp("expires_at").notNull(),
+    usedAt: timestamp("used_at"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) => [
+    index("password_reset_tokens_user_id_idx").on(table.userId),
+    index("password_reset_tokens_expires_at_idx").on(table.expiresAt),
+  ]
+);
+
 // ─── 18. shared_materials ─────────────────────────────────────
 export const sharedMaterials = pgTable(
   "shared_materials",
