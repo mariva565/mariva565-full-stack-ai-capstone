@@ -8745,3 +8745,52 @@ Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
 
 **Решения:**
 - Премахнахме изцяло бележките вместо замяна с нов copy, защото заявката е за чистене на остатъчни/временни подсказки в UI.
+
+## 2026-04-22
+
+### Session 294 — Contact form email delivery
+
+**Какво направихме:**
+- Вързахме `/contact` формата към реален server-side endpoint `POST /api/contact`.
+- Добавихме contact email изпращане през съществуващия Nodemailer/Gmail SMTP helper.
+- Формата вече изпраща `name`, `email`, `message`, показва реален success само след успешен API response и показва error state при отказ.
+- Добавихме SMTP/contact env placeholders в `.env.example`.
+- Нормализирахме share email helper-а към encoding-safe English copy и поправихме fallback sender текста в material share route.
+
+**Файлове:**
+- [ADD] apps/web/app/api/contact/route.ts
+- [MODIFY] apps/web/components/contact/contact-form.tsx
+- [MODIFY] apps/web/lib/email.ts
+- [MODIFY] apps/web/app/api/materials/[id]/share/route.ts
+- [MODIFY] .env.example
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd run typecheck:web` ✅
+
+**Решения:**
+- Contact email-ите се изпращат от `SMTP_USER` и отиват към `CONTACT_TO_EMAIL`, с fallback към `SMTP_USER`, ако отделен получател не е зададен.
+- `Reply-To` се задава към email-а от формата, така че отговор от Gmail inbox-а да отиде директно към човека, който е писал.
+- Не добавяме DB таблица за contact messages в този slice; scope-ът е само inbox delivery.
+
+### Session 295 — Contact console warning triage
+
+**Какво направихме:**
+- Проверихме console output-а от Contact страницата.
+- Потвърдихме, че `content.js` / `polyfill.js` грешките идват от browser extension content scripts, не от StudyHub bundle-а.
+- Олекотихме Contact constellation canvas animation-а, за да намалим `requestAnimationFrame` violation предупрежденията:
+  - намален FPS cap от 45 на 30
+  - намален star count за desktop/mobile
+  - ограничен canvas DPR cap до 1.5
+  - добавена squared-distance проверка преди `Math.sqrt` при constellation lines
+- Поправихме encoding-risk comment-а около `STARBURST_EVENT`.
+
+**Файлове:**
+- [MODIFY] apps/web/components/contact/contact-constellation.tsx
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd run typecheck:web` ✅
+
+**Решения:**
+- Не добавяме fallback за extension errors, защото не са в app runtime-а; най-чистата проверка е Chrome Incognito/профил без extensions.

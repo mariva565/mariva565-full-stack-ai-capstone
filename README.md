@@ -155,10 +155,6 @@ Most tools make you choose: Notion gives you flexibility but no structure. Googl
 
 ---
 
-<p align="center">
-  <img src="docs/assets/readme/hero.svg" width="100%" alt="StudyHub v2 — architecture overview banner" />
-</p>
-
 ## System Architecture
 
 ### Overview

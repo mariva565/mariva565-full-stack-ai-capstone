@@ -4,20 +4,31 @@ import { useState, type FormEvent } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { STARBURST_EVENT } from "./contact-constellation";
 
+const CONTACT_ERROR_MESSAGE =
+  "We couldn't send your message right now. Please try again in a moment.";
+
 export function ContactForm() {
   const [submitted, setSubmitted] = useState(false);
   const [sending, setSending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const form = e.currentTarget;
+
     setSending(true);
-    // Trigger constellation star burst
+    setError(null);
     window.dispatchEvent(new Event(STARBURST_EVENT));
-    // Simulate network delay, then show success
-    setTimeout(() => {
+
+    try {
+      await submitContactForm(form);
       setSending(false);
+      form.reset();
       setSubmitted(true);
-    }, 1200);
+    } catch {
+      setSending(false);
+      setError(CONTACT_ERROR_MESSAGE);
+    }
   };
 
   return (
@@ -29,7 +40,12 @@ export function ContactForm() {
           {submitted ? (
             <SuccessMessage key="success" onReset={() => setSubmitted(false)} />
           ) : (
-            <FormContent key="form" sending={sending} onSubmit={handleSubmit} />
+            <FormContent
+              key="form"
+              error={error}
+              sending={sending}
+              onSubmit={handleSubmit}
+            />
           )}
         </AnimatePresence>
       </div>
@@ -39,10 +55,34 @@ export function ContactForm() {
 
 /* ---------- form ---------- */
 
+function readFormField(formData: FormData, key: string): string {
+  const value = formData.get(key);
+  return typeof value === "string" ? value.trim() : "";
+}
+
+async function submitContactForm(form: HTMLFormElement): Promise<void> {
+  const formData = new FormData(form);
+  const response = await fetch("/api/contact", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      name: readFormField(formData, "name"),
+      email: readFormField(formData, "email"),
+      message: readFormField(formData, "message"),
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Contact request failed");
+  }
+}
+
 function FormContent({
-  sending, onSubmit,
+  error, sending, onSubmit,
 }: {
-  sending: boolean; onSubmit: (e: FormEvent) => void;
+  error: string | null;
+  sending: boolean;
+  onSubmit: (e: FormEvent<HTMLFormElement>) => void;
 }) {
   return (
     <motion.form
@@ -65,6 +105,15 @@ function FormContent({
       <FieldGroup label="Your Name" id="name" type="text" placeholder="John Doe" />
       <FieldGroup label="Your Email" id="email" type="email" placeholder="you@example.com" />
       <FieldGroup label="Your Message" id="message" placeholder="Tell us what's on your mind..." textarea />
+
+      {error ? (
+        <p
+          role="alert"
+          className="mb-4 rounded-xl border border-rose-300/25 bg-rose-500/15 px-4 py-3 text-sm font-medium text-rose-100"
+        >
+          {error}
+        </p>
+      ) : null}
 
       <button
         type="submit"

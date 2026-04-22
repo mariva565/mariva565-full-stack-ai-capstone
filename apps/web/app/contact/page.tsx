@@ -1,5 +1,3 @@
-"use client";
-
 import { ContactConstellation } from "../../components/contact/contact-constellation";
 import { ContactAurora } from "../../components/contact/contact-aurora";
 import { ContactHeader } from "../../components/contact/contact-header";

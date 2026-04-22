@@ -24,11 +24,13 @@ interface ShootingStar {
   maxLife: number;
 }
 
-const STAR_COUNT_DESKTOP = 60;
-const STAR_COUNT_MOBILE = 30;
-const LINE_DISTANCE = 120;
-const FPS_CAP = 45;
-const BURST_DURATION = 90; // frames (~2s at 45fps)
+const STAR_COUNT_DESKTOP = 48;
+const STAR_COUNT_MOBILE = 24;
+const LINE_DISTANCE = 110;
+const LINE_DISTANCE_SQ = LINE_DISTANCE * LINE_DISTANCE;
+const FPS_CAP = 30;
+const MAX_DPR = 1.5;
+const BURST_DURATION = 90; // frames (~3s at 30fps)
 const BURST_DRAG = 0.92;
 
 function createStars(count: number, w: number, h: number): Star[] {
@@ -58,7 +60,7 @@ function spawnShootingStar(w: number, h: number): ShootingStar {
   };
 }
 
-/** Custom event name — dispatched by contact-form on submit */
+/** Custom event name: dispatched by contact-form on submit */
 export const STARBURST_EVENT = "contact:starburst";
 
 export function ContactConstellation() {
@@ -111,8 +113,9 @@ export function ContactConstellation() {
         for (let j = i + 1; j < stars.length; j++) {
           const dx = stars[i].x - stars[j].x;
           const dy = stars[i].y - stars[j].y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < LINE_DISTANCE) {
+          const distSq = dx * dx + dy * dy;
+          if (distSq < LINE_DISTANCE_SQ) {
+            const dist = Math.sqrt(distSq);
             const lineAlpha = (1 - dist / LINE_DISTANCE) * 0.15;
             ctx.strokeStyle = `rgba(139,92,246,${lineAlpha})`;
             ctx.beginPath();
@@ -176,7 +179,7 @@ export function ContactConstellation() {
     const resize = () => {
       const prevW = canvas.width;
       const prevH = canvas.height;
-      const dpr = Math.min(window.devicePixelRatio, 2);
+      const dpr = Math.min(window.devicePixelRatio, MAX_DPR);
       const newW = window.innerWidth * dpr;
       const newH = window.innerHeight * dpr;
       canvas.width = newW;
@@ -191,8 +194,8 @@ export function ContactConstellation() {
         starsRef.current = createStars(count, window.innerWidth, window.innerHeight);
       } else {
         // Rescale existing stars to new dimensions instead of recreating
-        const scaleX = window.innerWidth / (prevW / Math.min(window.devicePixelRatio, 2));
-        const scaleY = window.innerHeight / (prevH / Math.min(window.devicePixelRatio, 2));
+        const scaleX = window.innerWidth / (prevW / dpr);
+        const scaleY = window.innerHeight / (prevH / dpr);
         for (const star of starsRef.current) {
           star.x *= scaleX;
           star.y *= scaleY;

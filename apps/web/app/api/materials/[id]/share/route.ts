@@ -96,11 +96,11 @@ export async function POST(request: NextRequest, { params }: Ctx) {
     .from(users)
     .where(eq(users.id, auth.user.sub));
 
-  const senderName = sender?.name ?? "Потребител";
+  const senderName = sender?.name ?? "StudyHub user";
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
   const materialUrl = `${appUrl}/materials/${materialId}`;
 
-  // Fire-and-forget — email failure never blocks the share action
+  // Fire-and-forget: email failure never blocks the share action.
   sendShareNotification({
     to: recipient.email,
     senderName,

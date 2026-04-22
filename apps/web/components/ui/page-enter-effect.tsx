@@ -16,6 +16,16 @@ export function PageEnterEffect({ children }: { children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
   const prevPath = useRef(pathname);
 
+  // After animation ends, clear it so transform:translateY(0) doesn't persist.
+  // A live transform on any ancestor breaks position:fixed children (Lottie decorations).
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const onEnd = () => { el.style.animation = "none"; };
+    el.addEventListener("animationend", onEnd);
+    return () => el.removeEventListener("animationend", onEnd);
+  }, []);
+
   useEffect(() => {
     if (pathname === prevPath.current) return;
     prevPath.current = pathname;
