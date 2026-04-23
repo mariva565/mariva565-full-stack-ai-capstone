@@ -9086,3 +9086,81 @@ Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
 
 **Решения:**
 - Запазихме brand heading signature като cross-surface правило: web ползва съществуващия `font-shantell` pattern, а mobile ползва `BRAND_FONT_FAMILY` без отделен `fontWeight`.
+
+### Session 305 — API Docs section headings switched to branded gradient
+
+**Какво направихме:**
+- Подменихме plain black section heading treatment в [`api-docs-page.tsx`](../apps/web/components/api-docs/api-docs-page.tsx), така че секционните заглавия на `/api-docs` да използват съществуващия `home-ink-title` brand gradient вместо `text-slate-950`.
+
+**Файлове:**
+- [MODIFY] apps/web/components/api-docs/api-docs-page.tsx
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd run typecheck:web` ✅
+- `npm.cmd run check:mojibake` ✅
+
+**Решения:**
+- Запазихме body copy неутрален за четимост, а върнахме цветния signature само върху branded section headings.
+
+### Session 306 — API Docs hero title aligned to display gradient
+
+**Какво направихме:**
+- Сменихме hero заглавието `API Docs` на [`/api-docs`](../apps/web/components/api-docs/api-docs-page.tsx) от generic gradient utility към `home-display-title`, за да използва същия display-level brand gradient, който вече работи стабилно на други публични surface-и.
+
+**Файлове:**
+- [MODIFY] apps/web/components/api-docs/api-docs-page.tsx
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd run typecheck:web` ✅
+- `npm.cmd run check:mojibake` ✅
+
+**Решения:**
+- Разделихме двата heading tiers:
+  - hero title -> `home-display-title`
+  - section titles -> `home-ink-title`
+  за да има по-ясна визуална йерархия без черни branded headings.
+
+### Session 307 — API Docs responsive pass and on-page dark-mode toggle
+
+**Какво направихме:**
+- Направихме responsive pass на [`/api-docs`](../apps/web/components/api-docs/api-docs-page.tsx):
+  - по-компактни mobile paddings
+  - по-мека типографска скала на малък екран
+  - highlights grid с `sm -> 2 cols`, `xl -> 3 cols`
+  - endpoint cards с `md -> 2 cols`, `xl -> 3 cols`
+  - CTA бутоните стават full-width на mobile
+  - endpoint path-овете минават на `break-all` за да не избутват layout-а
+- Добавихме [`ThemeToggle`](../apps/web/components/theme/theme-toggle.tsx) директно в hero зоната на docs страницата, за да може dark mode да се тества на място без зависимост от друг navigation shell.
+
+**Файлове:**
+- [MODIFY] apps/web/components/api-docs/api-docs-page.tsx
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd run typecheck:web` ✅
+- `npm.cmd run check:mojibake` ✅
+
+**Решения:**
+- Оставихме body copy и code blocks неутрални за четимост, а responsive/dark-mode polish е концентриран върху layout, spacing и достъпността на theme switch.
+
+### Session 308 — Public API Docs navbar dark-mode pass
+
+**Какво направихме:**
+- Подравнихме public navbar-а, използван на [`/api-docs`](../apps/web/components/layout/Navbar.tsx), към dark mode:
+  - dark background / border / shadow states
+  - dark logo gradient
+  - dark variants за desktop links, mobile links, login buttons и mobile menu toggle
+  - dark dropdown styling за mobile менюто
+
+**Файлове:**
+- [MODIFY] apps/web/components/layout/Navbar.tsx
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd run typecheck:web` ✅
+- `npm.cmd run check:mojibake` ✅
+
+**Решения:**
+- Оставихме тази navbar промяна в shared public component, защото подобрява не само `/api-docs`, а и останалите public surface-и без да променя навигационната структура.

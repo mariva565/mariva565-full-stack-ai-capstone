@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Navbar } from "@/components/layout/Navbar";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { apiDocsHighlights, apiDocsSections, type ApiDocMethod } from "./api-docs-content";
 
 const methodTone: Record<ApiDocMethod, string> = {
@@ -44,29 +45,35 @@ export function ApiDocsPage({ isAuthenticated }: { isAuthenticated: boolean }) {
     <div className="min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#eef2ff_32%,#ffffff_100%)] dark:bg-[linear-gradient(180deg,#020617_0%,#071120_42%,#020617_100%)]">
       <Navbar isAuthenticated={isAuthenticated} />
 
-      <main>
-        <section className="border-b border-slate-200/70 bg-white/70 px-6 py-20 backdrop-blur-sm dark:border-white/10 dark:bg-slate-950/40">
+      <main className="overflow-x-hidden">
+        <section className="border-b border-slate-200/70 bg-white/70 px-4 py-14 backdrop-blur-sm dark:border-white/10 dark:bg-slate-950/40 sm:px-6 sm:py-20">
           <div className="mx-auto max-w-6xl">
-            <div className="max-w-3xl space-y-6">
-              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-brand-600 dark:text-cyan-300">
-                StudyHub REST API
-              </p>
-              <h1 className="font-shantell text-4xl font-black tracking-tight text-transparent bg-v1-gradient bg-clip-text sm:text-5xl">
-                API Docs
-              </h1>
-              <p className="text-lg leading-8 text-slate-600 dark:text-slate-300">
-                A public reference for the main StudyHub endpoints used by the Next.js web app,
-                the Expo mobile app, and backend lesson demos. This page mirrors the repo-level
-                contract in <code>docs/api-contract.md</code> and focuses on the flows most useful
-                during defense and manual testing.
-              </p>
+            <div className="flex flex-col gap-6 sm:gap-8 lg:flex-row lg:items-start lg:justify-between">
+              <div className="max-w-3xl space-y-5 sm:space-y-6">
+                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-brand-600 dark:text-cyan-300 sm:text-sm">
+                  StudyHub REST API
+                </p>
+                <h1 className="home-display-title text-[2.35rem] sm:text-5xl">
+                  API Docs
+                </h1>
+                <p className="text-base leading-7 text-slate-600 dark:text-slate-300 sm:text-lg sm:leading-8">
+                  A public reference for the main StudyHub endpoints used by the Next.js web app,
+                  the Expo mobile app, and backend lesson demos. This page mirrors the repo-level
+                  contract in <code>docs/api-contract.md</code> and focuses on the flows most useful
+                  during defense and manual testing.
+                </p>
+              </div>
+
+              <div className="flex justify-start lg:justify-end">
+                <ThemeToggle />
+              </div>
             </div>
 
-            <div className="mt-10 grid gap-4 md:grid-cols-3">
+            <div className="mt-8 grid gap-4 sm:mt-10 sm:grid-cols-2 xl:grid-cols-3">
               {apiDocsHighlights.map((item) => (
                 <div
                   key={item.label}
-                  className="rounded-lg border border-slate-200 bg-white/85 px-5 py-5 shadow-sm dark:border-white/10 dark:bg-slate-900/70"
+                  className="h-full rounded-2xl border border-slate-200 bg-white/85 px-4 py-4 shadow-sm dark:border-white/10 dark:bg-slate-900/70 sm:px-5 sm:py-5"
                 >
                   <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">
                     {item.label}
@@ -86,35 +93,35 @@ export function ApiDocsPage({ isAuthenticated }: { isAuthenticated: boolean }) {
         {apiDocsSections.map((section) => (
           <section
             key={section.title}
-            className="border-b border-slate-200/70 px-6 py-16 dark:border-white/10"
+            className="border-b border-slate-200/70 px-4 py-12 dark:border-white/10 sm:px-6 sm:py-16"
           >
             <div className="mx-auto max-w-6xl">
               <div className="max-w-2xl space-y-3">
-                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-600 dark:text-cyan-300">
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-600 dark:text-cyan-300 sm:text-sm">
                   {section.eyebrow}
                 </p>
-                <h2 className="font-shantell text-3xl font-black tracking-tight text-slate-950 dark:text-white">
+                <h2 className="home-ink-title text-[1.9rem] sm:text-3xl">
                   {section.title}
                 </h2>
-                <p className="text-base leading-7 text-slate-600 dark:text-slate-300">
+                <p className="text-sm leading-7 text-slate-600 dark:text-slate-300 sm:text-base">
                   {section.description}
                 </p>
               </div>
 
-              <div className="mt-8 grid gap-5 xl:grid-cols-3">
+              <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                 {section.endpoints.map((endpoint) => (
                   <article
                     key={`${endpoint.method}-${endpoint.path}`}
-                    className="flex h-full flex-col rounded-lg border border-slate-200 bg-white/90 px-5 py-5 shadow-sm dark:border-white/10 dark:bg-slate-900/70"
+                    className="flex h-full flex-col rounded-2xl border border-slate-200 bg-white/90 px-4 py-4 shadow-sm dark:border-white/10 dark:bg-slate-900/70 sm:px-5 sm:py-5"
                   >
-                    <div className="flex flex-wrap items-center gap-3">
+                    <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
                       <MethodBadge method={endpoint.method} />
                       <span className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">
                         {endpoint.auth}
                       </span>
                     </div>
 
-                    <p className="mt-4 break-words font-mono text-sm font-semibold text-slate-900 dark:text-white">
+                    <p className="mt-4 break-all font-mono text-xs font-semibold text-slate-900 dark:text-white sm:text-sm">
                       {endpoint.path}
                     </p>
                     <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-300">
@@ -145,27 +152,27 @@ export function ApiDocsPage({ isAuthenticated }: { isAuthenticated: boolean }) {
           </section>
         ))}
 
-        <section className="px-6 py-16">
-          <div className="mx-auto flex max-w-6xl flex-col gap-5 rounded-lg border border-slate-200 bg-white/90 px-6 py-8 shadow-sm dark:border-white/10 dark:bg-slate-900/70 md:flex-row md:items-center md:justify-between">
+        <section className="px-4 py-12 sm:px-6 sm:py-16">
+          <div className="mx-auto flex max-w-6xl flex-col gap-5 rounded-2xl border border-slate-200 bg-white/90 px-4 py-6 shadow-sm dark:border-white/10 dark:bg-slate-900/70 sm:px-6 sm:py-8 md:flex-row md:items-center md:justify-between">
             <div className="max-w-3xl space-y-3">
-              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-600 dark:text-cyan-300">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-600 dark:text-cyan-300 sm:text-sm">
                 Manual Testing
               </p>
-              <p className="text-base leading-7 text-slate-600 dark:text-slate-300">
+              <p className="text-sm leading-7 text-slate-600 dark:text-slate-300 sm:text-base">
                 Use the repository contract doc together with the Postman collection in
                 <code> docs/StudyHub.postman_collection.json</code> for a live backend demo.
               </p>
             </div>
-            <div className="flex flex-wrap gap-3">
+            <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap">
               <Link
                 href="/"
-                className="inline-flex items-center justify-center rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-200"
+                className="inline-flex w-full items-center justify-center rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-200 sm:w-auto"
               >
                 Back Home
               </Link>
               <Link
                 href="/contact"
-                className="inline-flex items-center justify-center rounded-full border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-brand-400 hover:text-brand-600 dark:border-white/15 dark:text-slate-200 dark:hover:border-cyan-300 dark:hover:text-cyan-200"
+                className="inline-flex w-full items-center justify-center rounded-full border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-brand-400 hover:text-brand-600 dark:border-white/15 dark:text-slate-200 dark:hover:border-cyan-300 dark:hover:text-cyan-200 sm:w-auto"
               >
                 Contact
               </Link>
