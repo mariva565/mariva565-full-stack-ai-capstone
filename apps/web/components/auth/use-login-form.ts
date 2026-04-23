@@ -2,7 +2,7 @@
 
 import type { FormEvent } from "react";
 import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { readErrorMessage } from "@/lib/http";
 import type { ToastTone } from "../ui/toast";
 
@@ -32,17 +32,12 @@ function buildPlannedFeatureMessage(_feature: PlannedFeature): string {
 }
 
 export function useLoginForm(): LoginFormState {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState<ToastState | null>(null);
-
-  useEffect(() => {
-    router.prefetch("/dashboard");
-  }, [router]);
 
   useEffect(() => {
     if (searchParams.get("reset") === "success") {
@@ -71,7 +66,7 @@ export function useLoginForm(): LoginFormState {
         return;
       }
 
-      router.replace("/dashboard");
+      window.location.href = "/dashboard";
     } catch {
       setError("Something went wrong. Please try again.");
     } finally {

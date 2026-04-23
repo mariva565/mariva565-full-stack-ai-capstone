@@ -8892,3 +8892,22 @@ Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
 
 **Решения:**
 - Hard redirect през `window.location.href` избягва Next.js soft navigation, която сервира stale prefetch-нат `/login`. Симптом: първият login опит след reset биваше отхвърлян до ръчен refresh.
+
+### Session 298 — Login post-success redirect fix (истинският root cause след reset)
+
+**Какво направихме:**
+- Махнахме `router.prefetch("/dashboard")` useEffect-а от [`use-login-form.ts`](../apps/web/components/auth/use-login-form.ts) — prefetch-ваше protected route преди потребителят да е авторизиран, middleware връщаше redirect-to-login и Next.js кешираше този redirect.
+- Смяна на `router.replace("/dashboard")` → `window.location.href = "/dashboard"` след успешен login, за да гарантираме fresh server-side проверка с новата JWT cookie (каноничен Next.js pattern за auth state transitions).
+- Премахнат вече неизползваният `useRouter` import и локалната `router` променлива.
+
+**Файлове:**
+- [MODIFY] apps/web/components/auth/use-login-form.ts
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm run typecheck:web` ✅
+
+**Решения:**
+- Session 297 fix-а (hard redirect от reset-password формата) беше необходим но недостатъчен. Истинският симптом ("първи login опит след reset се отхвърля, refresh работи") идваше от login формата, не от reset формата.
+- Причина: при mount на `/login` prefetch-ваме `/dashboard` докато няма cookie → middleware връща redirect → Next.js кешира → `router.replace("/dashboard")` след login сервира stale кеша → връщане на `/login`. Refresh работи, защото прави hard request с новата cookie.
+- Алтернативи разгледани и отхвърлени: `router.refresh()` refresh-ва само current route, не destination; custom `useAuthRedirect()` hook е козметика за 2 места; middleware redirect е архитектурно неудобен за POST-to-JSON login API.
