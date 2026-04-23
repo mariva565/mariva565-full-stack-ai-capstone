@@ -59,7 +59,7 @@ export function ProfileMemberIdCard({
 
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-            <h3 className="text-xl font-bold leading-tight text-white sm:text-2xl">{name}</h3>
+            <h3 className="font-shantell text-2xl font-bold leading-tight !text-white sm:text-3xl">{name}</h3>
             <span className="rounded-full bg-white/20 px-2.5 py-0.5 text-[0.7rem] font-bold uppercase tracking-[0.14em] backdrop-blur-sm">
               {title}
             </span>
