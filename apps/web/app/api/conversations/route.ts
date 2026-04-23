@@ -135,7 +135,10 @@ export async function POST(request: NextRequest) {
   const otherUserId = Number(body.userId);
 
   if (!otherUserId || otherUserId === myId) {
-    return NextResponse.json({ message: "Invalid userId" }, { status: 400 });
+    return NextResponse.json(
+      { code: "INVALID_USER_ID", message: "Invalid userId" },
+      { status: 400 }
+    );
   }
 
   // Check the other user exists
@@ -146,7 +149,10 @@ export async function POST(request: NextRequest) {
     .limit(1);
 
   if (!otherUser) {
-    return NextResponse.json({ message: "User not found" }, { status: 404 });
+    return NextResponse.json(
+      { code: "USER_NOT_FOUND", message: "User not found" },
+      { status: 404 }
+    );
   }
 
   // Check if a conversation already exists between these two users

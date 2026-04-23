@@ -8934,3 +8934,133 @@ Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
 - **Founding Member cutoff:** `2026-06-01`. Capstone deadline-ът е 2026-05-27, значи всеки регистриран до launch-а получава title-а. Пост-launch регистрации стават Students.
 - **Placement:** full-width между primary и secondary, не в secondary grid-а — така картата е прoминентна като "showcase" feature, а не четвърта card в списък.
 - **`<img>` тег, не `next/image`** за avatar — match-ва конвенцията на [`profile-hero-card.tsx`](../apps/web/components/profile/profile-hero-card.tsx), избягва remotePatterns config за external avatar URLs.
+
+### Session 300 — Backend APIs lesson audit
+
+**Какво направихме:**
+- Прегледахме `docs/09.Back-End-APIs.pdf` и сравнихме темите от урока с текущата StudyHub backend/API реализация.
+- Потвърдихме, че проектът покрива основните теми от урока: Next.js route handlers, REST endpoints, HTTP methods/status codes, JSON responses, JWT auth, Bearer/cookie auth, bcrypt password hashing, protected endpoints, роли и serverless-friendly persistent DB.
+- Идентифицирахме оставащи polish/backlog точки: липсва Postman/OpenAPI collection, някои endpoints връщат inconsistent error shape, на няколко list endpoints липсва pagination, deployment остава planned.
+
+**Файлове:**
+- [READ] docs/09.Back-End-APIs.pdf
+- [READ] apps/web/app/api/**/route.ts
+- [READ] apps/web/lib/api-utils.ts
+- [READ] apps/web/lib/auth.ts
+- [READ] apps/web/lib/jwt.ts
+- [READ] README.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd run check:mojibake` ✅
+- `npm.cmd run typecheck:web` ✅
+
+**Решения:**
+- Няма функционални промени в backend-а в тази сесия; резултатът е audit/handoff анализ.
+- Препоръчаният следващ малък backend polish task е да се добави Postman collection или OpenAPI-style API contract doc с auth flow и representative request/response examples.
+
+### Session 301 — Backend API contract polish
+
+**Какво направихме:**
+- Уеднаквихме няколко останали API error responses към `{ code, message }`.
+- Премахнахме client-facing `stack` leak от shared materials endpoint-а.
+- Добавихме `docs/api-contract.md` с auth flow, JSON/error contract, status code table и representative request/response examples за core, social, messaging и admin endpoints.
+- Добавихме README линк към новия API contract документ от `API Endpoints` секцията.
+
+**Файлове:**
+- [MODIFY] apps/web/app/api/pusher/auth/route.ts
+- [MODIFY] apps/web/app/api/conversations/route.ts
+- [MODIFY] apps/web/app/api/materials/shared/route.ts
+- [MODIFY] apps/web/app/api/materials/shared-by-me/route.ts
+- [MODIFY] apps/web/app/api/admin/activity-stats/route.ts
+- [ADD] docs/api-contract.md
+- [MODIFY] README.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `rg -n "stack:|NextResponse\\.json\\(\\{ error:" apps\\web\\app\\api -S` ✅ no matches
+- `npm.cmd run typecheck:web` ✅
+- `npm.cmd run check:mojibake` ✅
+
+**Решения:**
+- Не променяхме success payload-и като conversation lists и notifications, защото web/mobile clients вече ги очакват в текущия им вид.
+- Оставихме `PUT` partial-update конвенцията като документирана текуща практика вместо да правим cross-client `PATCH` refactor.
+
+### Session 302 — Lesson 09 backend demo artifacts
+
+**Какво направихме:**
+- Добавихме публична [`/api-docs`](../apps/web/app/api-docs/page.tsx) страница като static server route с:
+  - base URL / auth header / error contract hero секция
+  - resource-grouped endpoint cards
+  - representative request/response examples
+  - status code badges за основните auth/content/community/admin flows
+- Изнесохме API docs съдържанието в отделни web компоненти/данни:
+  - [`api-docs-page.tsx`](../apps/web/components/api-docs/api-docs-page.tsx)
+  - [`api-docs-content.ts`](../apps/web/components/api-docs/api-docs-content.ts)
+- Добавихме публичен discoverability wiring за docs страницата:
+  - `/api-docs` е добавен към public path allowlist в navbar клиента, така че app navbar-ът не се показва върху docs route-а
+  - добавихме `API Docs` линк в public landing/how-it-works navbar-а
+  - добавихме `API Docs` линк в landing footer-а
+- Създадохме [`docs/StudyHub.postman_collection.json`](../docs/StudyHub.postman_collection.json):
+  - Auth folder (register/login/login-negative/me/logout)
+  - Courses folder (401 negative + list/create/read/update)
+  - Materials folder (module helper + list/create/read/update)
+  - Favorites folder (list/add/remove)
+  - Posts folder (list/create/read)
+  - Cleanup folder (delete created material/post/course)
+  - login request записва JWT token в collection variable
+  - create requests записват `courseId` / `moduleId` / `materialId` / `postId` за следващите requests
+- Обновихме README API docs секцията с линк към Postman collection-а.
+
+**Файлове:**
+- [ADD] apps/web/app/api-docs/page.tsx
+- [ADD] apps/web/components/api-docs/api-docs-page.tsx
+- [ADD] apps/web/components/api-docs/api-docs-content.ts
+- [ADD] docs/StudyHub.postman_collection.json
+- [MODIFY] apps/web/components/navbar-client.tsx
+- [MODIFY] apps/web/components/layout/Navbar.tsx
+- [MODIFY] apps/web/app/page.tsx
+- [MODIFY] README.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd run typecheck:web` ✅
+- `python -X utf8 -c "import json; json.load(open('docs/StudyHub.postman_collection.json', encoding='utf-8'))"` ✅
+- `npm.cmd run check:mojibake` ✅
+- `npm.cmd run build:web` ✅
+  - confirmed generated route: `/api-docs`
+
+**Решения:**
+- Не пипахме pagination contracts или frontend data hooks в тази сесия; фокусът е lesson-aligned backend demo artifacts с нисък риск.
+- Cleanup destructive requests са в отделен folder в Postman collection-а, за да не се чупи демонстрационната последователност за create/read/update flows.
+
+### Session 303 — Cleanup guard for protected docs
+
+**Какво направихме:**
+- Добавихме explicit cleanup guard в [`AGENTS.md`](../AGENTS.md), така че бъдещи агенти да не третират ключовите docs файлове като временни по време на cleanup/refactor passes.
+- Добавихме нов [`docs/README.md`](../docs/README.md) с кратка класификация:
+  - `Protected Docs`
+  - `Reference Docs`
+  - `Cleanup Guidance`
+- Маркирахме backend lesson артефактите като protected:
+  - `docs/api-contract.md`
+  - `docs/StudyHub.postman_collection.json`
+- Записахме и останалите project continuity docs като protected:
+  - `docs/dev-log.md`
+  - `docs/implementation-plan.md`
+  - `docs/performance-guardrails.md`
+  - mobile execution/smoke/release docs
+
+**Файлове:**
+- [MODIFY] AGENTS.md
+- [ADD] docs/README.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd run check:mojibake` ✅
+
+**Решения:**
+- Използвахме двоен guardrail:
+  - `AGENTS.md` за agent behavior
+  - `docs/README.md` за human-readable cleanup guidance
+- Protected docs не се трият, архивират, преименуват или свеждат до summary без explicit user approval.

@@ -93,6 +93,9 @@ export default async function HomePage() {
               <Link href="/contact" className="text-slate-500 hover:text-brand-500 font-semibold transition-colors text-sm">
                 Contact
               </Link>
+              <Link href="/api-docs" className="text-slate-500 hover:text-brand-500 font-semibold transition-colors text-sm">
+                API Docs
+              </Link>
               <Link href="/register" className="text-slate-500 hover:text-brand-500 font-semibold transition-colors text-sm">
                 Register
               </Link>

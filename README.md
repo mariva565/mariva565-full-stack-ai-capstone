@@ -681,6 +681,8 @@ Mobile intentionally ships only the student-facing flows. Mentor (`/mentor-inbox
 ## API Endpoints
 
 Grouped by feature domain. This matrix tracks the main product-facing routes used by web/mobile clients.
+See [`docs/api-contract.md`](docs/api-contract.md) for auth flow, error contract, status codes, and representative request/response examples.
+Manual testing artifacts for backend demos live in [`docs/StudyHub.postman_collection.json`](docs/StudyHub.postman_collection.json) and [`docs/api-contract.md`](docs/api-contract.md).
 
 ### Public
 

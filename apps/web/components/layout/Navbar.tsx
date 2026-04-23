@@ -58,6 +58,7 @@ export function Navbar({ isAuthenticated = false }: NavbarProps) {
           <NavLink href="/#features">Features</NavLink>
           <NavLink href="/#about">About</NavLink>
           <NavLink href="/how-it-works">How It Works</NavLink>
+          <NavLink href="/api-docs">API Docs</NavLink>
           <NavLink href="/#faq">FAQ</NavLink>
           <NavLink href="/contact">Contact</NavLink>
 
@@ -119,6 +120,7 @@ export function Navbar({ isAuthenticated = false }: NavbarProps) {
             <MobileNavLink href="/#features" onClick={() => setMenuOpen(false)}>Features</MobileNavLink>
             <MobileNavLink href="/#about" onClick={() => setMenuOpen(false)}>About</MobileNavLink>
             <MobileNavLink href="/how-it-works" onClick={() => setMenuOpen(false)}>How It Works</MobileNavLink>
+            <MobileNavLink href="/api-docs" onClick={() => setMenuOpen(false)}>API Docs</MobileNavLink>
             <MobileNavLink href="/#faq" onClick={() => setMenuOpen(false)}>FAQ</MobileNavLink>
             <MobileNavLink href="/contact" onClick={() => setMenuOpen(false)}>Contact</MobileNavLink>
             {isAuthenticated ? (

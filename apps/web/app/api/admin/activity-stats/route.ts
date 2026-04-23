@@ -48,6 +48,9 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(result);
   } catch (error) {
     console.error("Failed to fetch activity stats:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { code: "ACTIVITY_STATS_LOAD_FAILED", message: "Failed to load activity stats" },
+      { status: 500 }
+    );
   }
 }

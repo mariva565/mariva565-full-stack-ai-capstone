@@ -244,6 +244,28 @@ Current mobile quality-gate status:
   - `docs/mobile-smoke-test-matrix.md`
   - `docs/mobile-release-checklist.md`
 
+### Protected Docs During Cleanup
+
+When doing cleanup, pruning, archiving, or "remove temporary docs" work, treat the files below as **protected**. Do **not** delete, archive, rename, or rewrite them into summaries unless the user explicitly asks.
+
+- `docs/dev-log.md`
+- `docs/implementation-plan.md`
+- `docs/performance-guardrails.md`
+- `docs/mobile-execution-checklist.md`
+- `docs/mobile-smoke-test-matrix.md`
+- `docs/mobile-release-checklist.md`
+- `docs/api-contract.md`
+- `docs/StudyHub.postman_collection.json`
+
+Reason: these files are part of project continuity, lesson-defense evidence, or active execution checklists. Future agents must preserve them during cleanup passes.
+
+If a docs cleanup task touches `docs/`, first classify files into:
+- **Protected / keep**
+- **Reference / ask before deleting**
+- **Archive candidates**
+
+When uncertain, prefer keeping docs and ask the user before deleting.
+
 **Prompt за нов чат:** "Read `docs/dev-log.md`, `docs/implementation-plan.md`, `docs/performance-guardrails.md`, `docs/mobile-execution-checklist.md`, and `docs/mobile-smoke-test-matrix.md`, then continue from the current phase."
 
 ## Legacy Reference

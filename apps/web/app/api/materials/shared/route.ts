@@ -63,7 +63,11 @@ export async function GET(request: NextRequest) {
     }));
 
     return NextResponse.json({ shared: formatted });
-  } catch (e: any) {
-    return NextResponse.json({ error: e.message || String(e), stack: e.stack }, { status: 500 });
+  } catch (error) {
+    console.error("Failed to load shared materials:", error);
+    return NextResponse.json(
+      { code: "SHARED_MATERIALS_LOAD_FAILED", message: "Failed to load shared materials" },
+      { status: 500 }
+    );
   }
 }

@@ -17,13 +17,19 @@ export async function POST(request: NextRequest) {
   const channelName = params.get("channel_name");
 
   if (!socketId || !channelName) {
-    return NextResponse.json({ message: "Missing socket_id or channel_name" }, { status: 400 });
+    return NextResponse.json(
+      { code: "MISSING_PUSHER_AUTH_FIELDS", message: "Missing socket_id or channel_name" },
+      { status: 400 }
+    );
   }
 
   // Only allow private-conversation-{id} channels
   const match = channelName.match(/^private-conversation-(\d+)$/);
   if (!match) {
-    return NextResponse.json({ message: "Invalid channel" }, { status: 403 });
+    return NextResponse.json(
+      { code: "INVALID_PUSHER_CHANNEL", message: "Invalid channel" },
+      { status: 403 }
+    );
   }
 
   const conversationId = Number(match[1]);
@@ -41,7 +47,10 @@ export async function POST(request: NextRequest) {
     .limit(1);
 
   if (!membership) {
-    return NextResponse.json({ message: "Forbidden" }, { status: 403 });
+    return NextResponse.json(
+      { code: "FORBIDDEN", message: "Forbidden" },
+      { status: 403 }
+    );
   }
 
   const authResponse = pusherServer.authorizeChannel(socketId, channelName);
