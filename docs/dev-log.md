@@ -8911,3 +8911,26 @@ Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
 - Session 297 fix-а (hard redirect от reset-password формата) беше необходим но недостатъчен. Истинският симптом ("първи login опит след reset се отхвърля, refresh работи") идваше от login формата, не от reset формата.
 - Причина: при mount на `/login` prefetch-ваме `/dashboard` докато няма cookie → middleware връща redirect → Next.js кешира → `router.replace("/dashboard")` след login сервира stale кеша → връщане на `/login`. Refresh работи, защото прави hard request с новата cookie.
 - Алтернативи разгледани и отхвърлени: `router.refresh()` refresh-ва само current route, не destination; custom `useAuthRedirect()` hook е козметика за 2 места; middleware redirect е архитектурно неудобен за POST-to-JSON login API.
+
+### Session 299 — Member ID card на profile страницата (#46)
+
+**Какво направихме:**
+- Нов playful ID-card компонент [`profile-member-id-card.tsx`](../apps/web/components/profile/profile-member-id-card.tsx), показва avatar + name + computed title + email + member since + padded member number (`#0042`).
+- Интегриран в [`profile-page-client.tsx`](../apps/web/components/profile/profile-page-client.tsx) като full-width блок между primary двойката (hero + details) и secondary grid-а (security + QR + admin).
+- Computed title logic (pure функция, без extra DB queries): `admin` → Administrator, `mentor` → Mentor, `createdAt < 2026-06-01` → Founding Member, иначе → Student.
+- CSS-only holographic sheen на hover (gradient translate през card-а), два blurred corner blob-а, gradient border — 0 JS, 0 animation libraries.
+- Reuse-ваме съществуващите `formatMemberSince` и `getProfileInitials` от `lib/profile.ts` за консистентност.
+
+**Файлове:**
+- [NEW] apps/web/components/profile/profile-member-id-card.tsx
+- [MODIFY] apps/web/components/profile/profile-page-client.tsx
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm run typecheck:web` ✅
+
+**Решения:**
+- **Scope свит.** Активност-based titles (Active Contributor, Course Creator) отложени — изискват extra DB queries на profile fetch-а. Админ/Mentor/Founding/Student покрива 100% от текущите user scenarios без overhead.
+- **Founding Member cutoff:** `2026-06-01`. Capstone deadline-ът е 2026-05-27, значи всеки регистриран до launch-а получава title-а. Пост-launch регистрации стават Students.
+- **Placement:** full-width между primary и secondary, не в secondary grid-а — така картата е прoминентна като "showcase" feature, а не четвърта card в списък.
+- **`<img>` тег, не `next/image`** за avatar — match-ва конвенцията на [`profile-hero-card.tsx`](../apps/web/components/profile/profile-hero-card.tsx), избягва remotePatterns config за external avatar URLs.

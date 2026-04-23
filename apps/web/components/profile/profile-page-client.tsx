@@ -8,6 +8,7 @@ import { buildMobileProfileDeepLink } from "../../lib/profile";
 import { ProfileAdminCard } from "./profile-admin-card";
 import { ProfileDetailsCard } from "./profile-details-card";
 import { ProfileHeroCard } from "./profile-hero-card";
+import { ProfileMemberIdCard } from "./profile-member-id-card";
 import { ProfilePageHeader } from "./profile-page-header";
 import { ProfileQrCard } from "./profile-qr-card";
 import { ProfileSecurityCard } from "./profile-security-card";
@@ -59,6 +60,7 @@ function ProfileCardsGrid({ state }: { state: ProfilePageState }) {
   return (
     <div className="mt-8 space-y-6">
       <ProfilePrimaryCards state={state} />
+      <ProfileMemberIdBlock state={state} />
       <div className={`grid gap-6 ${secondaryGridClassName}`}>
         <ProfileSecondaryCards state={state} />
       </div>
@@ -99,6 +101,23 @@ function ProfilePrimaryCards({ state }: { state: ProfilePageState }) {
         />
       </ProfileMotion>
     </div>
+  );
+}
+
+function ProfileMemberIdBlock({ state }: { state: ProfilePageState }) {
+  const name = state.name.trim() || state.user.name;
+
+  return (
+    <ProfileMotion delay={0.12}>
+      <ProfileMemberIdCard
+        userId={state.user.id}
+        name={name}
+        email={state.user.email}
+        role={state.user.role}
+        createdAt={state.user.createdAt}
+        avatarUrl={state.avatarPreviewUrl}
+      />
+    </ProfileMotion>
   );
 }
 
