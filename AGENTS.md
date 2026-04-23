@@ -209,6 +209,13 @@ Current mobile quality-gate status:
 - **Modern Typography**: Use Google Fonts like 'Outfit' or 'Inter'.
 - **Visual Parity with v1**: For every page, check the old project for specific UI/UX patterns (colors, shadows, micro-animations) and reconstruct them using these modern technologies.
 
+### Brand Heading Signature
+- StudyHub has an explicit branded heading signature. Do not replace it with generic Rubik / Poppins headings when touching branded titles.
+- **Web:** branded headings should follow the existing `font-shantell` / shared heading-class pattern already used across landing, auth, community, mentor inbox, messages, and admin surfaces.
+- **Mobile:** branded headings must use `BRAND_FONT_FAMILY` from `apps/mobile/lib/brand-font.ts`, which currently resolves to `ShantellSans800`.
+- Mobile font rule: when Expo registers a font via `useFonts()` with a weight-specific key like `ShantellSans800`, never add `fontWeight` alongside that `fontFamily`. The weight is already baked into the `.ttf`, and adding `fontWeight` can break Android font rendering.
+- When adding a new branded screen, prefer the existing brand heading treatment first, then adapt size/color/effects to the surface.
+
 ### Component-First Architecture
 - **Max 300 lines per file**: Extract sub-components to `components/<page-name>/` proactively.
 - **Max 60 lines per function**: Extract logic to helpers or custom hooks.

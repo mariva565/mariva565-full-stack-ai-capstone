@@ -9064,3 +9064,25 @@ Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
   - `AGENTS.md` за agent behavior
   - `docs/README.md` за human-readable cleanup guidance
 - Protected docs не се трият, архивират, преименуват или свеждат до summary без explicit user approval.
+
+### Session 304 — Brand heading signature guardrail
+
+**Какво направихме:**
+- Добавихме explicit правило в [`AGENTS.md`](../AGENTS.md), че StudyHub има собствен brand heading signature и той не трябва да се заменя с generic Rubik/Poppins заглавия при UI polish или cleanup задачи.
+- Документирахме mobile font rule за Expo:
+  - branded headings използват `BRAND_FONT_FAMILY` от `apps/mobile/lib/brand-font.ts`
+  - текущата стойност е `ShantellSans800`
+  - когато font key вече съдържа теглото, не се добавя `fontWeight`, за да не се счупи Android рендерирането
+- Подравнихме [`/api-docs`](../apps/web/app/api-docs/page.tsx) към същия визуален подпис, като сменихме hero и section heading-ите към `font-shantell`.
+
+**Файлове:**
+- [MODIFY] AGENTS.md
+- [MODIFY] apps/web/components/api-docs/api-docs-page.tsx
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd run typecheck:web` ✅
+- `npm.cmd run check:mojibake` ✅
+
+**Решения:**
+- Запазихме brand heading signature като cross-surface правило: web ползва съществуващия `font-shantell` pattern, а mobile ползва `BRAND_FONT_FAMILY` без отделен `fontWeight`.

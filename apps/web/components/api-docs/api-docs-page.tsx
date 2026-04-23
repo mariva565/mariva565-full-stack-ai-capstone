@@ -51,7 +51,7 @@ export function ApiDocsPage({ isAuthenticated }: { isAuthenticated: boolean }) {
               <p className="text-sm font-semibold uppercase tracking-[0.22em] text-brand-600 dark:text-cyan-300">
                 StudyHub REST API
               </p>
-              <h1 className="text-4xl font-black text-slate-950 dark:text-white sm:text-5xl">
+              <h1 className="font-shantell text-4xl font-black tracking-tight text-transparent bg-v1-gradient bg-clip-text sm:text-5xl">
                 API Docs
               </h1>
               <p className="text-lg leading-8 text-slate-600 dark:text-slate-300">
@@ -93,7 +93,7 @@ export function ApiDocsPage({ isAuthenticated }: { isAuthenticated: boolean }) {
                 <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-600 dark:text-cyan-300">
                   {section.eyebrow}
                 </p>
-                <h2 className="text-3xl font-black text-slate-950 dark:text-white">
+                <h2 className="font-shantell text-3xl font-black tracking-tight text-slate-950 dark:text-white">
                   {section.title}
                 </h2>
                 <p className="text-base leading-7 text-slate-600 dark:text-slate-300">
