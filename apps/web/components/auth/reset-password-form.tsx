@@ -1,14 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { type FormEvent, useState } from "react";
 import { Toast } from "../ui/toast";
 import { AuthIconField } from "./auth-icon-field";
 import { LockIcon } from "./auth-icons";
 
 function useResetPasswordForm(token: string) {
-  const router = useRouter();
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -44,7 +43,7 @@ function useResetPasswordForm(token: string) {
         return;
       }
 
-      router.replace("/login?reset=success");
+      window.location.href = "/login?reset=success";
     } catch {
       setApiError("Something went wrong. Please check your connection and try again.");
     } finally {

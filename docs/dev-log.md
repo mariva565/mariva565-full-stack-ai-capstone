@@ -8876,3 +8876,19 @@ Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
 
 **Решения:**
 - Използваме demo/redacted screenshot с `Demo Student` и `student@example.com`, за да покажем inbox delivery без лични данни.
+
+### Session 297 — Reset-password hard redirect to avoid stale RSC prefetch
+
+**Какво направихме:**
+- Заменихме `router.replace("/login?reset=success")` с `window.location.href = "/login?reset=success"` в [`reset-password-form.tsx`](../apps/web/components/auth/reset-password-form.tsx), за да съвпадне с конвенцията, която login/register вече ползват.
+- Махнахме вече неизползвания `useRouter` import и локалната `router` променлива.
+
+**Файлове:**
+- [MODIFY] apps/web/components/auth/reset-password-form.tsx
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm run typecheck:web` ✅
+
+**Решения:**
+- Hard redirect през `window.location.href` избягва Next.js soft navigation, която сервира stale prefetch-нат `/login`. Симптом: първият login опит след reset биваше отхвърлян до ръчен refresh.
