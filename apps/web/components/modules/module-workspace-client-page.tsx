@@ -13,6 +13,7 @@ import type { ModuleWorkspaceData } from "./types";
 import { ModuleWorkspaceHeader } from "./module-workspace-header";
 import { AddMaterialFab } from "../ui/add-material-fab";
 import { LottieDecoration } from "../ui/lottie-decoration";
+import { ScrollToTop } from "../ui/scroll-to-top";
 import { Toast, type ToastTone } from "../ui/toast";
 import {
   matchesFilter,
@@ -274,6 +275,7 @@ export function ModuleWorkspaceClientPage({
       </div>
 
       <AddMaterialFab active={showCreateForm} onClick={toggleCreateForm} />
+      <ScrollToTop />
 
       {toast ? <Toast message={toast.message} tone={toast.tone} onClose={() => setToast(null)} /> : null}
       <LottieDecoration src="https://lottie.host/4db68bbd-31f6-4cd8-84eb-189de081159a/IGmMCqhzpt.lottie" />

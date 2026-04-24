@@ -113,11 +113,11 @@ export function ChatWidget() {
 
       {/* Chat window */}
       <div
-        className={`fixed bottom-24 right-6 z-[999] flex flex-col overflow-hidden rounded-2xl border border-white/60 bg-white/95 shadow-[0_20px_60px_rgba(15,23,42,0.2)] backdrop-blur-xl transition-all duration-300 dark:border-slate-700 dark:bg-slate-900/95 sm:bottom-28 ${
+        className={`fixed bottom-24 right-6 z-[999] flex h-[min(520px,72vh)] w-[min(400px,calc(100vw-3rem))] flex-col overflow-hidden rounded-2xl border border-white/60 bg-white/95 shadow-[0_20px_60px_rgba(15,23,42,0.2)] backdrop-blur-xl transition-all duration-300 dark:border-slate-700 dark:bg-slate-900/95 sm:bottom-28 ${
           isOpen
             ? "pointer-events-auto translate-y-0 opacity-100"
             : "pointer-events-none translate-y-4 opacity-0"
-        } h-[min(520px,72vh)] w-[min(400px,calc(100vw-3rem))]`}
+        }`}
       >
         {/* Header */}
         <div className="relative flex items-center gap-3 overflow-hidden bg-[linear-gradient(135deg,#6366f1_0%,#8b5cf6_55%,#06b6d4_100%)] px-4 py-3">

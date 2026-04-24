@@ -57,7 +57,7 @@ function detectService(url: string): ServiceInfo | null {
       name: "softuni",
       label: "Open in SoftUni",
       description: "Course material from the Software University learning platform",
-      iconSvg: <SoftUniIcon />,
+      iconSvg: <LearningPlatformIcon />,
       gradient:
         "bg-[linear-gradient(135deg,rgba(0,175,170,0.07)_0%,rgba(38,70,83,0.08)_100%)] dark:bg-[linear-gradient(135deg,rgba(0,175,170,0.14)_0%,rgba(38,70,83,0.16)_100%)]",
       hoverGradient:
@@ -100,23 +100,58 @@ function NotebookLmIcon() {
   );
 }
 
-function SoftUniIcon() {
+function LearningPlatformIcon() {
   return (
     <svg viewBox="0 0 24 24" className="h-8 w-8" fill="none">
+      <rect x="5" y="4" width="12" height="14" rx="3" fill="#DFF7F5" />
+      <rect x="7" y="6" width="12" height="14" rx="3" fill="url(#lp-grad)" />
       <path
-        d="M12 2L3 7l9 5 9-5-9-5z"
-        fill="url(#su-grad)"
+        d="M10 10.2h6"
+        stroke="white"
+        strokeWidth="1.6"
+        strokeLinecap="round"
         opacity="0.95"
       />
-      <path d="M3 7v2l9 5 9-5V7l-9 5-9-5z" fill="#00AFAA" opacity="0.7" />
-      <rect x="11" y="12" width="2" height="6" rx="1" fill="#264653" opacity="0.8" />
-      <rect x="8" y="17" width="8" height="2" rx="1" fill="#264653" opacity="0.7" />
-      <circle cx="19" cy="9" r="2" fill="#00AFAA" opacity="0.6" />
-      <path d="M19 9v5" stroke="#00AFAA" strokeWidth="1.2" opacity="0.5" />
+      <path
+        d="M10 13.5h6"
+        stroke="white"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        opacity="0.92"
+      />
+      <path
+        d="M10 16.8h3.6"
+        stroke="white"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        opacity="0.88"
+      />
+      <path
+        d="M8.4 10.1l0.9 0.9 1.7-1.9"
+        stroke="#0F766E"
+        strokeWidth="1.55"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M8.4 13.4l0.9 0.9 1.7-1.9"
+        stroke="#0F766E"
+        strokeWidth="1.55"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <circle cx="18.3" cy="17.7" r="3.2" fill="#264653" opacity="0.14" />
+      <path
+        d="M17.3 17.8l0.9 0.9 1.8-2"
+        stroke="#264653"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
       <defs>
-        <linearGradient id="su-grad" x1="3" y1="2" x2="21" y2="12">
+        <linearGradient id="lp-grad" x1="7" y1="6" x2="19" y2="20">
           <stop stopColor="#00AFAA" />
-          <stop offset="1" stopColor="#264653" />
+          <stop offset="1" stopColor="#1F7A7A" />
         </linearGradient>
       </defs>
     </svg>

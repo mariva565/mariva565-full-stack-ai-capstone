@@ -9412,3 +9412,61 @@ Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
 
 **Решения:**
 - Оставихме и оригиналния PNG asset в repo-то като source/reference, но UI-то вече използва компресирания `webp` вариант за по-бърз render.
+
+---
+
+### Session 315 — Move decorative Lottie widget to top-right on web pages
+
+**Какво направихме:**
+- Преместихме декоративното `LottieDecoration` от долния ляв ъгъл в горния десен ъгъл, за да не закрива module/course navigation елементите вляво.
+- Оставихме AI chat FAB-а и chat panel-а в досегашната им позиция долу вдясно, защото това е отделен UI елемент с различна функция.
+- Подравнихме Lottie-то под sticky navbar-а чрез `--app-navbar-height`, така че да не влиза в конфликт с header-а.
+
+**Файлове:**
+- [MODIFY] apps/web/components/ui/lottie-decoration.tsx
+- [MODIFY] apps/web/components/chat/chat-widget.tsx
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd run typecheck` ✅
+
+**Решения:**
+- Избрахме top-right позиция вместо top-left, защото не влиза в конфликт с breadcrumb/module sidebar зоната и пази левия rail за course/module navigation.
+
+---
+
+### Session 316 — Replace SoftUni smart-link icon with neutral learning-platform glyph
+
+**Какво направихме:**
+- Подменихме стария “graduation cap” стил SVG за SoftUni smart link card с по-неутрална `learning platform` иконка.
+- Новата иконка използва layered card/checklist визуален език вместо псевдо-лого, за да не имитира чужд бранд и да стои по-чисто в UI.
+- Запазихме същата teal цветова палитра, за да остане card-ът визуално последователен с badge-а и hover gradient-а.
+
+**Файлове:**
+- [MODIFY] apps/web/components/materials/smart-link-card.tsx
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd run typecheck`
+
+**Решения:**
+- Избрахме generic platform glyph вместо brand-like mark, защото искаме ясно разпознаване на типа линк без да ползваме или имитираме официално лого.
+
+---
+
+### Session 317 — Restore scroll-to-top FAB on module workspace page
+
+**Какво направихме:**
+- Върнахме `ScrollToTop` floating button-а в module workspace екрана, където беше останал само `AddMaterialFab`.
+- Поправихме regression-а, при който потребителят виждаше само plus FAB-а за create form и липсваше отделният бутон за scroll back to top.
+- Оставихме двата FAB-а като отделни контроли, защото имат различни роли: create/open form и quick scroll navigation.
+
+**Файлове:**
+- [MODIFY] apps/web/components/modules/module-workspace-client-page.tsx
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd run typecheck`
+
+**Решения:**
+- Поправката е направена на мястото на интеграция, а не чрез промяна на `AddMaterialFab`, за да не смесваме add/create и scroll-to-top поведение в един и същ бутон.
