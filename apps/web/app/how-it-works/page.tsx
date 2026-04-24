@@ -6,10 +6,10 @@ import { getRequestUserOrNull } from "@/lib/server-auth";
 export const metadata: Metadata = {
   title: "How It Works | Study Hub",
   description:
-    "Study Hub | Научи как работи платформата за организирано учене. Създавай курсове, модули и материали.",
+    "Study Hub — Learn how the platform works for organized studying. Create courses, modules, and materials.",
   openGraph: {
     title: "How It Works | Study Hub",
-    description: "Научи как работи платформата за организирано учене. Създавай курсове, модули и материали.",
+    description: "Learn how the platform works for organized studying. Create courses, modules, and materials.",
     type: "website",
   },
 };
@@ -20,7 +20,7 @@ const structuredData = {
   "@context": "https://schema.org",
   "@type": "WebPage",
   name: "How It Works | Study Hub",
-  description: "Научи как работи платформата за организирано учене. Създавай курсове, модули и материали.",
+  description: "Learn how the platform works for organized studying. Create courses, modules, and materials.",
   url: `${APP_URL}/how-it-works`,
   isPartOf: {
     "@type": "WebSite",

@@ -9230,4 +9230,41 @@ Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
 
 **Решения:**
 - Оставихме `/how-it-works` с Bulgarian description в metadata (вече е така) — не унифицираме i18n в този round; промяната е само структурна (env-driven URL).
+
+---
+
+### Session 311 — Public-site audit Round 2: i18n metadata + landing light-mode guard + shared SiteFooter (#4, #10, #5, #9)
+
+**Какво направихме:**
+
+1. **i18n metadata → English на `/how-it-works` (#4)**
+   - Заменихме Bulgarian описанията в `metadata.description`, `openGraph.description` и `structuredData.description` с английски текст: `"Study Hub — Learn how the platform works for organized studying. Create courses, modules, and materials."`
+   - `openGraph` и `structuredData` ползват по-краткия вариант без `"Study Hub — "` префикс.
+
+2. **Landing force-light-mode client wrapper (#10)**
+   - Създадохме `apps/web/components/landing/force-light-mode.tsx` — минимален `"use client"` компонент, който при mount премахва CSS класа `dark` от `<html>` и го възстановява при unmount.
+   - Рендерираме `<ForceLightMode />` директно в server компонента `app/page.tsx` (след `<ScrollToTop />`).
+   - Цел: потребители, дошли от dark dashboard, виждат landing-а в предвидения light дизайн, без грозен half-dark flash.
+
+3. **SiteFooter shared component (#5 + #9)**
+   - Създадохме `apps/web/components/site-footer.tsx` — `"use client"` компонент с пълния landing дизайн като canonical: mascot лого + copyright (динамична година) + 4 social иконки с реални URL-и + text links (Login / Contact / API Docs / Register).
+   - Преместихме `SocialLink` helper от `app/page.tsx` в новия файл.
+   - Заменихме inline `<footer>` в `app/page.tsx` с `<SiteFooter />` и изтрихме локалния `SocialLink`.
+   - Заменихме inline `<footer>` (и `SocialIcon` helper) в `how-it-works-page.tsx` с `<SiteFooter />`.
+   - Social URL-и: Facebook → `https://facebook.com`, X → `https://x.com`, Instagram → `https://instagram.com`, LinkedIn → `https://linkedin.com` (реални на двете места вместо placeholder `#`).
+
+**Файлове:**
+- [ADD] apps/web/components/landing/force-light-mode.tsx
+- [ADD] apps/web/components/site-footer.tsx
+- [MODIFY] apps/web/app/page.tsx
+- [MODIFY] apps/web/app/how-it-works/page.tsx
+- [MODIFY] apps/web/components/how-it-works/how-it-works-page.tsx
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm run typecheck:web` ✅ (clean, zero errors)
+
+**Решения:**
+- Избрахме landing footer-а като canonical дизайн (по-богат: mascot + social + text links), понеже е по-пълен визуално. На how-it-works Login/Contact/Register links са contextually уместни — страницата е публична и насочва към регистрация.
+- `ForceLightMode` е mount-scoped — не пипа `localStorage` и не пречи на ThemeProvider в authenticated зоните; просто е DOM side effect за времето на престой на landing.
 - Всички metadata са на English за consistency с landing `layout.tsx` метаданните.
