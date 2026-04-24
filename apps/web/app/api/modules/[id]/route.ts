@@ -4,6 +4,7 @@ import { modules } from "../../../../../../drizzle/schema";
 import { requireAuth } from "../../../../lib/api-utils";
 import { logActivity } from "../../../../lib/activity";
 import { getModuleContext } from "../../../../lib/module-workspace-data";
+import { userCanAccessCourse } from "../../../../lib/course-details-data";
 import { eq, and } from "drizzle-orm";
 
 type Ctx = { params: Promise<{ id: string }> };
@@ -17,6 +18,15 @@ export async function GET(request: NextRequest, { params }: Ctx) {
   const result = await getModuleContext(Number(id));
 
   if (!result) {
+    return NextResponse.json(
+      { code: "NOT_FOUND", message: "Module not found" },
+      { status: 404 }
+    );
+  }
+
+  const hasAccess = await userCanAccessCourse(auth.user, result.course.id);
+
+  if (!hasAccess) {
     return NextResponse.json(
       { code: "NOT_FOUND", message: "Module not found" },
       { status: 404 }

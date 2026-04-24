@@ -9493,3 +9493,35 @@ Page routes обхождат API guard-ите (зареждат директно
 - `module-workspace-client-page.tsx`: Lottie-то преместено от `<LottieDecoration>` (fixed overlay) в inline елемент в дясната колона над Quick Access панела.
 
 `tsc --noEmit` pass. Staged, not committed.
+
+---
+
+### Session 318 — Verify R1 API authz results and close residual module/course API IDOR
+
+**Какво направихме:**
+- Валидирахме live `localhost:3000` R1 authz smoke checks с demo user JWT flow (`user@studyhub.dev / user123`) вместо само да четем кода.
+- Потвърдихме, че оставащите Sonnet проверки минават на работещия сървър:
+  - `GET /api/courses/5` -> `404 {"code":"NOT_FOUND","message":"Course not found"}`
+  - `POST /api/courses/5/modules` -> `403 {"code":"FORBIDDEN","message":"Course mentor access required"}`
+  - `POST /api/modules/23/materials` -> `403 {"code":"FORBIDDEN","message":"Course mentor access required"}`
+- Открихме остатъчен API IDOR извън първоначалните R1 проверки: обикновен user все още получаваше `200` за `GET /api/courses/5/modules`, а `GET /api/modules/:id` и `GET /api/modules/:id/materials` също нямаха server-side membership guard в route handler-ите.
+- Добавихме explicit access checks към тези GET API route-и, така че да връщат `404` при липса на достъп, по същия недоразкриващ модел като page-level IDOR fix-а.
+- По време на сесията работещият `localhost:3000` процес продължи да връща старото поведение за новите GET guards, което подсказва, че сървърът е на стар build/process и трябва restart/rebuild, за да поеме последния patch.
+
+**Файлове:**
+- [MODIFY] apps/web/app/api/courses/[id]/modules/route.ts
+- [MODIFY] apps/web/app/api/modules/[id]/route.ts
+- [MODIFY] apps/web/app/api/modules/[id]/materials/route.ts
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd --workspace @studyhub/web run typecheck` -> pass
+- Live authz smoke on running `http://localhost:3000`:
+  - `GET /api/courses/5` -> 404 pass
+  - `POST /api/courses/5/modules` -> 403 pass
+  - `POST /api/modules/23/materials` -> 403 pass
+  - Residual finding before server restart: `GET /api/courses/5/modules` still returned 200 from the already-running local server process
+
+**Решения:**
+- Запазихме `404` за unauthorized read access, за да не разкриваме съществуването на чужди courses/modules/materials.
+- Ползваме съществуващия `userCanAccessCourse()` helper вместо нов abstraction, за да държим access model-а еднакъв между page loaders и API routes.

@@ -3,7 +3,11 @@ import { db } from "../../../../../lib/db";
 import { materials, modules, courses } from "../../../../../../../drizzle/schema";
 import { requireAuth, requireCourseMentor } from "../../../../../lib/api-utils";
 import { logActivity } from "../../../../../lib/activity";
-import { getModuleMaterials } from "../../../../../lib/module-workspace-data";
+import {
+  getModuleContext,
+  getModuleMaterials,
+} from "../../../../../lib/module-workspace-data";
+import { userCanAccessCourse } from "../../../../../lib/course-details-data";
 import { normalizeMaterialType, resolveMaterialTitle } from "../../../../../lib/materials";
 import { eq } from "drizzle-orm";
 
@@ -15,7 +19,26 @@ export async function GET(request: NextRequest, { params }: Ctx) {
   if ("error" in auth) return auth.error;
 
   const { id } = await params;
-  const rows = await getModuleMaterials(Number(id));
+  const moduleId = Number(id);
+  const context = await getModuleContext(moduleId);
+
+  if (!context) {
+    return NextResponse.json(
+      { code: "NOT_FOUND", message: "Module not found" },
+      { status: 404 }
+    );
+  }
+
+  const hasAccess = await userCanAccessCourse(auth.user, context.course.id);
+
+  if (!hasAccess) {
+    return NextResponse.json(
+      { code: "NOT_FOUND", message: "Module not found" },
+      { status: 404 }
+    );
+  }
+
+  const rows = await getModuleMaterials(moduleId);
 
   return NextResponse.json({ materials: rows });
 }

@@ -3,7 +3,10 @@ import { db } from "../../../../../lib/db";
 import { modules, courses } from "../../../../../../../drizzle/schema";
 import { requireAuth, requireCourseMentor } from "../../../../../lib/api-utils";
 import { logActivity } from "../../../../../lib/activity";
-import { getCourseModules } from "../../../../../lib/course-details-data";
+import {
+  getCourseModules,
+  userCanAccessCourse,
+} from "../../../../../lib/course-details-data";
 import { eq } from "drizzle-orm";
 
 type Ctx = { params: Promise<{ id: string }> };
@@ -14,7 +17,17 @@ export async function GET(request: NextRequest, { params }: Ctx) {
   if ("error" in auth) return auth.error;
 
   const { id } = await params;
-  const rows = await getCourseModules(Number(id));
+  const courseId = Number(id);
+  const hasAccess = await userCanAccessCourse(auth.user, courseId);
+
+  if (!hasAccess) {
+    return NextResponse.json(
+      { code: "NOT_FOUND", message: "Course not found" },
+      { status: 404 }
+    );
+  }
+
+  const rows = await getCourseModules(courseId);
 
   return NextResponse.json({ modules: rows });
 }
