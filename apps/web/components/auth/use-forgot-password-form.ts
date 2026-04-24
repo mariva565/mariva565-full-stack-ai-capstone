@@ -33,7 +33,7 @@ export function useForgotPasswordForm(): ForgotPasswordState {
       // Always show confirmation regardless of what the API returns
       setSubmitted(true);
     } catch {
-      setNetworkError("Something went wrong. Please check your connection and try again.");
+      setNetworkError("Oops, something went wrong. Check your connection and try again 🛠️");
     } finally {
       setLoading(false);
     }

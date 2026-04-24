@@ -38,7 +38,7 @@ export function AuthCardMascot({ variant }: { variant: AuthVariant }) {
     variant === "register"
       ? "h-[72px] w-[72px] sm:h-[84px] sm:w-[84px]"
       : "h-[96px] w-[96px] sm:h-[110px] sm:w-[110px]";
-  const marginClass = variant === "register" ? "mb-2.5 sm:mb-3" : "mb-4 sm:mb-5";
+  const marginClass = variant === "register" ? "mb-3.5 sm:mb-4" : "mb-4 sm:mb-5";
 
   return (
     <motion.div

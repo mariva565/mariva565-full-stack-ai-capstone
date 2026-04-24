@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useReducedMotion } from "framer-motion";
 
 import { STATUS_TOAST_LABEL } from "../../lib/progress";
+import { MascotEmptyState } from "../ui/mascot-empty-state";
 import { MilestoneTimelineItem } from "./milestone-timeline-item";
 import type { Milestone, MilestoneUpdate } from "./types";
 
@@ -95,9 +96,10 @@ export function MilestoneTimeline({
 
   if (milestones.length === 0) {
     return (
-      <div className="rounded-xl border border-slate-200 bg-white/80 px-6 py-12 text-center dark:border-slate-700 dark:bg-slate-900/60">
-        <p className="text-slate-500 dark:text-slate-400">{emptyMessage}</p>
-      </div>
+      <MascotEmptyState
+        message="Nothing here yet — add your first milestone! 🚀"
+        subMessage={emptyMessage}
+      />
     );
   }
 

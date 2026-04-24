@@ -39,13 +39,13 @@ function useResetPasswordForm(token: string) {
 
       if (!response.ok) {
         const payload = (await response.json()) as { message?: string };
-        setApiError(payload.message ?? "Something went wrong. Please try again.");
+        setApiError(payload.message ?? "Oops, something went wrong. Try again in a moment 🛠️");
         return;
       }
 
       window.location.href = "/login?reset=success";
     } catch {
-      setApiError("Something went wrong. Please check your connection and try again.");
+      setApiError("Oops, something went wrong. Check your connection and try again 🛠️");
     } finally {
       setLoading(false);
     }

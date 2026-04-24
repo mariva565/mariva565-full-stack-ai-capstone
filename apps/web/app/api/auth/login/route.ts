@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
 
     if (!user || !verifyPassword(password, user.passwordHash)) {
       return NextResponse.json(
-        { code: "INVALID_CREDENTIALS", message: "Invalid email or password" },
+        { code: "INVALID_CREDENTIALS", message: "Hmm, those details don't match. Try again? 🤔" },
         { status: 401 }
       );
     }

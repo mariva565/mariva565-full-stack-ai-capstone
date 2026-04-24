@@ -1,3 +1,4 @@
+import { MascotEmptyState } from "../ui/mascot-empty-state";
 import { ModuleSection, type ModuleInfo } from "./module-section";
 
 type ModuleListProps = {
@@ -25,14 +26,10 @@ export function ModuleList({
 
       <div className="space-y-4">
         {modules.length === 0 ? (
-          <div className="rounded-[1.8rem] border border-dashed border-slate-300/80 bg-white/75 px-6 py-8 text-center shadow-sm backdrop-blur dark:border-slate-700 dark:bg-slate-900/55">
-            <p className="text-lg font-semibold text-slate-900 dark:text-white">
-              No modules yet
-            </p>
-            <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-              Create the first module to start adding materials to this course.
-            </p>
-          </div>
+          <MascotEmptyState
+            message="Nothing here yet — shall we add the first module? 🚀"
+            subMessage="Create a module to start adding learning materials."
+          />
         ) : null}
 
         {modules.map((moduleRow, index) => (

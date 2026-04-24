@@ -6,6 +6,35 @@
 
 ## 2026-04-24
 
+### Сесия — Register form spacing polish
+
+**Проблем:** Register card беше прекалено compact (по-малък padding от login, стегнат header spacing).
+
+**Промени:**
+- `auth-layout.tsx` — register card: `p-4 sm:p-5 max-w-[408px]` → `p-5 sm:p-7 max-w-[420px]`
+- `auth-mascot.tsx` — register mascot margin: `mb-2.5 sm:mb-3` → `mb-3.5 sm:mb-4`
+- `register-form-header.tsx` — header spacing: `mb-3`, `mt-0.5`, `mt-1.5` → `mb-4`, `mt-1.5`, `mt-2`; heading `mt-2` → `mt-2.5`
+- `register-form.tsx` — password hint: премахнато "for the current backend", съкратено до `"At least 6 characters — longer is always safer 🔒"`; `leading-3.5` → `leading-4`
+- `tsc --noEmit` ✅
+
+---
+
+### Сесия — Round 3 Session C: Empty states + Error copy (задачи 2 + 6)
+
+**Задача 2 — Empty state mascot illustrations:**
+- `components/ui/mascot-empty-state.tsx` — нов reusable компонент: mascot image (52×70px, opacity-60) + message + subMessage + optional action button
+- `dashboard-client-page.tsx` — "No courses yet" → MascotEmptyState + "Nothing here yet — shall we add your first course? 🚀"; "No matches" → MascotEmptyState + "No matches 🔍"
+- `course/module-list.tsx` — "No modules yet" → MascotEmptyState + "Nothing here yet — shall we add the first module? 🚀"
+- `progress/milestone-timeline.tsx` — "No milestones yet" → MascotEmptyState (запазва emptyMessage prop като subMessage)
+
+**Задача 6 — Friendly error copy:**
+- `app/api/auth/login/route.ts`: `"Invalid email or password"` → `"Hmm, those details don't match. Try again? 🤔"`
+- `app/api/auth/register/route.ts`: `"A user with this email already exists"` → `"This email already has an account — maybe you want to sign in? 👋"`
+- `use-login-form.ts`, `use-register-form.ts`, `use-forgot-password-form.ts`, `reset-password-form.tsx`: network catch fallback → `"Oops, something went wrong. Try again in a moment 🛠️"`
+- `tsc --noEmit` ✅
+
+---
+
 ### Сесия — Round 3 Session B: Confetti + Easter egg (задачи 4 + 5) + API Docs button fix
 
 **API Docs — Back Home button:**

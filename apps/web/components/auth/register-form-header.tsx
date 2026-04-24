@@ -2,20 +2,16 @@ import Link from "next/link";
 
 export function RegisterFormHeader() {
   return (
-    <div className="mb-3 text-center sm:mb-4">
-      <span className="inline-flex rounded-full border border-white/60 bg-white/65 px-2.5 py-0.5 text-[0.66rem] font-semibold uppercase tracking-[0.22em] text-pink-700 shadow-sm backdrop-blur-md dark:border-white/10 dark:bg-slate-900/60 dark:text-pink-200">
-        Join StudyHub
-      </span>
-
-      <h1 className="mt-2 text-[1.95rem] font-bold text-slate-900 dark:text-white font-shantell sm:text-[2.2rem]">
+    <div className="mb-4 text-center sm:mb-5">
+      <h1 className="text-[1.95rem] font-bold text-slate-900 dark:text-white font-shantell sm:text-[2.2rem]">
         Join StudyHub
       </h1>
 
-      <p className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
+      <p className="mt-1.5 text-sm text-slate-500 dark:text-slate-400">
         Start your learning journey today.
       </p>
 
-      <p className="mt-1.5 text-sm text-slate-500 dark:text-slate-400">
+      <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
         Already have an account?{" "}
         <Link
           href="/login"

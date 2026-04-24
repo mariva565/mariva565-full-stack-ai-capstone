@@ -68,7 +68,7 @@ export function useLoginForm(): LoginFormState {
 
       window.location.href = "/dashboard";
     } catch {
-      setError("Something went wrong. Please try again.");
+      setError("Oops, something went wrong. Try again in a moment 🛠️");
     } finally {
       setLoading(false);
     }

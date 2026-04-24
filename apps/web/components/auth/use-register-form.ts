@@ -72,7 +72,7 @@ export function useRegisterForm(): RegisterFormState {
       router.push("/dashboard");
       router.refresh();
     } catch {
-      setError("Something went wrong. Please try again.");
+      setError("Oops, something went wrong. Try again in a moment 🛠️");
     } finally {
       setLoading(false);
     }

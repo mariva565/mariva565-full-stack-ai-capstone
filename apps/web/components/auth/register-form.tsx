@@ -76,9 +76,8 @@ export function RegisterForm() {
               onChange={(event) => setPassword(event.target.value)}
             />
 
-            <p className="px-1 text-right text-[0.68rem] leading-3.5 text-slate-500 dark:text-slate-400">
-              Minimum 6 characters for the current backend. A longer password is
-              still the better choice.
+            <p className="px-1 text-right text-[0.68rem] leading-4 text-slate-500 dark:text-slate-400">
+              At least 6 characters — longer is always safer 🔒
             </p>
           </div>
         </div>

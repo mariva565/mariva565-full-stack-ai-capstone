@@ -13,6 +13,7 @@ import { DashboardPageShell } from "./dashboard-page-shell";
 import { PinnedSidebar } from "./pinned-sidebar";
 import type { DashboardCourse, DashboardData, PinnedMaterial, SharedMaterial } from "./types";
 import { ConfirmModal } from "../ui/confirm-modal";
+import { MascotEmptyState } from "../ui/mascot-empty-state";
 import { Toast, type ToastTone } from "../ui/toast";
 import { readErrorMessage } from "../../lib/http";
 
@@ -197,28 +198,26 @@ export function DashboardClientPage({
 
             <div className="grid gap-4 sm:grid-cols-2">
               {filteredCourses.length === 0 && (
-                <div className="sm:col-span-2 rounded-[1.8rem] border border-dashed border-slate-300/80 bg-white/75 px-6 py-10 text-center shadow-sm backdrop-blur dark:border-slate-700 dark:bg-slate-900/55">
+                <div className="sm:col-span-2">
                   {courses.length === 0 ? (
-                    <>
-                      <p className="text-lg font-semibold text-slate-900 dark:text-white">No courses yet</p>
-                      <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-                        Create your first course and start organising your learning materials.
-                      </p>
-                      <button
-                        type="button"
-                        onClick={() => setShowCreateForm(true)}
-                        className="mt-4 rounded-full bg-[linear-gradient(135deg,#6366f1_0%,#8b5cf6_55%,#06b6d4_100%)] px-5 py-2 text-sm font-semibold text-white shadow-[0_12px_28px_rgba(99,102,241,0.22)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_36px_rgba(99,102,241,0.28)]"
-                      >
-                        Create first course
-                      </button>
-                    </>
+                    <MascotEmptyState
+                      message="Nothing here yet — shall we add your first course? 🚀"
+                      subMessage="Create a course and start organising your learning materials."
+                      action={
+                        <button
+                          type="button"
+                          onClick={() => setShowCreateForm(true)}
+                          className="rounded-full bg-[linear-gradient(135deg,#6366f1_0%,#8b5cf6_55%,#06b6d4_100%)] px-5 py-2 text-sm font-semibold text-white shadow-[0_12px_28px_rgba(99,102,241,0.22)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_36px_rgba(99,102,241,0.28)]"
+                        >
+                          Create first course
+                        </button>
+                      }
+                    />
                   ) : (
-                    <>
-                      <p className="text-lg font-semibold text-slate-900 dark:text-white">No matches</p>
-                      <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-                        Try a different search or course-state filter.
-                      </p>
-                    </>
+                    <MascotEmptyState
+                      message="No matches 🔍"
+                      subMessage="Try a different search or course-state filter."
+                    />
                   )}
                 </div>
               )}

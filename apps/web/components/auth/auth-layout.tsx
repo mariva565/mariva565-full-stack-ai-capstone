@@ -40,7 +40,7 @@ export function AuthLayout({ children, variant = "login" }: AuthLayoutProps) {
         transition={{ duration: 0.6, ease: "easeOut" }}
         className={`relative w-full overflow-y-auto border border-white/60 bg-white/55 shadow-[0_20px_50px_-18px_rgba(15,23,42,0.2)] backdrop-blur-[20px] dark:border-white/10 dark:bg-slate-900/55 ${
           isRegister
-            ? "max-w-[408px] rounded-[1.9rem] p-4 sm:p-5"
+            ? "max-w-[420px] rounded-[2rem] p-5 sm:p-7"
             : "max-w-[440px] rounded-[2.25rem] p-6 sm:p-7 lg:p-8"
         }`}
       >
