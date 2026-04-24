@@ -9164,3 +9164,70 @@ Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
 
 **Решения:**
 - Оставихме тази navbar промяна в shared public component, защото подобрява не само `/api-docs`, а и останалите public surface-и без да променя навигационната структура.
+
+### Session 309 — 300-line guardrail sync for favorites and global styles
+
+**Какво направихме:**
+- Намалихме mobile route файла [`apps/mobile/app/(tabs)/favorites.tsx`](../apps/mobile/app/(tabs)/favorites.tsx) под 300 реда чрез low-risk extraction:
+  - нов [`favorite-card.tsx`](../apps/mobile/components/favorites/favorite-card.tsx) за pinned favorites card UI
+  - нов [`favorites-tab-switcher.tsx`](../apps/mobile/components/favorites/favorites-tab-switcher.tsx) за таб бутона/active state presentation
+- Разцепихме [`apps/web/app/globals.css`](../apps/web/app/globals.css) на imported partial-и без да променяме нито един public selector/class name:
+  - [`globals-tailwind.css`](../apps/web/app/styles/globals-tailwind.css)
+  - [`globals-theme.css`](../apps/web/app/styles/globals-theme.css)
+  - [`globals-motion.css`](../apps/web/app/styles/globals-motion.css)
+  - [`globals-content.css`](../apps/web/app/styles/globals-content.css)
+- Синхронизирахме README guardrail бележката към реалното текущо състояние:
+  - премахнахме остарялото изключение за `hero-3d.tsx`, защото файлът вече е под лимита
+  - оставихме само двата реални, умишлени 300+ source файла: `milestone-timeline-item.tsx` и `drizzle/schema.ts`
+
+**Файлове:**
+- [MODIFY] apps/mobile/app/(tabs)/favorites.tsx
+- [ADD] apps/mobile/components/favorites/favorite-card.tsx
+- [ADD] apps/mobile/components/favorites/favorites-tab-switcher.tsx
+- [MODIFY] apps/web/app/globals.css
+- [ADD] apps/web/app/styles/globals-tailwind.css
+- [ADD] apps/web/app/styles/globals-theme.css
+- [ADD] apps/web/app/styles/globals-motion.css
+- [ADD] apps/web/app/styles/globals-content.css
+- [MODIFY] README.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd run typecheck:mobile`
+- `npm.cmd run typecheck:web`
+- `npm.cmd run build:web`
+- line-count audit over source files (`apps/`, `packages/`, `drizzle/`) to confirm only documented exceptions remain above 300
+
+**Решения:**
+- Предпочетохме presentation-only extractions за mobile favorites вместо data-flow refactor, за да намалим regression риска.
+- За web styles използвахме imported CSS partial-и вместо selector renames, така че class contracts да останат стабилни за всички публични и authenticated surface-и.
+
+---
+
+### Session 310 — Public-site audit Round 1: metadata exports + env-driven URL (#37)
+
+**Какво направихме:**
+- Добавихме `export const metadata: Metadata` към 5 public/auth страници, на които липсваше SEO метаданни:
+  - `/login` — "Sign In | Study Hub"
+  - `/register` — "Create Account | Study Hub"
+  - `/contact` — "Contact Us | Study Hub"
+  - `/forgot-password` — "Forgot Password | Study Hub"
+  - `/reset-password` — "Reset Password | Study Hub"
+- Всяка metadata включва `title`, `description` и `openGraph` блок (`title` + `description` + `type: "website"`), следвайки формата на `/how-it-works`.
+- Заменихме hardcoded `"https://studyhub.app"` URL-ите в `structuredData` на `/how-it-works/page.tsx` с env-driven стойност: `const APP_URL = process.env.APP_URL ?? "http://localhost:3000"` дефинирана на module scope (не в компонента).
+
+**Файлове:**
+- [MODIFY] apps/web/app/login/page.tsx
+- [MODIFY] apps/web/app/register/page.tsx
+- [MODIFY] apps/web/app/contact/page.tsx
+- [MODIFY] apps/web/app/forgot-password/page.tsx
+- [MODIFY] apps/web/app/reset-password/page.tsx
+- [MODIFY] apps/web/app/how-it-works/page.tsx
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm run typecheck:web` ✅ (clean, zero errors)
+
+**Решения:**
+- Оставихме `/how-it-works` с Bulgarian description в metadata (вече е така) — не унифицираме i18n в този round; промяната е само структурна (env-driven URL).
+- Всички metadata са на English за consistency с landing `layout.tsx` метаданните.

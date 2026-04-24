@@ -14,16 +14,18 @@ export const metadata: Metadata = {
   },
 };
 
+const APP_URL = process.env.APP_URL ?? "http://localhost:3000";
+
 const structuredData = {
   "@context": "https://schema.org",
   "@type": "WebPage",
   name: "How It Works | Study Hub",
   description: "Научи как работи платформата за организирано учене. Създавай курсове, модули и материали.",
-  url: "https://studyhub.app/how-it-works",
+  url: `${APP_URL}/how-it-works`,
   isPartOf: {
     "@type": "WebSite",
     name: "Study Hub",
-    url: "https://studyhub.app",
+    url: APP_URL,
   },
 };
 
