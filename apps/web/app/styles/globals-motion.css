@@ -1,0 +1,221 @@
+/* Animations from V1 */
+@keyframes floatRotate {
+  0% { transform: translateY(0px) rotate(-2deg); }
+  25% { transform: translateY(-15px) rotate(0deg); }
+  50% { transform: translateY(-25px) rotate(2deg); }
+  75% { transform: translateY(-15px) rotate(0deg); }
+  100% { transform: translateY(0px) rotate(-2deg); }
+}
+
+@keyframes glowPulse {
+  0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+  50% { opacity: 0.9; transform: translate(-50%, -50%) scale(1.1); }
+}
+
+@keyframes mascot-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+@keyframes mascot-pulse {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+
+@keyframes shineSwipe {
+  0% { left: -100%; }
+  20% { left: 200%; }
+  100% { left: 200%; }
+}
+
+@keyframes rotateGradient {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.hero-gradient-text {
+  background-image: linear-gradient(90deg, #ffffff, #67e8f9, #a78bfa, #ffffff);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: gradientShift 4s ease infinite;
+}
+
+.dark .hero-gradient-text {
+  background-image: linear-gradient(90deg, #f8fafc, #93c5fd, #c4b5fd, #f8fafc);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-gradient-text {
+    animation: none;
+    background-position: 0 50%;
+  }
+}
+
+/* Floating icon animation (About section benefit cards) */
+@keyframes floatIcon {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+/* Glossy card shine swipe effect */
+.glossy-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.glossy-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(to right,
+    rgba(255,255,255,0) 0%,
+    rgba(255,255,255,0.4) 50%,
+    rgba(255,255,255,0) 100%);
+  transform: skewX(-25deg);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.glossy-card:hover::before {
+  animation: shineSwipe 1.5s ease-in-out infinite;
+}
+
+/* Feature Icon bouncy curve */
+.feature-icon-transition {
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Feature card icon hover glow (matching v1) */
+.feature-card:hover .feature-icon-hover {
+  filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.3));
+}
+
+/* Spinner Animation from v1 */
+@keyframes spinner-border {
+  to { transform: rotate(360deg); }
+}
+
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+  border: 0.25rem solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  color: var(--primary-color, #6366f1);
+  animation: spinner-border .75s linear infinite;
+}
+
+#global-spinner-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(5px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+#global-spinner-overlay.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Auth page animations (from v1) */
+@keyframes meshGradient {
+  0% { background-position: 0% 0%; }
+  50% { background-position: 100% 100%; }
+  100% { background-position: 0% 0%; }
+}
+
+@keyframes authFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-15px); }
+}
+
+@keyframes authPulse {
+  0%, 100% { opacity: 0.6; transform: translateX(-50%) scale(1); }
+  50% { opacity: 1; transform: translateX(-50%) scale(1.2); }
+}
+
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(1.5deg); }
+  75% { transform: rotate(-1.5deg); }
+}
+
+@keyframes authSparkle {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+  50% {
+    opacity: 0.65;
+    transform: scale(1.22) rotate(14deg) translateY(-2px);
+  }
+}
+
+/* Contact page — cosmic background */
+@keyframes cosmic-gradient {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes aurora-drift-1 {
+  0%, 100% { transform: translateX(0) translateY(0) scale(1) rotate(0deg); }
+  25% { transform: translateX(40px) translateY(-30px) scale(1.05) rotate(2deg); }
+  50% { transform: translateX(-30px) translateY(25px) scale(0.95) rotate(-1deg); }
+  75% { transform: translateX(25px) translateY(15px) scale(1.02) rotate(1deg); }
+}
+
+@keyframes aurora-drift-2 {
+  0%, 100% { transform: translateX(0) translateY(0) scale(1) rotate(0deg); }
+  20% { transform: translateX(-35px) translateY(20px) scale(1.03) rotate(-2deg); }
+  45% { transform: translateX(30px) translateY(-35px) scale(0.97) rotate(1deg); }
+  70% { transform: translateX(-20px) translateY(-15px) scale(1.04) rotate(-1deg); }
+}
+
+@keyframes aurora-drift-3 {
+  0%, 100% { transform: translateX(0) translateY(0) scale(1) rotate(0deg); }
+  30% { transform: translateX(45px) translateY(20px) scale(1.06) rotate(2deg); }
+  55% { transform: translateX(-25px) translateY(-30px) scale(0.94) rotate(-2deg); }
+  80% { transform: translateX(20px) translateY(-20px) scale(1.03) rotate(1deg); }
+}
+
+/* Contact page CSS-only animation classes (replaces inline styles) */
+.contact-bg {
+  background: linear-gradient(135deg, #0a0a1a 0%, #1a0a2e 25%, #0f0a1f 50%, #0a1a2e 75%, #0a0a1a 100%);
+  background-size: 400% 400%;
+  animation: cosmic-gradient 20s ease infinite;
+}
+
+.aurora-1 {
+  animation: aurora-drift-1 60s ease-in-out infinite;
+}
+
+.aurora-2 {
+  animation: aurora-drift-2 70s ease-in-out infinite;
+  animation-delay: -20s;
+}
+
+.aurora-3 {
+  animation: aurora-drift-3 65s ease-in-out infinite;
+  animation-delay: -35s;
+}

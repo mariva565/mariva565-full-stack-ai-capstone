@@ -2,8 +2,6 @@
 
 import { useState, type ChangeEventHandler, type ReactNode } from "react";
 
-import { EyeIcon, EyeOffIcon } from "./auth-icons";
-
 type AuthIconFieldProps = {
   id: string;
   label: string;
@@ -15,6 +13,8 @@ type AuthIconFieldProps = {
   autoComplete?: string;
   minLength?: number;
   required?: boolean;
+  /** When true and type="password", shows a 🙈/🐵 toggle button. */
+  showToggle?: boolean;
 };
 
 export function AuthIconField({
@@ -28,10 +28,12 @@ export function AuthIconField({
   autoComplete,
   minLength,
   required = true,
+  showToggle = false,
 }: AuthIconFieldProps) {
-  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [revealed, setRevealed] = useState(false);
   const isPasswordField = type === "password";
-  const inputType = isPasswordField && isPasswordVisible ? "text" : type;
+  const showMonkeyToggle = isPasswordField && showToggle;
+  const inputType = showMonkeyToggle && revealed ? "text" : type;
 
   return (
     <div className="space-y-1.5">
@@ -59,17 +61,17 @@ export function AuthIconField({
           className="auth-field-input min-w-0 flex-1 bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400 dark:text-slate-100 dark:placeholder:text-slate-500"
         />
 
-        {isPasswordField ? (
+        {showMonkeyToggle ? (
           <button
             type="button"
             aria-controls={id}
-            aria-label={isPasswordVisible ? "Hide password" : "Show password"}
-            aria-pressed={isPasswordVisible}
+            aria-label={revealed ? "Hide password" : "Show password"}
+            aria-pressed={revealed}
             onMouseDown={(event) => event.preventDefault()}
-            onClick={() => setIsPasswordVisible((current) => !current)}
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-slate-500 transition hover:bg-slate-100 hover:text-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400/60 dark:text-slate-400 dark:hover:bg-slate-700/70 dark:hover:text-brand-100"
+            onClick={() => setRevealed((current) => !current)}
+            className="flex h-8 w-8 shrink-0 items-center justify-center text-xl leading-none transition hover:scale-110 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400/60"
           >
-            {isPasswordVisible ? <EyeOffIcon /> : <EyeIcon />}
+            {revealed ? "🐵" : "🙈"}
           </button>
         ) : null}
       </div>

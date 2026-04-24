@@ -1,4 +1,5 @@
 import { MaterialTypePill } from "./material-type-pill";
+import { SmartLinkCard } from "./smart-link-card";
 import { TagList } from "./tag-list";
 import { ExternalLinkIcon, PinAngleIcon } from "../ui/action-icons";
 import { normalizeMaterialType } from "../../lib/materials";
@@ -111,6 +112,8 @@ export function MaterialViewPanel({
       </div>
 
       <TagList tags={tags} />
+
+      {fileUrl ? <SmartLinkCard url={fileUrl} /> : null}
 
       {content ? (
         <div className="mt-6 whitespace-pre-wrap rounded-[1.6rem] border border-slate-200/80 bg-[linear-gradient(160deg,rgba(255,255,255,0.94)_0%,rgba(248,250,252,0.9)_100%)] px-5 py-5 text-[15px] leading-7 text-slate-700 shadow-sm dark:border-slate-800 dark:bg-[linear-gradient(160deg,rgba(15,23,42,0.82)_0%,rgba(15,23,42,0.62)_100%)] dark:text-slate-300">
