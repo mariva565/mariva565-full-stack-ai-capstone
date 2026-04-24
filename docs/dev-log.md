@@ -9343,3 +9343,72 @@ Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
 - Избрахме landing footer-а като canonical дизайн (по-богат: mascot + social + text links), понеже е по-пълен визуално. На how-it-works Login/Contact/Register links са contextually уместни — страницата е публична и насочва към регистрация.
 - `ForceLightMode` е mount-scoped — не пипа `localStorage` и не пречи на ThemeProvider в authenticated зоните; просто е DOM side effect за времето на престой на landing.
 - Всички metadata са на English за consistency с landing `layout.tsx` метаданните.
+
+---
+
+### Session 312 — Custom web 500 error screen with repair-robot illustration
+
+**Какво направихме:**
+- Добавихме root-level App Router error boundary в `apps/web/app/error.tsx`, така че web приложението вече има custom `500` fallback вместо default Next.js error UI.
+- Създадохме нов `ServerErrorClient` компонент с визуален език, синхронизиран с вече наличните `403` и `404` страници:
+  - glassmorphism card
+  - grid + blob background accents
+  - `font-shantell` branded heading
+  - primary `Try Again` action чрез `reset()`
+  - secondary `Back to Home` action
+- Поставихме новото изображение на repair robot-а като web asset в `apps/web/public/assets/images/500-robot.png` и го вързахме към `500` екрана.
+
+**Файлове:**
+- [ADD] apps/web/app/error.tsx
+- [ADD] apps/web/components/server-error/server-error-client.tsx
+- [ADD] apps/web/public/assets/images/500-robot.png
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd run typecheck:web` ✅
+- `npm.cmd run check:mojibake` ✅
+
+**Решения:**
+- Използвахме root `app/error.tsx`, а не `global-error.tsx`, защото това покрива стандартните page/segment runtime сривове без да усложнява аварийния fallback за root layout-а.
+- Поставихме новото изображение в `public/assets/images/` вместо в legacy `assets/v1/`, защото asset-ът е нов и не принадлежи към v1 reference pack-а.
+
+---
+
+### Session 313 — Localhost-only trigger route for 500 screen preview
+
+**Какво направихме:**
+- Добавихме localhost-only preview route в `apps/web/app/dev/error-preview/page.tsx`, който нарочно хвърля runtime error, за да може custom `app/error.tsx` да се види лесно в локален production build.
+- Route-ът валидира `host` / `x-forwarded-host` и връща `notFound()` извън `localhost`, `127.0.0.1` и `[::1]`, така че да не служи като публичен debug endpoint.
+- Добавихме `noindex` metadata и `force-dynamic`, понеже route-ът е само за локален preview/debug flow.
+
+**Файлове:**
+- [ADD] apps/web/app/dev/error-preview/page.tsx
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd run typecheck:web` ✅
+
+**Решения:**
+- Предпочетохме отделен localhost-only route вместо временен throw в реална страница, за да не засягаме нормални user flows и да можем да preview-ваме `500` екрана по repeatable начин.
+
+---
+
+### Session 314 — 500 screen polish: faster illustration asset + unclipped heading
+
+**Какво направихме:**
+- Конвертирахме `500` илюстрацията от тежък PNG в по-лек `webp` asset:
+  - source `500-robot.png` ≈ `1.87 MB`
+  - optimized `500-robot.webp` ≈ `79 KB`
+- Превключихме `500` екрана да ползва `500-robot.webp` с подходящ `sizes` hint и `unoptimized`, за да избегнем ненужно локално image optimization забавяне при preview.
+- Отпуснахме branded heading-а на `500` екрана с малко повече `line-height` и bottom padding, за да не се режат буквите от `font-shantell`.
+
+**Файлове:**
+- [ADD] apps/web/public/assets/images/500-robot.webp
+- [MODIFY] apps/web/components/server-error/server-error-client.tsx
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd run typecheck:web` ✅
+
+**Решения:**
+- Оставихме и оригиналния PNG asset в repo-то като source/reference, но UI-то вече използва компресирания `webp` вариант за по-бърз render.
