@@ -9525,3 +9525,68 @@ Page routes обхождат API guard-ите (зареждат директно
 **Решения:**
 - Запазихме `404` за unauthorized read access, за да не разкриваме съществуването на чужди courses/modules/materials.
 - Ползваме съществуващия `userCanAccessCourse()` helper вместо нов abstraction, за да държим access model-а еднакъв между page loaders и API routes.
+
+---
+
+### Session 319 — R2 CORS whitelist + server-side post sanitization
+
+**Какво направихме:**
+- Ограничихме CORS в `apps/web/middleware.ts`: премахнахме глобалния wildcard за всички `/api/*` route-ове и добавихме allowlist модел през `ALLOWED_ORIGINS`.
+- Оставихме CORS само за mobile-relevant API prefixes (`auth`, `courses`, `modules`, `materials`, `favorites`, `posts`, `conversations`, `mobile/push-token`) вместо да отваряме всички API endpoints cross-origin.
+- Добавихме shared `sanitizePostHtml()` helper в `apps/web/lib/post-html.ts` с `isomorphic-dompurify` и allowlist за безопасни rich-text тагове/атрибути.
+- Преместихме post HTML sanitization на server side при create/update:
+  - `POST /api/posts`
+  - `PUT /api/posts/:id`
+- Премахнахме SSR escape hatch-а в `apps/web/components/community/post-header.tsx` и заменихме локалния sanitizer с shared `sanitizePostHtml()`.
+- Обновихме `.env.example` с `ALLOWED_ORIGINS=http://localhost:3000,http://localhost:19006`.
+- Инсталирахме `isomorphic-dompurify` в `@studyhub/web`.
+
+**Файлове:**
+- [MODIFY] apps/web/middleware.ts
+- [MODIFY] apps/web/lib/post-html.ts
+- [MODIFY] apps/web/app/api/posts/route.ts
+- [MODIFY] apps/web/app/api/posts/[id]/route.ts
+- [MODIFY] apps/web/components/community/post-header.tsx
+- [MODIFY] .env.example
+- [MODIFY] package-lock.json
+- [MODIFY] apps/web/package.json
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd --workspace @studyhub/web run typecheck` -> pass
+- Runtime smoke before rebuild/restart still showed old behavior on the already-running local server process:
+  - `OPTIONS /api/auth/login` still returned wildcard CORS headers
+  - `POST /api/posts` still echoed unsanitized `<script>` / `<img onerror>` payload
+- Conclusion: code changes are present and type-safe, but `localhost:3000` needs a fresh rebuild/restart before R2 runtime verification.
+
+**Решения:**
+- Използваме allowlist за CORS origins вместо reflect-all / wildcard, за да свием cross-origin exposure до mobile/dev нуждите.
+- Sanitization остава централизирана в shared helper, за да няма ново разминаване между API storage и UI rendering.
+
+---
+
+### Session 320 — Verify R2 runtime after rebuild + remove lingering module plus FAB
+
+**Какво направихме:**
+- Пуснахме runtime smoke срещу новия локален production процес за `R2`.
+- Потвърдихме, че server-side post sanitization вече работи реално:
+  - `POST /api/posts` с payload containing `<script>` и `<img onerror>` връща записан `content` без dangerous tags/attrs.
+- Потвърдихме, че `OPTIONS /api/admin/users/1` не връща CORS allow header.
+- Видяхме, че `OPTIONS /api/auth/login` също не връща `Access-Control-Allow-Origin` дори за `http://localhost:19006`, което показва липсващ/ненатоварен `ALLOWED_ORIGINS` в текущия runtime environment, а не wildcard regression.
+- Премахнахме остатъчния floating `+` create FAB от module workspace-а; там остава само `ScrollToTop`.
+
+**Файлове:**
+- [MODIFY] apps/web/components/modules/module-workspace-client-page.tsx
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd --workspace @studyhub/web run typecheck` -> pass
+- Runtime smoke:
+  - allowed-origin preflight to `/api/auth/login` -> `204` with no allow-origin header
+  - denied-origin preflight to `/api/auth/login` -> `204` with no allow-origin header
+  - admin preflight to `/api/admin/users/1` -> `204` with no allow-origin header
+  - post sanitize smoke -> dangerous HTML removed from stored content
+
+**Решения:**
+- `R2` sanitization частта е runtime-validated.
+- `R2` CORS code path е shipped, но environment still needs `ALLOWED_ORIGINS` configured for positive-origin allow behavior.

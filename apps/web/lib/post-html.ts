@@ -1,3 +1,5 @@
+import DOMPurify from "isomorphic-dompurify";
+
 const EMPTY_INLINE_FRAGMENT = "(?:\\s|&nbsp;|<br\\s*/?>)*";
 const EMPTY_PARAGRAPH_RE = new RegExp(`<p>${EMPTY_INLINE_FRAGMENT}</p>`, "gi");
 const EMPTY_LIST_ITEM_RE = new RegExp(
@@ -5,6 +7,25 @@ const EMPTY_LIST_ITEM_RE = new RegExp(
   "gi"
 );
 const EMPTY_LIST_RE = /<(ul|ol)>(?:\s|&nbsp;|<br\s*\/?>)*<\/\1>/gi;
+const ALLOWED_TAGS = [
+  "p",
+  "br",
+  "strong",
+  "em",
+  "u",
+  "s",
+  "code",
+  "pre",
+  "blockquote",
+  "ul",
+  "ol",
+  "li",
+  "h1",
+  "h2",
+  "h3",
+  "a",
+];
+const ALLOWED_ATTR = ["href", "target", "rel"];
 
 function collapseWhitespace(value: string): string {
   return value.replace(/\s+/g, " ").trim();
@@ -23,6 +44,16 @@ export function normalizePostHtmlContent(rawContent: string): string {
   normalized = normalized.replace(/(?:<br\s*\/?>\s*){2,}/gi, "<br>");
 
   return normalized.trim();
+}
+
+export function sanitizePostHtml(rawContent: string): string {
+  const normalized = normalizePostHtmlContent(rawContent);
+
+  return DOMPurify.sanitize(normalized, {
+    ALLOWED_TAGS,
+    ALLOWED_ATTR,
+    ALLOW_DATA_ATTR: false,
+  });
 }
 
 export function hasMeaningfulPostHtmlContent(rawContent: string): boolean {

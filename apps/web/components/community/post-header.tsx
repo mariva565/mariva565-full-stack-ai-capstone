@@ -2,18 +2,8 @@
 
 import Link from "next/link";
 import { getProfileInitials } from "@/lib/profile";
-import { normalizePostHtmlContent } from "@/lib/post-html";
+import { sanitizePostHtml } from "@/lib/post-html";
 import { type Post, TYPE_LABELS, TYPE_COLORS, timeAgo } from "./post-types";
-
-function sanitizeHtml(dirty: string): string {
-  const normalized = normalizePostHtmlContent(dirty);
-  if (typeof window === "undefined") return normalized;
-  // Dynamic require keeps DOMPurify out of SSR bundle
-  // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-explicit-any
-  const DOMPurify = require("dompurify") as any;
-  const purify = DOMPurify.default ?? DOMPurify;
-  return purify.sanitize(normalized) as string;
-}
 
 type Props = {
   post: Post;
@@ -169,7 +159,7 @@ export function PostHeader({
         ) : null}
         <div
           className="post-html-content mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-300"
-          dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content) }}
+          dangerouslySetInnerHTML={{ __html: sanitizePostHtml(post.content) }}
         />
 
         {/* Like + bookmark */}

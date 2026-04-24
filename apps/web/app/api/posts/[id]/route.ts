@@ -6,7 +6,7 @@ import { logActivity } from "../../../../lib/activity";
 import { canUserAccessPost } from "../../../../lib/post-access";
 import {
   hasMeaningfulPostHtmlContent,
-  normalizePostHtmlContent,
+  sanitizePostHtml,
 } from "../../../../lib/post-html";
 import { eq, and, desc, sql } from "drizzle-orm";
 
@@ -107,7 +107,7 @@ export async function PUT(request: NextRequest, { params }: Params) {
   const hasTitle = typeof title === "string";
   const hasContent = typeof content === "string";
   const normalizedTitle = hasTitle ? title.trim() : "";
-  const normalizedContent = hasContent ? normalizePostHtmlContent(content) : "";
+  const normalizedContent = hasContent ? sanitizePostHtml(content) : "";
 
   if (hasTitle && !normalizedTitle) {
     return NextResponse.json(

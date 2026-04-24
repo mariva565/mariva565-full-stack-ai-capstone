@@ -5,7 +5,7 @@ import { requireAuth } from "../../../lib/api-utils";
 import { logActivity } from "../../../lib/activity";
 import {
   hasMeaningfulPostHtmlContent,
-  normalizePostHtmlContent,
+  sanitizePostHtml,
 } from "../../../lib/post-html";
 import { desc, eq, and, ilike, or, sql, inArray } from "drizzle-orm";
 
@@ -99,7 +99,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { title, content, postType, courseId } = body;
     const normalizedTitle = typeof title === "string" ? title.trim() : "";
-    const normalizedContent = normalizePostHtmlContent(
+    const normalizedContent = sanitizePostHtml(
       typeof content === "string" ? content : ""
     );
 
