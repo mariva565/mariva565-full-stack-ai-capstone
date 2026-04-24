@@ -106,7 +106,7 @@ export function ProfileDetailsCard({
             disabled={saving || !hasChanges}
             className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-brand-500 via-fuchsia-500 to-cyan-500 px-5 py-3 text-sm font-semibold text-white shadow-[0_18px_35px_rgba(99,102,241,0.25)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {saving ? "Saving..." : "Save changes"}
+            {saving ? "Saving... ✨" : "Save changes"}
           </button>
         </div>
       </form>

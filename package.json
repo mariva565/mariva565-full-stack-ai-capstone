@@ -38,6 +38,8 @@
     "drizzle-kit": "^0.30.6"
   },
   "dependencies": {
+    "@types/canvas-confetti": "^1.9.0",
+    "canvas-confetti": "^1.9.4",
     "nodemailer": "^8.0.5"
   }
 }

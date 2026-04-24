@@ -16,7 +16,7 @@ function toIsoString(value: any) {
 }
 
 export async function getDashboardData(userId: number): Promise<DashboardData> {
-  const [courseRows, favoriteRows, moduleCountRow, materialCountRow, sharedRecords] = await Promise.all([
+  const [courseRows, favoriteRows, moduleCountRow, materialCountRow, sharedRecords, userRow] = await Promise.all([
     db
       .select({
         id: courses.id,
@@ -52,6 +52,7 @@ export async function getDashboardData(userId: number): Promise<DashboardData> {
       .innerJoin(courses, eq(modules.courseId, courses.id))
       .where(eq(sharedMaterials.sharedWithUserId, userId))
       .orderBy(desc(sharedMaterials.createdAt)),
+    db.select({ name: users.name }).from(users).where(eq(users.id, userId)).limit(1),
   ]);
 
   const formattedShared = sharedRecords.map((r) => ({
@@ -83,5 +84,6 @@ export async function getDashboardData(userId: number): Promise<DashboardData> {
     shared: formattedShared,
     moduleCount: moduleCountRow[0]?.count ?? 0,
     materialCount: materialCountRow[0]?.count ?? 0,
+    userName: userRow[0]?.name ?? "",
   };
 }

@@ -36,4 +36,5 @@ export type DashboardData = {
   shared: SharedMaterial[];
   moduleCount: number;
   materialCount: number;
+  userName: string;
 };

@@ -131,6 +131,7 @@ function ResetPasswordContent() {
             placeholder="At least 6 characters"
             icon={<LockIcon />}
             minLength={6}
+            showToggle
             onChange={(event) => setNewPassword(event.target.value)}
           />
 
@@ -143,12 +144,13 @@ function ResetPasswordContent() {
             placeholder="Repeat your new password"
             icon={<LockIcon />}
             minLength={6}
+            showToggle
             onChange={(event) => setConfirmPassword(event.target.value)}
           />
         </div>
 
         <button type="submit" disabled={loading} className="auth-btn">
-          {loading ? "Updating..." : "Update password"}
+          {loading ? "Updating your password... 🔐" : "Update password"}
         </button>
 
         <div className="flex justify-center pt-1">

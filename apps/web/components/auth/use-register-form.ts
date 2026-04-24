@@ -64,6 +64,11 @@ export function useRegisterForm(): RegisterFormState {
       }
 
       setName(normalizedName);
+
+      const confetti = (await import("canvas-confetti")).default;
+      confetti({ particleCount: 140, spread: 90, origin: { y: 0.55 } });
+      await new Promise<void>((resolve) => setTimeout(resolve, 2200));
+
       router.push("/dashboard");
       router.refresh();
     } catch {

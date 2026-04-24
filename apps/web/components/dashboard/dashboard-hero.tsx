@@ -9,6 +9,7 @@ type DashboardHeroProps = {
   materialCount: number;
   pinnedCount: number;
   showCreateForm: boolean;
+  userName: string;
   onToggleCreateForm: () => void;
 };
 
@@ -62,7 +63,21 @@ function StatCard({ label, value }: StatCardProps) {
   );
 }
 
-function HeroHeading() {
+function useGreeting(firstName: string): string {
+  const [greeting, setGreeting] = useState("");
+
+  useEffect(() => {
+    const h = new Date().getHours();
+    const name = firstName.split(" ")[0] ?? firstName;
+    if (h >= 5 && h < 12) setGreeting(`Good morning, ${name}! ☀️`);
+    else if (h < 18) setGreeting(`Good afternoon, ${name}! 🌤️`);
+    else setGreeting(`Good evening, ${name}! 🌙`);
+  }, [firstName]);
+
+  return greeting;
+}
+
+function HeroHeading({ greeting }: { greeting: string }) {
   return (
     <div className="max-w-2xl">
       <div className="flex items-center gap-4">
@@ -78,6 +93,11 @@ function HeroHeading() {
           <h1 className="dashboard-script-title text-4xl sm:text-5xl">
             Dashboard
           </h1>
+          {greeting && (
+            <p className="mt-0.5 text-sm font-medium text-slate-500 dark:text-slate-400">
+              {greeting}
+            </p>
+          )}
         </div>
       </div>
     </div>
@@ -121,8 +141,11 @@ export function DashboardHero({
   materialCount,
   pinnedCount,
   showCreateForm,
+  userName,
   onToggleCreateForm,
 }: DashboardHeroProps) {
+  const greeting = useGreeting(userName);
+
   return (
     <section className="relative overflow-hidden rounded-[2rem] border border-slate-200/80 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(238,242,255,0.9)_52%,rgba(236,254,255,0.9)_100%)] p-6 shadow-[0_28px_80px_rgba(15,23,42,0.12)] backdrop-blur-xl dark:border-cyan-400/12 dark:bg-[radial-gradient(circle_at_28%_30%,rgba(168,85,247,0.2)_0%,rgba(124,58,237,0.12)_20%,rgba(15,23,42,0)_46%),radial-gradient(circle_at_82%_16%,rgba(226,232,240,0.18)_0%,rgba(148,163,184,0.11)_18%,rgba(15,23,42,0)_42%),linear-gradient(160deg,rgba(15,24,48,0.98)_0%,rgba(8,16,38,0.96)_58%,rgba(5,12,28,0.98)_100%)] dark:shadow-[0_30px_90px_rgba(2,12,27,0.72),0_0_42px_rgba(6,182,212,0.06)]">
       <div className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-brand-300/80 to-transparent dark:via-cyan-300/80" />
@@ -132,7 +155,7 @@ export function DashboardHero({
       <div className="pointer-events-none absolute left-[11rem] top-[4.5rem] hidden h-36 w-36 rounded-full bg-brand-500/10 blur-3xl dark:block" />
 
       <div className="relative flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-        <HeroHeading />
+        <HeroHeading greeting={greeting} />
         <HeroActions
           showCreateForm={showCreateForm}
           onToggleCreateForm={onToggleCreateForm}

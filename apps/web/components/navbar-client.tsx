@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import type React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -55,6 +56,27 @@ function BrandMark() {
 export function NavbarClient({ initialUser }: NavbarClientProps) {
   const pathname = usePathname();
   const headerRef = useRef<HTMLElement | null>(null);
+  const logoClickCountRef = useRef(0);
+  const logoClickTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  function handleLogoClick(e: React.MouseEvent) {
+    logoClickCountRef.current += 1;
+
+    if (logoClickTimerRef.current) clearTimeout(logoClickTimerRef.current);
+
+    if (logoClickCountRef.current >= 3) {
+      e.preventDefault();
+      logoClickCountRef.current = 0;
+      void import("canvas-confetti").then((m) => {
+        m.default({ particleCount: 200, spread: 130, origin: { y: 0.3 } });
+      });
+      return;
+    }
+
+    logoClickTimerRef.current = setTimeout(() => {
+      logoClickCountRef.current = 0;
+    }, 2000);
+  }
   const user = initialUser;
   const {
     unreadCount: messagesUnreadCount,
@@ -149,7 +171,7 @@ export function NavbarClient({ initialUser }: NavbarClientProps) {
       <nav className="font-poppins mx-auto max-w-6xl px-4 py-3 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-2">
           <div className="flex flex-wrap items-start justify-between gap-3">
-            <Link href="/" className="group inline-flex items-center gap-3">
+            <Link href="/" className="group inline-flex items-center gap-3" onClick={handleLogoClick}>
               <BrandMark />
               <span className="inline-block bg-[linear-gradient(135deg,#8b5cf6,#ec4899)] bg-[length:100%_100%] bg-no-repeat bg-clip-text pb-[0.16em] font-shantell text-[1.6rem] font-bold leading-[1.05] text-transparent [-webkit-text-fill-color:transparent] transition-all duration-300 group-hover:-translate-y-0.5 group-hover:scale-[1.02] dark:bg-[linear-gradient(135deg,#dccbff_0%,#c79dff_48%,#f4b4da_100%)]">
                 StudyHub

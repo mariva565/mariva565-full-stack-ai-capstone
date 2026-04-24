@@ -72,6 +72,7 @@ export function RegisterForm() {
               minLength={6}
               placeholder="At least 6 characters"
               icon={<LockIcon />}
+              showToggle
               onChange={(event) => setPassword(event.target.value)}
             />
 

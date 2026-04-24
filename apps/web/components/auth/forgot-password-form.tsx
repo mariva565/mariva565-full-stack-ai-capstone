@@ -64,7 +64,7 @@ export function ForgotPasswordForm() {
         />
 
         <button type="submit" disabled={loading} className="auth-btn">
-          {loading ? "Sending..." : "Send reset link"}
+          {loading ? "Sending reset link... 💌" : "Send reset link"}
         </button>
 
         <div className="flex justify-center pt-1">

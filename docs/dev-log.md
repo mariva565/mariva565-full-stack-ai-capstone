@@ -4,6 +4,52 @@
 
 ---
 
+## 2026-04-24
+
+### Сесия — Round 3 Session B: Confetti + Easter egg (задачи 4 + 5) + API Docs button fix
+
+**API Docs — Back Home button:**
+- `api-docs-page.tsx` — бутонът беше `bg-slate-950` (черен). Сменен с brand gradient (`#6366f1→#8b5cf6→#06b6d4`) + hover lift shadow. Визуално consistent с другите CTA бутони в приложението.
+
+**canvas-confetti:**
+- Инсталиран в root `package.json` (монорепо hoisting) — достъпен за web app.
+- Version: `^1.9.4` + `@types/canvas-confetti ^1.9.0`
+
+**Задача 4 — Registration success confetti:**
+- `use-register-form.ts` — след успешен register: dynamic import на `canvas-confetti` → burst (140 частици, spread 90°, origin y:0.55) → 2.2 sec пауза → router.push("/dashboard")
+- Dynamic import → zero bundle cost докато не се регистрира; SSR safe
+
+**Задача 5 — Logo easter egg (triple-click → confetti):**
+- `navbar-client.tsx` — добавени `logoClickCountRef` и `logoClickTimerRef`; `handleLogoClick` — 3 клика в рамките на 2 сек → confetti burst (200 частици, spread 130°, origin y:0.3) + preventDefault (не навигира); по-малко от 3 клика → таймер нулира брояча след 2 сек
+- `tsc --noEmit` ✅
+
+---
+
+### Сесия — Round 3 Session A: Playful polish (задачи 0 + 1 + 3)
+
+**Задача 0 — Password toggle 🙈/🐵 (wire-up в 3 форми):**
+- `auth-icon-field.tsx` — компонентът вече имаше имплементацията от предишна сесия (showToggle prop, revealed state, 🙈/🐵 button)
+- `login-form.tsx` — добавен `showToggle` на password полето
+- `register-form.tsx` — добавен `showToggle` на password полето
+- `reset-password-form.tsx` — добавен `showToggle` на двете password полета (new + confirm)
+
+**Задача 3 — Friendly button microcopy:**
+- `login-form.tsx`: `"Signing in..."` → `"Signing you in... 🔑"`
+- `reset-password-form.tsx`: `"Updating..."` → `"Updating your password... 🔐"`
+- `forgot-password-form.tsx`: `"Sending..."` → `"Sending reset link... 💌"`
+- `profile-details-card.tsx`: `"Saving..."` → `"Saving... ✨"`
+- `profile-security-card.tsx`: `"Updating..."` → `"Updating your password... 🔐"`
+
+**Задача 1 — Time-based greeting на Dashboard:**
+- `types.ts` (dashboard) — добавено `userName: string` в `DashboardData` тип
+- `dashboard-data.ts` — добавена DB заявка `users.name WHERE id = userId` в Promise.all; връща `userName`
+- `dashboard/page.tsx` — предава `userName` prop на `DashboardClientPage`
+- `dashboard-client-page.tsx` — добавен `userName` prop и предаден на `DashboardHero`
+- `dashboard-hero.tsx` — добавен `useGreeting(firstName)` hook (5-11 → ☀️, 12-17 → 🌤️, 18-4 → 🌙); greeting се показва под "Dashboard" заглавие; rendering е client-side (useEffect) — без hydration mismatch
+- `tsc --noEmit` ✅
+
+---
+
 ## Предстоящо (финален етап)
 
 - [x] **Community animated gradient title (`.hero-gradient-text`)** — внедрено в web + mobile с reduced-motion fallback (2026-04-13, Session 234).

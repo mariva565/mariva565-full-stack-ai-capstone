@@ -19,6 +19,7 @@ export default async function DashboardPage() {
       initialShared={dashboardData.shared}
       initialModuleCount={dashboardData.moduleCount}
       initialMaterialCount={dashboardData.materialCount}
+      userName={dashboardData.userName}
     />
   );
 }

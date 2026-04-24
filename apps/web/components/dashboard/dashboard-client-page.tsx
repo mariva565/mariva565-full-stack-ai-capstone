@@ -22,6 +22,7 @@ type DashboardClientPageProps = {
   initialShared: SharedMaterial[];
   initialModuleCount: number;
   initialMaterialCount: number;
+  userName: string;
 };
 
 type ToastState = {
@@ -44,6 +45,7 @@ export function DashboardClientPage({
   initialShared,
   initialModuleCount,
   initialMaterialCount,
+  userName,
 }: DashboardClientPageProps) {
   const router = useRouter();
   const [courses, setCourses] = useState<DashboardCourse[]>(initialCourses);
@@ -171,6 +173,7 @@ export function DashboardClientPage({
           materialCount={materialCount}
           pinnedCount={favorites.length}
           showCreateForm={showCreateForm}
+          userName={userName}
           onToggleCreateForm={() => setShowCreateForm((current) => !current)}
         />
 

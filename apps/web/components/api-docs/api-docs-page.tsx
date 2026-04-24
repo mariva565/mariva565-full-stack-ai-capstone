@@ -166,7 +166,7 @@ export function ApiDocsPage({ isAuthenticated }: { isAuthenticated: boolean }) {
             <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap">
               <Link
                 href="/"
-                className="inline-flex w-full items-center justify-center rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-200 sm:w-auto"
+                className="inline-flex w-full items-center justify-center rounded-full bg-[linear-gradient(135deg,#6366f1_0%,#8b5cf6_55%,#06b6d4_100%)] px-5 py-3 text-sm font-semibold text-white shadow-[0_12px_28px_rgba(99,102,241,0.22)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_36px_rgba(99,102,241,0.28)] sm:w-auto"
               >
                 Back Home
               </Link>

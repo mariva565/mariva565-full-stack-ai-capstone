@@ -59,12 +59,13 @@ function LoginFormInner() {
             autoComplete="current-password"
             placeholder="********"
             icon={<LockIcon />}
+            showToggle
             onChange={(event) => setPassword(event.target.value)}
           />
         </div>
 
         <button type="submit" disabled={loading} className="auth-btn">
-          {loading ? "Signing in..." : "Sign In"}
+          {loading ? "Signing you in... 🔑" : "Sign In"}
         </button>
 
         <LoginFormActions

@@ -83,7 +83,7 @@ export function ProfileSecurityCard({
           disabled={saving}
           className="inline-flex items-center justify-center rounded-full border border-white/70 bg-white/85 px-5 py-3 text-sm font-semibold text-slate-700 shadow-sm backdrop-blur transition hover:-translate-y-0.5 hover:text-brand-700 disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/10 dark:bg-slate-950/65 dark:text-slate-100 dark:hover:text-brand-200"
         >
-          {saving ? "Updating..." : "Change password"}
+          {saving ? "Updating your password... 🔐" : "Change password"}
         </button>
       </form>
     </section>
