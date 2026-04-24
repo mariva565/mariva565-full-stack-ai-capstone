@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 
 import { CourseDetailsClientPage } from "../../../../components/course/course-details-client-page";
 import { getCourseDetailsData, getCourseSummaryById } from "../../../../lib/course-details-data";
@@ -23,17 +23,17 @@ export async function generateMetadata({ params }: CourseDetailsPageProps): Prom
 }
 
 export default async function CourseDetailsPage({ params }: CourseDetailsPageProps) {
-  await getRequestUserOrRedirect();
+  const user = await getRequestUserOrRedirect();
 
   const { id } = await params;
   const courseId = Number(id);
   if (!Number.isInteger(courseId) || courseId < 1) {
-    redirect("/dashboard");
+    notFound();
   }
 
-  const courseDetails = await getCourseDetailsData(courseId);
+  const courseDetails = await getCourseDetailsData(user, courseId);
   if (!courseDetails) {
-    redirect("/dashboard");
+    notFound();
   }
 
   return <CourseDetailsClientPage key={courseDetails.course.id} initialData={courseDetails} />;

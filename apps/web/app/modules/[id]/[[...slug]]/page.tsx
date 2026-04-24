@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 
 import { ModuleWorkspaceClientPage } from "../../../../components/modules/module-workspace-client-page";
 import { getModuleContext, getModuleWorkspaceData } from "../../../../lib/module-workspace-data";
@@ -32,12 +32,12 @@ export default async function ModuleWorkspacePage({ params }: ModuleWorkspacePag
   const { id } = await params;
   const moduleId = Number(id);
   if (!Number.isInteger(moduleId) || moduleId < 1) {
-    redirect("/dashboard");
+    notFound();
   }
 
-  const workspaceData = await getModuleWorkspaceData(user.sub, moduleId);
+  const workspaceData = await getModuleWorkspaceData(user, moduleId);
   if (!workspaceData) {
-    redirect("/dashboard");
+    notFound();
   }
 
   return <ModuleWorkspaceClientPage key={workspaceData.module.id} initialData={workspaceData} />;

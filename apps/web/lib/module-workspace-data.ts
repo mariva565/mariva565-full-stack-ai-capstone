@@ -5,8 +5,9 @@ import type { ModuleInfo } from "../components/course/module-section";
 import type { ModuleWorkspaceCourse, ModuleWorkspaceData } from "../components/modules/types";
 import type { CourseMaterial } from "./course-materials";
 import { db } from "./db";
-import { getCourseModules } from "./course-details-data";
+import { getCourseModules, userCanAccessCourse } from "./course-details-data";
 import { getFavoriteItems } from "./favorites-data";
+import type { JwtPayload } from "./jwt";
 
 function toIsoString(value: Date | string) {
   return typeof value === "string" ? value : value.toISOString();
@@ -60,7 +61,7 @@ export async function getModuleMaterials(moduleId: number): Promise<CourseMateri
 }
 
 export async function getModuleWorkspaceData(
-  userId: number,
+  user: JwtPayload,
   moduleId: number
 ): Promise<ModuleWorkspaceData | null> {
   const context = await getModuleContext(moduleId);
@@ -68,10 +69,15 @@ export async function getModuleWorkspaceData(
     return null;
   }
 
+  const hasAccess = await userCanAccessCourse(user, context.course.id);
+  if (!hasAccess) {
+    return null;
+  }
+
   const [courseModules, moduleMaterials, favoriteItems] = await Promise.all([
     getCourseModules(context.course.id),
     getModuleMaterials(moduleId),
-    getFavoriteItems(userId),
+    getFavoriteItems(user.sub),
   ]);
 
   return {

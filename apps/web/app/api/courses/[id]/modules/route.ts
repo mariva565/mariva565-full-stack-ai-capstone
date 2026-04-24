@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "../../../../../lib/db";
-import { modules } from "../../../../../../../drizzle/schema";
-import { requireAuth } from "../../../../../lib/api-utils";
+import { modules, courses } from "../../../../../../../drizzle/schema";
+import { requireAuth, requireCourseMentor } from "../../../../../lib/api-utils";
 import { logActivity } from "../../../../../lib/activity";
 import { getCourseModules } from "../../../../../lib/course-details-data";
+import { eq } from "drizzle-orm";
 
 type Ctx = { params: Promise<{ id: string }> };
 
@@ -32,6 +33,27 @@ export async function POST(request: NextRequest, { params }: Ctx) {
       { code: "MISSING_TITLE", message: "Title is required" },
       { status: 400 }
     );
+  }
+
+  // Verify caller owns the course, is a course mentor, or is admin
+  if (auth.user.role !== "admin") {
+    const [parentCourse] = await db
+      .select({ createdBy: courses.createdBy })
+      .from(courses)
+      .where(eq(courses.id, Number(id)))
+      .limit(1);
+
+    if (!parentCourse) {
+      return NextResponse.json(
+        { code: "NOT_FOUND", message: "Course not found" },
+        { status: 404 }
+      );
+    }
+
+    if (parentCourse.createdBy !== auth.user.sub) {
+      const mentorCheck = await requireCourseMentor(auth.user, Number(id));
+      if (mentorCheck) return mentorCheck;
+    }
   }
 
   const [mod] = await db

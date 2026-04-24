@@ -50,8 +50,8 @@ export async function POST(request: NextRequest) {
               msg !== null &&
               ("role" in msg) &&
               ("parts" in msg) &&
-              (msg as ChatMessage).role === "user" ||
-              (msg as ChatMessage).role === "model"
+              ((msg as ChatMessage).role === "user" ||
+                (msg as ChatMessage).role === "model")
           )
           .map((msg: ChatMessage) => ({
             role: msg.role === "model" ? "model" as const : "user" as const,

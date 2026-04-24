@@ -12,8 +12,8 @@ import { ModuleSidebar } from "./module-sidebar";
 import type { ModuleWorkspaceData } from "./types";
 import { ModuleWorkspaceHeader } from "./module-workspace-header";
 import { AddMaterialFab } from "../ui/add-material-fab";
-import { LottieDecoration } from "../ui/lottie-decoration";
 import { ScrollToTop } from "../ui/scroll-to-top";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { Toast, type ToastTone } from "../ui/toast";
 import {
   matchesFilter,
@@ -269,7 +269,16 @@ export function ModuleWorkspaceClientPage({
               )}
             </div>
 
-            <ModulePinnedSidebar items={pinnedItems} />
+            <div className="space-y-4">
+              <div className="pointer-events-none mx-auto h-[160px] w-[160px] opacity-80 drop-shadow-[0_0_15px_rgba(99,102,241,0.1)] sm:h-[180px] sm:w-[180px]">
+                <DotLottieReact
+                  src="https://lottie.host/4db68bbd-31f6-4cd8-84eb-189de081159a/IGmMCqhzpt.lottie"
+                  loop
+                  autoplay
+                />
+              </div>
+              <ModulePinnedSidebar items={pinnedItems} />
+            </div>
           </div>
         </div>
       </div>
@@ -278,7 +287,6 @@ export function ModuleWorkspaceClientPage({
       <ScrollToTop />
 
       {toast ? <Toast message={toast.message} tone={toast.tone} onClose={() => setToast(null)} /> : null}
-      <LottieDecoration src="https://lottie.host/4db68bbd-31f6-4cd8-84eb-189de081159a/IGmMCqhzpt.lottie" />
     </>
   );
 }

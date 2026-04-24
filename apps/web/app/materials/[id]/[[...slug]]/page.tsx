@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 
 import { MaterialPageClient } from "../../../../components/materials/material-page-client";
 import { getMaterialDetail, getMaterialPageData } from "../../../../lib/material-detail-data";
@@ -37,12 +37,12 @@ export default async function MaterialPage({
   const resolvedSearchParams = searchParams ? await searchParams : undefined;
   const materialId = Number(id);
   if (!Number.isInteger(materialId) || materialId < 1) {
-    redirect("/dashboard");
+    notFound();
   }
 
   const materialPageData = await getMaterialPageData(user.sub, materialId);
   if (!materialPageData) {
-    redirect("/dashboard");
+    notFound();
   }
 
   return (

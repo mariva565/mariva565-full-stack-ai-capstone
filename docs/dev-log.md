@@ -9470,3 +9470,26 @@ Commit: `feat: implement S2 Ask Mentor — mentor inbox + answer-status API`
 
 **Решения:**
 - Поправката е направена на мястото на интеграция, а не чрез промяна на `AddMaterialFab`, за да не смесваме add/create и scroll-to-top поведение в един и същ бутон.
+
+---
+
+## 2026-04-24 — #52 Security R1 (Sonnet + follow-up)
+
+### API endpoints (Sonnet)
+- H1: `GET /api/materials/:id` — заменен `getMaterialDetail` с `getMaterialPageData(userId, id)`; достъп само за собственик или shared-with потребител
+- H2: `GET /api/courses/:id` — добавен LEFT JOIN membership check преди `getCourseSummaryById`; не-член/не-собственик/не-admin получава 404 (не разкрива съществуването)
+- H3a: `POST /api/courses/:id/modules` — добавена owner/mentor/admin проверка преди `db.insert(modules)`
+- H3b: `POST /api/modules/:id/materials` — добавен JOIN modules→courses и owner/mentor/admin проверка преди `db.insert(materials)`
+- M10: поправен operator precedence bug в AI chat history filter (`&&` vs `||`) — добавени скоби около role OR-check
+
+### Page-level IDOR (follow-up, смоук тест намери)
+Page routes обхождат API guard-ите (зареждат директно от DB):
+- `/courses/:id/...` — зареждаше чужд курс. Добавен `userCanAccessCourse(user, courseId)` helper в `lib/course-details-data.ts`; signature change на `getCourseDetailsData(user, courseId)`.
+- `/modules/:id/...` — зареждаше чужд модул. `getModuleWorkspaceData(user, moduleId)` сега проверява parent course достъп през новия helper.
+- `/materials/:id/...` вече проверяваше през `getMaterialPageData` (не е имало IDOR).
+- Всичките 3 page файла сменени `redirect("/dashboard")` → `notFound()` за коректна 404 страница вместо тихо redirect-ване.
+
+### Lottie repositioning (module workspace)
+- `module-workspace-client-page.tsx`: Lottie-то преместено от `<LottieDecoration>` (fixed overlay) в inline елемент в дясната колона над Quick Access панела.
+
+`tsc --noEmit` pass. Staged, not committed.

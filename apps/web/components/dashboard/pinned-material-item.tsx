@@ -31,7 +31,7 @@ export function PinnedMaterialItem({ item }: PinnedMaterialItemProps) {
         <MaterialTypePill type={item.materialType} />
         <Link
           href={`/modules/${item.moduleId}/${slugify(item.moduleTitle)}`}
-          className="truncate text-xs font-medium text-slate-500 hover:text-brand-600 dark:text-slate-400 dark:hover:text-brand-100"
+          className="break-words text-xs font-medium text-slate-500 hover:text-brand-600 dark:text-slate-400 dark:hover:text-brand-100"
         >
           {item.moduleTitle}
         </Link>

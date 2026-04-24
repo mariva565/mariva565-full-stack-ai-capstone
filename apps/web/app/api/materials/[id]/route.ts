@@ -3,7 +3,7 @@ import { db } from "../../../../lib/db";
 import { materials } from "../../../../../../drizzle/schema";
 import { requireAuth } from "../../../../lib/api-utils";
 import { logActivity } from "../../../../lib/activity";
-import { getMaterialDetail } from "../../../../lib/material-detail-data";
+import { getMaterialPageData } from "../../../../lib/material-detail-data";
 import { eq, and } from "drizzle-orm";
 
 type Ctx = { params: Promise<{ id: string }> };
@@ -14,7 +14,7 @@ export async function GET(request: NextRequest, { params }: Ctx) {
   if ("error" in auth) return auth.error;
 
   const { id } = await params;
-  const result = await getMaterialDetail(Number(id));
+  const result = await getMaterialPageData(auth.user.sub, Number(id));
 
   if (!result) {
     return NextResponse.json(

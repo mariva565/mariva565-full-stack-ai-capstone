@@ -74,11 +74,11 @@ export function EventSidebar({ date, events, onAdd, onDelete, addBusy }: Props) 
                 />
 
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium text-slate-700 dark:text-slate-100">
+                  <p className="break-words text-sm font-medium text-slate-700 dark:text-slate-100">
                     {event.title}
                   </p>
                   {event.description && (
-                    <p className="mt-0.5 truncate text-xs text-slate-500 dark:text-slate-400">
+                    <p className="mt-0.5 break-words text-xs text-slate-500 dark:text-slate-400">
                       {event.description}
                     </p>
                   )}

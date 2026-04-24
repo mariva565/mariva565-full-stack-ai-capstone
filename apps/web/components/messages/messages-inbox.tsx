@@ -141,7 +141,7 @@ export function MessagesInbox() {
 
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="truncate font-semibold text-slate-900 transition-colors group-hover:text-brand-600 dark:text-white dark:group-hover:text-brand-400">
+                  <span className="break-words font-semibold text-slate-900 transition-colors group-hover:text-brand-600 dark:text-white dark:group-hover:text-brand-400">
                     {conv.other?.name ?? "Unknown"}
                   </span>
                   {conv.lastMessage ? (

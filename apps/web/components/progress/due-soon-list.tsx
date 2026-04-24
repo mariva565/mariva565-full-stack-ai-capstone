@@ -41,7 +41,7 @@ export function DueSoonList({ milestones }: DueSoonListProps) {
                 key={milestone.id}
                 className="rounded-lg border border-slate-200 bg-slate-50/60 px-3 py-2 dark:border-slate-700 dark:bg-slate-950/40"
               >
-                <p className="font-rubik truncate text-sm font-semibold tracking-tight text-slate-700 dark:text-slate-100">
+                <p className="font-rubik break-words text-sm font-semibold tracking-tight text-slate-700 dark:text-slate-100">
                   {milestone.title}
                 </p>
                 <div className="mt-1">

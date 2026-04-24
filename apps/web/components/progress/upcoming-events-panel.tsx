@@ -43,15 +43,15 @@ export function UpcomingEventsPanel({ events }: UpcomingEventsPanelProps) {
           {upcoming.map((event) => (
             <li
               key={event.id}
-              className="flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50/60 px-3 py-2 dark:border-slate-700 dark:bg-slate-950/40"
+              className="flex items-start gap-2 rounded-lg border border-slate-200 bg-slate-50/60 px-3 py-2 dark:border-slate-700 dark:bg-slate-950/40"
             >
               <span
-                className={`h-2.5 w-2.5 shrink-0 rounded-full ${TYPE_COLORS[event.type] ?? "bg-slate-400"}`}
+                className={`mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full ${TYPE_COLORS[event.type] ?? "bg-slate-400"}`}
               />
-              <span className="font-rubik min-w-0 flex-1 truncate text-sm font-semibold tracking-tight text-slate-700 dark:text-slate-100">
+              <span className="font-rubik min-w-0 flex-1 break-words text-sm font-semibold tracking-tight text-slate-700 dark:text-slate-100">
                 {event.title}
               </span>
-              <span className="font-rubik shrink-0 text-xs font-medium text-slate-500 dark:text-slate-400">
+              <span className="font-rubik mt-0.5 shrink-0 text-xs font-medium text-slate-500 dark:text-slate-400">
                 {new Date(`${event.date}T00:00:00`).toLocaleDateString("en-GB", {
                   day: "numeric",
                   month: "short",

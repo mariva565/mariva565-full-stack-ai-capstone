@@ -65,9 +65,9 @@ export function ModuleSidebar({
                 >
                   {String(moduleRow.orderIndex + 1).padStart(2, "0")}
                 </span>
-                <div className="min-w-0">
+                <div className="min-w-0 flex-1">
                   <p
-                    className={`truncate leading-tight ${
+                    className={`break-words leading-tight ${
                       active
                         ? "dashboard-script-title block text-[1.18rem]"
                         : "block font-handwritten text-[1.02rem] font-bold tracking-tight text-slate-700 dark:text-slate-100"

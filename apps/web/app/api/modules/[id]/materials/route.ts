@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "../../../../../lib/db";
-import { materials } from "../../../../../../../drizzle/schema";
-import { requireAuth } from "../../../../../lib/api-utils";
+import { materials, modules, courses } from "../../../../../../../drizzle/schema";
+import { requireAuth, requireCourseMentor } from "../../../../../lib/api-utils";
 import { logActivity } from "../../../../../lib/activity";
 import { getModuleMaterials } from "../../../../../lib/module-workspace-data";
 import { normalizeMaterialType, resolveMaterialTitle } from "../../../../../lib/materials";
@@ -36,6 +36,26 @@ export async function POST(request: NextRequest, { params }: Ctx) {
       { code: "MISSING_TITLE", message: "Add a title, some content, or a file/link first" },
       { status: 400 }
     );
+  }
+
+  // Verify caller owns the parent course, is a course mentor, or is admin
+  const [parent] = await db
+    .select({ courseId: courses.id, courseCreatedBy: courses.createdBy })
+    .from(modules)
+    .innerJoin(courses, eq(modules.courseId, courses.id))
+    .where(eq(modules.id, Number(id)))
+    .limit(1);
+
+  if (!parent) {
+    return NextResponse.json(
+      { code: "NOT_FOUND", message: "Module not found" },
+      { status: 404 }
+    );
+  }
+
+  if (parent.courseCreatedBy !== auth.user.sub && auth.user.role !== "admin") {
+    const mentorCheck = await requireCourseMentor(auth.user, parent.courseId);
+    if (mentorCheck) return mentorCheck;
   }
 
   const [material] = await db

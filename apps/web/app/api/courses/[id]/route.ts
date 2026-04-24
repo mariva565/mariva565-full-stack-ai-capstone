@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "../../../../lib/db";
-import { courses } from "../../../../../../drizzle/schema";
+import { courses, courseMembers } from "../../../../../../drizzle/schema";
 import { requireAuth } from "../../../../lib/api-utils";
 import { logActivity } from "../../../../lib/activity";
 import { getCourseSummaryById } from "../../../../lib/course-details-data";
-import { eq, and } from "drizzle-orm";
+import { eq, and, or } from "drizzle-orm";
 
 type Ctx = { params: Promise<{ id: string }> };
 
@@ -14,6 +14,38 @@ export async function GET(request: NextRequest, { params }: Ctx) {
   if ("error" in auth) return auth.error;
 
   const { id } = await params;
+
+  // Enforce membership: only creator, enrolled member, or admin may view
+  if (auth.user.role !== "admin") {
+    const [access] = await db
+      .select({ id: courses.id })
+      .from(courses)
+      .leftJoin(
+        courseMembers,
+        and(
+          eq(courseMembers.courseId, courses.id),
+          eq(courseMembers.userId, auth.user.sub)
+        )
+      )
+      .where(
+        and(
+          eq(courses.id, Number(id)),
+          or(
+            eq(courses.createdBy, auth.user.sub),
+            eq(courseMembers.userId, auth.user.sub)
+          )
+        )
+      )
+      .limit(1);
+
+    if (!access) {
+      return NextResponse.json(
+        { code: "NOT_FOUND", message: "Course not found" },
+        { status: 404 }
+      );
+    }
+  }
+
   const course = await getCourseSummaryById(Number(id));
 
   if (!course) {
