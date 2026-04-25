@@ -9744,3 +9744,22 @@ Page routes обхождат API guard-ите (зареждат директно
 
 **Решения:**
 - Оставяме поведението без промяна и сваляме стилистичната непоследователност в RBAC слоя.
+
+### Session 326 — Admin activity Load more pagination fix
+
+**Какво направихме:**
+- Поправихме `Load more` в admin Activity таба да не остава заключен на loading при fetch/API грешка, като добавихме `try/catch/finally` около заявката.
+- След успешен `Load more` прехвърляме таблицата към първата клиентска страница от новозаредените activity logs, за да има видима реакция веднага след натискане.
+- Поправихме `/api/admin/activity-logs` да изчислява `hasMore` чрез `limit + 1` заявка вместо `rows.length === limit`, което премахва фалшивия "има още" бутон при точен multiple на page size.
+
+**Файлове:**
+- [MODIFY] apps/web/components/admin/activity-tab.tsx
+- [MODIFY] apps/web/app/api/admin/activity-logs/route.ts
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd --workspace @studyhub/web run typecheck` -> pass
+- `npm.cmd run check:mojibake` -> pass
+
+**Решения:**
+- Запазихме backend batch размера 200 и отделната клиентска пагинация; `Load more` само добавя следващия backend batch и премества текущата клиентска страница към новите редове.

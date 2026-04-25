@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
   const page = Math.max(parseInt(url.searchParams.get("page") || "1", 10), 1);
   const offset = (page - 1) * limit;
 
-  const logs = await db
+  const rows = await db
     .select({
       id: activityLogs.id,
       actionType: activityLogs.actionType,
@@ -29,8 +29,8 @@ export async function GET(request: NextRequest) {
     .from(activityLogs)
     .innerJoin(users, eq(activityLogs.userId, users.id))
     .orderBy(desc(activityLogs.createdAt))
-    .limit(limit)
+    .limit(limit + 1)
     .offset(offset);
 
-  return NextResponse.json({ logs, page, hasMore: logs.length === limit });
+  return NextResponse.json({ logs: rows.slice(0, limit), page, hasMore: rows.length > limit });
 }

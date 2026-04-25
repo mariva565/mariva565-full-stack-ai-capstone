@@ -54,16 +54,29 @@ export function ActivityTab() {
     if (loadingMore || !hasMore) return;
     setLoadingMore(true);
     void (async () => {
-      const res = await fetch(`/api/admin/activity-logs?page=${nextBackendPage}&limit=${LOGS_BATCH_SIZE}`);
-      if (res.ok) {
+      try {
+        const res = await fetch(`/api/admin/activity-logs?page=${nextBackendPage}&limit=${LOGS_BATCH_SIZE}`);
+        if (!res.ok) {
+          return;
+        }
+
         const data = await res.json();
-        setLogs((prev) => [...prev, ...((data.logs || []) as LogEntry[])]);
+        const newLogs = ((data.logs || []) as LogEntry[]);
+        const firstNewItemPage = Math.max(1, Math.ceil((logs.length + 1) / settings.itemsPerPage));
+
+        setLogs((prev) => [...prev, ...newLogs]);
         setHasMore(Boolean(data.hasMore));
         setNextBackendPage((p) => p + 1);
+        if (newLogs.length > 0) {
+          setPage(firstNewItemPage);
+        }
+      } catch {
+        // Keep the current table intact; the next click or poll can retry.
+      } finally {
+        setLoadingMore(false);
       }
-      setLoadingMore(false);
     })();
-  }, [loadingMore, hasMore, nextBackendPage]);
+  }, [loadingMore, hasMore, nextBackendPage, logs.length, settings.itemsPerPage]);
 
   useEffect(() => {
     fetchLogs();
