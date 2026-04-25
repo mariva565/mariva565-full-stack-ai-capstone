@@ -7,6 +7,7 @@ import { useRegisterForm } from "./use-register-form";
 import { Toast } from "../ui/toast";
 import { AuthSectionDivider } from "./auth-section-divider";
 import { AuthGoogleSignIn } from "./auth-google-sign-in";
+import { PASSWORD_POLICY_MESSAGE } from "../../lib/password-validation";
 
 export function RegisterForm() {
   const {
@@ -69,15 +70,15 @@ export function RegisterForm() {
               label="Password"
               value={password}
               autoComplete="new-password"
-              minLength={6}
-              placeholder="At least 6 characters"
+              minLength={8}
+              placeholder="Use a strong password"
               icon={<LockIcon />}
               showToggle
               onChange={(event) => setPassword(event.target.value)}
             />
 
             <p className="px-1 text-right text-[0.68rem] leading-4 text-slate-500 dark:text-slate-400">
-              At least 6 characters — longer is always safer 🔒
+              {PASSWORD_POLICY_MESSAGE}
             </p>
           </div>
         </div>

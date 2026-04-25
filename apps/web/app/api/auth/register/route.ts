@@ -3,24 +3,47 @@ import { db } from "../../../../lib/db";
 import { users } from "../../../../../../drizzle/schema";
 import { hashPassword } from "../../../../lib/auth";
 import { signToken } from "../../../../lib/jwt";
+import { isValidEmail, normalizeEmail } from "../../../../lib/email-validation";
+import { isStrongPassword, PASSWORD_POLICY_MESSAGE } from "../../../../lib/password-validation";
+import { checkRateLimit, getClientIp } from "../../../../lib/rate-limit";
 import { eq } from "drizzle-orm";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { email, name, password } = body;
+    const normalizedEmail = normalizeEmail(email);
+    const normalizedName = typeof name === "string" ? name.trim().replace(/\s+/g, " ") : "";
+    const ip = getClientIp(request);
 
     // Validate input
-    if (!email || !name || !password) {
+    if (!normalizedEmail || !normalizedName || !password) {
       return NextResponse.json(
         { code: "MISSING_FIELDS", message: "Email, name and password are required" },
         { status: 400 }
       );
     }
 
-    if (password.length < 6) {
+    if (!isValidEmail(normalizedEmail)) {
       return NextResponse.json(
-        { code: "WEAK_PASSWORD", message: "Password must be at least 6 characters" },
+        { code: "INVALID_EMAIL", message: "Please enter a valid email address" },
+        { status: 400 }
+      );
+    }
+
+    if (!checkRateLimit("register", ip, 5, 60 * 60 * 1000)) {
+      return NextResponse.json(
+        {
+          code: "RATE_LIMITED",
+          message: "Too many accounts from this IP. Try again later.",
+        },
+        { status: 429 }
+      );
+    }
+
+    if (!isStrongPassword(password)) {
+      return NextResponse.json(
+        { code: "WEAK_PASSWORD", message: PASSWORD_POLICY_MESSAGE },
         { status: 400 }
       );
     }
@@ -29,7 +52,7 @@ export async function POST(request: NextRequest) {
     const existing = await db
       .select({ id: users.id })
       .from(users)
-      .where(eq(users.email, email))
+      .where(eq(users.email, normalizedEmail))
       .limit(1);
 
     if (existing.length > 0) {
@@ -43,8 +66,8 @@ export async function POST(request: NextRequest) {
     const [newUser] = await db
       .insert(users)
       .values({
-        email,
-        name,
+        email: normalizedEmail,
+        name: normalizedName,
         passwordHash: hashPassword(password),
         role: "user",
       })

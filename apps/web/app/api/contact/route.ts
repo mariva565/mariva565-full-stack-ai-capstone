@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sendContactMessage } from "../../../lib/email";
+import { checkRateLimit, getClientIp } from "../../../lib/rate-limit";
 
 const MAX_NAME_LENGTH = 120;
 const MAX_EMAIL_LENGTH = 254;
@@ -33,6 +34,14 @@ async function readContactBody(request: NextRequest): Promise<ContactBody | null
 }
 
 export async function POST(request: NextRequest) {
+  const ip = getClientIp(request);
+  if (!checkRateLimit("contact", ip, 3, 60 * 60 * 1000)) {
+    return NextResponse.json(
+      { code: "RATE_LIMITED", message: "Too many messages. Please wait." },
+      { status: 429 }
+    );
+  }
+
   const body = await readContactBody(request);
   if (!body) return badRequest("Invalid JSON body");
 

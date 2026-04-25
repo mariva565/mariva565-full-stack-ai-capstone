@@ -5,6 +5,7 @@ import { logActivity } from "../../../../../lib/activity";
 import { hashPassword } from "../../../../../lib/auth";
 import { db } from "../../../../../lib/db";
 import { consumeResetToken } from "../../../../../lib/password-reset";
+import { isStrongPassword, PASSWORD_POLICY_MESSAGE } from "../../../../../lib/password-validation";
 
 export const runtime = "nodejs";
 
@@ -36,12 +37,12 @@ export async function POST(request: NextRequest) {
   if (
     !newPassword ||
     typeof newPassword !== "string" ||
-    newPassword.length < 6
+    !isStrongPassword(newPassword)
   ) {
     return NextResponse.json(
       {
-        code: "INVALID_PASSWORD",
-        message: "New password must be at least 6 characters.",
+        code: "WEAK_PASSWORD",
+        message: PASSWORD_POLICY_MESSAGE,
       },
       { status: 400 }
     );

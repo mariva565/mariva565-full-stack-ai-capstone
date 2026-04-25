@@ -9590,3 +9590,55 @@ Page routes обхождат API guard-ите (зареждат директно
 **Решения:**
 - `R2` sanitization частта е runtime-validated.
 - `R2` CORS code path е shipped, но environment still needs `ALLOWED_ORIGINS` configured for positive-origin allow behavior.
+
+---
+
+### Session 321 — R3 rate limits + password policy + email normalization
+
+**Какво направихме:**
+- Добавихме reusable in-memory rate-limit helper в `apps/web/lib/rate-limit.ts` с `checkRateLimit()` и `getClientIp()`.
+- Пренасочихме password-reset request cooldown-а да ползва shared limiter вместо отделен локален store в `apps/web/lib/password-reset.ts`.
+- Добавихме rate limits за R3 audit scope:
+  - `POST /api/ai/chat` — `20/hour` per user
+  - `POST /api/ai/tools` — `20/hour` per user
+  - `POST /api/assistant/material-finder` — `20/hour` per user
+  - `POST /api/contact` — `3/hour` per IP
+  - `POST /api/auth/login` — `20/15min` per IP + `5/15min` per normalized email
+  - `POST /api/auth/register` — `5/hour` per IP
+- Добавихме shared email normalization/validation helper в `apps/web/lib/email-validation.ts`.
+- Уеднаквихме strong password policy на server side:
+  - `POST /api/auth/register` вече изисква `isStrongPassword()`
+  - `POST /api/auth/password-reset/confirm` вече изисква същата policy и връща shared `PASSWORD_POLICY_MESSAGE`
+- Harden-нахме register flow-а:
+  - trim + lowercase email normalization
+  - email format validation
+  - trimmed/collapsed name normalization преди insert
+  - uniqueness check върху normalized email
+- Harden-нахме admin user edit API:
+  - trimmed-name validation (`INVALID_NAME` при празно име след trim)
+  - email trim + lowercase + format validation
+  - email uniqueness check срещу други users
+- Обновихме register form hint-а към новата password policy.
+
+**Файлове:**
+- [ADD] apps/web/lib/rate-limit.ts
+- [ADD] apps/web/lib/email-validation.ts
+- [MODIFY] apps/web/lib/password-reset.ts
+- [MODIFY] apps/web/app/api/auth/password-reset/request/route.ts
+- [MODIFY] apps/web/app/api/auth/login/route.ts
+- [MODIFY] apps/web/app/api/auth/register/route.ts
+- [MODIFY] apps/web/app/api/auth/password-reset/confirm/route.ts
+- [MODIFY] apps/web/app/api/admin/users/[id]/route.ts
+- [MODIFY] apps/web/app/api/ai/chat/route.ts
+- [MODIFY] apps/web/app/api/ai/tools/route.ts
+- [MODIFY] apps/web/app/api/assistant/material-finder/route.ts
+- [MODIFY] apps/web/app/api/contact/route.ts
+- [MODIFY] apps/web/components/auth/register-form.tsx
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd --workspace @studyhub/web run typecheck` -> pass
+
+**Решения:**
+- Оставихме limiter-а in-memory, защото това е най-малкият локален R3 fix без нов infra; production-grade distributed limiting остава за Redis/Upstash при deploy.
+- Ползваме shared email/password helpers, за да няма разминаване между register, password-reset и admin edit flow-овете.

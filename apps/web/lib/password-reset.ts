@@ -2,15 +2,13 @@ import crypto from "crypto";
 import { eq, and, isNull, gt } from "drizzle-orm";
 import { db } from "./db";
 import { passwordResetTokens } from "../../../drizzle/schema";
+import { checkRateLimit } from "./rate-limit";
 
 // === CONFIGURATION ===
 export const PASSWORD_RESET_TTL_HOURS = 1;
 export const PASSWORD_RESET_TTL_MS = PASSWORD_RESET_TTL_HOURS * 60 * 60 * 1000;
 export const RESET_REQUEST_RATE_LIMIT = 3;
 export const RESET_REQUEST_RATE_WINDOW_MS = 60 * 60 * 1000;
-
-// In-memory rate limit store: email → list of request timestamps
-const rateLimitStore = new Map<string, number[]>();
 
 export function hashToken(plaintext: string): string {
   return crypto.createHash("sha256").update(plaintext).digest("hex");
@@ -82,20 +80,10 @@ export async function consumeResetToken(
  * Trims old entries on each call.
  */
 export function checkResetRateLimit(email: string): boolean {
-  const key = email.toLowerCase();
-  const now = Date.now();
-  const windowStart = now - RESET_REQUEST_RATE_WINDOW_MS;
-
-  const timestamps = (rateLimitStore.get(key) ?? []).filter(
-    (ts) => ts > windowStart
+  return checkRateLimit(
+    "password-reset-request",
+    email.toLowerCase(),
+    RESET_REQUEST_RATE_LIMIT,
+    RESET_REQUEST_RATE_WINDOW_MS
   );
-
-  if (timestamps.length >= RESET_REQUEST_RATE_LIMIT) {
-    rateLimitStore.set(key, timestamps);
-    return false;
-  }
-
-  timestamps.push(now);
-  rateLimitStore.set(key, timestamps);
-  return true;
 }

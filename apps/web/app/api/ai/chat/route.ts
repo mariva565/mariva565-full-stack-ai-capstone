@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "../../../../lib/api-utils";
 import { askGemini } from "../../../../lib/gemini";
+import { checkRateLimit } from "../../../../lib/rate-limit";
 
 const SYSTEM_PROMPT =
   "You are StudyHub Mentor, a helpful coding study assistant. " +
@@ -20,6 +21,13 @@ interface ChatMessage {
 export async function POST(request: NextRequest) {
   const auth = await requireAuth(request);
   if ("error" in auth) return auth.error;
+
+  if (!checkRateLimit("ai-chat", String(auth.user.sub), 20, 60 * 60 * 1000)) {
+    return NextResponse.json(
+      { code: "RATE_LIMITED", message: "Too many AI requests. Try again in an hour." },
+      { status: 429 }
+    );
+  }
 
   try {
     const body = await request.json();

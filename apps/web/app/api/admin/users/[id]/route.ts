@@ -4,8 +4,9 @@ import { users, courses, modules, materials, favorites, activityLogs } from "../
 import { requireAuth, requireAdmin } from "../../../../../lib/api-utils";
 import { logActivity } from "../../../../../lib/activity";
 import { hashPassword } from "../../../../../lib/auth";
+import { isValidEmail, normalizeEmail } from "../../../../../lib/email-validation";
 import { isStrongPassword } from "../../../../../lib/password-validation";
-import { eq } from "drizzle-orm";
+import { eq, and, ne } from "drizzle-orm";
 
 type RouteParams = { params: Promise<{ id: string }> };
 
@@ -50,12 +51,40 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
   }
 
   if (name && typeof name === "string") {
-    setValues.name = name.trim();
+    const trimmedName = name.trim();
+    if (!trimmedName) {
+      return NextResponse.json(
+        { code: "INVALID_NAME", message: "Name cannot be empty" },
+        { status: 400 }
+      );
+    }
+    setValues.name = trimmedName;
     changedFields.push("name");
   }
 
   if (email && typeof email === "string") {
-    setValues.email = email.trim();
+    const normalizedEmail = normalizeEmail(email);
+    if (!isValidEmail(normalizedEmail)) {
+      return NextResponse.json(
+        { code: "INVALID_EMAIL", message: "Please enter a valid email address" },
+        { status: 400 }
+      );
+    }
+
+    const [duplicateUser] = await db
+      .select({ id: users.id })
+      .from(users)
+      .where(and(eq(users.email, normalizedEmail), ne(users.id, userId)))
+      .limit(1);
+
+    if (duplicateUser) {
+      return NextResponse.json(
+        { code: "EMAIL_IN_USE", message: "This email is already in use" },
+        { status: 409 }
+      );
+    }
+
+    setValues.email = normalizedEmail;
     changedFields.push("email");
   }
 

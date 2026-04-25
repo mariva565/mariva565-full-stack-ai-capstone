@@ -4,14 +4,13 @@ import { users } from "../../../../../../../drizzle/schema";
 import { logActivity } from "../../../../../lib/activity";
 import { sendPasswordResetEmail } from "../../../../../lib/email";
 import { db } from "../../../../../lib/db";
+import { isValidEmail, normalizeEmail } from "../../../../../lib/email-validation";
 import {
   checkResetRateLimit,
   createResetTokenForUser,
 } from "../../../../../lib/password-reset";
 
 export const runtime = "nodejs";
-
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function okResponse() {
   return NextResponse.json({ ok: true });
@@ -29,14 +28,13 @@ export async function POST(request: NextRequest) {
   }
 
   const rawEmail = (body as { email?: unknown }).email;
-  if (typeof rawEmail !== "string" || !EMAIL_REGEX.test(rawEmail.trim())) {
+  const email = normalizeEmail(rawEmail);
+  if (!isValidEmail(email)) {
     return NextResponse.json(
       { code: "INVALID_EMAIL", message: "A valid email address is required." },
       { status: 400 }
     );
   }
-
-  const email = rawEmail.trim().toLowerCase();
 
   // Rate limit check — always return 200 even if throttled (anti-enumeration)
   if (!checkResetRateLimit(email)) {
