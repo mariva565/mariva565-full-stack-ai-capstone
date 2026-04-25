@@ -260,11 +260,13 @@ export const apiDocsSections: ApiSectionDoc[] = [
       },
       {
         method: "GET",
-        path: "/api/admin/activity-logs?limit=50",
+        path: "/api/admin/activity-logs?page=1&limit=50",
         auth: "Admin",
-        description: "Return recent audit log entries with a bounded query limit.",
+        description: "Return recent audit log entries. Paginated with `page` (default 1) and `limit` (default 50, max 200). `hasMore` indicates whether another page is available.",
         responseExample: `{
-  "logs": []
+  "logs": [],
+  "page": 1,
+  "hasMore": false
 }`,
         statusCodes: ["200 OK", "401 Unauthorized", "403 Forbidden"],
       },

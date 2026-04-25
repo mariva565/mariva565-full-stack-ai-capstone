@@ -9642,3 +9642,24 @@ Page routes обхождат API guard-ите (зареждат директно
 **Решения:**
 - Оставихме limiter-а in-memory, защото това е най-малкият локален R3 fix без нов infra; production-grade distributed limiting остава за Redis/Upstash при deploy.
 - Ползваме shared email/password helpers, за да няма разминаване между register, password-reset и admin edit flow-овете.
+
+### Session 322 — Activity logs pagination + Load More (Lesson 09 polish)
+
+**Какво направихме:**
+- Добавихме backend pagination на `/api/admin/activity-logs`: `?page=N` (default 1) + `?limit=` (default 50, max 200), response shape `{ logs, page, hasMore }`. Преди endpoint-ът поддържаше само `limit` cap и нямаше начин да се листват по-стари записи.
+- Добавихме Load More UX в admin Activity таб: initial fetch `?page=1&limit=200`, бутон "Load more" под локалния `Pagination`, който дозарежда следващата партида от 200 в `logs[]`. Бутонът се показва само когато `hasMore === true` и има disabled "Loading…" state по време на fetch.
+- Update-нахме `/api-docs` страницата да описва новите параметри и response shape.
+
+**Файлове:**
+- [MODIFY] apps/web/app/api/admin/activity-logs/route.ts
+- [MODIFY] apps/web/components/admin/activity-tab.tsx
+- [MODIFY] apps/web/components/api-docs/api-docs-content.ts
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd --workspace @studyhub/web run typecheck` -> pass
+
+**Решения:**
+- Запазихме съществуващата client-side `Pagination` за локално разлистване и наслоихме Load More върху нея вместо да рефакторираме на чисто backend-driven paging — нула UX регресия, бутонът просто разширява локалния буфер.
+- Не пипнахме Postman колекцията: тя е скоупната за core CRUD flow-ове (Auth/Courses/Materials/Favorites/Posts), не за admin endpoints.
+- Не променихме default `limit` за UI заявката (200) — пазим текущото "една страница ≈ 10 локални pages" поведение; backend-ът cap-ва отделно.

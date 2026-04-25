@@ -21,10 +21,14 @@ type LogEntry = {
 
 const SEARCHABLE: (keyof LogEntry)[] = ["actionType", "userName", "userEmail"];
 const ACTIVITY_LOGS_POLL_MS = 60_000;
+const LOGS_BATCH_SIZE = 200;
 
 export function ActivityTab() {
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(false);
+  const [nextBackendPage, setNextBackendPage] = useState(2);
   const [page, setPage] = useState(1);
 
   const { searchQuery, viewAsFilter, settings } = useAdminContext();
@@ -35,14 +39,31 @@ export function ActivityTab() {
 
   const fetchLogs = useCallback(() => {
     void (async () => {
-      const res = await fetch("/api/admin/activity-logs?limit=200");
+      const res = await fetch(`/api/admin/activity-logs?page=1&limit=${LOGS_BATCH_SIZE}`);
       if (res.ok) {
         const data = await res.json();
         setLogs(data.logs || []);
+        setHasMore(Boolean(data.hasMore));
+        setNextBackendPage(2);
       }
       setLoading(false);
     })();
   }, []);
+
+  const loadMore = useCallback(() => {
+    if (loadingMore || !hasMore) return;
+    setLoadingMore(true);
+    void (async () => {
+      const res = await fetch(`/api/admin/activity-logs?page=${nextBackendPage}&limit=${LOGS_BATCH_SIZE}`);
+      if (res.ok) {
+        const data = await res.json();
+        setLogs((prev) => [...prev, ...((data.logs || []) as LogEntry[])]);
+        setHasMore(Boolean(data.hasMore));
+        setNextBackendPage((p) => p + 1);
+      }
+      setLoadingMore(false);
+    })();
+  }, [loadingMore, hasMore, nextBackendPage]);
 
   useEffect(() => {
     fetchLogs();
@@ -114,6 +135,19 @@ export function ActivityTab() {
         itemsPerPage={settings.itemsPerPage}
         onPageChange={setPage}
       />
+
+      {hasMore && (
+        <div className="mt-4 flex justify-center">
+          <button
+            type="button"
+            onClick={loadMore}
+            disabled={loadingMore}
+            className="rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+          >
+            {loadingMore ? "Loading…" : "Load more"}
+          </button>
+        </div>
+      )}
     </>
   );
 }

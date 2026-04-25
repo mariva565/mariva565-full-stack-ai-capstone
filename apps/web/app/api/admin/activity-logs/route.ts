@@ -13,6 +13,8 @@ export async function GET(request: NextRequest) {
 
   const url = new URL(request.url);
   const limit = Math.min(parseInt(url.searchParams.get("limit") || "50", 10), 200);
+  const page = Math.max(parseInt(url.searchParams.get("page") || "1", 10), 1);
+  const offset = (page - 1) * limit;
 
   const logs = await db
     .select({
@@ -27,7 +29,8 @@ export async function GET(request: NextRequest) {
     .from(activityLogs)
     .innerJoin(users, eq(activityLogs.userId, users.id))
     .orderBy(desc(activityLogs.createdAt))
-    .limit(limit);
+    .limit(limit)
+    .offset(offset);
 
-  return NextResponse.json({ logs });
+  return NextResponse.json({ logs, page, hasMore: logs.length === limit });
 }
