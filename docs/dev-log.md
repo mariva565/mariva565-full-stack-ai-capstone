@@ -9663,3 +9663,49 @@ Page routes обхождат API guard-ите (зареждат директно
 - Запазихме съществуващата client-side `Pagination` за локално разлистване и наслоихме Load More върху нея вместо да рефакторираме на чисто backend-driven paging — нула UX регресия, бутонът просто разширява локалния буфер.
 - Не пипнахме Postman колекцията: тя е скоупната за core CRUD flow-ове (Auth/Courses/Materials/Favorites/Posts), не за admin endpoints.
 - Не променихме default `limit` за UI заявката (200) — пазим текущото "една страница ≈ 10 локални pages" поведение; backend-ът cap-ва отделно.
+
+## 2026-04-25
+
+### Session 323 — Admin route guard hardening
+
+**Какво направихме:**
+- Затворихме дупката за exact `/admin`, като добавихме `/admin` в `middleware` matcher-а; преди беше покрит само `/admin/:path*`, което оставяше base route-а извън middleware auth/role checks.
+- Добавихме defense-in-depth на самата страница: `apps/web/app/admin/page.tsx` вече е server component, който чете текущия user чрез `getRequestUserOrRedirect()` и прави `redirect("/forbidden")` за всеки non-admin преди да се рендерира admin UI.
+- Изнесохме client-side admin shell-а в отделен `AdminShell` компонент, така че интерактивният admin UI да се рендерира само след server-side authorization.
+
+**Файлове:**
+- [ADD] apps/web/components/admin/admin-shell.tsx
+- [MODIFY] apps/web/app/admin/page.tsx
+- [MODIFY] apps/web/middleware.ts
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd --workspace @studyhub/web run typecheck` -> pass
+
+**Решения:**
+- Оставихме защитата на две нива: middleware за ранно route blocking и server-side page guard за да не се показва admin shell дори при matcher regression или бъдещ routing пропуск.
+
+### Session 324 — Full app/page.tsx security walkthrough
+
+**Какво направихме:**
+- Прегледахме всичките 28 `page.tsx` файла в `apps/web/app/` за `"use client"` без server guard, role checks и resource-scoped access checks.
+- Установихме чисто състояние след session 323:
+  - Само `apps/web/app/error.tsx` е `"use client"` (задължително за Next.js error boundaries) — всички 28 page.tsx са server components
+  - 21 страници имат `getRequestUserOrRedirect()` guard
+  - 7 страници са правилно публични: `/`, `/login`, `/register`, `/contact`, `/forgot-password`, `/reset-password`, `/forbidden`. `/dev/error-preview` е публична само на localhost (има `isLocalHost()` check, връща 404 в production).
+  - Role-restricted страници блокират правилно non-privileged users: `/admin` (admin), `/moderation` (mentor/admin), `/mentor-inbox` (mentor/admin)
+  - Resource-scoped страници имат ownership/membership checks: `/courses/[id]` и `/modules/[id]` чрез `userCanAccessCourse()`, `/materials/[id]` чрез `getMaterialPageData()` с owner+share проверка
+- Документирахме две UX-only слабости (без data leak), които остават за по-късно polishing:
+  1. `/messages/[id]` рендерира празен chat shell за non-conversation-members. API (`requireMember()` в `/api/conversations/[id]/messages`) блокира данните, но shell-ът се вижда. Същият defense-in-depth pattern както счупения /admin беше, но без admin powers leak — само празен chat прозорец.
+  2. `/community/[id]/edit` зарежда публичните данни на чужд post в edit form (заглавие, content). Save-ът fail-ва на 403 от PUT handler-а. По дизайн posts са public-by-default в community board-а, така че видимите данни са същите, които юзърът би видял на view страницата `/community/[id]`.
+
+**Файлове:**
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Walk-through-only сесия — без code промени, без typecheck нужен.
+- Inventory: 28 `page.tsx` files; 1 `error.tsx` client (expected); 21 protected pages; 7 public pages; 0 admin/role bypass holes (след session 323).
+
+**Решения:**
+- Не патчваме двете UX observations сега — реален data leak няма, и едната (community edit) e by design на публични posts. Може да се добавят proper page-level checks при следващ polish round.
+- Оставяме walkthrough-а тук като baseline; следващи нови page.tsx файлове трябва да минат подобен check преди commit.
