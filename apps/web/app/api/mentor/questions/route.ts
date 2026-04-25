@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "../../../../lib/db";
 import { posts, users, courses, courseMembers } from "../../../../../../drizzle/schema";
-import { requireAuth } from "../../../../lib/api-utils";
+import { requireAuth, requireMentor } from "../../../../lib/api-utils";
 import { eq, and, inArray, desc, sql } from "drizzle-orm";
 
 // GET /api/mentor/questions
@@ -11,9 +11,8 @@ export async function GET(request: NextRequest) {
   const auth = await requireAuth(request);
   if ("error" in auth) return auth.error;
 
-  if (auth.user.role !== "mentor" && auth.user.role !== "admin") {
-    return NextResponse.json({ code: "FORBIDDEN", message: "Mentor or admin only" }, { status: 403 });
-  }
+  const mentorError = requireMentor(auth.user);
+  if (mentorError) return mentorError;
 
   const { searchParams } = new URL(request.url);
   const questionStatus = searchParams.get("status"); // filter: open | answered | closed

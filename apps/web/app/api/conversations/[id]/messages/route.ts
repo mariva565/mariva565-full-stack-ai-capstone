@@ -7,6 +7,7 @@ import {
   users,
 } from "../../../../../../../drizzle/schema";
 import { requireAuth } from "../../../../../lib/api-utils";
+import { isConversationMember } from "../../../../../lib/conversation-access";
 import { pusherServer } from "../../../../../lib/pusher";
 import { sendExpoPushNotifications } from "../../../../../lib/expo-push";
 import { and, eq, asc, inArray, ne } from "drizzle-orm";
@@ -25,21 +26,6 @@ function parseConversationId(rawId: string): number | null {
   return conversationId;
 }
 
-// Verify current user is a member of the conversation
-async function requireMember(userId: number, conversationId: number) {
-  const [membership] = await db
-    .select({ id: conversationMembers.id })
-    .from(conversationMembers)
-    .where(
-      and(
-        eq(conversationMembers.conversationId, conversationId),
-        eq(conversationMembers.userId, userId)
-      )
-    )
-    .limit(1);
-  return !!membership;
-}
-
 // GET /api/conversations/[id]/messages — full message history + other participant
 export async function GET(request: NextRequest, { params }: Params) {
   const auth = await requireAuth(request);
@@ -52,7 +38,7 @@ export async function GET(request: NextRequest, { params }: Params) {
   }
   const userId = auth.user.sub;
 
-  const isMember = await requireMember(userId, conversationId);
+  const isMember = await isConversationMember(userId, conversationId);
   if (!isMember) {
     return apiError(403, "FORBIDDEN", "Forbidden");
   }
@@ -109,7 +95,7 @@ export async function POST(request: NextRequest, { params }: Params) {
     return apiError(400, "INVALID_CONVERSATION_ID", "Invalid conversation ID");
   }
 
-  const isMember = await requireMember(auth.user.sub, conversationId);
+  const isMember = await isConversationMember(auth.user.sub, conversationId);
   if (!isMember) {
     return apiError(403, "FORBIDDEN", "Forbidden");
   }

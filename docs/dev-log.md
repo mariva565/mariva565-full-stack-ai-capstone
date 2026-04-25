@@ -9685,6 +9685,26 @@ Page routes обхождат API guard-ите (зареждат директно
 **Решения:**
 - Оставихме защитата на две нива: middleware за ранно route blocking и server-side page guard за да не се показва admin shell дори при matcher regression или бъдещ routing пропуск.
 
+### Session 324 — Page-level authorization polish for messages and post edit
+
+**Какво направихме:**
+- Добавихме page-level membership guard за `apps/web/app/messages/[id]/page.tsx`, така че non-members вече да не виждат празен chat shell при ръчно въведен чужд conversation URL.
+- Изнесохме conversation membership проверката в shared helper `apps/web/lib/conversation-access.ts` и я вързахме и към `/api/conversations/[id]/messages`, за да няма разминаване между page и API checks.
+- Добавихме page-level ownership/admin guard за `apps/web/app/community/[id]/edit/page.tsx`, така че edit form да не се рендерира за чужди posts; non-authors се пренасочват към `/forbidden`, а невалиден/missing `id` връща `notFound()`.
+
+**Файлове:**
+- [ADD] apps/web/lib/conversation-access.ts
+- [MODIFY] apps/web/app/api/conversations/[id]/messages/route.ts
+- [MODIFY] apps/web/app/messages/[id]/page.tsx
+- [MODIFY] apps/web/app/community/[id]/edit/page.tsx
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd --workspace @studyhub/web run typecheck` -> timed out twice in terminal session while `tsc --noEmit` was running (no TypeScript error output emitted before timeout)
+
+**Решения:**
+- Запазихме API-level authorization като source of truth, но добавихме page guards за по-чист UX и по-силен defense-in-depth при direct URL access.
+
 ### Session 324 — Full app/page.tsx security walkthrough
 
 **Какво направихме:**
@@ -9709,3 +9729,18 @@ Page routes обхождат API guard-ите (зареждат директно
 **Решения:**
 - Не патчваме двете UX observations сега — реален data leak няма, и едната (community edit) e by design на публични posts. Може да се добавят proper page-level checks при следващ polish round.
 - Оставяме walkthrough-а тук като baseline; следващи нови page.tsx файлове трябва да минат подобен check преди commit.
+
+### Session 325 — RBAC helper consistency for mentor questions
+
+**Какво направихме:**
+- Рефакторираме `apps/web/app/api/mentor/questions/route.ts` да ползва shared `requireMentor()` helper вместо локален inline role check за `mentor/admin`.
+
+**Файлове:**
+- [MODIFY] apps/web/app/api/mentor/questions/route.ts
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Refactor-only промяна; не променя authorization логиката, а само я уеднаквява с останалите role-gated endpoints.
+
+**Решения:**
+- Оставяме поведението без промяна и сваляме стилистичната непоследователност в RBAC слоя.
