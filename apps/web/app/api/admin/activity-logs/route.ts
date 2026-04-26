@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
       userEmail: users.email,
     })
     .from(activityLogs)
-    .innerJoin(users, eq(activityLogs.userId, users.id))
+    .leftJoin(users, eq(activityLogs.userId, users.id))
     .orderBy(desc(activityLogs.createdAt))
     .limit(limit + 1)
     .offset(offset);

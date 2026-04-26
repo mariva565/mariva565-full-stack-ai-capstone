@@ -9763,3 +9763,28 @@ Page routes обхождат API guard-ите (зареждат директно
 
 **Решения:**
 - Запазихме backend batch размера 200 и отделната клиентска пагинация; `Load more` само добавя следващия backend batch и премества текущата клиентска страница към новите редове.
+
+## 2026-04-26
+
+### Session 327 — Admin activity Load more stability follow-up
+
+**Какво направихме:**
+- Поправихме admin Activity таба да държи текущата клиентска страница във валиден диапазон при search/view-as/items-per-page промени, така че `Load more` да не оставя таблицата на празна/невидима страница.
+- Добавихме видима грешка при неуспешен `Load more` fetch вместо бутонът да се върне тихо без обратна връзка.
+- Дедупликираме дозаредените activity rows по `id`, за да няма повторения при offset pagination и нови логове между две заявки.
+- Добавихме "All activity logs are loaded." статус след последния backend batch, за да не изглежда, че бутонът просто изчезва.
+- Променихме `/api/admin/activity-logs` към `leftJoin(users)`, за да не се губят activity rows с липсващ/null user reference.
+- Почистихме mojibake символите в Activity tab/Pagination fallback текстовете.
+
+**Файлове:**
+- [MODIFY] apps/web/components/admin/activity-tab.tsx
+- [MODIFY] apps/web/components/admin/pagination.tsx
+- [MODIFY] apps/web/app/api/admin/activity-logs/route.ts
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd --workspace @studyhub/web run typecheck` -> pass
+- `npm.cmd run check:mojibake` -> pass
+
+**Решения:**
+- Запазихме съществуващия модел: backend batch pagination по 200 записа + локална table pagination. Корекцията е само за стабилност, видима обратна връзка и edge cases, без да смесваме промяната със security walkthrough-а, който върви паралелно.

@@ -15,8 +15,8 @@ type LogEntry = {
   targetId: number | null;
   details: Record<string, unknown> | null;
   createdAt: string;
-  userName: string;
-  userEmail: string;
+  userName: string | null;
+  userEmail: string | null;
 };
 
 const SEARCHABLE: (keyof LogEntry)[] = ["actionType", "userName", "userEmail"];
@@ -30,12 +30,17 @@ export function ActivityTab() {
   const [hasMore, setHasMore] = useState(false);
   const [nextBackendPage, setNextBackendPage] = useState(2);
   const [page, setPage] = useState(1);
+  const [loadMoreError, setLoadMoreError] = useState("");
 
   const { searchQuery, viewAsFilter, settings } = useAdminContext();
   const filtered = useFilteredData(logs, searchQuery, SEARCHABLE, viewAsFilter, "userEmail");
+  const totalPages = Math.max(1, Math.ceil(filtered.length / settings.itemsPerPage));
   const paged = filtered.slice((page - 1) * settings.itemsPerPage, page * settings.itemsPerPage);
 
-  useEffect(() => { setPage(1); }, [searchQuery]);
+  useEffect(() => { setPage(1); }, [searchQuery, viewAsFilter, settings.itemsPerPage]);
+  useEffect(() => {
+    setPage((current) => Math.min(current, totalPages));
+  }, [totalPages]);
 
   const fetchLogs = useCallback(() => {
     void (async () => {
@@ -45,6 +50,7 @@ export function ActivityTab() {
         setLogs(data.logs || []);
         setHasMore(Boolean(data.hasMore));
         setNextBackendPage(2);
+        setLoadMoreError("");
       }
       setLoading(false);
     })();
@@ -57,26 +63,29 @@ export function ActivityTab() {
       try {
         const res = await fetch(`/api/admin/activity-logs?page=${nextBackendPage}&limit=${LOGS_BATCH_SIZE}`);
         if (!res.ok) {
-          return;
+          throw new Error("Could not load older activity logs.");
         }
 
         const data = await res.json();
-        const newLogs = ((data.logs || []) as LogEntry[]);
+        const newLogs = (data.logs || []) as LogEntry[];
+        const existingIds = new Set(logs.map((log) => log.id));
+        const uniqueNewLogs = newLogs.filter((log) => !existingIds.has(log.id));
         const firstNewItemPage = Math.max(1, Math.ceil((logs.length + 1) / settings.itemsPerPage));
 
-        setLogs((prev) => [...prev, ...newLogs]);
+        setLogs((prev) => [...prev, ...uniqueNewLogs]);
         setHasMore(Boolean(data.hasMore));
         setNextBackendPage((p) => p + 1);
-        if (newLogs.length > 0) {
+        setLoadMoreError("");
+        if (uniqueNewLogs.length > 0 && !searchQuery && viewAsFilter === "all") {
           setPage(firstNewItemPage);
         }
       } catch {
-        // Keep the current table intact; the next click or poll can retry.
+        setLoadMoreError("Could not load older activity logs. Please try again.");
       } finally {
         setLoadingMore(false);
       }
     })();
-  }, [loadingMore, hasMore, nextBackendPage, logs.length, settings.itemsPerPage]);
+  }, [loadingMore, hasMore, nextBackendPage, logs, settings.itemsPerPage, searchQuery, viewAsFilter]);
 
   useEffect(() => {
     fetchLogs();
@@ -119,17 +128,19 @@ export function ActivityTab() {
                 <td className="py-3 whitespace-nowrap text-slate-500 dark:text-slate-400">
                   {new Date(log.createdAt).toLocaleString()}
                 </td>
-                <td className="py-3 text-slate-900 dark:text-white">{log.userName}</td>
+                <td className="py-3 text-slate-900 dark:text-white">
+                  {log.userName ?? "Deleted user"}
+                </td>
                 <td className="py-3">
                   <span className="rounded-full bg-brand-100 px-2 py-0.5 text-xs font-medium text-brand-700 dark:bg-brand-500/20 dark:text-brand-100">
                     {log.actionType}
                   </span>
                 </td>
                 <td className="py-3 text-slate-500 dark:text-slate-400">
-                  {log.targetId ?? "—"}
+                  {log.targetId ?? "-"}
                 </td>
                 <td className="py-3 max-w-[200px] truncate text-xs text-slate-400 dark:text-slate-500">
-                  {log.details ? JSON.stringify(log.details) : "—"}
+                  {log.details ? JSON.stringify(log.details) : "-"}
                 </td>
               </tr>
             ))}
@@ -149,6 +160,12 @@ export function ActivityTab() {
         onPageChange={setPage}
       />
 
+      {loadMoreError && (
+        <p className="mt-3 text-center text-sm text-red-600 dark:text-red-300">
+          {loadMoreError}
+        </p>
+      )}
+
       {hasMore && (
         <div className="mt-4 flex justify-center">
           <button
@@ -157,9 +174,14 @@ export function ActivityTab() {
             disabled={loadingMore}
             className="rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
           >
-            {loadingMore ? "Loading…" : "Load more"}
+            {loadingMore ? "Loading..." : "Load more"}
           </button>
         </div>
+      )}
+      {!hasMore && logs.length > LOGS_BATCH_SIZE && (
+        <p className="mt-4 text-center text-sm text-slate-500 dark:text-slate-400">
+          All activity logs are loaded.
+        </p>
       )}
     </>
   );

@@ -20,7 +20,7 @@ export function Pagination({ currentPage, totalItems, itemsPerPage, onPageChange
   return (
     <div className="mt-4 flex items-center justify-between text-sm">
       <span className="text-slate-500 dark:text-slate-400">
-        Showing {start}–{end} of {totalItems}
+        Showing {start}-{end} of {totalItems}
       </span>
 
       <div className="flex items-center gap-2">
