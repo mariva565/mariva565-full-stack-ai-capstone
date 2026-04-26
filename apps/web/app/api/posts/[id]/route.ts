@@ -10,6 +10,8 @@ import {
 } from "../../../../lib/post-html";
 import { eq, and, desc, sql } from "drizzle-orm";
 
+const VALID_POST_TYPES = ["discussion", "question", "resource", "article"] as const;
+
 type Params = { params: Promise<{ id: string }> };
 
 // GET /api/posts/:id — post details + comments + like/bookmark state
@@ -123,13 +125,47 @@ export async function PUT(request: NextRequest, { params }: Params) {
     );
   }
 
+  if (postType !== undefined && !VALID_POST_TYPES.includes(postType)) {
+    return NextResponse.json(
+      { code: "INVALID_TYPE", message: "Invalid post type" },
+      { status: 400 }
+    );
+  }
+
+  let normalizedCourseId: number | null | undefined = undefined;
+  if (courseId !== undefined) {
+    if (courseId === null || String(courseId).trim() === "") {
+      normalizedCourseId = null;
+    } else {
+      const parsed = Number(courseId);
+      if (!Number.isInteger(parsed) || parsed <= 0) {
+        return NextResponse.json(
+          { code: "INVALID_COURSE", message: "Invalid course selection" },
+          { status: 400 }
+        );
+      }
+      const [course] = await db
+        .select({ id: courses.id })
+        .from(courses)
+        .where(eq(courses.id, parsed))
+        .limit(1);
+      if (!course) {
+        return NextResponse.json(
+          { code: "INVALID_COURSE", message: "Course not found" },
+          { status: 400 }
+        );
+      }
+      normalizedCourseId = parsed;
+    }
+  }
+
   const [updated] = await db
     .update(posts)
     .set({
       ...(hasTitle ? { title: normalizedTitle } : {}),
       ...(hasContent ? { content: normalizedContent } : {}),
       ...(postType ? { postType } : {}),
-      ...(courseId !== undefined ? { courseId: courseId ? parseInt(courseId, 10) : null } : {}),
+      ...(normalizedCourseId !== undefined ? { courseId: normalizedCourseId } : {}),
       updatedAt: new Date(),
     })
     .where(eq(posts.id, postId))

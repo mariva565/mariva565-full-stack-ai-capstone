@@ -9788,3 +9788,25 @@ Page routes обхождат API guard-ите (зареждат директно
 
 **Решения:**
 - Запазихме съществуващия модел: backend batch pagination по 200 записа + локална table pagination. Корекцията е само за стабилност, видима обратна връзка и edge cases, без да смесваме промяната със security walkthrough-а, който върви паралелно.
+
+### Session 328 — Security walkthrough Round 2: write-path guards
+
+**Какво направихме:**
+- Втори security walkthrough след #52: middleware, всички protected pages и всички API routes. Auth/role/ownership картината е чиста — единствените реални пропуски бяха на три write paths.
+- `PUT /api/posts/:id`: добавена валидация на `postType` (allowlist) и проверка че `courseId` съществува, преди да се пише — паритет с POST. Без това автор можеше да премести собствен post в произволен `courseId` и така да го изкара извън mentor moderation queue (mentor филтрира по `inArray(posts.courseId, mentorCourseIds)`).
+- `POST /api/events`: добавени ownership проверки за `milestoneId` (`milestones.userId === auth.user.sub`) и `courseId` (`userCanAccessCourse`). Преди това user можеше да създаде event, който FK-референцира чужд milestone или недостъпен курс.
+- `POST /api/materials/:id/ai-outputs`: заменен голия `materials.id` lookup с `getMaterialPageData(auth.user.sub, materialId)`, за да минава през същата owner/shared проверка като GET sibling-а.
+
+**Файлове:**
+- [MODIFY] apps/web/app/api/posts/[id]/route.ts
+- [MODIFY] apps/web/app/api/events/route.ts
+- [MODIFY] apps/web/app/api/materials/[id]/ai-outputs/route.ts
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npx tsc --noEmit -p apps/web/tsconfig.json` -> pass
+
+**Решения:**
+- Не пипнахме middleware/page guards — те минават walkthrough-а чисто (matcher включва `/admin` + `/admin/*`, всички admin/mentor pages имат server-side `requireAuth + role`, всички API admin routes минават през `requireAuth + requireAdmin`).
+- Не пипнахме architecture или UI — минимални fixes, парирани с POST sibling-ите.
+- Severity: #1 е MEDIUM (заобикаляне на moderation), #2 и #3 са LOW (FK инварианти, без data leak).

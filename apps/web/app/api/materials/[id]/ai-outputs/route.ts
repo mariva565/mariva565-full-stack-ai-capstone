@@ -1,13 +1,13 @@
-import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
-import { aiToolOutputs, materials } from "../../../../../../../drizzle/schema";
+import { aiToolOutputs } from "../../../../../../../drizzle/schema";
 import { requireAuth } from "../../../../../lib/api-utils";
 import { logActivity } from "../../../../../lib/activity";
 import { mapAiToolOutputRow, listAiToolOutputsForMaterial } from "../../../../../lib/ai-tool-output-data";
 import type { ToolName } from "../../../../../lib/ai-tool-outputs";
 import { isToolData, isToolName } from "../../../../../lib/ai-tool-outputs";
 import { db } from "../../../../../lib/db";
+import { getMaterialPageData } from "../../../../../lib/material-detail-data";
 
 type Ctx = { params: Promise<{ id: string }> };
 
@@ -52,13 +52,8 @@ export async function POST(request: NextRequest, { params }: Ctx) {
     );
   }
 
-  const [material] = await db
-    .select({ id: materials.id })
-    .from(materials)
-    .where(eq(materials.id, materialId))
-    .limit(1);
-
-  if (!material) {
+  const access = await getMaterialPageData(auth.user.sub, materialId);
+  if (!access) {
     return NextResponse.json(
       { code: "NOT_FOUND", message: "Material not found" },
       { status: 404 },
