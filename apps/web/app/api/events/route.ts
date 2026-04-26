@@ -52,8 +52,8 @@ export async function POST(request: NextRequest) {
     const hasAccess = await userCanAccessCourse(auth.user, parsed);
     if (!hasAccess) {
       return NextResponse.json(
-        { code: "FORBIDDEN_COURSE", message: "You do not have access to this course" },
-        { status: 403 }
+        { code: "NOT_FOUND", message: "Course not found" },
+        { status: 404 }
       );
     }
     normalizedCourseId = parsed;
