@@ -9835,3 +9835,34 @@ Page routes обхождат API guard-ите (зареждат директно
 **Решения:**
 - Останалите три "remaining" находки (in-memory rate limiter, без CSRF token, без JWT revocation list) са документирани като приемливи за capstone scope: rate limiter работи на single instance, `httpOnly + sameSite: lax` е достатъчен baseline срещу CSRF, stateless JWT е by-design без session store.
 - 1d JWT е защитим избор на изпит — съответства на материала на учителя и стеснява прозореца за откраднат токен. UX цената (re-login веднъж дневно) е приемлива.
+
+## 2026-04-27
+
+### Session 330 — Lesson security hardening follow-up
+
+**Какво направихме:**
+- Добавихме runtime guard за `JWT_SECRET` в `apps/web/lib/jwt.ts`: липсващ, твърде кратък или placeholder-like secret вече fail-ва с ясен server-side error вместо да отслаби JWT подписването тихо.
+- Затегнахме blocked user поведението: login отказва blocked акаунти, а `requireAuth()` и server-side page auth сверяват текущия user в DB и отказват blocked/deleted акаунти. Това прави API/mobile Bearer токените и web server-rendered pages по-сигурни при admin промени.
+- Унифицирахме password-change policy с register/reset flow-а: `/api/auth/password` вече използва `isStrongPassword()` и `PASSWORD_POLICY_MESSAGE` вместо отделен минимум от 6 символа.
+- Синхронизирахме README от `7d` към реалния `1d` JWT срок.
+- Добавихме коментиран `# JWT_SECRET=` placeholder в `.env.example`, за да е ясно за проверка, без да се задава празна активна стойност.
+- Почистихме mojibake/emoji артефакта в login error message в засегнатия auth файл.
+
+**Файлове:**
+- [MODIFY] apps/web/lib/jwt.ts
+- [MODIFY] apps/web/lib/api-utils.ts
+- [MODIFY] apps/web/lib/server-auth.ts
+- [MODIFY] apps/web/app/api/auth/login/route.ts
+- [MODIFY] apps/web/app/api/auth/password/route.ts
+- [MODIFY] .env.example
+- [MODIFY] README.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd --workspace @studyhub/web run typecheck` -> pass
+- `npm.cmd run check:mojibake` -> pass
+
+**Решения:**
+- Не записвахме и не отпечатвахме реален secret. Проверяваме само runtime качество на стойността и държим реалния `JWT_SECRET` в gitignored local env.
+- Не добавяхме stateful JWT revocation list или full CSRF token flow в тази сесия; за capstone защитата остава `httpOnly + sameSite: lax`, кратък 1-day JWT и server-side guards.
+- `docs/09.Back-End-APIs.pdf` остава untracked lesson reference и не трябва да влиза в commit.

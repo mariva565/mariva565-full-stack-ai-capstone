@@ -48,8 +48,15 @@ export async function POST(request: NextRequest) {
 
     if (!user || !verifyPassword(password, user.passwordHash)) {
       return NextResponse.json(
-        { code: "INVALID_CREDENTIALS", message: "Hmm, those details don't match. Try again? 🤔" },
+        { code: "INVALID_CREDENTIALS", message: "Hmm, those details don't match. Try again?" },
         { status: 401 }
+      );
+    }
+
+    if (user.blocked) {
+      return NextResponse.json(
+        { code: "ACCOUNT_BLOCKED", message: "This account is blocked" },
+        { status: 403 }
       );
     }
 

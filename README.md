@@ -240,7 +240,7 @@ sequenceDiagram
     F->>A: POST /api/auth/register
     A->>A: Hash password with bcryptjs
     A->>D: Insert user
-    A->>A: Sign JWT with jose HS256 (7d)
+    A->>A: Sign JWT with jose HS256 (1d)
     A-->>F: Set httpOnly token cookie
     F-->>U: Redirect to /dashboard
 
@@ -801,7 +801,7 @@ Manual testing artifacts for backend demos live in [`docs/StudyHub.postman_colle
 | Measure | Implementation |
 |---|---|
 | Password hashing | bcryptjs (server-side only) |
-| JWT tokens | jose library, HS256, 7-day expiry, httpOnly cookie |
+| JWT tokens | jose library, HS256, 1-day expiry, httpOnly cookie |
 | Route protection | `middleware.ts` — validates JWT on every protected request |
 | Admin guards | `requireAdmin()` — server-side role check per endpoint |
 | Self-protection | Admin cannot delete self or change own role |

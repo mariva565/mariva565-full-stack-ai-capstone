@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
 
   if (courseIdParam) {
     const courseId = parseInt(courseIdParam, 10);
-    if (!isNaN(courseId)) {
+    if (Number.isInteger(courseId) && courseId > 0) {
       query = query.where(eq(courseMembers.courseId, courseId));
     }
   }

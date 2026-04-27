@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
     if (existingOAuthAccount) {
       // User is already linked
       const [existingUser] = await db
-        .select({ id: users.id, email: users.email, role: users.role })
+        .select({ id: users.id, email: users.email, role: users.role, blocked: users.blocked })
         .from(users)
         .where(eq(users.id, existingOAuthAccount.userId))
         .limit(1);
@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
     // 3. If no matching oauth_account, find user by email or create a new user
     if (!userToSignIn) {
       const [existingUserByEmail] = await db
-        .select({ id: users.id, email: users.email, role: users.role })
+        .select({ id: users.id, email: users.email, role: users.role, blocked: users.blocked })
         .from(users)
         .where(eq(users.email, googleEmail))
         .limit(1);
@@ -103,7 +103,7 @@ export async function POST(request: NextRequest) {
             passwordHash: hashedRandomPassword,
             role: "user",
           })
-          .returning({ id: users.id, email: users.email, role: users.role });
+          .returning({ id: users.id, email: users.email, role: users.role, blocked: users.blocked });
 
         // Link the Google account to the new user
         await db.insert(oauthAccounts).values({
@@ -121,6 +121,13 @@ export async function POST(request: NextRequest) {
       throw new Error("Failed to sign in or create user");
     }
 
+    if (userToSignIn.blocked) {
+      return NextResponse.json(
+        { code: "ACCOUNT_BLOCKED", message: "This account is blocked" },
+        { status: 403 }
+      );
+    }
+
     // 4. Generate standard JWT
     const jwtToken = await signToken({
       sub: userToSignIn.id,
@@ -129,11 +136,12 @@ export async function POST(request: NextRequest) {
     });
 
     // 5. Build standard response with cookies
+    const { blocked: _blocked, ...userPublic } = userToSignIn;
     const response = NextResponse.json(
       {
         message: "Login successful",
         token: jwtToken,
-        user: userToSignIn,
+        user: userPublic,
       },
       { status: 200 }
     );

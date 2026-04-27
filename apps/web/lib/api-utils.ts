@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyToken, type JwtPayload } from "./jwt";
 import { db } from "./db";
-import { courseMembers } from "../../../drizzle/schema";
+import { courseMembers, users } from "../../../drizzle/schema";
 import { and, eq } from "drizzle-orm";
 
 /**
@@ -39,7 +39,42 @@ export async function requireAuth(
     };
   }
 
-  return { user: payload };
+  const [currentUser] = await db
+    .select({
+      id: users.id,
+      email: users.email,
+      role: users.role,
+      blocked: users.blocked,
+    })
+    .from(users)
+    .where(eq(users.id, payload.sub))
+    .limit(1);
+
+  if (!currentUser) {
+    return {
+      error: NextResponse.json(
+        { code: "USER_NOT_FOUND", message: "User not found" },
+        { status: 401 }
+      ),
+    };
+  }
+
+  if (currentUser.blocked) {
+    return {
+      error: NextResponse.json(
+        { code: "ACCOUNT_BLOCKED", message: "This account is blocked" },
+        { status: 403 }
+      ),
+    };
+  }
+
+  return {
+    user: {
+      sub: currentUser.id,
+      email: currentUser.email,
+      role: currentUser.role,
+    },
+  };
 }
 
 /**

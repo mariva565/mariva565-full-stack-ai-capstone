@@ -16,7 +16,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 
   const { id } = await params;
   const courseId = parseInt(id, 10);
-  if (isNaN(courseId)) {
+  if (!Number.isInteger(courseId) || courseId <= 0) {
     return NextResponse.json(
       { code: "INVALID_ID", message: "Invalid course ID" },
       { status: 400 }
@@ -60,7 +60,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
 
   const { id } = await params;
   const courseId = parseInt(id, 10);
-  if (isNaN(courseId)) {
+  if (!Number.isInteger(courseId) || courseId <= 0) {
     return NextResponse.json(
       { code: "INVALID_ID", message: "Invalid course ID" },
       { status: 400 }

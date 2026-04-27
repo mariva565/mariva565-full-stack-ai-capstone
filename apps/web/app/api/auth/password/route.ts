@@ -5,6 +5,7 @@ import { logActivity } from "../../../../lib/activity";
 import { hashPassword, verifyPassword } from "../../../../lib/auth";
 import { requireAuth } from "../../../../lib/api-utils";
 import { db } from "../../../../lib/db";
+import { isStrongPassword, PASSWORD_POLICY_MESSAGE } from "../../../../lib/password-validation";
 
 type PasswordPayload = {
   currentPassword?: string;
@@ -16,8 +17,8 @@ function getValidationMessage(payload: PasswordPayload): string | null {
     return "Current password and new password are required.";
   }
 
-  if (payload.newPassword.length < 6) {
-    return "New password must be at least 6 characters.";
+  if (!isStrongPassword(payload.newPassword)) {
+    return PASSWORD_POLICY_MESSAGE;
   }
 
   if (payload.currentPassword === payload.newPassword) {

@@ -17,7 +17,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
 
   const { id } = await params;
   const membershipId = parseInt(id, 10);
-  if (isNaN(membershipId)) {
+  if (!Number.isInteger(membershipId) || membershipId <= 0) {
     return NextResponse.json({ code: "INVALID_ID", message: "Invalid membership ID" }, { status: 400 });
   }
 
@@ -47,7 +47,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 
   const { id } = await params;
   const membershipId = parseInt(id, 10);
-  if (isNaN(membershipId)) {
+  if (!Number.isInteger(membershipId) || membershipId <= 0) {
     return NextResponse.json({ code: "INVALID_ID", message: "Invalid membership ID" }, { status: 400 });
   }
 
