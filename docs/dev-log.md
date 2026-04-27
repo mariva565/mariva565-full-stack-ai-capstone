@@ -9810,3 +9810,28 @@ Page routes обхождат API guard-ите (зареждат директно
 - Не пипнахме middleware/page guards — те минават walkthrough-а чисто (matcher включва `/admin` + `/admin/*`, всички admin/mentor pages имат server-side `requireAuth + role`, всички API admin routes минават през `requireAuth + requireAdmin`).
 - Не пипнахме architecture или UI — минимални fixes, парирани с POST sibling-ите.
 - Severity: #1 е MEDIUM (заобикаляне на moderation), #2 и #3 са LOW (FK инварианти, без data leak).
+
+### Session 329 — JWT 1d + bulk delete & members hardening
+
+**Какво направихме:**
+- JWT expiration: смъкнат от 7d на 1d, за да съвпада с по-стриктния default на упражнението на учителя. Сменено на 4 места — `EXPIRES_IN` в `lib/jwt.ts` (signature) и `cookie.maxAge` в трите auth ендпойнта (login, register, google). Mobile Bearer token-ът наследява новия срок автоматично.
+- Admin bulk delete (courses/modules/materials): добавена per-id валидация `ids.every((id) => Number.isInteger(id) && id > 0)`. Преди това `[1, "abc", null]` минаваше count check-а и стигаше до Drizzle/Postgres. Admin-only ендпойнт, impact беше нисък, но е чист input-validation win.
+- `GET /api/courses/[id]/members`: ограничен до admin / creator / enrolled member чрез `userCanAccessCourse(auth.user, courseId)`. Преди това всеки логнат user можеше да получи member list (с emails) на произволен курс — privacy leak. Сега има parity с `GET /api/courses/[id]`. 404 при no-access за анти-enumeration.
+
+**Файлове:**
+- [MODIFY] apps/web/lib/jwt.ts
+- [MODIFY] apps/web/app/api/auth/login/route.ts
+- [MODIFY] apps/web/app/api/auth/register/route.ts
+- [MODIFY] apps/web/app/api/auth/google/route.ts
+- [MODIFY] apps/web/app/api/admin/courses/bulk-delete/route.ts
+- [MODIFY] apps/web/app/api/admin/modules/bulk-delete/route.ts
+- [MODIFY] apps/web/app/api/admin/materials/bulk-delete/route.ts
+- [MODIFY] apps/web/app/api/courses/[id]/members/route.ts
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd --workspace @studyhub/web run typecheck` -> pass
+
+**Решения:**
+- Останалите три "remaining" находки (in-memory rate limiter, без CSRF token, без JWT revocation list) са документирани като приемливи за capstone scope: rate limiter работи на single instance, `httpOnly + sameSite: lax` е достатъчен baseline срещу CSRF, stateless JWT е by-design без session store.
+- 1d JWT е защитим избор на изпит — съответства на материала на учителя и стеснява прозореца за откраднат токен. UX цената (re-login веднъж дневно) е приемлива.

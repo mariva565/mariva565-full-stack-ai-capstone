@@ -21,6 +21,13 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  if (!ids.every((id) => Number.isInteger(id) && id > 0)) {
+    return NextResponse.json(
+      { code: "INVALID_IDS", message: "All IDs must be positive integers" },
+      { status: 400 }
+    );
+  }
+
   await db.delete(modules).where(inArray(modules.id, ids));
 
   await logActivity(auth.user.sub, "admin_bulk_delete_modules", undefined, {

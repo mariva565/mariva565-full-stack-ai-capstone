@@ -3,11 +3,12 @@ import { db } from "../../../../../lib/db";
 import { courseMembers, users, courses } from "../../../../../../../drizzle/schema";
 import { requireAuth, requireAdmin } from "../../../../../lib/api-utils";
 import { logActivity } from "../../../../../lib/activity";
+import { userCanAccessCourse } from "../../../../../lib/course-details-data";
 import { and, eq } from "drizzle-orm";
 
 type RouteParams = { params: Promise<{ id: string }> };
 
-// GET /api/courses/:id/members — list members (any authenticated user)
+// GET /api/courses/:id/members — list members (admin, creator, or enrolled member only)
 export async function GET(request: NextRequest, { params }: RouteParams) {
   const auth = await requireAuth(request);
   if ("error" in auth) return auth.error;
@@ -18,13 +19,8 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     return NextResponse.json({ code: "INVALID_ID", message: "Invalid course ID" }, { status: 400 });
   }
 
-  const [course] = await db
-    .select({ id: courses.id })
-    .from(courses)
-    .where(eq(courses.id, courseId))
-    .limit(1);
-
-  if (!course) {
+  const hasAccess = await userCanAccessCourse(auth.user, courseId);
+  if (!hasAccess) {
     return NextResponse.json({ code: "NOT_FOUND", message: "Course not found" }, { status: 404 });
   }
 

@@ -2,7 +2,7 @@ import { SignJWT, jwtVerify } from "jose";
 
 const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
 const ISSUER = "studyhub";
-const EXPIRES_IN = "7d";
+const EXPIRES_IN = "1d";
 
 export type JwtPayload = {
   sub: number;
