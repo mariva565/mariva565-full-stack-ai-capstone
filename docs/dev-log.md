@@ -9861,8 +9861,26 @@ Page routes обхождат API guard-ите (зареждат директно
 **Verification:**
 - `npm.cmd --workspace @studyhub/web run typecheck` -> pass
 - `npm.cmd run check:mojibake` -> pass
+- `rg -n "user@studyhub\\.dev|user123" apps\\web\\components\\api-docs` -> no matches
+- `npm.cmd run check:mojibake` -> pass
 
 **Решения:**
 - Не записвахме и не отпечатвахме реален secret. Проверяваме само runtime качество на стойността и държим реалния `JWT_SECRET` в gitignored local env.
 - Не добавяхме stateful JWT revocation list или full CSRF token flow в тази сесия; за capstone защитата остава `httpOnly + sameSite: lax`, кратък 1-day JWT и server-side guards.
 - `docs/09.Back-End-APIs.pdf` остава untracked lesson reference и не трябва да влиза в commit.
+
+### Session 331 — API docs credential example cleanup
+
+**Какво направихме:**
+- Сменихме login примера в API docs страницата, за да не показва реалния seeded demo акаунт и парола.
+- Обновихме response примерите за login и `/api/auth/me` към синтетичен placeholder user.
+
+**Файлове:**
+- [MODIFY] apps/web/components/api-docs/api-docs-content.ts
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd --workspace @studyhub/web run typecheck` -> pass
+
+**Решения:**
+- Оставихме seed файловете без промяна, защото те са development data setup, а не публичен API docs пример.

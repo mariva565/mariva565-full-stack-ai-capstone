@@ -65,13 +65,13 @@ export const apiDocsSections: ApiSectionDoc[] = [
         auth: "Public",
         description: "Verify credentials, set the httpOnly cookie, and return the JWT in JSON for mobile/Postman flows.",
         requestExample: `{
-  "email": "user@studyhub.dev",
-  "password": "user123"
+  "email": "reader@example.com",
+  "password": "<your-password>"
 }`,
         responseExample: `{
   "message": "Login successful",
   "token": "<jwt>",
-  "user": { "id": 2, "email": "user@studyhub.dev", "name": "Demo User", "role": "user" }
+  "user": { "id": 2, "email": "reader@example.com", "name": "Demo Reader", "role": "user" }
 }`,
         statusCodes: ["200 OK", "400 Bad Request", "401 Unauthorized", "500 Internal Server Error"],
       },
@@ -81,7 +81,7 @@ export const apiDocsSections: ApiSectionDoc[] = [
         auth: "Bearer or cookie",
         description: "Resolve the currently authenticated user from the JWT payload.",
         responseExample: `{
-  "user": { "id": 2, "email": "user@studyhub.dev", "name": "Demo User", "role": "user" }
+  "user": { "id": 2, "email": "reader@example.com", "name": "Demo Reader", "role": "user" }
 }`,
         statusCodes: ["200 OK", "401 Unauthorized", "404 Not Found"],
       },
