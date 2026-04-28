@@ -9884,3 +9884,20 @@ Page routes обхождат API guard-ите (зареждат директно
 
 **Решения:**
 - Оставихме seed файловете без промяна, защото те са development data setup, а не публичен API docs пример.
+
+### Session 332 — Deployment JWT secret reminder
+
+**Какво направихме:**
+- Добавихме README reminder за production `JWT_SECRET` при Netlify/Vercel deployment: да се генерира свеж random secret, да не се reuse-ва локалният `.env` / `.env.local` secret, и да остане стабилен между redeploy-и.
+- Добавихме същата кратка бележка и в `docs/implementation-plan.md` при Environment Variables секцията.
+
+**Файлове:**
+- [MODIFY] README.md
+- [MODIFY] docs/implementation-plan.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd run check:mojibake` -> pass
+
+**Решения:**
+- Документирахме production secret-а като отделен от local secret-а, за да не се разчита на памет при финалния deploy.

@@ -490,6 +490,8 @@ R2_PUBLIC_URL=
 GEMINI_API_KEY=
 ```
 
+Deployment note: production `JWT_SECRET` must be generated as a fresh random value in Netlify/Vercel environment variables. Do not reuse the local `.env` / `.env.local` secret, and keep the production value stable between redeploys.
+
 ---
 
 ## Demo Credentials (за журито)

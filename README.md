@@ -997,6 +997,13 @@ cp .env.example .env
 - `material-finder` keeps working in template mode even when Gemini phrasing is unavailable.
 - For production, set `GEMINI_API_KEY` in your deployment environment variables (Vercel/Netlify).
 
+### Production JWT secret reminder
+
+- Set `JWT_SECRET` in Netlify/Vercel environment variables before deploying.
+- Generate a fresh random production value; do not reuse the local `.env` / `.env.local` secret.
+- Keep the same production value between redeploys, or already issued JWT sessions will be invalidated and users will need to log in again.
+- The app requires at least 32 characters and rejects obvious placeholders like `secret`, `example`, or `your-jwt-secret`.
+
 ### Mobile telemetry env note (Sentry)
 
 - Mobile runtime telemetry reads these values from `apps/mobile/.env`:
