@@ -8,6 +8,15 @@ This is a capstone project for the SoftUni "Full Stack Apps with AI" course.
 It is a rewrite of a previous project (StudyHub v1, Vanilla JS + Supabase) using a completely new tech stack.
 The old project is at `C:\Users\mariy\Projects\Visual-Studio-Capstone-Project-StudyHub-interface-v3\` and should be used **only as a visual/logical reference** — no code should be copied.
 
+## Current Status (2026-04-30)
+
+- **Phases 0–4:** Complete (foundation, auth, content CRUD, AI tools, social features)
+- **Phase 5 (Mobile):** In progress — Auth, Courses, Favorites, Community, Messages, Push notifications all working
+- **Social features:** S0 (community board), S1 (mentor Q&A), S2 (direct messaging) shipped
+- **Lesson 09 deliverables:** Postman collection, `/api-docs` page, OpenAPI contract — all done
+- **Security audit (#52):** Complete — 14 findings closed across 3 rounds (5 HIGH + 8 MEDIUM + 1 LOW)
+- **Pending:** Mobile polish, Cloudflare R2 file uploads (waiting on course lecture), final UI polish, deployment
+
 ## Tech Stack (mandatory)
 
 - **Frontend Web:** Next.js + React + TypeScript + Tailwind CSS + Framer Motion
@@ -56,7 +65,7 @@ capstone/
 └── README.md
 ```
 
-## Database Tables (19 tables, Drizzle ORM)
+## Database Tables (21 tables, Drizzle ORM)
 
 - **users** — id, email, name, password_hash, role (user/mentor/admin), avatar_url, blocked, created_at
 - **courses** — id, title, description, created_by (FK→users), is_public, status, created_at
@@ -77,41 +86,48 @@ capstone/
 - **conversation_members** — id, conversation_id (FK→conversations), user_id (FK→users), joined_at, last_read_at
 - **messages** — id, conversation_id (FK→conversations), sender_id (FK→users), content, created_at
 - **user_push_tokens** — id, user_id (FK→users), token, platform, app_ownership, is_active, created_at, updated_at, last_seen_at
+- **password_reset_tokens** — id, user_id (FK→users), token_hash (unique), expires_at, used_at, created_at
+- **shared_materials** — id, material_id (FK→materials), shared_with_user_id (FK→users), shared_by_user_id (FK→users), created_at
 
 Every schema change MUST use Drizzle migrations. Migration SQL scripts must be committed.
 
-## Web Screens (23 screens, responsive)
+## Web Screens (28 screens, responsive)
 
 | # | Screen | Path | Access |
 |---|---|---|---|
 | 1 | Landing Page | `/` | public (guest + authenticated) |
 | 2 | How It Works | `/how-it-works` | public |
 | 3 | Contact | `/contact` | public |
-| 4 | Register | `/register` | public |
-| 5 | Login | `/login` | public |
-| 6 | Dashboard | `/dashboard` | login |
-| 7 | Course Details | `/courses/[id]` | login |
-| 8 | Module Workspace | `/modules/[id]` | login |
-| 9 | Material View/Edit | `/materials/[id]` | login |
-| 10 | Profile | `/profile` | login |
-| 11 | Public Profile | `/profile/[id]` | login |
-| 12 | Progress | `/progress` | login |
-| 13 | Calendar | `/calendar` | login |
-| 14 | Admin Panel | `/admin` | admin |
-| 15 | Moderation Queue | `/moderation` | admin |
-| 16 | Forbidden (403) | `/forbidden` | public |
-| 17 | Community Feed | `/community` | login |
-| 18 | Community Create | `/community/new` | login |
-| 19 | Community Details | `/community/[id]` | login |
-| 20 | Community Edit | `/community/[id]/edit` | login (author/admin) |
-| 21 | Mentor Inbox | `/mentor-inbox` | mentor/admin |
-| 22 | Messages Inbox | `/messages` | login |
-| 23 | Message Thread | `/messages/[id]` | login |
+| 4 | API Docs | `/api-docs` | public |
+| 5 | Register | `/register` | public |
+| 6 | Login | `/login` | public |
+| 7 | Forgot Password | `/forgot-password` | public |
+| 8 | Reset Password | `/reset-password` | public |
+| 9 | Dashboard | `/dashboard` | login |
+| 10 | Material Finder | `/dashboard/material-finder` | login |
+| 11 | Course Details | `/courses/[id]` | login |
+| 12 | Module Workspace | `/modules/[id]` | login |
+| 13 | Material View/Edit | `/materials/[id]` | login |
+| 14 | Profile | `/profile` | login |
+| 15 | Public Profile | `/profile/[id]` | login |
+| 16 | Progress | `/progress` | login |
+| 17 | Calendar | `/calendar` | login |
+| 18 | Admin Panel | `/admin` | admin |
+| 19 | Moderation Queue | `/moderation` | admin |
+| 20 | Forbidden (403) | `/forbidden` | public |
+| 21 | Community Feed | `/community` | login |
+| 22 | Community Create | `/community/new` | login |
+| 23 | Community Details | `/community/[id]` | login |
+| 24 | Community Edit | `/community/[id]/edit` | login (author/admin) |
+| 25 | Mentor Inbox | `/mentor-inbox` | mentor/admin |
+| 26 | Messages Inbox | `/messages` | login |
+| 27 | Message Thread | `/messages/[id]` | login |
+| 28 | Error Preview | `/dev/error-preview` | dev-only (robots: noindex) |
 
 Additional: `/forbidden` is the unauthorized destination for role-guarded pages. Unauthorized `/admin` access redirects to `/forbidden` via middleware.
 Navigation parity note: navbar `Home` always points to `/` even for authenticated users; authenticated navbar should expose `Dashboard` CTA instead of `Login`/`Register`.
 
-## Mobile Scope (Current, 2026-04-16)
+## Mobile Scope (Current, 2026-04-30)
 
 In-scope mobile product flows:
 1. Auth (`/login`, `/register`)
@@ -255,14 +271,16 @@ Current mobile quality-gate status:
 
 When doing cleanup, pruning, archiving, or "remove temporary docs" work, treat the files below as **protected**. Do **not** delete, archive, rename, or rewrite them into summaries unless the user explicitly asks.
 
-- `docs/dev-log.md`
-- `docs/implementation-plan.md`
-- `docs/performance-guardrails.md`
-- `docs/mobile-execution-checklist.md`
-- `docs/mobile-smoke-test-matrix.md`
-- `docs/mobile-release-checklist.md`
-- `docs/api-contract.md`
-- `docs/StudyHub.postman_collection.json`
+> **Note:** Most internal working docs below are kept **locally only** (not tracked in git, see `.gitignore`). They exist on the developer's machine for handoff between AI sessions. Only `docs/dev-log.md`, `docs/api-contract.md`, and `docs/StudyHub.postman_collection.json` are committed to the repo.
+
+- `docs/dev-log.md` *(in repo)*
+- `docs/api-contract.md` *(in repo)*
+- `docs/StudyHub.postman_collection.json` *(in repo)*
+- `docs/implementation-plan.md` *(local only)*
+- `docs/performance-guardrails.md` *(local only)*
+- `docs/mobile-execution-checklist.md` *(local only)*
+- `docs/mobile-smoke-test-matrix.md` *(local only)*
+- `docs/mobile-release-checklist.md` *(local only)*
 
 Reason: these files are part of project continuity, lesson-defense evidence, or active execution checklists. Future agents must preserve them during cleanup passes.
 
@@ -279,9 +297,9 @@ When uncertain, prefer keeping docs and ask the user before deleting.
 
 The old StudyHub project can be consulted for:
 - Visual design reference (screenshots, layout ideas)
-- Security patterns (`docs/security-playbook-bg.md`)
+- Security patterns (`docs/legacy-notes/security-playbook-bg.md`, local only)
 - DB schema concepts (ER diagram in README)
-- Foundation plan (`docs/capstone-foundation-plan.md`)
+- Foundation plan (`docs/legacy-notes/capstone-foundation-plan.md`, local only)
 
 Do NOT copy any Vanilla JS code. Rewrite everything in React + TypeScript.
 

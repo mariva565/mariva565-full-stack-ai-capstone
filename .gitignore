@@ -28,6 +28,7 @@ scratch/
 
 # Internal docs (kept locally, not in repo)
 docs/README.md
+docs/assignment.md
 docs/legacy-notes/
 docs/audit-fix-plan.md
 docs/implementation-plan.md
@@ -38,6 +39,10 @@ docs/mobile-release-checklist.md
 docs/navbar-reorganization-plan.md
 docs/social-features-plan.md
 docs/performance-guardrails.md
+
+# Dev-log backups (kept locally for historical reference)
+docs/dev-log.md.*.bak
+docs/dev-log.md.repaired
 
 # Env
 .env
@@ -53,6 +58,6 @@ Thumbs.db
 .vscode/
 
 # Claude Code local config
-.claude/settings.local.json
+.claude/
 # TypeScript build cache
 *.tsbuildinfo
