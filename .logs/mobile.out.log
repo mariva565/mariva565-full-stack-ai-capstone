@@ -1,9 +1,0 @@
-
-> @studyhub/mobile@0.1.0 start
-> expo start --localhost -c
-
-Starting project at C:\Users\mariy\Projects\20260327 Capstone\apps\mobile
-Starting Metro Bundler
-warning: Bundler cache is empty, rebuilding (this may take a minute)
-Waiting on http://localhost:8081
-Logs for your project will appear below.

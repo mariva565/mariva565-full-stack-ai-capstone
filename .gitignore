@@ -14,6 +14,30 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 tmp-*.log
+*.err.log
+*.out.log
+*.stderr.log
+*.stdout.log
+.logs/
+.npm-cache/
+apps/web/dev-server*.log
+
+# Internal/scratch (kept locally, not in repo)
+scratch/
+.gemini/
+
+# Internal docs (kept locally, not in repo)
+docs/README.md
+docs/legacy-notes/
+docs/audit-fix-plan.md
+docs/implementation-plan.md
+docs/mobile-phone-testing-handoff.md
+docs/mobile-smoke-test-matrix.md
+docs/mobile-execution-checklist.md
+docs/mobile-release-checklist.md
+docs/navbar-reorganization-plan.md
+docs/social-features-plan.md
+docs/performance-guardrails.md
 
 # Env
 .env
