@@ -5,7 +5,7 @@ import { eq } from "drizzle-orm";
 import { logActivity } from "../../../../lib/activity";
 import { requireAuth } from "../../../../lib/api-utils";
 import { getProfileUserById, getProfileUserSelection, normalizeProfileUser } from "../../../../lib/profile-data";
-import { deleteAvatarByUrl } from "../../../../lib/r2";
+import { deleteAvatarByUrl, extractR2ObjectKey } from "../../../../lib/r2";
 
 export async function GET(request: NextRequest) {
   const auth = await requireAuth(request);
@@ -51,7 +51,20 @@ export async function PUT(request: NextRequest) {
 
   if (typeof body.avatarUrl === "string") {
     const normalizedAvatarUrl = body.avatarUrl.trim();
-    updates.avatarUrl = normalizedAvatarUrl || null;
+    if (normalizedAvatarUrl) {
+      if (!extractR2ObjectKey(normalizedAvatarUrl)) {
+        return NextResponse.json(
+          {
+            code: "INVALID_AVATAR_URL",
+            message: "Avatar URL must be from the configured storage bucket",
+          },
+          { status: 400 }
+        );
+      }
+      updates.avatarUrl = normalizedAvatarUrl;
+    } else {
+      updates.avatarUrl = null;
+    }
   }
 
   if (body.avatarUrl === null) {

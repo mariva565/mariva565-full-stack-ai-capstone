@@ -18,6 +18,10 @@ export async function verifyGoogleIdToken(token: string) {
     throw new Error("Invalid token payload");
   }
 
+  if (!payload.email_verified) {
+    throw new Error("Google email is not verified");
+  }
+
   return payload;
 }
 
@@ -31,6 +35,11 @@ export async function verifyGoogleAccessToken(accessToken: string) {
   }
 
   const data = await response.json();
+
+  if (!data.email_verified) {
+    throw new Error("Google email is not verified");
+  }
+
   return {
     sub: data.sub,
     email: data.email,

@@ -25,16 +25,34 @@ export async function POST(request: NextRequest) {
     let googleEmail: string;
     let googleName: string;
 
-    if (type === "access_token") {
-      const profile = await verifyGoogleAccessToken(token);
-      googleUserId = profile.sub;
-      googleEmail = profile.email;
-      googleName = profile.name || "Google User";
-    } else {
-      const payload = await verifyGoogleIdToken(token);
-      googleUserId = payload.sub;
-      googleEmail = payload.email!;
-      googleName = payload.name || "Google User";
+    try {
+      if (type === "access_token") {
+        const profile = await verifyGoogleAccessToken(token);
+        googleUserId = profile.sub;
+        googleEmail = profile.email;
+        googleName = profile.name || "Google User";
+      } else {
+        const payload = await verifyGoogleIdToken(token);
+        googleUserId = payload.sub;
+        googleEmail = payload.email!;
+        googleName = payload.name || "Google User";
+      }
+    } catch (verifyError) {
+      const message =
+        verifyError instanceof Error ? verifyError.message : "Invalid Google token";
+      if (message === "Google email is not verified") {
+        return NextResponse.json(
+          {
+            code: "EMAIL_NOT_VERIFIED",
+            message: "Your Google account email is not verified",
+          },
+          { status: 403 }
+        );
+      }
+      return NextResponse.json(
+        { code: "INVALID_TOKEN", message: "Invalid Google token" },
+        { status: 401 }
+      );
     }
 
     if (!googleUserId || !googleEmail) {

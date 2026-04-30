@@ -4,6 +4,27 @@
 
 ---
 
+## 2026-04-30
+
+### Сесия — Финален security audit (post-#52) + 2 fix-а
+
+**Контекст:** Holistic security review преди предаването (deadline 2026-05-27). Стартиран agent audit върху цялата кодова база (не само diff). Намерени 2 нови finding-а извън покритието на #52.
+
+**Finding 1 (HIGH) — Google OAuth account takeover via unverified email:**
+- `lib/google.ts` — `verifyGoogleIdToken` и `verifyGoogleAccessToken` не проверяваха `email_verified`. Атакуващ с Google Workspace, който контролира домейн, можеше да се сдобие с token за `victim@example.com` без реално да притежава имейла; ако такъв user съществува локално, кодът автоматично linkваше Google акаунта и даваше достъп → пълен takeover (включително admin/mentor роли).
+- Fix: добавени проверки `if (!payload.email_verified) throw` в двете функции; rejectнатите токени връщат `403 EMAIL_NOT_VERIFIED` (отделено от `401 INVALID_TOKEN` за невалидни токени).
+- `app/api/auth/google/route.ts` — token verification е обвито в локален try/catch, който mapвa грешките към proper status codes вместо generic 500.
+
+**Finding 2 (MEDIUM) — `avatarUrl` приемаше произволен URL:**
+- `app/api/auth/me/route.ts` PUT не валидираше произхода на `avatarUrl` → user можеше да зададе `https://attacker.com/track.png` и всеки друг user, който види аватара, leak-ваше IP + Referer (tracking pixel). Бъдещо използване на стойността в `<a href>` би било stored XSS.
+- Fix: import на `extractR2ObjectKey` от `lib/r2.ts`; невалидни URL-и (различен origin) се отхвърлят с `400 INVALID_AVATAR_URL`. Празен string и `null` все още валидно изчистват аватара.
+
+**Verified safe (без промени):** JWT, `requireAuth`/`requireAdmin`, cookies, bcrypt, password reset, admin self-protection, DOMPurify, Drizzle ORM (нула raw SQL injection surface), IDOR на всички mutation routes, CORS exact-origin allow-list.
+
+- `tsc --noEmit` ✅
+
+---
+
 ## 2026-04-24
 
 ### Сесия — Register form spacing polish
