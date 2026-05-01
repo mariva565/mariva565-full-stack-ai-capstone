@@ -19,6 +19,9 @@ const CORS_ENABLED_API_PREFIXES = [
   "/api/posts",
   "/api/conversations",
   "/api/mobile/push-token",
+  "/api/auth/avatar",
+  "/api/upload",
+  "/api/ping",
 ];
 
 function isCorsEnabledApiPath(pathname: string) {
