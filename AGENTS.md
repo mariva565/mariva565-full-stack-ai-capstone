@@ -30,6 +30,56 @@ The old project is at `C:\Users\mariy\Projects\Visual-Studio-Capstone-Project-St
 - **Storage:** Cloudflare R2 (optional, for file uploads)
 - **Deploy:** Vercel or Netlify
 
+## Neon MCP Database Access Rules
+
+Neon MCP connects to the **entire Neon account** (all projects), not to a single project.
+AI agents using Neon MCP can see every project in the account, so the target project must
+be specified explicitly to avoid accidental writes to unrelated databases.
+
+- Connect Neon MCP **only** to the Neon project named `studyhub` in the `MAV` org/account.
+- The active database within that project is `neondb` (Neon default).
+- The default branch is `production`.
+- Do **not** create, query, modify, or drop tables in any other Neon project.
+- For schema changes, always use Drizzle migrations in `drizzle/migrations/` —
+  never run ad-hoc `CREATE TABLE` / `ALTER TABLE` via Neon MCP against `production`.
+- Throw-away experiments are allowed only on a Neon **branch** of the `studyhub` project,
+  never on the `production` branch.
+
+### Free-tier compute budget — handle with care
+
+The `studyhub` project runs on the **Neon Free tier**, which has a hard cap of
+**100 compute-hours (CU-hrs) per calendar month**. As of 2026-04-30 the project has
+already consumed **~49 CU-hrs** in April. The capstone demo is on **2026-05-27**, so
+the entire May budget must last until then.
+
+If the project hits the 100 CU-hr ceiling, **the compute is suspended** and the app
+**will not respond on demo day**. To stay safe:
+
+- Do **not** run heavy seed scripts or full re-migrations against the `production` branch
+  without a real reason. Each big script burns CU-hrs.
+- For large tests, integration tests, or experimental migrations, **create a Neon
+  branch** (e.g. `dev`, `test`, `seed-experiment`). Branches share storage but have
+  their own compute, and a throw-away branch can be deleted to reclaim the slot
+  (free tier limit: 10 branches).
+- Prefer small, targeted queries over `SELECT *` on big tables when iterating.
+- Treat the production branch as read-mostly during the final two weeks before the demo.
+
+## Development Environment
+
+- **Primary IDE:** Google Antigravity (a VS Code fork with a built-in agent layer).
+- **Implications for AI agents working on this project:**
+  - Standard VS Code extensions may not be available in the Antigravity marketplace.
+    Do **not** recommend "install this VS Code extension" as the only solution —
+    always offer a CLI / web-based / config-file alternative.
+  - MCP servers are supported, but installation may require manual `.mcp.json` /
+    `mcp_settings.json` setup rather than one-click install from a marketplace.
+  - The user works with **multiple agents in parallel** (Antigravity native agent,
+    Claude Code, occasional Sonnet sessions). The `docs/dev-log.md` rules in the
+    Handoff section below are the single source of continuity across sessions.
+- **OS / hardware constraints:** Windows 11, Intel UHD Graphics integrated GPU,
+  60Hz display, no discrete GPU. Be cautious with WebGL / Three.js heavy workloads
+  (see the existing `hero-3d` notes — that file is intentionally not modified).
+
 ## Architecture
 
 Monorepo with two apps communicating via REST API:
