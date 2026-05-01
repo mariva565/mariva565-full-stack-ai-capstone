@@ -38,7 +38,7 @@ function readR2Config(): R2Config | null {
 function requireR2Config(): R2Config {
   const config = readR2Config();
   if (!config) {
-    throw new Error("Avatar uploads are unavailable because Cloudflare R2 is not configured.");
+    throw new Error("File uploads are unavailable because Cloudflare R2 is not configured.");
   }
 
   return config;

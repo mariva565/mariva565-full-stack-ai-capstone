@@ -47,7 +47,7 @@ export function ProfileSecurityCard({
           onChange={(event) => onCurrentPasswordChange(event.target.value)}
         />
 
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-4">
           <ProfileField
             id="new-password"
             label="New password"

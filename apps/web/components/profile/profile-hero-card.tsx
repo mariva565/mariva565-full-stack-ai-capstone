@@ -1,4 +1,6 @@
-import type { ReactNode } from "react";
+"use client";
+
+import { useRef, type ChangeEvent, type ReactNode } from "react";
 import Link from "next/link";
 import {
   formatMemberSince,
@@ -17,6 +19,7 @@ type ProfileHeroCardProps = {
   hasUnsavedChanges: boolean;
   avatarBusy?: boolean;
   onClearAvatar: () => void;
+  onUploadAvatar: (event: ChangeEvent<HTMLInputElement>) => void;
 };
 
 export function ProfileHeroCard({
@@ -28,7 +31,9 @@ export function ProfileHeroCard({
   hasUnsavedChanges,
   avatarBusy = false,
   onClearAvatar,
+  onUploadAvatar,
 }: ProfileHeroCardProps) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const roleLabel = formatRoleLabel(role);
   const initials = getProfileInitials(name);
   const memberSince = formatMemberSince(createdAt);
@@ -47,6 +52,15 @@ export function ProfileHeroCard({
 
         <div className="mt-6 flex flex-col items-center text-center">
           <div className="relative">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/gif"
+              className="hidden"
+              onChange={onUploadAvatar}
+              disabled={avatarBusy}
+            />
+
             <div className="absolute inset-[-10px] rounded-full bg-gradient-to-br from-brand-400/35 via-fuchsia-400/25 to-cyan-300/35 blur-2xl" />
             <div className="relative flex h-32 w-32 items-center justify-center rounded-full bg-gradient-to-br from-brand-500 via-fuchsia-500 to-cyan-400 p-1 shadow-[0_18px_35px_rgba(99,102,241,0.35)]">
               <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-full border-4 border-white bg-white text-4xl font-black text-brand-700 dark:border-slate-950 dark:bg-slate-950 dark:text-brand-100">
@@ -62,16 +76,27 @@ export function ProfileHeroCard({
               </div>
             </div>
 
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={avatarBusy}
+              className="absolute bottom-1 right-0 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/80 bg-white text-slate-700 shadow-lg transition hover:-translate-y-0.5 hover:text-brand-600 disabled:opacity-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:text-brand-400"
+              aria-label="Upload avatar photo"
+              title="Change avatar photo"
+            >
+              <CameraIcon className="h-4 w-4" />
+            </button>
+
             {avatarUrl ? (
               <button
                 type="button"
                 onClick={onClearAvatar}
                 disabled={avatarBusy}
-                className="absolute bottom-1 right-0 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/80 bg-white text-slate-700 shadow-lg transition hover:-translate-y-0.5 hover:text-red-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:text-red-300"
-                aria-label="Clear avatar"
-                title="Clear avatar"
+                className="absolute -right-1 -top-1 inline-flex h-6 w-6 items-center justify-center rounded-full border border-white/80 bg-white text-slate-500 shadow transition hover:text-red-500 disabled:opacity-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400 dark:hover:text-red-400"
+                aria-label="Remove avatar"
+                title="Remove avatar"
               >
-                <CameraIcon className="h-4 w-4" />
+                <span className="text-sm font-bold leading-none">×</span>
               </button>
             ) : null}
           </div>

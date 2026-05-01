@@ -83,6 +83,7 @@ function ProfilePrimaryCards({ state }: { state: ProfilePageState }) {
           hasUnsavedChanges={state.hasProfileChanges}
           avatarBusy={state.uploadingAvatar || state.removingAvatar}
           onClearAvatar={state.handleRemoveAvatar}
+          onUploadAvatar={state.handleAvatarFileChange}
         />
       </ProfileMotion>
 

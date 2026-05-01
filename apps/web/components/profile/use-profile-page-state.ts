@@ -248,6 +248,7 @@ export function useProfilePageState({ initialUser }: UseProfilePageStateParams) 
     setConfirmPassword,
     handleProfileSubmit,
     handlePasswordSubmit,
+    handleAvatarFileChange,
     handleRemoveAvatar,
     closeToast: () => setToast(null),
   };
