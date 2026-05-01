@@ -65,6 +65,7 @@ export function DashboardClientPage({
   const [courseToDelete, setCourseToDelete] = useState<number | null>(null);
   const [deleteBusy, setDeleteBusy] = useState(false);
   const [toast, setToast] = useState<ToastState | null>(null);
+  const [showFirstCourseCelebration, setShowFirstCourseCelebration] = useState(false);
   const {
     courseToEdit,
     editTitle,
@@ -128,11 +129,20 @@ export function DashboardClientPage({
       return;
     }
 
+    const isFirst = courses.length === 0;
     setTitle("");
     setDescription("");
     setShowCreateForm(false);
     await refreshDashboardData();
-    setToast({ tone: "success", message: "Course created." });
+
+    if (isFirst) {
+      const confetti = (await import("canvas-confetti")).default;
+      confetti({ particleCount: 160, spread: 100, origin: { y: 0.5 } });
+      setShowFirstCourseCelebration(true);
+      setTimeout(() => setShowFirstCourseCelebration(false), 3000);
+    } else {
+      setToast({ tone: "success", message: "Course created." });
+    }
   }
 
   async function confirmDeleteCourse() {
@@ -167,6 +177,29 @@ export function DashboardClientPage({
 
   return (
     <>
+      {/* First-course celebration overlay */}
+      {showFirstCourseCelebration && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="flex flex-col items-center gap-4 rounded-[2rem] border border-white/20 bg-white/95 px-10 py-8 text-center shadow-[0_32px_80px_rgba(99,102,241,0.3)] dark:bg-slate-900/95 dark:border-cyan-400/20">
+            <img
+              src="/assets/v1/ziksi-celebration.png"
+              alt="Ziksi celebrating"
+              width={120}
+              height={120}
+              className="h-32 w-32 animate-bounce object-contain drop-shadow-[0_12px_28px_rgba(99,102,241,0.35)]"
+            />
+            <div>
+              <p className="text-2xl font-bold text-slate-900 dark:text-white">
+                First course created! 🎉
+              </p>
+              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                Now open it and add your first module.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <DashboardPageShell>
         <DashboardHero
           courseCount={courses.length}

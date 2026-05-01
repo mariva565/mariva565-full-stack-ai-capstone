@@ -145,19 +145,23 @@ function HeroHeading({ greeting }: { greeting: string }) {
       </div>
 
       <motion.div
-        initial={{ opacity: 0, y: 6 }}
+        initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.35, duration: 0.5 }}
-        className="mt-4 flex items-center gap-3"
+        className="mt-4 flex items-center gap-4"
       >
-        <img
+        <motion.img
           src="/assets/v1/ziksi-explaining-2.png"
-          alt="Ziksi mascot"
-          width={64}
-          height={64}
-          className="hidden sm:block h-16 w-16 flex-shrink-0 object-contain drop-shadow-md"
+          alt=""
           aria-hidden="true"
+          width={80}
+          height={80}
+          animate={{ y: [0, -5, 0] }}
+          transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
+          whileHover={{ scale: 1.12, rotate: -6 }}
+          className="hidden sm:block h-20 w-20 flex-shrink-0 object-contain drop-shadow-[0_8px_20px_rgba(99,102,241,0.25)] cursor-default"
         />
+
         <blockquote className="border-l-2 border-brand-400/50 pl-3 dark:border-cyan-400/40">
           <p className="text-[0.8rem] italic leading-relaxed text-slate-500 dark:text-slate-400">
             &ldquo;{quote.text}&rdquo;

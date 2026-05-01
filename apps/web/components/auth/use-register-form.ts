@@ -17,6 +17,7 @@ type RegisterFormState = {
   password: string;
   error: string;
   loading: boolean;
+  success: boolean;
   toast: ToastState | null;
   setName: (value: string) => void;
   setEmail: (value: string) => void;
@@ -37,6 +38,7 @@ export function useRegisterForm(): RegisterFormState {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
   const [toast, setToast] = useState<ToastState | null>(null);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -64,10 +66,11 @@ export function useRegisterForm(): RegisterFormState {
       }
 
       setName(normalizedName);
+      setSuccess(true);
 
       const confetti = (await import("canvas-confetti")).default;
-      confetti({ particleCount: 140, spread: 90, origin: { y: 0.55 } });
-      await new Promise<void>((resolve) => setTimeout(resolve, 2200));
+      confetti({ particleCount: 160, spread: 100, origin: { y: 0.6 } });
+      await new Promise<void>((resolve) => setTimeout(resolve, 2400));
 
       router.push("/dashboard");
       router.refresh();
@@ -88,6 +91,7 @@ export function useRegisterForm(): RegisterFormState {
     password,
     error,
     loading,
+    success,
     toast,
     setName,
     setEmail,

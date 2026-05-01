@@ -1,4 +1,3 @@
-import Image from "next/image";
 import type { ReactNode } from "react";
 
 type MascotEmptyStateProps = {
@@ -10,13 +9,13 @@ type MascotEmptyStateProps = {
 export function MascotEmptyState({ message, subMessage, action }: MascotEmptyStateProps) {
   return (
     <div className="rounded-[1.8rem] border border-dashed border-slate-300/80 bg-white/75 px-6 py-10 text-center shadow-sm backdrop-blur dark:border-slate-700 dark:bg-slate-900/55">
-      <Image
+      <img
         src="/assets/v1/ziksi-thinking.png"
         alt=""
         aria-hidden="true"
-        width={80}
-        height={80}
-        className="mx-auto mb-4 drop-shadow-md"
+        width={88}
+        height={88}
+        className="mx-auto mb-4 h-22 w-22 object-contain drop-shadow-[0_8px_20px_rgba(99,102,241,0.22)] animate-float transition-transform duration-300 hover:scale-110 hover:-rotate-6"
       />
       <p className="text-lg font-semibold text-slate-900 dark:text-white">{message}</p>
       {subMessage && (
