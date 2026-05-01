@@ -12,7 +12,7 @@ import {
   uniqueIndex,
 } from "drizzle-orm/pg-core";
 
-// ─── 1. users ───────────────────────────────────────────────
+// 1. users
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   email: varchar("email", { length: 255 }).notNull().unique(),
@@ -24,7 +24,7 @@ export const users = pgTable("users", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
-// ─── 2. courses ─────────────────────────────────────────────
+// 2. courses
 export const courses = pgTable("courses", {
   id: serial("id").primaryKey(),
   title: varchar("title", { length: 255 }).notNull(),
@@ -39,7 +39,7 @@ export const courses = pgTable("courses", {
   index("courses_created_by_idx").on(table.createdBy),
 ]);
 
-// ─── 3. modules ─────────────────────────────────────────────
+// 3. modules
 export const modules = pgTable("modules", {
   id: serial("id").primaryKey(),
   courseId: integer("course_id")
@@ -53,7 +53,7 @@ export const modules = pgTable("modules", {
     .references(() => users.id, { onDelete: "cascade" }),
 });
 
-// ─── 4. materials ───────────────────────────────────────────
+// 4. materials
 export const materials = pgTable("materials", {
   id: serial("id").primaryKey(),
   moduleId: integer("module_id")
@@ -72,7 +72,7 @@ export const materials = pgTable("materials", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
-// ─── 5. favorites ───────────────────────────────────────────
+// 5. favorites
 export const favorites = pgTable(
   "favorites",
   {
@@ -93,7 +93,7 @@ export const favorites = pgTable(
   ]
 );
 
-// ─── 6. milestones ──────────────────────────────────────────
+// 6. ai_tool_outputs and milestones
 export const aiToolOutputs = pgTable(
   "ai_tool_outputs",
   {
@@ -128,7 +128,7 @@ export const milestones = pgTable("milestones", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
-// ─── 7. events ──────────────────────────────────────────────
+// 7. events
 export const events = pgTable("events", {
   id: serial("id").primaryKey(),
   userId: integer("user_id")
@@ -144,7 +144,7 @@ export const events = pgTable("events", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
-// ─── 8. activity_logs ───────────────────────────────────────
+// 8. activity_logs
 export const activityLogs = pgTable("activity_logs", {
   id: serial("id").primaryKey(),
   userId: integer("user_id")
@@ -155,7 +155,7 @@ export const activityLogs = pgTable("activity_logs", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
-// ─── 9. course_members ──────────────────────────────────────
+// 9. course_members
 export const courseMembers = pgTable(
   "course_members",
   {
@@ -174,7 +174,7 @@ export const courseMembers = pgTable(
   ]
 );
 
-// ─── 10. posts ──────────────────────────────────────────────
+// 10. posts
 export const posts = pgTable("posts", {
   id: serial("id").primaryKey(),
   authorId: integer("author_id").notNull().references(() => users.id, { onDelete: "cascade" }),
@@ -192,7 +192,7 @@ export const posts = pgTable("posts", {
   index("posts_course_id_idx").on(table.courseId),
 ]);
 
-// ─── 11. comments ───────────────────────────────────────────
+// 11. comments
 export const comments = pgTable("comments", {
   id: serial("id").primaryKey(),
   postId: integer("post_id").notNull().references(() => posts.id, { onDelete: "cascade" }),
@@ -203,7 +203,7 @@ export const comments = pgTable("comments", {
   index("comments_author_id_idx").on(table.authorId),
 ]);
 
-// ─── 12. post_likes ─────────────────────────────────────────
+// 12. post_likes
 export const postLikes = pgTable(
   "post_likes",
   {
@@ -217,7 +217,7 @@ export const postLikes = pgTable(
   ]
 );
 
-// ─── 13. post_bookmarks ─────────────────────────────────────
+// 13. post_bookmarks
 export const postBookmarks = pgTable(
   "post_bookmarks",
   {
@@ -231,13 +231,13 @@ export const postBookmarks = pgTable(
   ]
 );
 
-// ─── 15. conversations ──────────────────────────────────────
+// 15. conversations
 export const conversations = pgTable("conversations", {
   id: serial("id").primaryKey(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
-// ─── 16. conversation_members ───────────────────────────────
+// 16. conversation_members
 export const conversationMembers = pgTable(
   "conversation_members",
   {
@@ -259,7 +259,7 @@ export const conversationMembers = pgTable(
   ]
 );
 
-// ─── 17. messages ────────────────────────────────────────────
+// 17. messages
 export const messages = pgTable(
   "messages",
   {
@@ -281,7 +281,7 @@ export const messages = pgTable(
   ]
 );
 
-// ─── 14. oauth_accounts ─────────────────────────────────────
+// 14. user_push_tokens and oauth_accounts
 export const userPushTokens = pgTable(
   "user_push_tokens",
   {
@@ -323,7 +323,7 @@ export const oauthAccounts = pgTable(
   ]
 );
 
-// ─── 19. password_reset_tokens ──────────────────────────────────
+// 19. password_reset_tokens
 export const passwordResetTokens = pgTable(
   "password_reset_tokens",
   {
@@ -342,7 +342,7 @@ export const passwordResetTokens = pgTable(
   ]
 );
 
-// ─── 18. shared_materials ─────────────────────────────────────
+// 18. shared_materials
 export const sharedMaterials = pgTable(
   "shared_materials",
   {

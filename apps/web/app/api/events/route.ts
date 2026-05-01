@@ -7,7 +7,7 @@ import { userCanAccessCourse } from "../../../lib/course-details-data";
 import { db } from "../../../lib/db";
 import { events, milestones } from "../../../../../drizzle/schema";
 
-// GET /api/events?month=2026-04 вЂ” list events for a month
+// GET /api/events?month=2026-04 - list events for a month
 export async function GET(request: NextRequest) {
   const auth = await requireAuth(request);
   if ("error" in auth) return auth.error;
@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST /api/events вЂ” create a new event
+// POST /api/events - create a new event
 export async function POST(request: NextRequest) {
   const auth = await requireAuth(request);
   if ("error" in auth) return auth.error;

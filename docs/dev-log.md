@@ -9922,3 +9922,124 @@ Page routes обхождат API guard-ите (зареждат директно
 
 **Решения:**
 - Документирахме production secret-а като отделен от local secret-а, за да не се разчита на памет при финалния deploy.
+
+## 2026-05-01
+
+### Session 333 — Lesson 11 server-side development review
+
+**Какво направихме:**
+- Прегледахме `docs/11.Server-Side-Development.pdf` и извлякохме основните теми: Neon serverless PostgreSQL, Drizzle schema/migrations, Next.js route handlers, JWT/bcrypt auth, RESTful Blog API exercise, Cloudflare R2 uploads, Jest/integration/Playwright testing, and serverless deployment.
+- Сравнихме lesson checklist-а с текущия StudyHub код без да пускаме Neon production queries.
+- Потвърдихме, че StudyHub вече покрива core backend частта: Next.js API routes, Neon + Drizzle connection, Drizzle schema and migrations, JWT auth, bcrypt password hashing, protected CRUD APIs, Postman/API docs artifacts, and R2 upload plumbing.
+- Идентифицирахме оставащи lesson gaps: няма committed Playwright E2E suite, няма real-DB Jest integration suite using `TEST_DATABASE_URL`, няма npm db scripts for generate/migrate/seed, deployment URL/env setup remains TBD, and R2 is implemented but still waiting for real production configuration/validation.
+- Забелязахме отделна encoding hygiene тема: има mojibake strings in some existing UI/docs text (CP1252-style mojibake marker strings), which should be cleaned in a focused follow-up.
+
+**Файлове:**
+- [READ] docs/11.Server-Side-Development.pdf
+- [READ] apps/web/lib/db.ts
+- [READ] drizzle/schema.ts
+- [READ] drizzle/migrations/*
+- [READ] apps/web/lib/api-utils.ts
+- [READ] apps/web/lib/jwt.ts
+- [READ] apps/web/lib/auth.ts
+- [READ] apps/web/app/api/**/route.ts
+- [READ] apps/web/lib/r2.ts
+- [READ] apps/web/app/api/upload/route.ts
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm run typecheck:web` -> pass
+- `npm --workspace @studyhub/web run test -- --runInBand` -> pass (5 suites, 48 tests)
+
+**Решения:**
+- Не използвахме Neon MCP и не правихме database queries, за да пазим Free-tier compute budget.
+- Lesson 11 should not trigger a rewrite: StudyHub is already beyond the sample Blog API in product scope. The best follow-up is evidence hardening: integration tests, Playwright smoke tests, db scripts, R2 deploy validation, and final deployment smoke test.
+
+### Session 334 — Mojibake cleanup in active source files
+
+**Какво направихме:**
+- Сканирахме активните source/docs файлове за CP1252/UTF-8 mojibake маркери, като игнорирахме historical `dev-log` backup/repaired artifacts.
+- Поправихме `apps/web/lib/material-search.constants.ts`: smart quote regex-ът вече използва реални smart quotes, а българските stop words са нормална кирилица.
+- Поправихме два API route коментара в `apps/web/app/api/events/route.ts`, като заменихме счупените dash символи с ASCII `-`.
+
+**Файлове:**
+- [MODIFY] apps/web/lib/material-search.constants.ts
+- [MODIFY] apps/web/app/api/events/route.ts
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Focused mojibake scan across active source/docs files -> no matches
+- `npm run typecheck:web` -> pass
+- `npm --workspace @studyhub/web run test -- --runInBand` -> pass (5 suites, 48 tests)
+
+**Решения:**
+- Не променяхме `docs/dev-log.md.*` backup/repaired файловете, защото са historical recovery artifacts и не участват в runtime/product evidence.
+- Оправихме material search stop words като функционален bug, не само като визуална хигиена.
+
+### Session 335 — Posts update method decision
+
+**Какво направихме:**
+- Потвърдихме, че няма да добавяме `PATCH /api/posts/:id` alias само за 1:1 Lesson 11 parity.
+- Оставяме текущия `PUT /api/posts/:id` endpoint като canonical edit route за community posts.
+
+**Файлове:**
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Not run; decision-only dev-log update.
+
+**Решения:**
+- `PUT` е приемлив и последователен избор за текущия StudyHub API. `PATCH` alias би добавил допълнителна повърхност без продуктова нужда.
+
+### Session 336 — Lesson 11 gap triage follow-up
+
+**Какво направихме:**
+- Класифицирахме оставащите Lesson 11 gaps след уточнението на потребителя.
+- Решихме да оставим storage provider избора (`R2` vs `UploadThing`) за момента от урока, в който реално се стига до file uploads.
+- Решихме да не бързаме с Playwright E2E suite преди storage/avatar/file upload flow-ът да е финализиран.
+- Потвърдихме, че `PUT /api/posts/:id` остава canonical route и не добавяме `PATCH` alias.
+- Оставащите независими теми са: root `db:*` scripts като нискорисков housekeeping и real-DB integration tests само върху отделен test Neon branch/database, не върху production.
+
+**Файлове:**
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Not run; decision-only dev-log update.
+
+**Решения:**
+- R2/UploadThing, R2 object lifecycle cleanup and Playwright upload coverage are intentionally deferred until storage platform choice.
+- Deployment docs should keep production URL as `TBD` until there is a real deployed URL to record.
+
+### Session 337 — Safe db scripts and idempotent demo seed
+
+**Какво направихме:**
+- Добавихме root npm scripts: `db:generate`, `db:migrate`, `db:seed`.
+- Добавихме `tsx`, `dotenv`, and `bcryptjs` като explicit root dev dependencies за DB tooling/seed usage.
+- Обновихме `drizzle.config.ts` да зарежда `.env` чрез `dotenv/config`, така Drizzle CLI commands виждат `DATABASE_URL` от local env.
+- Направихме `drizzle/seed.ts` idempotent: demo users вече се upsert-ват по email вместо seed-ът да гърми при повторно пускане.
+- Добавихме safety guard: `db:seed` отказва да пише, освен ако `ALLOW_DEMO_SEED=true` е зададено изрично.
+- Добавихме `ALLOW_DEMO_SEED=false` в `.env.example` с warning comment.
+- Нормализирахме декоративните section comments в `drizzle/schema.ts` до ASCII comments, без schema behavior промени.
+
+**Файлове:**
+- [MODIFY] package.json
+- [MODIFY] package-lock.json
+- [MODIFY] .env.example
+- [MODIFY] drizzle.config.ts
+- [MODIFY] drizzle/seed.ts
+- [MODIFY] drizzle/schema.ts
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm run db:generate -- --help` -> pass
+- `npm run db:migrate -- --help` -> pass
+- `$env:ALLOW_DEMO_SEED='false'; npm run db:seed` -> expected refusal before DB connection
+- `npx tsx -e "console.log('tsx ok')"` -> pass
+- `npm run typecheck:web` -> pass
+- `npm --workspace @studyhub/web run test -- --runInBand` -> pass (5 suites, 48 tests)
+- `git diff --check` -> pass (warnings only about future CRLF normalization)
+- Focused mojibake scan across active source/docs files -> no matches
+
+**Решения:**
+- Не пускахме seed срещу реалната Neon база. Seed command-ът вече изисква explicit opt-in, за да пази production/demo data.
+- `db:seed` е удобна команда, но реалното й изпълнение трябва да е само за non-production database/branch.

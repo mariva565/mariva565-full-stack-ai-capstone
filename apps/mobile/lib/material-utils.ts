@@ -1,6 +1,6 @@
 import { COLORS, type AppColors } from "./colors";
 
-export type MaterialType = "note" | "link" | "file" | "video";
+export type MaterialType = "note" | "link" | "file";
 
 type MaterialTypeVisualConfig = {
   icon: string;
@@ -15,7 +15,6 @@ export const MATERIAL_TYPE_CONFIG: Record<MaterialType, MaterialTypeVisualConfig
   note: { icon: "\u{1F4DD}", label: "Note", color: COLORS.brandAccent, bg: COLORS.violetSoft },
   link: { icon: "\u{1F517}", label: "Link", color: COLORS.link, bg: COLORS.linkSoft },
   file: { icon: "\u{1F4C4}", label: "File", color: COLORS.warning, bg: COLORS.warningSoft },
-  video: { icon: "\u{1F3AC}", label: "Video", color: COLORS.dangerAccent, bg: COLORS.dangerSoftAlt },
 };
 
 export const MATERIAL_TYPE_OPTIONS = (Object.keys(MATERIAL_TYPE_CONFIG) as MaterialType[]).map(
@@ -32,7 +31,7 @@ export function getMaterialTypeOptions(colors: AppColors = COLORS) {
   }));
 }
 
-const URL_MATERIAL_TYPES: ReadonlySet<MaterialType> = new Set(["link", "file", "video"]);
+const URL_MATERIAL_TYPES: ReadonlySet<MaterialType> = new Set(["link", "file"]);
 
 export function isMaterialType(value: string): value is MaterialType {
   return value in MATERIAL_TYPE_CONFIG;
@@ -67,8 +66,6 @@ export function getMaterialTypeConfig(
       return { icon: "\u{1F517}", label: "Link", color: colors.link, bg: colors.linkSoft };
     case "file":
       return { icon: "\u{1F4C4}", label: "File", color: colors.warning, bg: colors.warningSoft };
-    case "video":
-      return { icon: "\u{1F3AC}", label: "Video", color: colors.dangerAccent, bg: colors.dangerSoftAlt };
     default:
       return MATERIAL_TYPE_CONFIG.note;
   }
