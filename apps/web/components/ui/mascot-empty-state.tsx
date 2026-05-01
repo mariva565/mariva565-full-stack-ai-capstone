@@ -11,12 +11,12 @@ export function MascotEmptyState({ message, subMessage, action }: MascotEmptySta
   return (
     <div className="rounded-[1.8rem] border border-dashed border-slate-300/80 bg-white/75 px-6 py-10 text-center shadow-sm backdrop-blur dark:border-slate-700 dark:bg-slate-900/55">
       <Image
-        src="/assets/v1/icons/mascot-logo-navbar-filled.png"
+        src="/assets/v1/ziksi-thinking.png"
         alt=""
         aria-hidden="true"
-        width={52}
-        height={70}
-        className="mx-auto mb-4 opacity-60 dark:opacity-50"
+        width={80}
+        height={80}
+        className="mx-auto mb-4 drop-shadow-md"
       />
       <p className="text-lg font-semibold text-slate-900 dark:text-white">{message}</p>
       {subMessage && (

@@ -97,6 +97,14 @@ function FinderConversationTurn({ turn }: { turn: FinderTurn }) {
 function EmptyState() {
   return (
     <div className="rounded-2xl border border-dashed border-slate-300/80 bg-white/70 px-6 py-8 text-center dark:border-cyan-400/20 dark:bg-slate-900/35">
+      <img
+        src="/assets/v1/ziksi-observing.png"
+        alt=""
+        aria-hidden="true"
+        width={72}
+        height={72}
+        className="mx-auto mb-3 drop-shadow-md"
+      />
       <p className="text-lg font-semibold text-slate-900 dark:text-slate-100">
         Ask where you saved something
       </p>

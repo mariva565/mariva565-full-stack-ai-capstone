@@ -63,6 +63,47 @@ function StatCard({ label, value }: StatCardProps) {
   );
 }
 
+const STUDY_QUOTES = [
+  { text: "The expert in anything was once a beginner.", author: "Helen Hayes" },
+  { text: "An investment in knowledge pays the best interest.", author: "Benjamin Franklin" },
+  { text: "Live as if you were to die tomorrow. Learn as if you were to live forever.", author: "Gandhi" },
+  { text: "The more that you read, the more things you will know.", author: "Dr. Seuss" },
+  { text: "Education is the passport to the future.", author: "Malcolm X" },
+  { text: "The beautiful thing about learning is that no one can take it away from you.", author: "B.B. King" },
+  { text: "It does not matter how slowly you go as long as you do not stop.", author: "Confucius" },
+  { text: "Success is the sum of small efforts repeated day in and day out.", author: "Robert Collier" },
+  { text: "The secret of getting ahead is getting started.", author: "Mark Twain" },
+  { text: "Don't watch the clock; do what it does. Keep going.", author: "Sam Levenson" },
+  { text: "You don't have to be great to start, but you have to start to be great.", author: "Zig Ziglar" },
+  { text: "A little progress each day adds up to big results.", author: "Satya Nani" },
+  { text: "The capacity to learn is a gift; the ability to learn is a skill; the willingness to learn is a choice.", author: "Brian Herbert" },
+  { text: "Study while others are sleeping; work while others are loafing.", author: "William A. Ward" },
+  { text: "You are never too old to set another goal or to dream a new dream.", author: "C.S. Lewis" },
+  { text: "Believe you can and you're halfway there.", author: "Theodore Roosevelt" },
+  { text: "Push yourself, because no one else is going to do it for you.", author: "Unknown" },
+  { text: "Great things never come from comfort zones.", author: "Unknown" },
+  { text: "Dream it. Wish it. Do it.", author: "Unknown" },
+  { text: "Stay focused, go after your dreams and keep moving toward your goals.", author: "LL Cool J" },
+  { text: "Hard work beats talent when talent doesn't work hard.", author: "Tim Notke" },
+  { text: "Your future is created by what you do today, not tomorrow.", author: "Robert Kiyosaki" },
+  { text: "The only way to do great work is to love what you do.", author: "Steve Jobs" },
+  { text: "Genius is one percent inspiration and ninety-nine percent perspiration.", author: "Thomas Edison" },
+  { text: "You miss 100% of the shots you don't take.", author: "Wayne Gretzky" },
+  { text: "Continuous improvement is better than delayed perfection.", author: "Mark Twain" },
+  { text: "The mind is not a vessel to be filled but a fire to be kindled.", author: "Plutarch" },
+  { text: "Knowledge is power. Information is liberating.", author: "Kofi Annan" },
+  { text: "Take the first step in faith. You don't have to see the whole staircase.", author: "Martin Luther King Jr." },
+  { text: "Start where you are. Use what you have. Do what you can.", author: "Arthur Ashe" },
+] as const;
+
+function useDailyQuote() {
+  const now = new Date();
+  const dayOfYear = Math.floor(
+    (now.getTime() - new Date(now.getFullYear(), 0, 0).getTime()) / 86_400_000
+  );
+  return STUDY_QUOTES[dayOfYear % STUDY_QUOTES.length]!;
+}
+
 function useGreeting(firstName: string): string {
   const [greeting, setGreeting] = useState("");
 
@@ -78,6 +119,8 @@ function useGreeting(firstName: string): string {
 }
 
 function HeroHeading({ greeting }: { greeting: string }) {
+  const quote = useDailyQuote();
+
   return (
     <div className="max-w-2xl">
       <div className="flex items-center gap-4">
@@ -100,6 +143,30 @@ function HeroHeading({ greeting }: { greeting: string }) {
           )}
         </div>
       </div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.35, duration: 0.5 }}
+        className="mt-4 flex items-center gap-3"
+      >
+        <img
+          src="/assets/v1/ziksi-explaining-2.png"
+          alt="Ziksi mascot"
+          width={64}
+          height={64}
+          className="hidden sm:block h-16 w-16 flex-shrink-0 object-contain drop-shadow-md"
+          aria-hidden="true"
+        />
+        <blockquote className="border-l-2 border-brand-400/50 pl-3 dark:border-cyan-400/40">
+          <p className="text-[0.8rem] italic leading-relaxed text-slate-500 dark:text-slate-400">
+            &ldquo;{quote.text}&rdquo;
+          </p>
+          <footer className="mt-0.5 text-[0.7rem] font-semibold tracking-wide text-brand-500/70 dark:text-cyan-400/60">
+            — {quote.author}
+          </footer>
+        </blockquote>
+      </motion.div>
     </div>
   );
 }
