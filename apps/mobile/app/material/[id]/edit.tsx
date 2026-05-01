@@ -48,6 +48,7 @@ export default function EditMaterialScreen() {
       onContentChange={setContent}
       onMaterialTypeChange={setMaterialType}
       onFileUrlChange={setFileUrl}
+      onFileUploaded={setFileUrl}
       onTagsChange={setTags}
       onSubmit={handleSave}
       onCancel={handleCancel}

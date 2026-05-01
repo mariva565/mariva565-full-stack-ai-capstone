@@ -38,6 +38,7 @@ export default function AddMaterialScreen() {
       onContentChange={setContent}
       onMaterialTypeChange={setMaterialType}
       onFileUrlChange={setFileUrl}
+      onFileUploaded={setFileUrl}
       onTagsChange={setTags}
       onSubmit={handleCreate}
       onCancel={handleCancel}

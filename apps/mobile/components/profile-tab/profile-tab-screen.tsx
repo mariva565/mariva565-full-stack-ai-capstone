@@ -11,6 +11,7 @@ import type { ProfileTabViewModel } from "./profile-tab.types";
 import { makeProfileTabStyles } from "./profile-tab.styles";
 import { ProfileQrCard } from "./profile-qr-card";
 import { QrScannerScreen } from "./qr-scanner-screen";
+import { AvatarUploadButton } from "./avatar-upload-button";
 
 type ProfileTabScreenProps = {
   viewModel: ProfileTabViewModel;
@@ -61,9 +62,12 @@ function ProfileHero({
       end={{ x: 1, y: 1 }}
       style={styles.hero}
     >
-      <View style={styles.avatarCircle}>
-        <Text style={styles.avatarText}>{viewModel.initials}</Text>
-      </View>
+      <AvatarUploadButton
+        avatarUrl={viewModel.profile.avatarUrl}
+        initials={viewModel.initials}
+        onUploadSuccess={viewModel.onAvatarUploaded}
+        styles={styles}
+      />
       <Text style={styles.heroName}>{viewModel.profile.name}</Text>
       <View style={styles.heroBadge}>
         <Text style={styles.heroBadgeText}>{viewModel.profile.role}</Text>

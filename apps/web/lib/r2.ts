@@ -163,3 +163,70 @@ export function extractR2ObjectKey(avatarUrl: string | null | undefined): string
 export function isR2Configured(): boolean {
   return readR2Config() !== null;
 }
+
+const UPLOAD_ALLOWED_MIME_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+  "application/pdf",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+] as const;
+
+type UploadAllowedMimeType = (typeof UPLOAD_ALLOWED_MIME_TYPES)[number];
+
+const IMAGE_MIME_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
+const UPLOAD_MAX_IMAGE_BYTES = 5 * 1024 * 1024;  // 5 MB for photos/screenshots
+const UPLOAD_MAX_DOC_BYTES   = 20 * 1024 * 1024; // 20 MB for PDF/Word
+
+export function validateUploadFile(file: File): string | null {
+  if (!UPLOAD_ALLOWED_MIME_TYPES.includes(file.type as UploadAllowedMimeType)) {
+    return "Only images (JPG, PNG, WebP, GIF), PDF, and Word documents are allowed.";
+  }
+  const maxBytes = IMAGE_MIME_TYPES.has(file.type) ? UPLOAD_MAX_IMAGE_BYTES : UPLOAD_MAX_DOC_BYTES;
+  if (file.size > maxBytes) {
+    return IMAGE_MIME_TYPES.has(file.type)
+      ? "Images must be 5 MB or smaller."
+      : "Documents must be 20 MB or smaller.";
+  }
+  return null;
+}
+
+function getUploadExtension(contentType: string): string {
+  const map: Record<string, string> = {
+    "image/jpeg": "jpg",
+    "image/png": "png",
+    "image/webp": "webp",
+    "image/gif": "gif",
+    "application/pdf": "pdf",
+    "application/msword": "doc",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "docx",
+  };
+  return map[contentType] ?? "bin";
+}
+
+export async function uploadMaterialFile({
+  userId,
+  file,
+}: {
+  userId: number;
+  file: File;
+}): Promise<string> {
+  const config = requireR2Config();
+  const client = getR2Client(config);
+  const objectKey = `materials/${userId}/${Date.now()}-${randomUUID()}.${getUploadExtension(file.type)}`;
+  const buffer = Buffer.from(await file.arrayBuffer());
+
+  await client.send(
+    new PutObjectCommand({
+      Bucket: config.bucketName,
+      Key: objectKey,
+      Body: buffer,
+      ContentType: file.type,
+      CacheControl: "public, max-age=31536000, immutable",
+    })
+  );
+
+  return buildPublicUrl(config.publicUrl, objectKey);
+}

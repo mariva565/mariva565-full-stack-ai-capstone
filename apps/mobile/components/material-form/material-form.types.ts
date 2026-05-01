@@ -29,6 +29,7 @@ export type MaterialFormScreenProps = {
   onContentChange: (value: string) => void;
   onMaterialTypeChange: (value: MaterialType) => void;
   onFileUrlChange: (value: string) => void;
+  onFileUploaded: (url: string) => void;
   onTagsChange: (value: string) => void;
   onSubmit: () => void;
   onCancel: () => void;

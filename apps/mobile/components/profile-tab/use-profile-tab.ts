@@ -149,6 +149,10 @@ export function useProfileTab(): ProfileTabViewModel {
     router.push("/settings");
   }, [router]);
 
+  const onAvatarUploaded = useCallback(() => {
+    void queryClient.invalidateQueries({ queryKey: queryKeys.auth.me() });
+  }, [queryClient]);
+
   return {
     profile,
     initials,
@@ -166,5 +170,6 @@ export function useProfileTab(): ProfileTabViewModel {
     saveProfile: editor.saveProfile,
     openSettings,
     logout,
+    onAvatarUploaded,
   };
 }

@@ -1,5 +1,7 @@
 import type { FormEvent } from "react";
 
+import { FileUploadButton } from "../materials/file-upload-button";
+
 type MaterialDraft = {
   title: string;
   content: string;
@@ -69,7 +71,7 @@ export function ModuleMaterialComposer({
             >
               <option value="note">Note</option>
               <option value="link">Link</option>
-              <option value="file">File URL</option>
+              <option value="file">File</option>
             </select>
           </div>
         </div>
@@ -88,19 +90,30 @@ export function ModuleMaterialComposer({
             />
           </div>
 
-          <div>
-            <label className="block text-xs font-semibold uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">
-              Link / file URL
-            </label>
-            <input
-              type="text"
-              inputMode="url"
-              value={draft.fileUrl}
-              onChange={(event) => onDraftChange("fileUrl", event.target.value)}
-              className="mt-2 block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-200/50 dark:border-slate-700 dark:bg-slate-950/70 dark:text-white dark:focus:border-brand-400 dark:focus:ring-brand-500/20"
-              placeholder="https://..."
-            />
-          </div>
+          {draft.materialType !== "note" && (
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">
+                {draft.materialType === "file" ? "File" : "Link URL"}
+              </label>
+              {draft.materialType === "file" ? (
+                <div className="mt-2">
+                  <FileUploadButton
+                    currentUrl={draft.fileUrl || null}
+                    onUploadSuccess={(url) => onDraftChange("fileUrl", url)}
+                  />
+                </div>
+              ) : (
+                <input
+                  type="text"
+                  inputMode="url"
+                  value={draft.fileUrl}
+                  onChange={(event) => onDraftChange("fileUrl", event.target.value)}
+                  className="mt-2 block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-200/50 dark:border-slate-700 dark:bg-slate-950/70 dark:text-white dark:focus:border-brand-400 dark:focus:ring-brand-500/20"
+                  placeholder="https://..."
+                />
+              )}
+            </div>
+          )}
         </div>
 
         <div>

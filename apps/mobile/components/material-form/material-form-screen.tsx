@@ -15,6 +15,7 @@ import { makeMaterialFormStyles } from "./material-form.styles";
 import type { MaterialFormScreenProps, FocusedField } from "./material-form.types";
 import { MaterialInputField } from "./material-form-input";
 import { MaterialTypeSelector } from "./material-form-type-picker";
+import { FileUploadPicker } from "./file-upload-picker";
 
 function MaterialHeader({
   iconText,
@@ -99,6 +100,7 @@ function MaterialMetadataFields({
   focusedField,
   onFocusChange,
   onFileUrlChange,
+  onFileUploaded,
   onTagsChange,
 }: {
   values: MaterialFormScreenProps["values"];
@@ -107,11 +109,15 @@ function MaterialMetadataFields({
   focusedField: FocusedField;
   onFocusChange: (field: FocusedField) => void;
   onFileUrlChange: (value: string) => void;
+  onFileUploaded: (url: string) => void;
   onTagsChange: (value: string) => void;
 }) {
   return (
     <>
-      {showUrlField ? (
+      {showUrlField && values.materialType === "file" ? (
+        <FileUploadPicker currentUrl={values.fileUrl} onUploadSuccess={onFileUploaded} />
+      ) : null}
+      {showUrlField && values.materialType !== "file" ? (
         <MaterialInputField
           field="url"
           label="URL"
@@ -229,6 +235,7 @@ export function MaterialFormScreen(props: MaterialFormScreenProps) {
             focusedField={focusedField}
             onFocusChange={setFocusedField}
             onFileUrlChange={props.onFileUrlChange}
+            onFileUploaded={props.onFileUploaded}
             onTagsChange={props.onTagsChange}
           />
         </View>

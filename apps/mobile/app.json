@@ -8,15 +8,23 @@
     "userInterfaceStyle": "automatic",
     "ios": {
       "bundleIdentifier": "com.studyhub.mobile",
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "StudyHub uses the camera to let you photograph study materials and update your profile picture.",
+        "NSPhotoLibraryUsageDescription": "StudyHub accesses your photo library to let you select images for study materials and profile pictures.",
+        "NSPhotoLibraryAddUsageDescription": "StudyHub may save photos to your library."
+      }
     },
     "android": {
-      "package": "com.studyhub.mobile"
+      "package": "com.studyhub.mobile",
+      "permissions": ["android.permission.CAMERA", "android.permission.READ_MEDIA_IMAGES", "android.permission.READ_EXTERNAL_STORAGE"]
     },
     "plugins": [
       "expo-router",
       "expo-secure-store",
       "expo-notifications",
+      ["expo-image-picker", { "photosPermission": "StudyHub accesses your photos to upload study materials and profile pictures." }],
+      "expo-document-picker",
       [
         "@sentry/react-native/expo",
         {

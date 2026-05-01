@@ -24,4 +24,5 @@ export type ProfileTabViewModel = {
   saveProfile: () => void;
   openSettings: () => void;
   logout: () => void;
+  onAvatarUploaded: (url: string) => void;
 };

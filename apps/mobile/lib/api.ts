@@ -268,6 +268,53 @@ export async function clearApiCache(): Promise<void> {
   await clearCacheScope(scope);
 }
 
+type UploadableFile = {
+  uri: string;
+  name: string;
+  type: string;
+};
+
+export async function uploadFile(
+  endpoint: string,
+  file: UploadableFile
+): Promise<{ url: string }> {
+  const token = await getToken();
+
+  const formData = new FormData();
+  // React Native FormData приема обект с uri/name/type, не File обект
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  formData.append("file", { uri: file.uri, name: file.name, type: file.type } as any);
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 60_000); // 60s за по-големи файлове
+
+  try {
+    const response = await fetch(`${API_BASE}${endpoint}`, {
+      method: "POST",
+      headers: {
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        // Content-Type НЕ се слага ръчно — fetch го генерира автоматично с boundary
+      },
+      body: formData,
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      const text = await response.text();
+      const payload = text ? tryParseJson(text) : null;
+      throw createApiErrorFromResponse(response.status, payload);
+    }
+
+    return response.json() as Promise<{ url: string }>;
+  } catch (err) {
+    clearTimeout(timeoutId);
+    if (err instanceof ApiError) throw err;
+    throw createNetworkError(err, "POST");
+  }
+}
+
 // Fire-and-forget DB warmup. Hits /api/ping (no auth) to pre-warm the
 // Neon serverless connection so subsequent mutations do not hit a cold start.
 export function warmupBackend(): void {

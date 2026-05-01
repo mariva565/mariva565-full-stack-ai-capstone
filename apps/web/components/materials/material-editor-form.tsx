@@ -1,6 +1,7 @@
 import type { FormEvent } from "react";
 
 import type { MaterialType } from "../../lib/materials";
+import { FileUploadButton } from "./file-upload-button";
 
 type MaterialEditorFormProps = {
   title: string;
@@ -111,19 +112,30 @@ export function MaterialEditorForm({
 
         <div>
           <label className="block text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-300">
-            {sourceLabel}
+            {materialType === "file" ? "File" : sourceLabel}
           </label>
-          <input
-            type="text"
-            inputMode="url"
-            value={fileUrl}
-            onChange={(event) => onFileUrlChange(event.target.value)}
-            placeholder={sourcePlaceholder}
-            className="mt-2 block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 placeholder:text-slate-400 outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-200/50 dark:border-slate-700 dark:bg-slate-950/70 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-brand-400 dark:focus:ring-brand-500/20"
-          />
-          <p className="mt-2 text-xs leading-5 text-slate-500 dark:text-slate-400">
-            {sourceHelper}
-          </p>
+          {materialType === "file" ? (
+            <div className="mt-2">
+              <FileUploadButton
+                currentUrl={fileUrl || null}
+                onUploadSuccess={onFileUrlChange}
+              />
+            </div>
+          ) : (
+            <>
+              <input
+                type="text"
+                inputMode="url"
+                value={fileUrl}
+                onChange={(event) => onFileUrlChange(event.target.value)}
+                placeholder={sourcePlaceholder}
+                className="mt-2 block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 placeholder:text-slate-400 outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-200/50 dark:border-slate-700 dark:bg-slate-950/70 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-brand-400 dark:focus:ring-brand-500/20"
+              />
+              <p className="mt-2 text-xs leading-5 text-slate-500 dark:text-slate-400">
+                {sourceHelper}
+              </p>
+            </>
+          )}
         </div>
       </div>
 
