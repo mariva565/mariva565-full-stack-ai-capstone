@@ -6,6 +6,7 @@ import { FormEvent, useState } from "react";
 import { readErrorMessage } from "../../lib/http";
 import { DashboardActionButton } from "../dashboard/dashboard-controls";
 import { DashboardPageShell } from "../dashboard/dashboard-page-shell";
+import { ZiksiMascot } from "../ui/ziksi-mascot";
 
 type FinderResult = {
   id: number;
@@ -97,14 +98,7 @@ function FinderConversationTurn({ turn }: { turn: FinderTurn }) {
 function EmptyState() {
   return (
     <div className="rounded-2xl border border-dashed border-slate-300/80 bg-white/70 px-6 py-10 text-center dark:border-cyan-400/20 dark:bg-slate-900/35">
-      <img
-        src="/assets/v1/ziksi-observing.png"
-        alt=""
-        aria-hidden="true"
-        width={88}
-        height={88}
-        className="mx-auto mb-4 h-22 w-22 object-contain drop-shadow-[0_8px_20px_rgba(99,102,241,0.22)] animate-float transition-transform duration-300 hover:scale-110 hover:rotate-6"
-      />
+      <ZiksiMascot src="/assets/v1/ziksi-observing.png" size="md" className="mx-auto mb-4" />
       <p className="text-lg font-semibold text-slate-900 dark:text-slate-100">
         Ask where you saved something
       </p>

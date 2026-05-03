@@ -103,6 +103,10 @@ const config: Config = {
           "50%": { opacity: "1", transform: "scale(1.1) translateX(5px)" },
           "100%": { opacity: "0.3", transform: "scale(0.8) translateX(-10px)" },
         },
+        "mascot-float": {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-4px)" },
+        },
       },
     }
   },

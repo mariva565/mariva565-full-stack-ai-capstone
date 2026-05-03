@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeftIcon } from "../auth/auth-icons";
+import { ZiksiMascot } from "../ui/ziksi-mascot";
 import { DashboardActionButton } from "./dashboard-controls";
 
 type DashboardHeroProps = {
@@ -96,12 +97,55 @@ const STUDY_QUOTES = [
   { text: "Start where you are. Use what you have. Do what you can.", author: "Arthur Ashe" },
 ] as const;
 
-function useDailyQuote() {
-  const now = new Date();
+const DAY_MS = 86_400_000;
+const MIDNIGHT_REFRESH_BUFFER_MS = 1_000;
+
+function getDailyQuote(now = new Date()) {
   const dayOfYear = Math.floor(
-    (now.getTime() - new Date(now.getFullYear(), 0, 0).getTime()) / 86_400_000
+    (Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) -
+      Date.UTC(now.getFullYear(), 0, 0)) /
+      DAY_MS
   );
   return STUDY_QUOTES[dayOfYear % STUDY_QUOTES.length]!;
+}
+
+function getMsUntilNextLocalDay(now = new Date()): number {
+  const nextDay = new Date(now);
+  nextDay.setHours(24, 0, 0, 0);
+  return Math.max(
+    MIDNIGHT_REFRESH_BUFFER_MS,
+    nextDay.getTime() - now.getTime() + MIDNIGHT_REFRESH_BUFFER_MS
+  );
+}
+
+function useDailyQuote() {
+  const [quote, setQuote] = useState(() => getDailyQuote());
+
+  useEffect(() => {
+    let timeoutId: ReturnType<typeof setTimeout>;
+
+    function refreshAndSchedule() {
+      const now = new Date();
+      setQuote(getDailyQuote(now));
+      timeoutId = setTimeout(refreshAndSchedule, getMsUntilNextLocalDay(now));
+    }
+
+    function refreshWhenVisible() {
+      if (document.visibilityState === "visible") {
+        setQuote(getDailyQuote());
+      }
+    }
+
+    refreshAndSchedule();
+    document.addEventListener("visibilitychange", refreshWhenVisible);
+
+    return () => {
+      clearTimeout(timeoutId);
+      document.removeEventListener("visibilitychange", refreshWhenVisible);
+    };
+  }, []);
+
+  return quote;
 }
 
 function useGreeting(firstName: string): string {
@@ -150,17 +194,9 @@ function HeroHeading({ greeting }: { greeting: string }) {
         transition={{ delay: 0.35, duration: 0.5 }}
         className="mt-4 flex items-center gap-4"
       >
-        <motion.img
-          src="/assets/v1/ziksi-explaining-2.png"
-          alt=""
-          aria-hidden="true"
-          width={80}
-          height={80}
-          animate={{ y: [0, -5, 0] }}
-          transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
-          whileHover={{ scale: 1.12, rotate: -6 }}
-          className="hidden sm:block h-20 w-20 flex-shrink-0 object-contain drop-shadow-[0_8px_20px_rgba(99,102,241,0.25)] cursor-default"
-        />
+        <div className="hidden flex-shrink-0 sm:block">
+          <ZiksiMascot src="/assets/v1/ziksi-explaining-2.png" size="md" />
+        </div>
 
         <blockquote className="border-l-2 border-brand-400/50 pl-3 dark:border-cyan-400/40">
           <p className="text-[0.8rem] italic leading-relaxed text-slate-500 dark:text-slate-400">

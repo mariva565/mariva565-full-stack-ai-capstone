@@ -14,6 +14,7 @@ import { PinnedSidebar } from "./pinned-sidebar";
 import type { DashboardCourse, DashboardData, PinnedMaterial, SharedMaterial } from "./types";
 import { ConfirmModal } from "../ui/confirm-modal";
 import { MascotEmptyState } from "../ui/mascot-empty-state";
+import { ZiksiMascot } from "../ui/ziksi-mascot";
 import { Toast, type ToastTone } from "../ui/toast";
 import { readErrorMessage } from "../../lib/http";
 
@@ -181,13 +182,7 @@ export function DashboardClientPage({
       {showFirstCourseCelebration && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
           <div className="flex flex-col items-center gap-4 rounded-[2rem] border border-white/20 bg-white/95 px-10 py-8 text-center shadow-[0_32px_80px_rgba(99,102,241,0.3)] dark:bg-slate-900/95 dark:border-cyan-400/20">
-            <img
-              src="/assets/v1/ziksi-celebration.png"
-              alt="Ziksi celebrating"
-              width={120}
-              height={120}
-              className="h-32 w-32 animate-bounce object-contain drop-shadow-[0_12px_28px_rgba(99,102,241,0.35)]"
-            />
+            <ZiksiMascot src="/assets/v1/ziksi-celebration.png" size="lg" />
             <div>
               <p className="text-2xl font-bold text-slate-900 dark:text-white">
                 First course created! 🎉

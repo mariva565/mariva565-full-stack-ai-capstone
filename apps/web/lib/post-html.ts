@@ -24,8 +24,14 @@ const ALLOWED_TAGS = [
   "h2",
   "h3",
   "a",
+  "table",
+  "thead",
+  "tbody",
+  "tr",
+  "th",
+  "td",
 ];
-const ALLOWED_ATTR = ["href", "target", "rel"];
+const ALLOWED_ATTR = ["href", "target", "rel", "colspan", "rowspan"];
 
 function collapseWhitespace(value: string): string {
   return value.replace(/\s+/g, " ").trim();

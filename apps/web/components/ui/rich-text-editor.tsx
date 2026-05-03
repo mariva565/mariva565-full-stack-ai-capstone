@@ -2,6 +2,10 @@
 
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import { Table } from "@tiptap/extension-table";
+import { TableRow } from "@tiptap/extension-table-row";
+import { TableHeader } from "@tiptap/extension-table-header";
+import { TableCell } from "@tiptap/extension-table-cell";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -56,7 +60,13 @@ export function RichTextEditor({
   minHeight = "180px",
 }: RichTextEditorProps) {
   const editor = useEditor({
-    extensions: [StarterKit],
+    extensions: [
+      StarterKit,
+      Table.configure({ resizable: false }),
+      TableRow,
+      TableHeader,
+      TableCell,
+    ],
     content: value || "<p></p>",
     onUpdate: ({ editor: ed }) => {
       onChange(ed.getHTML());
@@ -125,6 +135,25 @@ export function RichTextEditor({
           active={editor.isActive("codeBlock")}
           onClick={() => editor.chain().focus().toggleCodeBlock().run()}
         />
+        <ToolbarDivider />
+        <ToolbarButton
+          label="Table"
+          title="Insert Table"
+          active={editor.isActive("table")}
+          onClick={() =>
+            editor.isActive("table")
+              ? editor.chain().focus().deleteTable().run()
+              : editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()
+          }
+        />
+        {editor.isActive("table") && (
+          <>
+            <ToolbarButton label="+Col" title="Add Column" onClick={() => editor.chain().focus().addColumnAfter().run()} />
+            <ToolbarButton label="-Col" title="Remove Column" onClick={() => editor.chain().focus().deleteColumn().run()} />
+            <ToolbarButton label="+Row" title="Add Row" onClick={() => editor.chain().focus().addRowAfter().run()} />
+            <ToolbarButton label="-Row" title="Remove Row" onClick={() => editor.chain().focus().deleteRow().run()} />
+          </>
+        )}
       </div>
 
       {/* Editor area */}

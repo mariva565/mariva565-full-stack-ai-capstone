@@ -10043,3 +10043,49 @@ Page routes обхождат API guard-ите (зареждат директно
 **Решения:**
 - Не пускахме seed срещу реалната Neon база. Seed command-ът вече изисква explicit opt-in, за да пази production/demo data.
 - `db:seed` е удобна команда, но реалното й изпълнение трябва да е само за non-production database/branch.
+
+
+### Session 338 — Ziksi mascot UI tile polish
+
+**Какво направихме:**
+- Added shared `ZiksiMascot` wrapper that presents the images as soft rounded character tiles instead of square sticker PNGs.
+- Updated dashboard hero quote mascot to use the same wrapper as empty states, Material Finder, and celebration states.
+- Softened the `mascot-float` animation to 4px so it feels calmer in dashboard/auth UI.
+
+**Файлове:**
+- [ADD] apps/web/components/ui/ziksi-mascot.tsx
+- [MODIFY] apps/web/components/auth/register-form.tsx
+- [MODIFY] apps/web/components/dashboard/dashboard-client-page.tsx
+- [MODIFY] apps/web/components/dashboard/dashboard-hero.tsx
+- [MODIFY] apps/web/components/material-finder/material-finder-client.tsx
+- [MODIFY] apps/web/components/ui/mascot-empty-state.tsx
+- [MODIFY] apps/web/tailwind.config.ts
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm run typecheck:web` -> pass
+- `npm run check:mojibake` -> pass
+- `git diff --check` -> pass (CRLF normalization warnings only)
+
+**Решения:**
+- Kept the existing mascot PNG assets. The white backing remains acceptable, but it is now framed as an intentional glass/gradient tile with clipped rounded shape, border, and softer aura.
+
+
+## 2026-05-02
+
+### Session 339 — Daily quote auto-refresh
+
+**Какво направихме:**
+- Updated the dashboard quote-of-the-day hook to keep quote state and refresh automatically after the next local midnight.
+- Added a visibility-change refresh so a tab left open overnight shows the correct daily quote when the user returns to it.
+- Switched quote indexing to calendar-day calculation with `Date.UTC(...)` to avoid DST/hour-shift drift.
+
+**Файлове:**
+- [MODIFY] apps/web/components/dashboard/dashboard-hero.tsx
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm run typecheck:web` -> pass
+
+**Решения:**
+- Kept the quote behavior deterministic: one quote per local calendar day, not random per refresh.
