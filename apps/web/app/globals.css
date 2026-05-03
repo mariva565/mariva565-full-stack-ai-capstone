@@ -1,4 +1,6 @@
 @import "./styles/globals-tailwind.css";
 @import "./styles/globals-theme.css";
 @import "./styles/globals-motion.css";
+@import "./styles/globals-auth.css";
+@import "./styles/globals-editor.css";
 @import "./styles/globals-content.css";
