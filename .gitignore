@@ -62,3 +62,5 @@ Thumbs.db
 .claude/
 # TypeScript build cache
 *.tsbuildinfo
+
+.vercel

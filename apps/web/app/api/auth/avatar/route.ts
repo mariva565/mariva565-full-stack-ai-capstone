@@ -5,7 +5,7 @@ import { logActivity } from "../../../../lib/activity";
 import { requireAuth } from "../../../../lib/api-utils";
 import { db } from "../../../../lib/db";
 import { getProfileUserSelection, normalizeProfileUser } from "../../../../lib/profile-data";
-import { deleteAvatarByUrl, uploadAvatarFile, validateAvatarFile } from "../../../../lib/r2";
+import { deleteAvatarBlob, uploadAvatarBlob, validateAvatarBlob } from "../../../../lib/blob-storage";
 
 export const runtime = "nodejs";
 
@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const validationMessage = validateAvatarFile(fileEntry);
+  const validationMessage = validateAvatarBlob(fileEntry);
   if (validationMessage) {
     return NextResponse.json(
       { code: "INVALID_FILE", message: validationMessage },
@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
   let uploadedAvatarUrl: string | null = null;
 
   try {
-    uploadedAvatarUrl = await uploadAvatarFile({
+    uploadedAvatarUrl = await uploadAvatarBlob({
       userId: auth.user.sub,
       file: fileEntry,
     });
@@ -63,9 +63,9 @@ export async function POST(request: NextRequest) {
 
     if (existingUser.avatarUrl && existingUser.avatarUrl !== uploadedAvatarUrl) {
       try {
-        await deleteAvatarByUrl(existingUser.avatarUrl);
+        await deleteAvatarBlob(existingUser.avatarUrl);
       } catch (cleanupError) {
-        console.error("Failed to delete previous avatar from R2:", cleanupError);
+        console.error("Failed to delete previous avatar from Blob:", cleanupError);
       }
     }
 
@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     if (uploadedAvatarUrl) {
       try {
-        await deleteAvatarByUrl(uploadedAvatarUrl);
+        await deleteAvatarBlob(uploadedAvatarUrl);
       } catch (cleanupError) {
         console.error("Failed to clean up uploaded avatar after error:", cleanupError);
       }
@@ -115,7 +115,7 @@ export async function DELETE(request: NextRequest) {
 
   try {
     if (existingUser.avatarUrl) {
-      await deleteAvatarByUrl(existingUser.avatarUrl);
+      await deleteAvatarBlob(existingUser.avatarUrl);
     }
 
     const [updatedUser] = await db

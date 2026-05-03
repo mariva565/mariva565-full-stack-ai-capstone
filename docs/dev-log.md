@@ -4,6 +4,30 @@
 
 ---
 
+## 2026-05-03
+
+### Session 341 — Vercel Blob Step 2: Avatar Migration
+
+**Какво направихме:**
+- Updated `apps/web/app/api/auth/avatar/route.ts` to use Vercel Blob instead of Cloudflare R2.
+- Swapped all three R2 helpers: `validateAvatarFile` → `validateAvatarBlob`, `uploadAvatarFile` → `uploadAvatarBlob`, `deleteAvatarByUrl` → `deleteAvatarBlob`.
+- Removed import of `lib/r2` from the avatar route; now imports from `lib/blob-storage` only.
+- R2 code kept intact in `lib/r2.ts` — no other routes affected.
+
+**Файлове:**
+- [MODIFY] apps/web/app/api/auth/avatar/route.ts — R2 → Blob helpers
+- [MODIFY] apps/web/app/api/auth/me/route.ts — `extractR2ObjectKey` → `isValidAvatarBlobUrl`, `deleteAvatarByUrl` → `deleteAvatarBlob`
+- [MODIFY] apps/web/lib/blob-storage.ts — added `isValidAvatarBlobUrl`, removed unused `sanitizeFilename`
+
+**Verification:**
+- `npm run typecheck:web` → pass
+
+**Решения:**
+- `deleteAvatarBlob` is best-effort (try/catch) — existing users with R2 URLs will silently skip deletion, new uploads will store and delete Blob URLs correctly.
+- Avatar URL origin validation now checks `.public.blob.vercel-storage.com` domain (security fix from #52 preserved).
+
+---
+
 ## 2026-04-30
 
 ### Сесия — Финален security audit (post-#52) + 2 fix-а
@@ -10089,3 +10113,30 @@ Page routes обхождат API guard-ите (зареждат директно
 
 **Решения:**
 - Kept the quote behavior deterministic: one quote per local calendar day, not random per refresh.
+
+
+## 2026-05-03
+
+### Session 340 — Vercel Blob storage foundation (Step 1)
+
+**Какво направихме:**
+- Installed `@vercel/blob` in `apps/web`.
+- Created `apps/web/lib/blob-storage.ts` with dual-store helpers: public avatar upload (`uploadAvatarBlob`, `deleteAvatarBlob`) and private material upload (`uploadMaterialBlob` — returns pathname only, never public URL).
+- Added validation functions `validateAvatarBlob` (2 MB, images) and `validateMaterialBlob` (3 MB, images + PDF + Word).
+- Added `AVATAR_BLOB_READ_WRITE_TOKEN` and `MATERIAL_BLOB_READ_WRITE_TOKEN` placeholders to `.env.example`.
+- R2 code kept intact — no existing behavior changed.
+
+**Файлове:**
+- [ADD] apps/web/lib/blob-storage.ts
+- [MODIFY] .env.example
+- [MODIFY] apps/web/package.json (added @vercel/blob)
+- [MODIFY] package-lock.json
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm run typecheck:web` -> pass
+
+**Решения:**
+- Two separate Vercel Blob stores (public avatars, private materials) via separate tokens — no mixed-access single store.
+- Material upload returns only the Blob pathname; the full URL is never exposed to clients.
+- Filename sanitization and UUID-based pathnames prevent collisions and injection.

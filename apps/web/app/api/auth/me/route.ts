@@ -5,7 +5,7 @@ import { eq } from "drizzle-orm";
 import { logActivity } from "../../../../lib/activity";
 import { requireAuth } from "../../../../lib/api-utils";
 import { getProfileUserById, getProfileUserSelection, normalizeProfileUser } from "../../../../lib/profile-data";
-import { deleteAvatarByUrl, extractR2ObjectKey } from "../../../../lib/r2";
+import { deleteAvatarBlob, isValidAvatarBlobUrl } from "../../../../lib/blob-storage";
 
 export async function GET(request: NextRequest) {
   const auth = await requireAuth(request);
@@ -52,7 +52,7 @@ export async function PUT(request: NextRequest) {
   if (typeof body.avatarUrl === "string") {
     const normalizedAvatarUrl = body.avatarUrl.trim();
     if (normalizedAvatarUrl) {
-      if (!extractR2ObjectKey(normalizedAvatarUrl)) {
+      if (!isValidAvatarBlobUrl(normalizedAvatarUrl)) {
         return NextResponse.json(
           {
             code: "INVALID_AVATAR_URL",
@@ -92,9 +92,9 @@ export async function PUT(request: NextRequest) {
     currentUser.avatarUrl !== updated.avatarUrl
   ) {
     try {
-      await deleteAvatarByUrl(currentUser.avatarUrl);
+      await deleteAvatarBlob(currentUser.avatarUrl);
     } catch (cleanupError) {
-      console.error("Failed to delete replaced avatar from R2:", cleanupError);
+      console.error("Failed to delete replaced avatar from Blob:", cleanupError);
     }
   }
 

@@ -158,7 +158,7 @@ Most tools make you choose: Notion gives you flexibility but no structure. Googl
 | Social S1 | Community Board — posts, comments, likes, bookmarks, moderation | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
 | Social S2 | Ask Mentor — Q&A workflow with Mentor Inbox | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
 | Social S3 | Messaging + notifications (web inbox/chat, mobile inbox/thread, browser + mobile push) | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
-| Phase 9 | File storage (Cloudflare R2 — PDF upload, export) | ![Planned](https://img.shields.io/badge/Planned-64748B?style=flat-square) |
+| Phase 9 | File storage (Vercel Blob — avatar + material uploads) | ![In Progress](https://img.shields.io/badge/In%20Progress-F59E0B?style=flat-square) |
 | Phase 10 | Deployment (Vercel/Netlify) | ![Planned](https://img.shields.io/badge/Planned-64748B?style=flat-square) |
 
 ---
@@ -1110,11 +1110,34 @@ The Load More pattern was chosen over numbered pagination for the Community Feed
 
 ---
 
+## File Storage — Vercel Blob
+
+### Why Vercel Blob for File Storage
+
+StudyHub uses Vercel Blob because the app has two different storage needs with different privacy requirements:
+
+- **Profile avatars** are public identity assets, so they can be stored in a public Blob store and rendered directly by URL.
+- **Learning material files** are private user content, so they are stored in a private Blob store and served only through protected API routes.
+
+This keeps the v2 rewrite aligned with StudyHub v1, where material files were stored in private Supabase Storage buckets and accessed through signed URLs. It also preserves the product promise that each user has a private workspace and can access only their own or explicitly shared materials.
+
+Vercel Blob was chosen over Cloudflare R2 for this capstone because it integrates directly with the Vercel deployment target and avoids the billing/card friction that blocked the R2 setup. It was also preferred over public-by-link free storage providers because material documents should not be accessible just by knowing the raw file URL.
+
+The implementation uses two Blob stores:
+
+- `studyhub-avatars` — public store for avatars
+- `studyhub-materials` — private store for uploaded documents/images
+
+Material uploads are limited to 3 MB and validated server-side by MIME type. File records store only the private Blob pathname; downloads go through authenticated StudyHub API endpoints that enforce owner/shared-user access before returning the file.
+
+References: Vercel Blob supports public and private stores, and private Blob stores require authenticated access. Blob is available on Vercel plans with included Hobby usage limits. See the Vercel Blob docs, Private Storage docs, and usage/pricing documentation.
+
+---
+
 ## Planned Features
 
 | Feature | Description | Status |
 |---|---|---|
-| Cloudflare R2 Storage | Upload PDFs and documents, avatar file storage | Planned |
 | Sharing & Permissions | Share materials/notes between users with access control | Planned |
 | Deployment | Live production deploy on Vercel/Netlify | Final phase |
 
