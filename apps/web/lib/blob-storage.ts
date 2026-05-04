@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import { put, del } from "@vercel/blob";
+import { put, del, list, type ListBlobResultBlob } from "@vercel/blob";
 import { AVATAR_ALLOWED_MIME_TYPES, AVATAR_MAX_BYTES } from "./profile";
 
 // ---------------------------------------------------------------------------
@@ -134,6 +134,24 @@ export async function uploadMaterialBlob({
 
   // Return only the pathname — never expose the full Blob URL to clients.
   return pathname;
+}
+
+export async function getMaterialBlob(
+  pathname: string
+): Promise<ListBlobResultBlob | null> {
+  const normalizedPathname = pathname.trim();
+  if (!normalizedPathname) {
+    return null;
+  }
+
+  const token = requireToken("MATERIAL_BLOB_READ_WRITE_TOKEN");
+  const result = await list({
+    prefix: normalizedPathname,
+    token,
+    limit: 1,
+  });
+
+  return result.blobs.find((blob) => blob.pathname === normalizedPathname) ?? null;
 }
 
 // ---------------------------------------------------------------------------

@@ -10164,3 +10164,26 @@ Page routes обхождат API guard-ите (зареждат директно
 - Two separate Vercel Blob stores (public avatars, private materials) via separate tokens — no mixed-access single store.
 - Material upload returns only the Blob pathname; the full URL is never exposed to clients.
 - Filename sanitization and UUID-based pathnames prevent collisions and injection.
+
+
+## 2026-05-04
+
+### Session 341 — Protected material file download endpoint
+
+**Какво направихме:**
+- Added `GET /api/materials/[id]/file` as a protected App Router endpoint for private Vercel Blob material files.
+- The endpoint requires JWT auth, loads the material by id, enforces owner-or-shared access via `shared_materials`, redirects external `http(s)` file URLs, and proxies private Blob downloads server-side.
+- Added `getMaterialBlob(pathname)` to the Blob storage helper to locate private material blobs by pathname using the material Blob token without exposing the raw Blob URL to clients.
+- Download responses stream the Blob body with `Content-Type`, `Content-Disposition: inline; filename="..."`, and private no-store caching.
+
+**Файлове:**
+- [ADD] apps/web/app/api/materials/[id]/file/route.ts
+- [MODIFY] apps/web/lib/blob-storage.ts
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm run typecheck:web` -> pass
+
+**Решения:**
+- Access checks run before file/link handling so unauthorized users cannot use the endpoint to discover or follow material file URLs.
+- Private Blob URLs stay server-only; clients receive only the proxied stream response.
