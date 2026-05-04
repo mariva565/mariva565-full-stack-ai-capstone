@@ -1,5 +1,13 @@
 import { useState } from "react";
-import { ActivityIndicator, Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  ActivityIndicator,
+  Alert,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import * as DocumentPicker from "expo-document-picker";
 import { uploadFile } from "../../lib/api";
@@ -81,18 +89,22 @@ export function FileUploadPicker({ currentUrl, onUploadSuccess }: FileUploadPick
         <View style={styles.buttonRow}>
           <TouchableOpacity
             style={styles.btn}
-            onPress={() =>
-              Alert.alert("Add Image", "Choose source", [
-                { text: "Camera", onPress: () => void handlePickImage("camera") },
-                { text: "Gallery", onPress: () => void handlePickImage("library") },
-                { text: "Cancel", style: "cancel" },
-              ])
-            }
+            onPress={() => void handlePickImage("library")}
             accessibilityRole="button"
-            accessibilityLabel="Upload image"
+            accessibilityLabel="Upload image from gallery"
           >
             <Text style={styles.btnText}>📷 Image</Text>
           </TouchableOpacity>
+          {Platform.OS !== "web" ? (
+            <TouchableOpacity
+              style={styles.btn}
+              onPress={() => void handlePickImage("camera")}
+              accessibilityRole="button"
+              accessibilityLabel="Take photo"
+            >
+              <Text style={styles.btnText}>Camera</Text>
+            </TouchableOpacity>
+          ) : null}
           <TouchableOpacity
             style={styles.btn}
             onPress={() => void handlePickDocument()}
@@ -112,9 +124,10 @@ const styles = StyleSheet.create({
   uploadedText: { fontSize: 13, color: "#22c55e", marginBottom: 6 },
   loadingRow: { flexDirection: "row", alignItems: "center", gap: 8 },
   loadingText: { fontSize: 13, color: "#94a3b8" },
-  buttonRow: { flexDirection: "row", gap: 8 },
+  buttonRow: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
   btn: {
     flex: 1,
+    minWidth: 140,
     paddingVertical: 10,
     paddingHorizontal: 12,
     backgroundColor: "#1e293b",

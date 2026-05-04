@@ -281,9 +281,16 @@ export async function uploadFile(
   const token = await getToken();
 
   const formData = new FormData();
-  // React Native FormData приема обект с uri/name/type, не File обект
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  formData.append("file", { uri: file.uri, name: file.name, type: file.type } as any);
+  if (Platform.OS === "web") {
+    const response = await fetch(file.uri);
+    const blob = await response.blob();
+    const uploadBlob = new File([blob], file.name, { type: blob.type || file.type });
+    formData.append("file", uploadBlob);
+  } else {
+    // React Native FormData приема обект с uri/name/type, не File обект
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    formData.append("file", { uri: file.uri, name: file.name, type: file.type } as any);
+  }
 
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 60_000); // 60s за по-големи файлове

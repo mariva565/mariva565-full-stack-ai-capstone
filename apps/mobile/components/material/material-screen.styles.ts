@@ -129,6 +129,28 @@ export function makeMaterialScreenStyles(colors: AppColors) {
       textAlign: "center",
       paddingVertical: 12,
     },
+    filePreviewCard: {
+      backgroundColor: colors.surface,
+      marginHorizontal: 16,
+      marginBottom: 12,
+      borderRadius: 14,
+      overflow: "hidden",
+      borderWidth: 1,
+      borderColor: colors.borderMuted,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    filePreviewImage: {
+      width: "100%",
+      height: 280,
+      backgroundColor: colors.surfaceMuted,
+    },
+    filePreviewLoadingText: {
+      color: colors.textSecondary,
+      fontSize: 13,
+      fontWeight: "600",
+      paddingVertical: 16,
+    },
     linkCard: {
       backgroundColor: colors.surface,
       marginHorizontal: 16,

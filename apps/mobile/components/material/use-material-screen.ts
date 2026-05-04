@@ -3,7 +3,8 @@ import { Linking } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { apiFetch, getUserFriendlyError } from "../../lib/api";
+import { ApiError, apiFetch, getUserFriendlyError } from "../../lib/api";
+import { API_BASE } from "../../lib/api.constants";
 import {
   addFavorite,
   appendOptimisticFavorite,
@@ -16,7 +17,8 @@ import { useIsOffline } from "../../lib/network";
 import { invalidateFavoritesList, queryKeys } from "../../lib/query-keys";
 import type { FavoriteItem, Material } from "../../lib/studyhub-types";
 import { useToast } from "../../lib/toast-context";
-import { normalizeMaterialType } from "../../lib/material-utils";
+import { isImageFileUrl, normalizeMaterialType } from "../../lib/material-utils";
+import { captureTelemetryException } from "../../lib/telemetry";
 
 type MaterialDetailResponse = {
   material: Material & {
@@ -36,6 +38,13 @@ type MaterialFileLinkResponse = {
   url: string;
   expiresIn: number;
 };
+
+function fetchMaterialFileLink(materialId: number): Promise<MaterialFileLinkResponse> {
+  return apiFetch<MaterialFileLinkResponse>(`/api/materials/${materialId}/file-link`, {
+    method: "POST",
+    cache: false,
+  });
+}
 
 export function useMaterialScreen(routeId: string) {
   const queryClient = useQueryClient();
@@ -59,11 +68,7 @@ export function useMaterialScreen(routeId: string) {
     mutateAsync: createFileLink,
     isPending: openMaterialBusy,
   } = useMutation({
-    mutationFn: (materialId: number) =>
-      apiFetch<MaterialFileLinkResponse>(`/api/materials/${materialId}/file-link`, {
-        method: "POST",
-        cache: false,
-      }),
+    mutationFn: fetchMaterialFileLink,
   });
 
   const toggleFavoriteMutation = useMutation({
@@ -121,6 +126,26 @@ export function useMaterialScreen(routeId: string) {
 
   const materialData = materialQuery.data ?? null;
   const material = materialData?.material ?? null;
+  const isFileMaterial = material
+    ? normalizeMaterialType(material.materialType) === "file"
+    : false;
+  const canPreviewImageFile =
+    isFileMaterial && isImageFileUrl(material?.fileUrl);
+
+  const filePreviewQuery = useQuery({
+    queryKey: [...queryKeys.materials.detail(routeId), "filePreview"],
+    queryFn: async () => {
+      if (!material) {
+        throw new Error("Material is not loaded.");
+      }
+      return fetchMaterialFileLink(material.id);
+    },
+    enabled: canPreviewImageFile,
+    retry: 1,
+    staleTime: 45_000,
+    gcTime: 60_000,
+  });
+
   const isPinned = material ? isFavoriteMaterial(favoritesQuery.data, material.id) : false;
   const loading = materialQuery.isPending && !material;
   const refreshing = materialQuery.isRefetching && !materialQuery.isPending;
@@ -139,13 +164,18 @@ export function useMaterialScreen(routeId: string) {
           ? (await createFileLink(material.id)).url
           : material.fileUrl;
 
-      const supported = await Linking.canOpenURL(targetUrl);
-      if (!supported) {
-        showToast("This URL cannot be opened on your device", "error");
-        return;
-      }
       await Linking.openURL(targetUrl);
     } catch (error) {
+      captureTelemetryException(error, {
+        area: "material_file_open",
+        details: {
+          apiBase: API_BASE,
+          materialId: material.id,
+          materialType: material.materialType,
+          errorCode: error instanceof ApiError ? error.code : null,
+          errorStatus: error instanceof ApiError ? error.status : null,
+        },
+      });
       showToast(getUserFriendlyError(error, "Could not open this material"), "error");
     }
   }, [createFileLink, material, showToast]);
@@ -178,6 +208,8 @@ export function useMaterialScreen(routeId: string) {
     isPinned,
     toggleFavoriteBusy: toggleFavoriteMutation.isPending,
     openMaterialBusy,
+    filePreviewUrl: filePreviewQuery.data?.url ?? null,
+    filePreviewLoading: filePreviewQuery.isPending && canPreviewImageFile,
     openMaterialUrl,
     toggleFavorite,
     refresh,

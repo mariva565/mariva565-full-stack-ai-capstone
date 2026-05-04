@@ -10257,7 +10257,55 @@ Page routes обхождат API guard-ите (зареждат директно
 **Verification:**
 - `npm run typecheck:web` -> pass
 - `npm run typecheck:mobile` -> pass
+- Local production API check -> pass (`POST /api/materials/58/file-link` returned `expiresIn: 60`; signed URL streamed PNG before expiry; same URL returned `401 INVALID_FILE_LINK` after 65 seconds)
 
 **Решения:**
 - Used a StudyHub-signed URL back to the streaming endpoint instead of exposing a raw private Blob URL, because private Vercel Blob reads are served through Functions.
 - Signed links are scoped to both `materialId` and the current Blob pathname and expire after 60 seconds.
+
+### Session 345 — Expo Web material upload compatibility
+
+**Какво направихме:**
+- Fixed Expo Web material uploads by converting picked `uri` assets into browser `File` objects before appending them to `FormData`.
+- Kept the existing React Native upload path unchanged for device builds, where `{ uri, name, type }` FormData entries are required.
+- Added Expo Web dev origins (`localhost:8081`, `127.0.0.1:8081`) to `.env.example` `ALLOWED_ORIGINS` so browser-based mobile testing can call the Next API.
+- Updated local `.env` / `.env.local` `ALLOWED_ORIGINS` with Expo Web origins for this machine; those files remain untracked.
+- Made the material image upload action open the image library/file picker directly, with a separate native-only Camera button instead of hiding the choice behind `Alert`.
+- Added inline previews for uploaded image file materials in the Expo material detail screen using the same short-lived signed file-link endpoint.
+- Added Sentry capture context for handled Open File failures so mobile file-open network/linking errors are visible when telemetry is configured.
+
+**Файлове:**
+- [MODIFY] apps/mobile/lib/api.ts
+- [MODIFY] apps/mobile/components/material-form/file-upload-picker.tsx
+- [MODIFY] apps/mobile/components/material/use-material-screen.ts
+- [MODIFY] apps/mobile/app/material/[id].tsx
+- [MODIFY] apps/mobile/components/material/material-screen.styles.ts
+- [MODIFY] apps/mobile/lib/material-utils.ts
+- [MODIFY] .env.example
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm run typecheck:mobile` -> pass
+- `npm run typecheck:web` -> pass
+- Pre-restart CORS probe showed the running production API still needed restart to pick up the local env change.
+
+**Решения:**
+- Expo Web upload needs browser-native `File`/`Blob` FormData, while native Expo still needs the React Native URI object shape.
+- Image library upload is now the default image action because it works consistently on Expo Web and native devices; camera capture stays available on native as a dedicated button.
+- Image previews use signed StudyHub file links rather than raw private Blob URLs; Open File still requests a fresh link when tapped.
+- Sentry did not capture the previous handled toast-only failure; this pass explicitly reports that flow with non-sensitive material/API context.
+### Session 346 — LAN-safe mobile signed file URLs
+
+**Какво направихме:**
+- Fixed `POST /api/materials/[id]/file-link` to build signed URLs from `Host` / forwarded headers instead of `request.url`, which Next local production normalized to `localhost`.
+- Confirmed the phone failure cause: LAN requests to `http://192.168.1.9:3000` were receiving signed URLs pointing at `http://localhost:3000`, which resolves to the phone itself on device.
+
+**Файлове:**
+- [MODIFY] apps/web/app/api/materials/[id]/file-link/route.ts
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm run typecheck:web` -> pass
+
+**Решения:**
+- Signed file links now preserve the externally reachable request host locally and remain compatible with Vercel forwarded host/proto headers in deployment.

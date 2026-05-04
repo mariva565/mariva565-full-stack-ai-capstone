@@ -73,9 +73,27 @@ function buildSignedFileUrl(
   materialId: number,
   token: string
 ): string {
-  const url = new URL(`/api/materials/${materialId}/file`, request.url);
+  const url = new URL(`/api/materials/${materialId}/file`, getRequestOrigin(request));
   url.searchParams.set(MATERIAL_FILE_LINK_QUERY_PARAM, token);
   return url.toString();
+}
+
+function readForwardedHeader(value: string | null): string | null {
+  return value?.split(",", 1)[0]?.trim() || null;
+}
+
+function getRequestOrigin(request: NextRequest): string {
+  const forwardedProto = readForwardedHeader(request.headers.get("x-forwarded-proto"));
+  const forwardedHost = readForwardedHeader(request.headers.get("x-forwarded-host"));
+  const host = request.headers.get("host")?.trim();
+  const protocol = forwardedProto ?? request.nextUrl.protocol.replace(":", "");
+  const hostname = forwardedHost ?? host;
+
+  if (hostname) {
+    return `${protocol}://${hostname}`;
+  }
+
+  return request.nextUrl.origin;
 }
 
 // POST /api/materials/:id/file-link

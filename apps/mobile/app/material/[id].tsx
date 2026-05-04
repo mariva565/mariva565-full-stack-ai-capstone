@@ -1,6 +1,7 @@
 import { useState } from "react";
 import {
   ActivityIndicator,
+  Image,
   RefreshControl,
   ScrollView,
   Text,
@@ -42,6 +43,8 @@ export default function MaterialScreen() {
     isPinned,
     toggleFavoriteBusy,
     openMaterialBusy,
+    filePreviewUrl,
+    filePreviewLoading,
     openMaterialUrl,
     toggleFavorite,
     refresh,
@@ -182,6 +185,24 @@ export default function MaterialScreen() {
           <Text style={styles.noContent}>No content</Text>
         )}
       </View>
+
+      {filePreviewLoading ? (
+        <View style={styles.filePreviewCard}>
+          <ActivityIndicator size="small" color={colors.link} />
+          <Text style={styles.filePreviewLoadingText}>Loading preview...</Text>
+        </View>
+      ) : null}
+
+      {filePreviewUrl ? (
+        <View style={styles.filePreviewCard}>
+          <Image
+            source={{ uri: filePreviewUrl }}
+            resizeMode="contain"
+            style={styles.filePreviewImage}
+            accessibilityLabel={`${material.title} image preview`}
+          />
+        </View>
+      ) : null}
 
       {material.fileUrl ? (
         <TouchableOpacity
