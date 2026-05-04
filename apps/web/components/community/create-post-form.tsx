@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
+import { hasPostFormContent, validatePostFormImages } from "./post-form-utils";
 
 type Course = { id: number; title: string };
 
@@ -30,9 +31,13 @@ export function CreatePostForm() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const plainContent = content.replace(/<[^>]*>/g, "").trim();
-    if (!title.trim() || !plainContent) {
+    if (!title.trim() || !hasPostFormContent(content)) {
       setError("Title and content are required.");
+      return;
+    }
+    const imageErrorMessage = validatePostFormImages(content);
+    if (imageErrorMessage) {
+      setError(imageErrorMessage);
       return;
     }
     setSaving(true);

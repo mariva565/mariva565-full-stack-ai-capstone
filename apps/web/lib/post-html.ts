@@ -1,4 +1,5 @@
 import DOMPurify from "isomorphic-dompurify";
+import { hasPostImage } from "./post-images";
 
 const EMPTY_INLINE_FRAGMENT = "(?:\\s|&nbsp;|<br\\s*/?>)*";
 const EMPTY_PARAGRAPH_RE = new RegExp(`<p>${EMPTY_INLINE_FRAGMENT}</p>`, "gi");
@@ -30,8 +31,19 @@ const ALLOWED_TAGS = [
   "tr",
   "th",
   "td",
+  "img",
 ];
-const ALLOWED_ATTR = ["href", "target", "rel", "colspan", "rowspan"];
+const ALLOWED_ATTR = [
+  "href",
+  "target",
+  "rel",
+  "colspan",
+  "rowspan",
+  "src",
+  "alt",
+  "width",
+  "height",
+];
 
 function collapseWhitespace(value: string): string {
   return value.replace(/\s+/g, " ").trim();
@@ -67,5 +79,5 @@ export function hasMeaningfulPostHtmlContent(rawContent: string): boolean {
     .replace(/<[^>]*>/g, " ")
     .replace(/&nbsp;/gi, " ");
 
-  return collapseWhitespace(textOnly).length > 0;
+  return collapseWhitespace(textOnly).length > 0 || hasPostImage(rawContent);
 }

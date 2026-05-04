@@ -8,6 +8,7 @@ import {
   hasMeaningfulPostHtmlContent,
   sanitizePostHtml,
 } from "../../../../lib/post-html";
+import { countPostImages, MAX_POST_IMAGES } from "../../../../lib/post-images";
 import { eq, and, desc, sql } from "drizzle-orm";
 
 const VALID_POST_TYPES = ["discussion", "question", "resource", "article"] as const;
@@ -121,6 +122,16 @@ export async function PUT(request: NextRequest, { params }: Params) {
   if (hasContent && !hasMeaningfulPostHtmlContent(normalizedContent)) {
     return NextResponse.json(
       { code: "MISSING_CONTENT", message: "Content is required" },
+      { status: 400 }
+    );
+  }
+
+  if (hasContent && countPostImages(normalizedContent) > MAX_POST_IMAGES) {
+    return NextResponse.json(
+      {
+        code: "TOO_MANY_IMAGES",
+        message: `You can add up to ${MAX_POST_IMAGES} images per post.`,
+      },
       { status: 400 }
     );
   }

@@ -10309,3 +10309,59 @@ Page routes обхождат API guard-ите (зареждат директно
 
 **Решения:**
 - Signed file links now preserve the externally reachable request host locally and remain compatible with Vercel forwarded host/proto headers in deployment.
+
+### Session 347 — Community post image uploads
+
+**Какво направихме:**
+- Added `POST /api/upload/post-image` for authenticated community post image uploads.
+- Added public Vercel Blob helpers for post images using `AVATAR_BLOB_READ_WRITE_TOKEN` and the `posts/{userId}/...` prefix.
+- Installed `@tiptap/extension-image` and enabled image insertion in the community Tiptap editor via drag-and-drop, paste, and toolbar file picker.
+- Added upload validation for JPG/PNG/WebP/GIF images up to 2 MB, plus a 3-image-per-post cap in editor, forms, and API validation.
+- Added an editor helper note with supported image formats, 2 MB limit, drag/drop, paste, button upload, and the 3-image cap.
+- Tightened editor file handling so non-image drag/drop, paste, or file picker attempts show a validation error instead of being ignored.
+- Updated post HTML sanitization and rich-text styles so rendered posts allow and display `<img>` tags safely.
+
+**Файлове:**
+- [ADD] apps/web/app/api/upload/post-image/route.ts
+- [ADD] apps/web/components/community/post-form-utils.ts
+- [ADD] apps/web/components/ui/rich-text-toolbar.tsx
+- [ADD] apps/web/lib/post-images.ts
+- [MODIFY] apps/web/lib/blob-storage.ts
+- [MODIFY] apps/web/lib/post-html.ts
+- [MODIFY] apps/web/components/ui/rich-text-editor.tsx
+- [MODIFY] apps/web/components/community/create-post-form.tsx
+- [MODIFY] apps/web/components/community/edit-post-form.tsx
+- [MODIFY] apps/web/app/api/posts/route.ts
+- [MODIFY] apps/web/app/api/posts/[id]/route.ts
+- [MODIFY] apps/web/app/styles/globals-editor.css
+- [MODIFY] apps/web/package.json
+- [MODIFY] package-lock.json
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm run typecheck:web` -> pass
+
+**Решения:**
+- Post images are public because community posts are visible to logged-in users; the material private Blob store and material upload flow were left untouched.
+- The editor disables editing while uploads are in flight and inserts the returned public Blob URL only after the API succeeds.
+- Image-only posts now count as meaningful content after sanitization.
+
+
+### Session 348 — Material attachment remove action
+
+**Какво направихме:**
+- Added a `Remove file` action to the web material editor attachment control.
+- Changed the material file picker trigger from programmatic hidden-input clicks to `label htmlFor` triggers so `Replace` opens the file picker more reliably.
+- Added client-side validation for material replacement uploads so oversized or unsupported files show an immediate error.
+- Kept material attachment upload on the existing private `/api/upload` flow; removing a file clears the draft `fileUrl`, and Save persists `fileUrl: null`.
+
+**Файлове:**
+- [MODIFY] apps/web/components/materials/file-upload-button.tsx
+- [MODIFY] apps/web/components/materials/material-editor-form.tsx
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm run typecheck:web` -> pass
+
+**Решения:**
+- `Remove file` detaches the file from the material record; it does not delete the underlying private Blob object in this pass.

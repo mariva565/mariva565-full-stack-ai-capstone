@@ -1,6 +1,7 @@
 import { randomUUID } from "crypto";
 import { put, del, list, type ListBlobResultBlob } from "@vercel/blob";
 import { AVATAR_ALLOWED_MIME_TYPES, AVATAR_MAX_BYTES } from "./profile";
+import { validatePostImageFile } from "./post-images";
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -73,6 +74,10 @@ export function validateMaterialBlob(file: File): string | null {
   return null;
 }
 
+export function validatePostImageBlob(file: File): string | null {
+  return validatePostImageFile(file);
+}
+
 // ---------------------------------------------------------------------------
 // Avatar — public store
 // ---------------------------------------------------------------------------
@@ -86,6 +91,27 @@ export async function uploadAvatarBlob({
 }): Promise<string> {
   const token = requireToken("AVATAR_BLOB_READ_WRITE_TOKEN");
   const pathname = buildPathname("avatars", userId, file.type);
+
+  const blob = await put(pathname, file, {
+    access: "public",
+    token,
+    contentType: file.type,
+    cacheControlMaxAge: 31_536_000, // 1 year
+    addRandomSuffix: false,
+  });
+
+  return blob.url;
+}
+
+export async function uploadPostImageBlob({
+  userId,
+  file,
+}: {
+  userId: number;
+  file: File;
+}): Promise<string> {
+  const token = requireToken("AVATAR_BLOB_READ_WRITE_TOKEN");
+  const pathname = buildPathname("posts", userId, file.type);
 
   const blob = await put(pathname, file, {
     access: "public",

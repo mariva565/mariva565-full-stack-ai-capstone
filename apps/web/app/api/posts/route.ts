@@ -7,6 +7,7 @@ import {
   hasMeaningfulPostHtmlContent,
   sanitizePostHtml,
 } from "../../../lib/post-html";
+import { countPostImages, MAX_POST_IMAGES } from "../../../lib/post-images";
 import { desc, eq, and, ilike, or, sql, inArray } from "drizzle-orm";
 
 // GET /api/posts — list posts (filters: type, courseId, status, search, pinned)
@@ -106,6 +107,16 @@ export async function POST(request: NextRequest) {
     if (!normalizedTitle || !hasMeaningfulPostHtmlContent(normalizedContent)) {
       return NextResponse.json(
         { code: "MISSING_FIELDS", message: "Title and content are required" },
+        { status: 400 }
+      );
+    }
+
+    if (countPostImages(normalizedContent) > MAX_POST_IMAGES) {
+      return NextResponse.json(
+        {
+          code: "TOO_MANY_IMAGES",
+          message: `You can add up to ${MAX_POST_IMAGES} images per post.`,
+        },
         { status: 400 }
       );
     }

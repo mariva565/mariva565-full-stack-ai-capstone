@@ -64,6 +64,16 @@
   @apply bg-transparent p-0 text-inherit;
 }
 
+/* ===== Image styles — shared between editor and rendered posts ===== */
+.post-html-content img,
+.tiptap-content img {
+  @apply my-4 max-w-full rounded-xl border border-slate-200 object-contain shadow-sm dark:border-slate-700;
+}
+
+.tiptap-content img.ProseMirror-selectednode {
+  @apply ring-2 ring-brand-400;
+}
+
 /* ===== Table styles — shared between editor and rendered posts ===== */
 .post-html-content table,
 .tiptap-content table {

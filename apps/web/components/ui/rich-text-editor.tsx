@@ -1,13 +1,21 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import Image from "@tiptap/extension-image";
 import { Table } from "@tiptap/extension-table";
 import { TableRow } from "@tiptap/extension-table-row";
 import { TableHeader } from "@tiptap/extension-table-header";
 import { TableCell } from "@tiptap/extension-table-cell";
-
-// ─── Types ──────────────────────────────────────────────────────────────────
+import {
+  countPostImages,
+  MAX_POST_IMAGES,
+  POST_IMAGE_FILE_ACCEPT,
+  POST_IMAGE_MAX_BYTES,
+  validatePostImageFile,
+} from "@/lib/post-images";
+import { RichTextToolbar } from "./rich-text-toolbar";
 
 interface RichTextEditorProps {
   value: string;
@@ -16,42 +24,59 @@ interface RichTextEditorProps {
   minHeight?: string;
 }
 
-// ─── Toolbar Button ──────────────────────────────────────────────────────────
+type EditorInstance = NonNullable<ReturnType<typeof useEditor>>;
+type UploadResponse = { url?: unknown; message?: unknown };
 
-function ToolbarButton({
-  active,
-  onClick,
-  label,
-  title,
-}: {
-  active?: boolean;
-  onClick: () => void;
-  label: string;
-  title?: string;
-}) {
+function getFiles(files: FileList | null | undefined): File[] {
+  return Array.from(files ?? []);
+}
+
+function hasDraggedFile(dataTransfer: DataTransfer | null): boolean {
+  const types = Array.from(dataTransfer?.types ?? []);
+  const items = Array.from(dataTransfer?.items ?? []);
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      title={title ?? label}
-      className={`rounded-lg border px-2.5 py-1 text-xs font-semibold transition-all ${
-        active
-          ? "border-brand-400 bg-brand-100 text-brand-700 dark:border-brand-600 dark:bg-brand-900/40 dark:text-brand-300"
-          : "border-slate-200 bg-white text-slate-600 hover:border-brand-300 hover:bg-brand-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-brand-700 dark:hover:bg-brand-900/20"
-      }`}
-    >
-      {label}
-    </button>
+    types.includes("Files") ||
+    items.some((item) => item.kind === "file") ||
+    (dataTransfer?.files.length ?? 0) > 0
   );
 }
 
-// ─── Divider ─────────────────────────────────────────────────────────────────
-
-function ToolbarDivider() {
-  return <span className="h-5 w-px bg-slate-200 dark:bg-slate-700" />;
+function getMinHeightClass(minHeight: string): string {
+  return minHeight === "200px" ? "min-h-[200px]" : "min-h-[180px]";
 }
 
-// ─── Editor ──────────────────────────────────────────────────────────────────
+function getMaxImageMegabytes(): number {
+  return POST_IMAGE_MAX_BYTES / (1024 * 1024);
+}
+
+function getPayloadMessage(payload: unknown): string {
+  if (!payload || typeof payload !== "object" || !("message" in payload)) {
+    return "";
+  }
+
+  return String((payload as UploadResponse).message ?? "");
+}
+
+async function uploadPostImage(file: File): Promise<string> {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const response = await fetch("/api/upload/post-image", {
+    method: "POST",
+    body: formData,
+  });
+  const payload = (await response.json().catch(() => null)) as UploadResponse | null;
+
+  if (!response.ok) {
+    throw new Error(getPayloadMessage(payload) || "Image upload failed.");
+  }
+
+  if (!payload || typeof payload.url !== "string") {
+    throw new Error("Image upload did not return a URL.");
+  }
+
+  return payload.url;
+}
 
 export function RichTextEditor({
   value,
@@ -59,18 +84,24 @@ export function RichTextEditor({
   placeholder = "Write something...",
   minHeight = "180px",
 }: RichTextEditorProps) {
+  const editorRef = useRef<EditorInstance | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const uploadingRef = useRef(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [isDraggingImage, setIsDraggingImage] = useState(false);
+  const [imageError, setImageError] = useState("");
+
   const editor = useEditor({
     extensions: [
       StarterKit,
+      Image.configure({ allowBase64: false }),
       Table.configure({ resizable: false }),
       TableRow,
       TableHeader,
       TableCell,
     ],
     content: value || "<p></p>",
-    onUpdate: ({ editor: ed }) => {
-      onChange(ed.getHTML());
-    },
+    onUpdate: ({ editor: ed }) => onChange(ed.getHTML()),
     editorProps: {
       attributes: {
         class: [
@@ -83,83 +114,142 @@ export function RichTextEditor({
         ].join(" "),
         "data-placeholder": placeholder,
       },
+      handlePaste: (_view, event) => handleImagePaste(event),
     },
   });
 
+  useEffect(() => {
+    editorRef.current = editor;
+  }, [editor]);
+
   if (!editor) return null;
 
-  return (
-    <div className="overflow-hidden rounded-xl border border-slate-200 bg-white transition focus-within:border-brand-400 focus-within:ring-2 focus-within:ring-brand-400/20 dark:border-slate-700 dark:bg-slate-800 dark:focus-within:border-brand-600">
-      {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-1.5 border-b border-slate-200 bg-slate-50 px-3 py-2 dark:border-slate-700 dark:bg-slate-900/40">
-        <ToolbarButton
-          label="B"
-          title="Bold"
-          active={editor.isActive("bold")}
-          onClick={() => editor.chain().focus().toggleBold().run()}
-        />
-        <ToolbarButton
-          label="I"
-          title="Italic"
-          active={editor.isActive("italic")}
-          onClick={() => editor.chain().focus().toggleItalic().run()}
-        />
-        <ToolbarDivider />
-        <ToolbarButton
-          label="H2"
-          active={editor.isActive("heading", { level: 2 })}
-          onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-        />
-        <ToolbarButton
-          label="H3"
-          active={editor.isActive("heading", { level: 3 })}
-          onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-        />
-        <ToolbarDivider />
-        <ToolbarButton
-          label="• List"
-          title="Bullet List"
-          active={editor.isActive("bulletList")}
-          onClick={() => editor.chain().focus().toggleBulletList().run()}
-        />
-        <ToolbarButton
-          label="1. List"
-          title="Ordered List"
-          active={editor.isActive("orderedList")}
-          onClick={() => editor.chain().focus().toggleOrderedList().run()}
-        />
-        <ToolbarDivider />
-        <ToolbarButton
-          label="<>"
-          title="Code Block"
-          active={editor.isActive("codeBlock")}
-          onClick={() => editor.chain().focus().toggleCodeBlock().run()}
-        />
-        <ToolbarDivider />
-        <ToolbarButton
-          label="Table"
-          title="Insert Table"
-          active={editor.isActive("table")}
-          onClick={() =>
-            editor.isActive("table")
-              ? editor.chain().focus().deleteTable().run()
-              : editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()
-          }
-        />
-        {editor.isActive("table") && (
-          <>
-            <ToolbarButton label="+Col" title="Add Column" onClick={() => editor.chain().focus().addColumnAfter().run()} />
-            <ToolbarButton label="-Col" title="Remove Column" onClick={() => editor.chain().focus().deleteColumn().run()} />
-            <ToolbarButton label="+Row" title="Add Row" onClick={() => editor.chain().focus().addRowAfter().run()} />
-            <ToolbarButton label="-Row" title="Remove Row" onClick={() => editor.chain().focus().deleteRow().run()} />
-          </>
-        )}
-      </div>
+  async function uploadImageFiles(files: File[]) {
+    const currentEditor = editorRef.current;
+    if (!currentEditor || uploadingRef.current || files.length === 0) return;
 
-      {/* Editor area */}
-      <div style={{ minHeight }}>
+    const validationMessage = files.map(validatePostImageFile).find(Boolean);
+    if (validationMessage) {
+      setImageError(validationMessage);
+      return;
+    }
+
+    const imageCount = countPostImages(currentEditor.getHTML());
+    if (imageCount + files.length > MAX_POST_IMAGES) {
+      setImageError(`You can add up to ${MAX_POST_IMAGES} images per post.`);
+      return;
+    }
+
+    await insertUploadedImages(currentEditor, files);
+  }
+
+  async function insertUploadedImages(currentEditor: EditorInstance, files: File[]) {
+    uploadingRef.current = true;
+    setIsUploading(true);
+    setImageError("");
+    currentEditor.setEditable(false);
+
+    try {
+      for (const file of files) {
+        const url = await uploadPostImage(file);
+        currentEditor.setEditable(true);
+        currentEditor.chain().focus().setImage({ src: url, alt: file.name }).run();
+        currentEditor.setEditable(false);
+      }
+    } catch (error) {
+      setImageError(error instanceof Error ? error.message : "Image upload failed.");
+    } finally {
+      uploadingRef.current = false;
+      setIsUploading(false);
+      currentEditor.setEditable(true);
+    }
+  }
+
+  function handleEditorDragOver(event: React.DragEvent<HTMLDivElement>) {
+    if (!hasDraggedFile(event.dataTransfer)) return;
+    event.preventDefault();
+    event.stopPropagation();
+    event.dataTransfer.dropEffect = isUploading ? "none" : "copy";
+    setIsDraggingImage(true);
+  }
+
+  function handleEditorDragLeave(event: React.DragEvent<HTMLDivElement>) {
+    if (!hasDraggedFile(event.dataTransfer)) return;
+    const nextTarget = event.relatedTarget as Node | null;
+    if (nextTarget && event.currentTarget.contains(nextTarget)) return;
+    event.stopPropagation();
+    setIsDraggingImage(false);
+  }
+
+  function handleEditorDrop(event: React.DragEvent<HTMLDivElement>) {
+    if (!hasDraggedFile(event.dataTransfer)) return;
+    event.preventDefault();
+    event.stopPropagation();
+    setIsDraggingImage(false);
+
+    void uploadImageFiles(getFiles(event.dataTransfer.files));
+  }
+
+  function handleImagePaste(event: ClipboardEvent): boolean {
+    const files = getFiles(event.clipboardData?.files);
+    if (files.length === 0) return false;
+
+    event.preventDefault();
+    void uploadImageFiles(files);
+    return true;
+  }
+
+  function handleFilePick(event: React.ChangeEvent<HTMLInputElement>) {
+    const files = getFiles(event.currentTarget.files);
+    event.currentTarget.value = "";
+    void uploadImageFiles(files);
+  }
+
+  return (
+    <div
+      aria-busy={isUploading}
+      className="overflow-hidden rounded-xl border border-slate-200 bg-white transition focus-within:border-brand-400 focus-within:ring-2 focus-within:ring-brand-400/20 dark:border-slate-700 dark:bg-slate-800 dark:focus-within:border-brand-600"
+    >
+      <RichTextToolbar
+        editor={editor}
+        isUploading={isUploading}
+        onInsertImage={() => fileInputRef.current?.click()}
+      />
+      <p className="border-b border-slate-200 bg-slate-50/80 px-4 py-2 text-xs font-medium text-slate-500 dark:border-slate-700 dark:bg-slate-900/30 dark:text-slate-400">
+        Images: JPG, PNG, WebP, or GIF under {getMaxImageMegabytes()} MB. Use
+        the Image button, drag and drop, or paste a screenshot. Max{" "}
+        {MAX_POST_IMAGES} images per post.
+      </p>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept={POST_IMAGE_FILE_ACCEPT}
+        multiple
+        disabled={isUploading}
+        onChange={handleFilePick}
+        className="hidden"
+      />
+      <div
+        onDragEnterCapture={handleEditorDragOver}
+        onDragOverCapture={handleEditorDragOver}
+        onDragLeaveCapture={handleEditorDragLeave}
+        onDropCapture={handleEditorDrop}
+        className={`relative ${getMinHeightClass(minHeight)} ${
+          isDraggingImage ? "ring-2 ring-inset ring-brand-400" : ""
+        }`}
+      >
         <EditorContent editor={editor} />
+        {isDraggingImage ? (
+          <div className="pointer-events-none absolute inset-3 flex items-center justify-center rounded-xl border-2 border-dashed border-brand-400 bg-brand-50/80 text-sm font-semibold text-brand-700 backdrop-blur-sm dark:border-brand-500 dark:bg-brand-950/70 dark:text-brand-200">
+            Drop image to upload
+          </div>
+        ) : null}
       </div>
+      {imageError ? (
+        <p className="border-t border-rose-100 bg-rose-50 px-4 py-2 text-xs font-medium text-rose-600 dark:border-rose-900/40 dark:bg-rose-950/30 dark:text-rose-300">
+          {imageError}
+        </p>
+      ) : null}
     </div>
   );
 }

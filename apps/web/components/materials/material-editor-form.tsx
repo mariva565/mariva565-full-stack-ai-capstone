@@ -119,6 +119,7 @@ export function MaterialEditorForm({
               <FileUploadButton
                 currentUrl={fileUrl || null}
                 onUploadSuccess={onFileUrlChange}
+                onRemove={() => onFileUrlChange("")}
               />
             </div>
           ) : (
