@@ -62,7 +62,7 @@ export function SiteFooter() {
             <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
           </SocialLink>
           <SocialLink href="https://linkedin.com" label="LinkedIn">
-            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z" />
+            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z" />
             <circle cx="4" cy="4" r="2" />
           </SocialLink>
           <span className="ml-2 h-4 w-px bg-slate-200" />

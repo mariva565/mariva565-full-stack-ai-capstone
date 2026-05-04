@@ -14,6 +14,7 @@ const MATERIAL_TYPE_ALIASES: Record<string, MaterialType> = {
 
 const TAG_SPLIT_REGEX = /[,;]/;
 const TITLE_PREVIEW_MAX_LENGTH = 80;
+const IMAGE_FILE_EXTENSION_REGEX = /\.(avif|gif|jpe?g|png|webp)$/i;
 
 function trimToNull(value: string | null | undefined): string | null {
   const trimmed = value?.trim();
@@ -71,6 +72,22 @@ export function getMaterialSourceHref(
   }
 
   return `/api/materials/${materialId}/file`;
+}
+
+export function isImageFileUrl(fileUrl: string | null | undefined): boolean {
+  const trimmedUrl = trimToNull(fileUrl);
+  if (!trimmedUrl) {
+    return false;
+  }
+
+  let pathname = trimmedUrl;
+  try {
+    pathname = new URL(trimmedUrl).pathname;
+  } catch {
+    pathname = trimmedUrl.split(/[?#]/, 1)[0];
+  }
+
+  return IMAGE_FILE_EXTENSION_REGEX.test(pathname);
 }
 
 export function resolveMaterialTitle(

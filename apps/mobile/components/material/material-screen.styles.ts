@@ -138,11 +138,19 @@ export function makeMaterialScreenStyles(colors: AppColors) {
       borderLeftWidth: 4,
       borderLeftColor: colors.link,
     },
+    linkCardDisabled: {
+      opacity: 0.72,
+    },
+    linkLabelRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 8,
+      marginBottom: 4,
+    },
     linkLabel: {
       fontSize: 14,
       fontWeight: "700",
       color: colors.link,
-      marginBottom: 4,
     },
     linkUrl: {
       fontSize: 13,

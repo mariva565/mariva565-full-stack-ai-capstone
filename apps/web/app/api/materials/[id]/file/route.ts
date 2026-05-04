@@ -5,6 +5,10 @@ import { materials, sharedMaterials } from "../../../../../../../drizzle/schema"
 import { requireAuth } from "../../../../../lib/api-utils";
 import { getMaterialBlob } from "../../../../../lib/blob-storage";
 import { db } from "../../../../../lib/db";
+import {
+  MATERIAL_FILE_LINK_QUERY_PARAM,
+  verifyMaterialFileLinkToken,
+} from "../../../../../lib/material-file-link-token";
 
 type Ctx = { params: Promise<{ id: string }> };
 type MaterialFileRecord = {
@@ -117,6 +121,58 @@ async function loadMaterialFileRecord(
   return material ?? null;
 }
 
+async function getSignedFileLinkAccessError(
+  request: NextRequest,
+  materialId: number,
+  pathname: string
+): Promise<NextResponse | null> {
+  const token = request.nextUrl.searchParams
+    .get(MATERIAL_FILE_LINK_QUERY_PARAM)
+    ?.trim();
+
+  if (!token) {
+    return null;
+  }
+
+  const payload = await verifyMaterialFileLinkToken(token);
+  if (!payload || payload.materialId !== materialId || payload.pathname !== pathname) {
+    return jsonError("INVALID_FILE_LINK", "Invalid or expired file link", 401);
+  }
+
+  return null;
+}
+
+async function getAuthenticatedAccessError(
+  request: NextRequest,
+  material: MaterialFileRecord
+): Promise<NextResponse | null> {
+  const auth = await requireAuth(request);
+  if ("error" in auth) return auth.error;
+
+  const hasAccess = await canAccessMaterial(
+    material.id,
+    auth.user.sub,
+    material.createdBy
+  );
+  if (!hasAccess) {
+    return jsonError("FORBIDDEN", "You do not have access to this file", 403);
+  }
+
+  return null;
+}
+
+async function getAccessError(
+  request: NextRequest,
+  material: MaterialFileRecord,
+  pathname: string
+): Promise<NextResponse | null> {
+  if (request.nextUrl.searchParams.has(MATERIAL_FILE_LINK_QUERY_PARAM)) {
+    return getSignedFileLinkAccessError(request, material.id, pathname);
+  }
+
+  return getAuthenticatedAccessError(request, material);
+}
+
 async function buildBlobDownloadResponse(
   pathname: string,
   materialId: number
@@ -148,9 +204,6 @@ async function buildBlobDownloadResponse(
 
 // GET /api/materials/:id/file
 export async function GET(request: NextRequest, { params }: Ctx) {
-  const auth = await requireAuth(request);
-  if ("error" in auth) return auth.error;
-
   const { id } = await params;
   const materialId = Number(id);
   if (!Number.isFinite(materialId) || materialId <= 0) {
@@ -163,18 +216,14 @@ export async function GET(request: NextRequest, { params }: Ctx) {
       return jsonError("NOT_FOUND", "Material not found", 404);
     }
 
-    const hasAccess = await canAccessMaterial(
-      material.id,
-      auth.user.sub,
-      material.createdBy
-    );
-    if (!hasAccess) {
-      return jsonError("FORBIDDEN", "You do not have access to this file", 403);
-    }
-
     const fileUrl = material.fileUrl?.trim();
     if (!fileUrl) {
       return jsonError("NOT_FOUND", "No file attached to this material", 404);
+    }
+
+    const accessError = await getAccessError(request, material, fileUrl);
+    if (accessError) {
+      return accessError;
     }
 
     if (isExternalUrl(fileUrl)) {

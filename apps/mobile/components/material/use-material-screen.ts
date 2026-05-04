@@ -16,6 +16,7 @@ import { useIsOffline } from "../../lib/network";
 import { invalidateFavoritesList, queryKeys } from "../../lib/query-keys";
 import type { FavoriteItem, Material } from "../../lib/studyhub-types";
 import { useToast } from "../../lib/toast-context";
+import { normalizeMaterialType } from "../../lib/material-utils";
 
 type MaterialDetailResponse = {
   material: Material & {
@@ -29,6 +30,11 @@ type MaterialDetailResponse = {
     id: number;
     title: string;
   };
+};
+
+type MaterialFileLinkResponse = {
+  url: string;
+  expiresIn: number;
 };
 
 export function useMaterialScreen(routeId: string) {
@@ -47,6 +53,17 @@ export function useMaterialScreen(routeId: string) {
   const favoritesQuery = useQuery({
     queryKey: queryKeys.favorites.lists(),
     queryFn: fetchFavorites,
+  });
+
+  const {
+    mutateAsync: createFileLink,
+    isPending: openMaterialBusy,
+  } = useMutation({
+    mutationFn: (materialId: number) =>
+      apiFetch<MaterialFileLinkResponse>(`/api/materials/${materialId}/file-link`, {
+        method: "POST",
+        cache: false,
+      }),
   });
 
   const toggleFavoriteMutation = useMutation({
@@ -117,16 +134,21 @@ export function useMaterialScreen(routeId: string) {
     }
 
     try {
-      const supported = await Linking.canOpenURL(material.fileUrl);
+      const targetUrl =
+        normalizeMaterialType(material.materialType) === "file"
+          ? (await createFileLink(material.id)).url
+          : material.fileUrl;
+
+      const supported = await Linking.canOpenURL(targetUrl);
       if (!supported) {
         showToast("This URL cannot be opened on your device", "error");
         return;
       }
-      await Linking.openURL(material.fileUrl);
-    } catch {
-      showToast("Could not open this link", "error");
+      await Linking.openURL(targetUrl);
+    } catch (error) {
+      showToast(getUserFriendlyError(error, "Could not open this material"), "error");
     }
-  }, [material, showToast]);
+  }, [createFileLink, material, showToast]);
 
   const toggleFavorite = useCallback(async () => {
     if (!material || toggleFavoriteMutation.isPending) {
@@ -155,6 +177,7 @@ export function useMaterialScreen(routeId: string) {
     offline,
     isPinned,
     toggleFavoriteBusy: toggleFavoriteMutation.isPending,
+    openMaterialBusy,
     openMaterialUrl,
     toggleFavorite,
     refresh,

@@ -10210,3 +10210,54 @@ Page routes обхождат API guard-ите (зареждат директно
 **Решения:**
 - Link materials keep using their external URL directly.
 - File materials with non-`http(s)` `fileUrl` pathnames now go through `/api/materials/[id]/file`, so private Blob URLs/pathnames are not used as browser destinations.
+
+
+### Session 343 — Material attachment preview clarity
+
+**Какво направихме:**
+- Added `MaterialFilePreview` for material detail pages so file materials have a visible attachment block, not only a small external-link icon.
+- Image file attachments now render an inline preview using the protected `/api/materials/[id]/file` endpoint.
+- Non-image file attachments show the same attachment block with a clear `Open file` action.
+- Added `isImageFileUrl(...)` helper to infer image previews from the stored pathname/URL extension.
+- Fixed an invalid LinkedIn SVG path in `SiteFooter` that caused browser console `<path attribute d>` errors.
+
+**Файлове:**
+- [ADD] apps/web/components/materials/material-file-preview.tsx
+- [MODIFY] apps/web/components/materials/material-view-panel.tsx
+- [MODIFY] apps/web/lib/materials.ts
+- [MODIFY] apps/web/components/site-footer.tsx
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm run typecheck:web` -> pass
+
+**Решения:**
+- Kept the protected file endpoint as the only file destination; the inline image preview also uses `/api/materials/[id]/file`.
+- Left `/favicon.ico` 404 out of scope for this pass because app metadata already points to the existing PNG favicon asset.
+
+### Session 344 — Mobile signed material file links
+
+**Какво направихме:**
+- Added `POST /api/materials/[id]/file-link` for mobile clients to request a 60-second signed material file URL after normal JWT auth.
+- Added app-signed file-link tokens and taught `GET /api/materials/[id]/file` to accept `downloadToken` links while preserving cookie/Bearer auth for normal downloads.
+- Kept the same owner-or-shared material access rule before creating a signed link, and checked that the private Blob pathname still exists before returning a URL.
+- Updated the Expo material screen so file materials request a signed link before opening, show a loading indicator, and avoid displaying the private file pathname in the card.
+- Documented optional `FILE_LINK_SIGNING_SECRET` in `.env.example`; the implementation falls back to `JWT_SECRET` when a separate secret is not configured.
+
+**Файлове:**
+- [ADD] apps/web/app/api/materials/[id]/file-link/route.ts
+- [ADD] apps/web/lib/material-file-link-token.ts
+- [MODIFY] apps/web/app/api/materials/[id]/file/route.ts
+- [MODIFY] apps/mobile/components/material/use-material-screen.ts
+- [MODIFY] apps/mobile/app/material/[id].tsx
+- [MODIFY] apps/mobile/components/material/material-screen.styles.ts
+- [MODIFY] .env.example
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm run typecheck:web` -> pass
+- `npm run typecheck:mobile` -> pass
+
+**Решения:**
+- Used a StudyHub-signed URL back to the streaming endpoint instead of exposing a raw private Blob URL, because private Vercel Blob reads are served through Functions.
+- Signed links are scoped to both `materialId` and the current Blob pathname and expire after 60 seconds.

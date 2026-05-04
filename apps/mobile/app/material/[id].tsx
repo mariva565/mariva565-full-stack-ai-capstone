@@ -1,11 +1,22 @@
 import { useState } from "react";
-import { RefreshControl, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import {
+  ActivityIndicator,
+  RefreshControl,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import Svg, { Path } from "react-native-svg";
 import { LinearGradient } from "expo-linear-gradient";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 
 import { useTheme, useThemedStyles } from "../../lib/app-preferences";
-import { getMaterialTypeConfig, splitTags } from "../../lib/material-utils";
+import {
+  getMaterialTypeConfig,
+  normalizeMaterialType,
+  splitTags,
+} from "../../lib/material-utils";
 import { NetworkBanner } from "../../components/network-banner";
 import { RequestState } from "../../components/request-state";
 import { MaterialScreenSkeleton } from "../../components/material/material-screen-skeleton";
@@ -30,6 +41,7 @@ export default function MaterialScreen() {
     offline,
     isPinned,
     toggleFavoriteBusy,
+    openMaterialBusy,
     openMaterialUrl,
     toggleFavorite,
     refresh,
@@ -64,6 +76,12 @@ export default function MaterialScreen() {
 
   const cfg = getMaterialTypeConfig(material.materialType, colors);
   const tags = splitTags(material.tags);
+  const isFileMaterial = normalizeMaterialType(material.materialType) === "file";
+  const openLabel = isFileMaterial
+    ? openMaterialBusy
+      ? "Preparing File..."
+      : "Open File"
+    : "Open Link";
 
   return (
     <ScrollView
@@ -167,22 +185,28 @@ export default function MaterialScreen() {
 
       {material.fileUrl ? (
         <TouchableOpacity
-          style={styles.linkCard}
+          style={[styles.linkCard, openMaterialBusy ? styles.linkCardDisabled : null]}
           onPress={() => {
             void openMaterialUrl();
           }}
+          disabled={openMaterialBusy}
           activeOpacity={0.7}
           accessibilityRole="button"
           accessibilityLabel={
-            material.materialType === "link" ? "Open material link" : "Open material file"
+            isFileMaterial ? "Open material file" : "Open material link"
           }
           accessibilityHint="Opens the URL with your device browser or file handler"
         >
-          <Text style={styles.linkLabel} maxFontSizeMultiplier={1.2}>
-            {material.materialType === "link" ? "Open Link" : "Open File"}
-          </Text>
+          <View style={styles.linkLabelRow}>
+            <Text style={styles.linkLabel} maxFontSizeMultiplier={1.2}>
+              {openLabel}
+            </Text>
+            {openMaterialBusy ? (
+              <ActivityIndicator size="small" color={colors.link} />
+            ) : null}
+          </View>
           <Text style={styles.linkUrl} numberOfLines={2} maxFontSizeMultiplier={1.2}>
-            {material.fileUrl}
+            {isFileMaterial ? "Protected file attachment" : material.fileUrl}
           </Text>
         </TouchableOpacity>
       ) : null}
