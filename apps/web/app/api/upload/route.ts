@@ -35,10 +35,9 @@ export async function POST(request: NextRequest) {
     // Never expose the full private Blob URL.
     return NextResponse.json({ url: pathname });
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Upload failed.";
+    console.error("Material upload failed:", error);
     return NextResponse.json(
-      { code: "UPLOAD_FAILED", message },
+      { code: "UPLOAD_FAILED", message: "Upload failed. Please try again." },
       { status: 500 }
     );
   }

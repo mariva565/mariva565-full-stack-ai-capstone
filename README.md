@@ -20,7 +20,7 @@
   <img src="https://img.shields.io/badge/Status-In%20Progress-F59E0B?style=flat-square" alt="Status in progress" />
   <img src="https://img.shields.io/badge/Commits-220%2B-22C55E?style=flat-square" alt="220 plus commits" />
   <img src="https://img.shields.io/badge/TypeScript-Strict%20Mode-6366F1?style=flat-square" alt="TypeScript strict mode" />
-  <img src="https://img.shields.io/badge/Tables-20-8B5CF6?style=flat-square" alt="20 database tables" />
+  <img src="https://img.shields.io/badge/Tables-21-8B5CF6?style=flat-square" alt="21 database tables" />
   <img src="https://img.shields.io/badge/API-62%20routes-06B6D4?style=flat-square" alt="62 API routes" />
   <img src="https://img.shields.io/badge/Web-26%20pages-6366F1?style=flat-square" alt="26 web pages" />
   <img src="https://img.shields.io/badge/Mobile-React%20Query%20Cache-8B5CF6?style=flat-square" alt="mobile react query cache" />
@@ -146,7 +146,7 @@ Most tools make you choose: Notion gives you flexibility but no structure. Googl
 | Phase | Scope | Status |
 |---|---|---|
 | Phase 0 | Monorepo bootstrap (npm workspaces) | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
-| Phase 1 | DB schema + Drizzle migrations (19 tables) | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
+| Phase 1 | DB schema + Drizzle migrations (21 tables) | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
 | Phase 2 | Auth (JWT + Google OAuth + role guards) | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
 | Phase 3 | Courses / modules / materials CRUD + favorites | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
 | Phase 4 | Profile + milestones + calendar + progress tracking | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
@@ -189,7 +189,7 @@ graph TB
     end
 
     subgraph DATA["Data Layer"]
-        DB[("Neon PostgreSQL<br/><i>Serverless — EU region</i><br/>20 tables + relationships")]
+        DB[("Neon PostgreSQL<br/><i>Serverless — EU region</i><br/>21 tables + relationships")]
     end
 
     WEB -->|"REST API<br/>61 routes"| SERVER
@@ -218,7 +218,7 @@ graph TB
 |---|---|
 | Frontend Web | Next.js 15 + React 19 + TypeScript (strict) + Tailwind CSS |
 | Backend API | Next.js API Routes — core + social + messaging route groups |
-| Database | Neon PostgreSQL (serverless) + Drizzle ORM + SQL migrations |
+| Database | Neon PostgreSQL (serverless) + Drizzle ORM + SQL migrations (21 tables) |
 | Auth | Custom JWT (jose, HS256, httpOnly cookies) + Google OAuth |
 | Mobile | React Native + Expo SDK 54 + TanStack React Query + AsyncStorage persistence + Expo notifications |
 | Monorepo | npm workspaces (`apps/web`, `apps/mobile`, `packages/shared`) |
@@ -378,7 +378,7 @@ Mobile is intentionally scoped to the student experience. Mentor and admin workf
 
 ## Database Schema
 
-Current schema includes 19 tables with foreign key relationships, cascade deletes, and unique constraints.
+Current schema includes 21 tables with foreign key relationships, cascade deletes, and unique constraints.
 
 ```mermaid
 erDiagram
@@ -525,6 +525,23 @@ erDiagram
         timestamp created_at
     }
 
+    password_reset_tokens {
+        serial id PK
+        integer user_id FK
+        text token_hash UK
+        timestamp expires_at
+        boolean used
+        timestamp created_at
+    }
+
+    shared_materials {
+        serial id PK
+        integer material_id FK
+        integer shared_by FK
+        integer shared_with FK
+        timestamp created_at
+    }
+
     users ||--o{ courses : creates
     users ||--o{ modules : creates
     users ||--o{ materials : creates
@@ -552,13 +569,18 @@ erDiagram
     users ||--o{ post_likes : gives
     posts ||--o{ post_bookmarks : saved_in
     users ||--o{ post_bookmarks : saves
+    users ||--o{ password_reset_tokens : requests
+    materials ||--o{ shared_materials : shared
+    users ||--o{ shared_materials : "shares / receives"
 ```
 
-Additional messaging/push tables in the current schema:
+Additional tables in the current schema (shown in diagram above):
 - `conversations`
 - `conversation_members`
 - `messages`
 - `user_push_tokens`
+- `password_reset_tokens`
+- `shared_materials`
 
 ### Table Descriptions
 
@@ -582,6 +604,8 @@ Additional messaging/push tables in the current schema:
 | 16 | `conversation_members` | Membership + unread cursor (`last_read_at`) per conversation | Unique (conversation_id, user_id) prevents duplicates |
 | 17 | `messages` | Message history for conversations | Indexed by (conversation_id, created_at) for fast thread reads |
 | 18 | `user_push_tokens` | Device push token registry for mobile notifications | Tracks active Expo tokens by user and platform |
+| 19 | `password_reset_tokens` | One-hour expiry tokens for forgot-password flow | Linked to user; hashed token stored, `used` flag prevents reuse |
+| 20 | `shared_materials` | Material sharing between users | Tracks who shared what with whom; unique (material, shared_by, shared_with) |
 
 ---
 
@@ -702,7 +726,7 @@ Manual testing artifacts for backend demos live in [`docs/StudyHub.postman_colle
 | `POST` | `/api/auth/password` | Change password (authenticated) |
 | `POST` | `/api/auth/password-reset/request` | Request password reset email (anti-enumeration: always 200) |
 | `POST` | `/api/auth/password-reset/confirm` | Set new password using one-hour reset token |
-| `POST/DELETE` | `/api/auth/avatar` | Upload or remove avatar image |
+| `POST/DELETE` | `/api/auth/avatar` | Upload or remove avatar image (public Vercel Blob) |
 | `POST` | `/api/auth/google` | Google OAuth login |
 
 ### Content CRUD
@@ -716,6 +740,7 @@ Manual testing artifacts for backend demos live in [`docs/StudyHub.postman_colle
 | `GET/PUT/DELETE` | `/api/modules/[id]` | Module by id |
 | `GET/POST` | `/api/modules/[id]/materials` | List / create materials for module |
 | `GET/PUT/DELETE` | `/api/materials/[id]` | Material by id |
+| `POST` | `/api/upload` | Upload material file (private Vercel Blob, 3 MB max) |
 
 ### Features
 
@@ -955,7 +980,7 @@ studyhub-v2/
 │   └── shared/                       # Shared TypeScript types/utils
 │
 ├── drizzle/
-│   ├── schema.ts                     # All 19 table definitions
+│   ├── schema.ts                     # All 21 table definitions
 │   └── migrations/                   # SQL migration files (committed)
 │
 ├── docs/
@@ -1075,7 +1100,7 @@ npm run dev:mobile:usb
 | Frontend | Vanilla JS + Bootstrap | React + Next.js + TypeScript + Tailwind |
 | Backend | Supabase (BaaS) | Next.js API Routes (custom) |
 | Auth | Supabase Auth (GoTrue) | Custom JWT + Google OAuth |
-| Database | Supabase PostgreSQL (6 tables) | Neon PostgreSQL + Drizzle ORM (19 tables) |
+| Database | Supabase PostgreSQL (6 tables) | Neon PostgreSQL + Drizzle ORM (21 tables) |
 | Mobile | None | React Native + Expo + tabs/CRUD/community/messages + push-ready notifications |
 | File structure | Single app, monolithic files | Monorepo + modular components (<300 LOC each)* |
 | Deployment | Netlify + Vercel (dual) | Planned: Vercel |

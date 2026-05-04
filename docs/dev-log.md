@@ -23,7 +23,7 @@
 
 **Решения:**
 - Kept response key as `url` (unchanged shape) so `FileUploadButton` needs no modification.
-- `validateMaterialBlob` enforces 3 MB max (down from R2's 5 MB).
+- `validateMaterialBlob` enforces 3 MB max (down from the previous 5 MB image / 20 MB document limits).
 - `access: "private"` is set inside `uploadMaterialBlob` in blob-storage.ts.
 
 ---
