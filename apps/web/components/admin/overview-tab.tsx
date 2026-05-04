@@ -119,7 +119,7 @@ export function OverviewTab({ onNavigateToModeration }: { onNavigateToModeration
                   <div className="h-full w-[12%] bg-gradient-to-r from-primary-500 to-cyan-500" />
                 </div>
                 <p className="mt-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
-                  1.2 GB of 10 GB (Cloudflare R2)
+                  Storage powered by Vercel Blob
                 </p>
               </motion.div>
             </div>

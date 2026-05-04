@@ -83,7 +83,7 @@ export function getProfileStatus(hasAvatar: boolean, hasUnsavedChanges: boolean)
 
   return {
       label: "Photo missing",
-      description: "Use an image URL for your avatar, or leave it blank to keep your initials.",
+      description: "Upload a JPG, PNG, WebP, or GIF image (up to 2 MB), or leave it blank to keep your initials.",
     };
 }
 
