@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "../../../lib/api-utils";
-import { uploadMaterialFile, validateUploadFile } from "../../../lib/r2";
+import { uploadMaterialBlob, validateMaterialBlob } from "../../../lib/blob-storage";
 
 export const runtime = "nodejs";
 
@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const validationMessage = validateUploadFile(fileEntry);
+  const validationMessage = validateMaterialBlob(fileEntry);
   if (validationMessage) {
     return NextResponse.json(
       { code: "INVALID_FILE", message: validationMessage },
@@ -27,11 +27,13 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const url = await uploadMaterialFile({
+    const pathname = await uploadMaterialBlob({
       userId: auth.user.sub,
       file: fileEntry,
     });
-    return NextResponse.json({ url });
+    // Return pathname as `url` — client stores it in materials.file_url.
+    // Never expose the full private Blob URL.
+    return NextResponse.json({ url: pathname });
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "Upload failed.";

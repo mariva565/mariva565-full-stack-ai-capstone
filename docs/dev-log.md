@@ -4,6 +4,30 @@
 
 ---
 
+## 2026-05-04
+
+### Session 342 — Vercel Blob Step 3: Private Material Upload Migration
+
+**Какво направихме:**
+- Migrated `apps/web/app/api/upload/route.ts` from Cloudflare R2 to Vercel Blob.
+- Swapped imports: `validateUploadFile` → `validateMaterialBlob`, `uploadMaterialFile` → `uploadMaterialBlob` (both from `lib/blob-storage`).
+- Route now returns `{ url: pathname }` — the pathname (not a full URL) is stored in `materials.file_url`; raw private Blob URLs are never exposed to clients.
+- `FileUploadButton` client component unchanged — it already destructures `{ url }` and passes it through to the parent for DB storage.
+- R2 code in `lib/r2.ts` left intact (cleanup is Step 7).
+
+**Файлове:**
+- [MODIFY] apps/web/app/api/upload/route.ts — R2 → Blob helpers, pathname response
+
+**Verification:**
+- `npm run typecheck:web` → pass
+
+**Решения:**
+- Kept response key as `url` (unchanged shape) so `FileUploadButton` needs no modification.
+- `validateMaterialBlob` enforces 3 MB max (down from R2's 5 MB).
+- `access: "private"` is set inside `uploadMaterialBlob` in blob-storage.ts.
+
+---
+
 ## 2026-05-03
 
 ### Session 341 — Vercel Blob Step 2: Avatar Migration
