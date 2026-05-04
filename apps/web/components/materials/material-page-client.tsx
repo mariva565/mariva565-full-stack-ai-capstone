@@ -262,6 +262,7 @@ export function MaterialPageClient({
               />
             ) : (
               <MaterialViewPanel
+                materialId={material.id}
                 title={material.title}
                 materialType={material.materialType}
                 tags={normalizedTags}

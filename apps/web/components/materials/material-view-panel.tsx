@@ -2,9 +2,13 @@ import { MaterialTypePill } from "./material-type-pill";
 import { SmartLinkCard } from "./smart-link-card";
 import { TagList } from "./tag-list";
 import { ExternalLinkIcon, PinAngleIcon } from "../ui/action-icons";
-import { normalizeMaterialType } from "../../lib/materials";
+import {
+  getMaterialSourceHref,
+  normalizeMaterialType,
+} from "../../lib/materials";
 
 type MaterialViewPanelProps = {
+  materialId: number;
   title: string;
   materialType: string;
   tags: string[];
@@ -21,6 +25,7 @@ type MaterialViewPanelProps = {
 };
 
 export function MaterialViewPanel({
+  materialId,
   title,
   materialType,
   tags,
@@ -37,9 +42,10 @@ export function MaterialViewPanel({
 }: MaterialViewPanelProps) {
   const formattedCreatedAt = new Date(createdAt).toLocaleDateString();
   const normalizedType = normalizeMaterialType(materialType);
+  const sourceHref = getMaterialSourceHref(materialId, materialType, fileUrl);
   const pinLabel = isPinned ? "Remove from quick access" : "Pin to quick access";
   const sourceLabel =
-    normalizedType === "file" ? "Open file URL" : "Open saved link";
+    normalizedType === "file" ? "Open attached file" : "Open saved link";
 
   return (
     <div>
@@ -53,9 +59,9 @@ export function MaterialViewPanel({
           </h2>
           <div className="mt-3 flex flex-wrap items-center gap-2">
             <MaterialTypePill type={materialType} />
-            {fileUrl ? (
+            {sourceHref ? (
               <a
-                href={fileUrl}
+                href={sourceHref}
                 target="_blank"
                 rel="noopener noreferrer"
                 title={sourceLabel}
@@ -113,7 +119,7 @@ export function MaterialViewPanel({
 
       <TagList tags={tags} />
 
-      {fileUrl ? <SmartLinkCard url={fileUrl} /> : null}
+      {sourceHref ? <SmartLinkCard url={sourceHref} /> : null}
 
       {content ? (
         <div className="mt-6 whitespace-pre-wrap rounded-[1.6rem] border border-slate-200/80 bg-[linear-gradient(160deg,rgba(255,255,255,0.94)_0%,rgba(248,250,252,0.9)_100%)] px-5 py-5 text-[15px] leading-7 text-slate-700 shadow-sm dark:border-slate-800 dark:bg-[linear-gradient(160deg,rgba(15,23,42,0.82)_0%,rgba(15,23,42,0.62)_100%)] dark:text-slate-300">

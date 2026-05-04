@@ -51,6 +51,28 @@ export function materialTypeLabel(type: MaterialType): string {
   return "Note";
 }
 
+function isExternalUrl(value: string): boolean {
+  const normalized = value.toLowerCase();
+  return normalized.startsWith("http://") || normalized.startsWith("https://");
+}
+
+export function getMaterialSourceHref(
+  materialId: number,
+  materialType: string | null | undefined,
+  fileUrl: string | null | undefined
+): string | null {
+  const trimmedUrl = trimToNull(fileUrl);
+  if (!trimmedUrl) {
+    return null;
+  }
+
+  if (normalizeMaterialType(materialType) === "link" || isExternalUrl(trimmedUrl)) {
+    return trimmedUrl;
+  }
+
+  return `/api/materials/${materialId}/file`;
+}
+
 export function resolveMaterialTitle(
   title: string | null | undefined,
   content: string | null | undefined,

@@ -10187,3 +10187,26 @@ Page routes обхождат API guard-ите (зареждат директно
 **Решения:**
 - Access checks run before file/link handling so unauthorized users cannot use the endpoint to discover or follow material file URLs.
 - Private Blob URLs stay server-only; clients receive only the proxied stream response.
+
+
+### Session 342 — Web file material links use protected endpoint
+
+**Какво направихме:**
+- Added `getMaterialSourceHref(...)` in `apps/web/lib/materials.ts` to resolve material source links for display without changing stored `materials.file_url` values.
+- Updated course material rows so file material action links open `/api/materials/[id]/file` for private Blob pathnames, while external `http(s)` links still open as-is.
+- Updated the material detail view link icon and `SmartLinkCard` URL source to use the protected endpoint for Blob-backed file materials.
+- Passed `material.id` into `MaterialViewPanel` so it can build protected download URLs.
+
+**Файлове:**
+- [MODIFY] apps/web/lib/materials.ts
+- [MODIFY] apps/web/components/course/material-row.tsx
+- [MODIFY] apps/web/components/materials/material-page-client.tsx
+- [MODIFY] apps/web/components/materials/material-view-panel.tsx
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm run typecheck:web` -> pass
+
+**Решения:**
+- Link materials keep using their external URL directly.
+- File materials with non-`http(s)` `fileUrl` pathnames now go through `/api/materials/[id]/file`, so private Blob URLs/pathnames are not used as browser destinations.
