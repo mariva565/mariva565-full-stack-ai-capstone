@@ -4,6 +4,130 @@
 
 ---
 
+## 2026-05-05
+
+### Session 348 — Vercel Blob Step 9: Mobile Camera/Gallery Upload
+
+**Какво направихме:**
+- Created `apps/mobile/components/community/post-image-upload.tsx` — full camera + gallery picker for community post images (expo-image-picker).
+- Created `apps/mobile/components/material-form/image-upload-button.tsx` — camera + gallery picker for material file uploads.
+- Both components use `quality: 0.7`, `maxWidth/maxHeight: 2048` for client-side compression.
+- Post images upload to `/api/upload/post-image` (2 MB); material images upload to `/api/upload` (3 MB).
+- Permission handling with descriptive denial messages; loading state per source (camera vs library).
+
+**Файлове:**
+- [NEW] apps/mobile/components/community/post-image-upload.tsx
+- [NEW] apps/mobile/components/material-form/image-upload-button.tsx
+
+**Verification:**
+- `npm run typecheck:web` → pass
+
+---
+
+### Session 347 — Vercel Blob Step 8: Community Post Image Upload (Tiptap)
+
+**Какво направихме:**
+- Created `apps/web/app/api/upload/post-image/route.ts` — POST endpoint for community post images (auth + validation + public Blob upload under `posts/` prefix).
+- Created `apps/web/lib/post-images.ts` — validation logic: 2 MB max, image-only MIME types, max 3 images per post.
+- Enhanced `apps/web/components/ui/rich-text-editor.tsx` — added Tiptap `Image` extension (`allowBase64: false`), drag-and-drop handler, paste handler, and file input button.
+- `apps/web/lib/post-html.ts` — DOMPurify config allows `<img>` with `src`, `alt`, `width`, `height` attributes.
+- `uploadPostImageBlob` in `blob-storage.ts` uses the public avatar store with `posts/` prefix.
+
+**Файлове:**
+- [NEW] apps/web/app/api/upload/post-image/route.ts
+- [NEW] apps/web/lib/post-images.ts
+- [MODIFY] apps/web/components/ui/rich-text-editor.tsx — Image extension + upload handlers
+- [MODIFY] apps/web/lib/post-html.ts — img in ALLOWED_TAGS
+- [MODIFY] apps/web/lib/blob-storage.ts — uploadPostImageBlob, validatePostImageBlob
+
+**Verification:**
+- `npm run typecheck:web` → pass
+
+---
+
+### Session 346 — Vercel Blob Step 7: Cleanup (R2 Removal)
+
+**Какво направихме:**
+- Deleted `apps/web/lib/r2.ts` — all R2 helper functions removed.
+- Removed `@aws-sdk/client-s3` from `package.json` dependencies.
+- Updated `.env.example`: removed all `R2_*` / `CLOUDFLARE_*` vars; Blob tokens (`AVATAR_BLOB_READ_WRITE_TOKEN`, `MATERIAL_BLOB_READ_WRITE_TOKEN`) and `FILE_LINK_SIGNING_SECRET` are present.
+- Verified no remaining R2 imports in source code (only lockfile references remain).
+
+**Файлове:**
+- [DELETE] apps/web/lib/r2.ts
+- [MODIFY] package.json — removed @aws-sdk/client-s3
+- [MODIFY] .env.example — R2 vars removed, Blob vars confirmed
+
+**Verification:**
+- `npm run typecheck:web` → pass
+- `grep -r "r2\|R2\|@aws-sdk" --include="*.ts"` → no matches
+
+---
+
+### Session 345 — Vercel Blob Step 6: Mobile Protected File Open (file-link)
+
+**Какво направихме:**
+- Created `apps/web/app/api/materials/[id]/file-link/route.ts` — POST endpoint that generates a short-lived signed URL for mobile file access.
+- Created `apps/web/lib/material-file-link-token.ts` — JWT-based token signing/verification (HS256, 60 s expiry, `jose` library).
+- Token payload includes `materialId` + `pathname`; verification rejects mismatched values.
+- Same auth + ownership/shared access check as Step 4.
+- Returns `{ url, expiresIn }` — the URL points to the Step 4 GET route with `?downloadToken=` query param.
+
+**Файлове:**
+- [NEW] apps/web/app/api/materials/[id]/file-link/route.ts
+- [NEW] apps/web/lib/material-file-link-token.ts
+
+**Решения:**
+- 60-second expiry is enough for mobile to open the URL via Linking/WebBrowser — short enough to limit sharing risk.
+- Signing secret falls back to `JWT_SECRET` if `FILE_LINK_SIGNING_SECRET` is not set (convenience for dev).
+
+**Verification:**
+- `npm run typecheck:web` → pass
+
+---
+
+### Session 344 — Vercel Blob Step 5: Web UI — File Links to Protected Endpoint
+
+**Какво направихме:**
+- Updated `apps/web/lib/materials.ts` — `getMaterialSourceHref()` now returns `/api/materials/${materialId}/file` for file-type materials (non-external URLs), preserving raw `fileUrl` for link-type materials.
+- `material-row.tsx` and `material-view-panel.tsx` consume `getMaterialSourceHref()` — no direct changes needed in components since they already used the helper.
+
+**Файлове:**
+- [MODIFY] apps/web/lib/materials.ts — getMaterialSourceHref logic update
+
+**Решения:**
+- Link-type materials still render `fileUrl` as-is (external URLs pass through unchanged).
+- File-type materials with external URLs (legacy) also pass through — only private Blob pathnames route to the protected endpoint.
+
+**Verification:**
+- `npm run typecheck:web` → pass
+
+---
+
+### Session 343 — Vercel Blob Step 4: Protected Download Endpoint
+
+**Какво направихме:**
+- Created `apps/web/app/api/materials/[id]/file/route.ts` — GET endpoint for authenticated material file downloads.
+- Auth: supports two modes — (1) standard JWT auth + ownership/shared_materials check, (2) signed `downloadToken` query param (for mobile file-link flow).
+- Downloads: `getMaterialBlob()` finds blob by pathname via `list()` → fetches raw blob URL server-side with Bearer token → streams response body to client.
+- Headers: `Content-Type` from Blob, `Content-Disposition: inline`, `Cache-Control: private, no-store`.
+- Filename: decoded from pathname, sanitized (control chars + quotes removed), fallback to `material-{id}`.
+- External URLs (legacy link-type stored in `fileUrl`) redirect directly.
+
+**Файлове:**
+- [NEW] apps/web/app/api/materials/[id]/file/route.ts
+- [MODIFY] apps/web/lib/blob-storage.ts — getMaterialBlob helper (list + exact match)
+
+**Решения:**
+- Server-side proxy ensures raw private Blob URL never reaches the client.
+- `runtime = "nodejs"` for streaming body support.
+- 404 returned for both missing DB record and missing blob (no information leak).
+
+**Verification:**
+- `npm run typecheck:web` → pass
+
+---
+
 ## 2026-05-04
 
 ### Session 342 — Vercel Blob Step 3: Private Material Upload Migration

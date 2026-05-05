@@ -21,7 +21,7 @@
   <img src="https://img.shields.io/badge/Commits-220%2B-22C55E?style=flat-square" alt="220 plus commits" />
   <img src="https://img.shields.io/badge/TypeScript-Strict%20Mode-6366F1?style=flat-square" alt="TypeScript strict mode" />
   <img src="https://img.shields.io/badge/Tables-21-8B5CF6?style=flat-square" alt="21 database tables" />
-  <img src="https://img.shields.io/badge/API-62%20routes-06B6D4?style=flat-square" alt="62 API routes" />
+  <img src="https://img.shields.io/badge/API-71%20routes-06B6D4?style=flat-square" alt="71 API routes" />
   <img src="https://img.shields.io/badge/Web-26%20pages-6366F1?style=flat-square" alt="26 web pages" />
   <img src="https://img.shields.io/badge/Mobile-React%20Query%20Cache-8B5CF6?style=flat-square" alt="mobile react query cache" />
 </p>
@@ -192,7 +192,7 @@ graph TB
         DB[("Neon PostgreSQL")]
     end
 
-    WEB -->|"REST API - 61 routes"| SERVER
+    WEB -->|"REST API - 71 routes"| SERVER
     MOBILE -->|"REST API - same backend"| SERVER
     SERVER --> ORM
     ORM --> DB
@@ -579,8 +579,6 @@ Additional tables in the current schema (shown in diagram above):
 - `conversation_members`
 - `messages`
 - `user_push_tokens`
-- `password_reset_tokens`
-- `shared_materials`
 
 ### Table Descriptions
 
@@ -741,6 +739,9 @@ Manual testing artifacts for backend demos live in [`docs/StudyHub.postman_colle
 | `GET/POST` | `/api/modules/[id]/materials` | List / create materials for module |
 | `GET/PUT/DELETE` | `/api/materials/[id]` | Material by id |
 | `POST` | `/api/upload` | Upload material file (private Vercel Blob, 3 MB max) |
+| `GET` | `/api/materials/[id]/file` | Protected file download (server-side proxy, ownership/shared check) |
+| `POST` | `/api/materials/[id]/file-link` | Generate short-lived signed URL for mobile file access (60 s) |
+| `POST` | `/api/upload/post-image` | Upload community post image (public Vercel Blob, 2 MB max) |
 
 ### Features
 
@@ -1150,10 +1151,12 @@ Vercel Blob fits the Vercel deployment target and supports the split between pub
 
 The implementation uses two Blob stores:
 
-- `studyhub-avatars` — public store for avatars, configured with `AVATAR_BLOB_READ_WRITE_TOKEN`
+- `studyhub-avatars` — public store for avatars and community post images, configured with `AVATAR_BLOB_READ_WRITE_TOKEN`
 - `studyhub-materials` — private store for uploaded documents/images, configured with `MATERIAL_BLOB_READ_WRITE_TOKEN`
 
 Material uploads are limited to 3 MB and validated server-side by MIME type. File records store only the private Blob pathname; downloads go through authenticated StudyHub API endpoints that enforce owner/shared-user access before returning the file.
+
+Community post images are stored in the public Blob store under the `posts/` prefix (2 MB max, image-only MIME types). They are rendered inline via `<img>` tags in sanitized post HTML.
 
 References: Vercel Blob supports public and private stores, and private Blob stores require authenticated access. Blob is available on Vercel plans with included Hobby usage limits. See the Vercel Blob docs, Private Storage docs, and usage/pricing documentation.
 
