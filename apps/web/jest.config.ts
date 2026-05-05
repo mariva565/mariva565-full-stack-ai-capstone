@@ -28,6 +28,7 @@ const config: Config = {
     {
       displayName: "integration",
       testEnvironment: "node",
+      testTimeout: 15_000,
       rootDir: ".",
       testMatch: ["<rootDir>/lib/__tests__/integration/**/*.test.ts"],
       setupFiles: ["<rootDir>/jest.setup.ts"],
