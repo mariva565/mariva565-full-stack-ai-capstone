@@ -101,6 +101,7 @@ export function RichTextEditor({
       TableCell,
     ],
     content: value || "<p></p>",
+    immediatelyRender: false,
     onUpdate: ({ editor: ed }) => onChange(ed.getHTML()),
     editorProps: {
       attributes: {

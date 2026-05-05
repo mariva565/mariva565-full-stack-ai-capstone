@@ -30,6 +30,10 @@ scratch/
 # Course slides (not for GitHub)
 docs/*.pdf
 
+# Playwright output
+apps/web/test-results/
+apps/web/playwright-report/
+
 # Internal docs (kept locally, not in repo)
 docs/README.md
 docs/assignment.md

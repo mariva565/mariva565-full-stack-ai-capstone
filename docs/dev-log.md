@@ -6,6 +6,55 @@
 
 ## 2026-05-05
 
+### Session 351 — Automated Testing: Playwright E2E (Session C)
+
+**Какво направихме:**
+- Написахме Playwright E2E тестове за всички основни потоци на приложението.
+- Фиксирахме SSR crash в Tiptap — добавихме `immediatelyRender: false` в `rich-text-editor.tsx`.
+- Добавихме placeholder `"What's on your mind?"` и в edit формата на пост (преди беше само в create).
+
+**Файлове:**
+- [NEW] apps/web/e2e/helpers/seed.ts — seedUser() helper (регистрира потребители за E2E тестове)
+- [NEW] apps/web/e2e/navigation.spec.ts — home page рендира, навигация до login
+- [NEW] apps/web/e2e/auth.spec.ts — register flow, login (correct/wrong password), protected page redirect
+- [NEW] apps/web/e2e/posts.spec.ts — create/edit/delete post CRUD в браузър
+- [NEW] apps/web/e2e/courses.spec.ts — create course, add module, add material (note)
+- [NEW] apps/web/playwright.config.ts — headless Chromium, port 3001, workers: 1 (serial)
+- [MODIFY] apps/web/components/ui/rich-text-editor.tsx — immediatelyRender: false (SSR fix)
+
+**Verification:**
+- `playwright test` → Exit code 0 (всички тестове минават)
+
+---
+
+### Session 350 — Automated Testing: Integration Tests Sessions A + B
+
+**Какво направихме:**
+- Създадохме Neon test branch (`test`, parent: `production`) + `TEST_DATABASE_URL` в `.env.local`.
+- Написахме Jest integration test инфраструктура: `setup.ts` (TRUNCATE 20 таблици + testDb) и `helpers.ts` (registerUser/loginUser/authHeader — всичко през API).
+- Написахме `dev-test-server.js` — стартира Next.js на порт 3001 с `DATABASE_URL=$TEST_DATABASE_URL`.
+- Обновихме `jest.config.ts` на multi-project (unit + integration, `testTimeout: 15000`).
+- Написахме integration тестове за Auth, Posts, Courses и Materials.
+- Фиксирахме timeout проблем с integration тестовете (`testTimeout: 15_000`).
+
+**Файлове:**
+- [NEW] apps/web/lib/__tests__/integration/setup.ts
+- [NEW] apps/web/lib/__tests__/integration/helpers.ts
+- [NEW] apps/web/lib/__tests__/integration/auth.test.ts (12 теста)
+- [NEW] apps/web/lib/__tests__/integration/posts.test.ts (9 теста)
+- [NEW] apps/web/lib/__tests__/integration/courses.test.ts (7 теста)
+- [NEW] apps/web/lib/__tests__/integration/materials.test.ts (5 теста)
+- [NEW] apps/web/scripts/dev-test-server.js
+- [MODIFY] apps/web/jest.config.ts — multi-project, testTimeout: 15000
+- [MODIFY] apps/web/package.json — dev:test, test:unit, test:integration scripts
+- [MODIFY] .gitignore — docs/*.pdf (course slides не отиват в GitHub)
+
+**Verification:**
+- `npm run test:unit` → 5 suites pass
+- `npm run test:integration --runInBand` → 33/33 pass
+
+---
+
 ### Session 348 — Vercel Blob Step 9: Mobile Camera/Gallery Upload
 
 **Какво направихме:**
