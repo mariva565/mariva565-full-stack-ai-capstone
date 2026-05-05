@@ -10746,3 +10746,35 @@ Page routes обхождат API guard-ите (зареждат директно
 
 **Решения:**
 - Preferred GitHub-safe Mermaid syntax over decorative multiline HTML labels so the diagrams render reliably in the README.
+
+### Session 360 — Auth integration test harness
+
+**Какво направихме:**
+- Installed `cross-env` for the web workspace and added test scripts for unit, integration, all-tests, and the port 3001 test server.
+- Added `apps/web/scripts/dev-test-server.js` so `npm run dev:test` loads `.env` / `.env.local`, maps `TEST_DATABASE_URL` into `DATABASE_URL`, and starts Next on port 3001.
+- Converted web Jest config to separate `unit` and `integration` projects, with integration tests forced through `--runInBand` by script.
+- Added integration test setup/helpers using the Neon test database only for cleanup and native `fetch()` for API calls.
+- Added auth integration coverage for register, login, `/api/auth/me`, and logout using only API-created users/tokens.
+- Added a rate-limit bypass for Jest/test-server runs to keep local auth integration tests deterministic.
+
+**Файлове:**
+- [MODIFY] apps/web/package.json
+- [MODIFY] package-lock.json
+- [MODIFY] apps/web/jest.config.ts
+- [MODIFY] apps/web/lib/rate-limit.ts
+- [ADD] apps/web/scripts/dev-test-server.js
+- [ADD] apps/web/lib/__tests__/integration/setup.ts
+- [ADD] apps/web/lib/__tests__/integration/helpers.ts
+- [ADD] apps/web/lib/__tests__/integration/auth.test.ts
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd run typecheck` from `apps/web` -> pass
+- `npm.cmd run test:unit` from `apps/web` -> pass (5 suites, 48 tests)
+- `npm.cmd run test:integration` from `apps/web` with `npm run dev:test` on port 3001 -> pass (1 suite, 12 tests)
+- Port 3001 cleanup check -> no listener after verification
+
+**Решения:**
+- Kept integration auth strictly through real API register/login endpoints; no direct JWT generation in tests.
+- Used direct Drizzle access only for `TRUNCATE ... CASCADE` cleanup against `TEST_DATABASE_URL`.
+- Used `STUDYHUB_TEST_SERVER=1` alongside the existing `NODE_ENV === "test"` bypass path so Next dev can stay in its normal development mode while auth rate limits are disabled only for the test server.

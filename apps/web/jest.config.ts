@@ -9,15 +9,38 @@ const tsJestConfig = {
 };
 
 const config: Config = {
-  testEnvironment: "node",
-  rootDir: ".",
-  testMatch: ["<rootDir>/lib/__tests__/**/*.test.ts"],
-  setupFiles: ["<rootDir>/jest.setup.ts"],
-  transform: {
-    "^.+\\.tsx?$": ["ts-jest", tsJestConfig],
-    "^.+\\.js$": ["ts-jest", { tsconfig: { module: "CommonJS", moduleResolution: "node", allowJs: true } }],
-  },
-  transformIgnorePatterns: ["/node_modules/(?!jose/)"],
+  projects: [
+    {
+      displayName: "unit",
+      testEnvironment: "node",
+      rootDir: ".",
+      testMatch: ["<rootDir>/lib/__tests__/*.test.ts"],
+      setupFiles: ["<rootDir>/jest.setup.ts"],
+      transform: {
+        "^.+\\.tsx?$": ["ts-jest", tsJestConfig],
+        "^.+\\.js$": [
+          "ts-jest",
+          { tsconfig: { module: "CommonJS", moduleResolution: "node", allowJs: true } },
+        ],
+      },
+      transformIgnorePatterns: ["/node_modules/(?!jose/)"],
+    },
+    {
+      displayName: "integration",
+      testEnvironment: "node",
+      rootDir: ".",
+      testMatch: ["<rootDir>/lib/__tests__/integration/**/*.test.ts"],
+      setupFiles: ["<rootDir>/jest.setup.ts"],
+      transform: {
+        "^.+\\.tsx?$": ["ts-jest", tsJestConfig],
+        "^.+\\.js$": [
+          "ts-jest",
+          { tsconfig: { module: "CommonJS", moduleResolution: "node", allowJs: true } },
+        ],
+      },
+      transformIgnorePatterns: ["/node_modules/(?!jose/)"],
+    },
+  ],
   collectCoverageFrom: [
     "lib/auth.ts",
     "lib/jwt.ts",

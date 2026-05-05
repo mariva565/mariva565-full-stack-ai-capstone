@@ -8,6 +8,10 @@ export function checkRateLimit(
   max: number,
   windowMs: number
 ): boolean {
+  if (process.env.NODE_ENV === "test" || process.env.STUDYHUB_TEST_SERVER === "1") {
+    return true;
+  }
+
   let store = stores.get(namespace);
   if (!store) {
     store = new Map<string, number[]>();

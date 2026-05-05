@@ -27,6 +27,9 @@ apps/web/dev-server*.log
 scratch/
 .gemini/
 
+# Course slides (not for GitHub)
+docs/*.pdf
+
 # Internal docs (kept locally, not in repo)
 docs/README.md
 docs/assignment.md
