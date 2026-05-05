@@ -10466,3 +10466,33 @@ Page routes обхождат API guard-ите (зареждат директно
 **Решения:**
 - Android keeps the crop step disabled for community image picking as well, matching the material upload workaround for the Expo Go crop overlay issue.
 - Mobile community images use the public post image Blob flow; material uploads remain on the private material Blob flow.
+
+### Session 354 — Vercel Blob R2 cleanup
+
+**Какво направихме:**
+- Deleted the obsolete web R2 helper after avatar, material, and post-image uploads had all moved to Vercel Blob.
+- Removed the unused `@aws-sdk/client-s3` dependency from the web workspace and refreshed `package-lock.json` with `npm install`.
+- Removed the R2 variables from `.env.example` and kept only the two Blob token placeholders.
+- Updated README Phase 9 status to Done and clarified the current public/private Blob store setup.
+- Updated `AGENTS.md` so the project handoff describes Phase 9 as complete and records the Blob store names/token env vars.
+
+**Файлове:**
+- [DELETE] apps/web/lib/r2.ts
+- [MODIFY] apps/web/package.json
+- [MODIFY] package-lock.json
+- [MODIFY] .env.example
+- [MODIFY] README.md
+- [MODIFY] AGENTS.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm install` -> pass
+- `rg -n "r2" apps/web/lib` -> no hits
+- `rg -n "R2_" .env.example` -> no hits
+- `rg -n "@aws-sdk/client-s3" apps/web/package.json package-lock.json` -> no hits
+- `npm run typecheck:web` -> pass
+- `npm run dev:web` -> pass; Next started on `http://localhost:3001` because port 3000 was already in use, then the verification process was stopped.
+
+**Решения:**
+- Historical dev-log references to the old R2 implementation were left intact as project history.
+- No `CLAUDE.md` file exists in the repo, so the persistent handoff update was made in `AGENTS.md` only.

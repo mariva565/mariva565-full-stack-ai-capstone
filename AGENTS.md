@@ -15,7 +15,7 @@ The old project is at `C:\Users\mariy\Projects\Visual-Studio-Capstone-Project-St
 - **Social features:** S0 (community board), S1 (mentor Q&A), S2 (direct messaging) shipped
 - **Lesson 09 deliverables:** Postman collection, `/api-docs` page, OpenAPI contract — all done
 - **Security audit (#52):** Complete — 14 findings closed across 3 rounds (5 HIGH + 8 MEDIUM + 1 LOW)
-- **Phase 9 (Vercel Blob):** In progress — avatar upload migrated to Blob, material upload next
+- **Phase 9 (Vercel Blob):** Done — avatars use the public Blob store and material files use the private Blob store
 - **Pending:** Mobile polish, final UI polish, deployment
 
 ## Tech Stack (mandatory)
@@ -28,7 +28,7 @@ The old project is at `C:\Users\mariy\Projects\Visual-Studio-Capstone-Project-St
 - **AI:** Google Gemini API (chat, summarize, quiz generation)
 - **Realtime & Notifications:** Pusher (web realtime), Browser Notification API, Expo notifications + Expo push tokens
 - **3D/Visuals:** Three.js (landing page scenes)
-- **Storage:** Vercel Blob (public store for avatars, private store for material files)
+- **Storage:** Vercel Blob (`studyhub-avatars` with `AVATAR_BLOB_READ_WRITE_TOKEN`, `studyhub-materials` with `MATERIAL_BLOB_READ_WRITE_TOKEN`)
 - **Deploy:** Vercel or Netlify
 
 ## Neon MCP Database Access Rules
