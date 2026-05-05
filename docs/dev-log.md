@@ -10778,3 +10778,27 @@ Page routes обхождат API guard-ите (зареждат директно
 - Kept integration auth strictly through real API register/login endpoints; no direct JWT generation in tests.
 - Used direct Drizzle access only for `TRUNCATE ... CASCADE` cleanup against `TEST_DATABASE_URL`.
 - Used `STUDYHUB_TEST_SERVER=1` alongside the existing `NODE_ENV === "test"` bypass path so Next dev can stay in its normal development mode while auth rate limits are disabled only for the test server.
+
+### Session 361 — Posts courses materials integration tests
+
+**Какво направихме:**
+- Added API integration coverage for posts CRUD, author/non-owner authorization, and like/bookmark toggles.
+- Added API integration coverage for user-created courses plus course module create/list flows.
+- Added API integration coverage for note material create/read/update/delete and material search.
+- Moved Jest timeout to the root config so integration tests running through Next dev have enough time for route compilation and test DB calls.
+
+**Файлове:**
+- [ADD] apps/web/lib/__tests__/integration/posts.test.ts
+- [ADD] apps/web/lib/__tests__/integration/courses.test.ts
+- [ADD] apps/web/lib/__tests__/integration/materials.test.ts
+- [MODIFY] apps/web/jest.config.ts
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd run typecheck` from `apps/web` -> pass
+- `npm.cmd run test:integration` from `apps/web` with `dev-test-server.js` already running on port 3001 -> pass (4 suites, 33 tests)
+
+**Решения:**
+- Kept test setup through real API calls and used direct DB access only for `cleanTestDb()`.
+- Used `POST /api/modules/:moduleId/materials` with `materialType: "note"` for materials, and skipped Blob upload/share coverage.
+- Left the already-running port 3001 test server untouched after verification.
