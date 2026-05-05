@@ -171,29 +171,29 @@ Most tools make you choose: Notion gives you flexibility but no structure. Googl
 graph TB
     subgraph CLIENT["Client Layer"]
         direction LR
-        WEB["<b>Next.js Web App</b><br/>React 19 + TypeScript<br/>Tailwind CSS + Three.js<br/>24 pages"]
-        MOBILE["<b>Expo Mobile App</b><br/>React Native<br/>Android / iOS<br/>20+ screens"]
+        WEB["Next.js Web App"]
+        MOBILE["Expo Mobile App"]
     end
 
-    subgraph SERVER["Server Layer — Next.js API Routes"]
+    subgraph SERVER["Server Layer - Next.js API Routes"]
         direction LR
-        AUTH["Auth<br/><i>JWT + Google OAuth</i><br/><i>httpOnly cookies</i><br/><i>role guards</i>"]
-        CRUD["CRUD<br/><i>Courses</i><br/><i>Modules</i><br/><i>Materials</i>"]
-        FEATURES["Features<br/><i>Favorites</i><br/><i>Milestones</i><br/><i>Events</i>"]
-        AI["AI Tools<br/><i>Gemini Chat</i><br/><i>Summarize</i><br/><i>Quiz</i>"]
-        ADMIN["Admin<br/><i>Users</i><br/><i>Moderation</i><br/><i>Activity Logs</i>"]
+        AUTH["Auth"]
+        CRUD["Courses / Modules / Materials"]
+        FEATURES["Favorites / Milestones / Events"]
+        AI["AI Tools"]
+        ADMIN["Admin"]
     end
 
-    subgraph ORM["Data Access — Drizzle ORM"]
-        DRIZZLE["TypeScript schema<br/>Type-safe queries<br/>SQL migrations"]
+    subgraph ORM["Data Access - Drizzle ORM"]
+        DRIZZLE["TypeScript schema + migrations"]
     end
 
     subgraph DATA["Data Layer"]
-        DB[("Neon PostgreSQL<br/><i>Serverless — EU region</i><br/>21 tables + relationships")]
+        DB[("Neon PostgreSQL")]
     end
 
-    WEB -->|"REST API<br/>61 routes"| SERVER
-    MOBILE -->|"REST API<br/>same backend"| SERVER
+    WEB -->|"REST API - 61 routes"| SERVER
+    MOBILE -->|"REST API - same backend"| SERVER
     SERVER --> ORM
     ORM --> DB
 
@@ -387,7 +387,7 @@ erDiagram
         varchar email UK
         varchar name
         text password_hash
-        varchar role "user | mentor | admin"
+        varchar role
         text avatar_url
         timestamp created_at
     }
@@ -398,7 +398,7 @@ erDiagram
         text description
         integer created_by FK
         boolean is_public
-        varchar status "draft | published"
+        varchar status
         timestamp created_at
     }
 
@@ -416,7 +416,7 @@ erDiagram
         integer module_id FK
         varchar title
         text content
-        varchar material_type "text | link | file"
+        varchar material_type
         text file_url
         text tags
         integer created_by FK
@@ -435,7 +435,7 @@ erDiagram
         integer user_id FK
         varchar title
         text description
-        varchar status "not_started | in_progress | done"
+        varchar status
         date due_date
         timestamp completed_at
         integer order_index
@@ -448,7 +448,7 @@ erDiagram
         varchar title
         text description
         date date
-        varchar type "deadline | reminder | milestone | exam | personal"
+        varchar type
         varchar color
         integer course_id FK
         integer milestone_id FK
@@ -468,7 +468,7 @@ erDiagram
         serial id PK
         integer user_id FK
         integer material_id FK
-        varchar tool "summarize | quiz | chat"
+        varchar tool
         jsonb data
         timestamp created_at
     }
@@ -477,7 +477,7 @@ erDiagram
         serial id PK
         integer course_id FK
         integer user_id FK
-        varchar role "student | mentor"
+        varchar role
         timestamp joined_at
     }
 
@@ -486,11 +486,11 @@ erDiagram
         integer author_id FK
         varchar title
         text content
-        varchar post_type "discussion | question | resource | article"
-        varchar status "pending | approved | hidden"
+        varchar post_type
+        varchar status
         integer course_id FK
         boolean is_pinned
-        varchar question_status "open | answered | closed"
+        varchar question_status
         timestamp created_at
     }
 
@@ -554,15 +554,15 @@ erDiagram
     courses ||--o{ modules : contains
     modules ||--o{ materials : contains
     materials ||--o{ favorites : bookmarked
-    materials ||--o{ ai_tool_outputs : "analyzed by"
+    materials ||--o{ ai_tool_outputs : analyzed_by
     users ||--o{ ai_tool_outputs : generates
 
-    courses ||--o{ events : "linked to"
-    milestones ||--o{ events : "linked to"
+    courses ||--o{ events : linked_to
+    milestones ||--o{ events : linked_to
     courses ||--o{ course_members : has
     users ||--o{ course_members : joins
     users ||--o{ posts : writes
-    courses ||--o{ posts : "discussed in"
+    courses ||--o{ posts : discussed_in
     posts ||--o{ comments : has
     users ||--o{ comments : writes
     posts ||--o{ post_likes : receives
@@ -571,7 +571,7 @@ erDiagram
     users ||--o{ post_bookmarks : saves
     users ||--o{ password_reset_tokens : requests
     materials ||--o{ shared_materials : shared
-    users ||--o{ shared_materials : "shares / receives"
+    users ||--o{ shared_materials : shares
 ```
 
 Additional tables in the current schema (shown in diagram above):

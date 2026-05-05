@@ -10551,3 +10551,74 @@ Page routes обхождат API guard-ите (зареждат директно
 
 **Решения:**
 - Kept this as text-only encoding hygiene; no upload, Blob, or post-form behavior was changed.
+
+### Session 357 — Mobile API de-monolith split
+
+**Какво направихме:**
+- Split token persistence helpers out of `apps/mobile/lib/api.ts` into `apps/mobile/lib/api.token.ts`.
+- Split multipart upload handling out of `apps/mobile/lib/api.ts` into `apps/mobile/lib/api.upload.ts`.
+- Kept the public import contract stable by re-exporting `getToken`, `setToken`, `removeToken`, and `uploadFile` from `apps/mobile/lib/api.ts`.
+- Reduced `apps/mobile/lib/api.ts` from 336 lines to 255 lines, bringing it under the 300-line guardrail.
+
+**Файлове:**
+- [ADD] apps/mobile/lib/api.token.ts
+- [ADD] apps/mobile/lib/api.upload.ts
+- [MODIFY] apps/mobile/lib/api.ts
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Mobile API line-count check -> `api.ts` 255 lines, `api.token.ts` 31 lines, `api.upload.ts` 65 lines
+- Custom TypeScript AST check for changed mobile API files -> no functions over 60 lines
+- `npm.cmd run typecheck:mobile` -> pass
+- `npm.cmd run check:mojibake` -> pass
+
+**Решения:**
+- Chose re-exports over changing call sites so existing imports like `import { uploadFile } from "../../lib/api"` keep working.
+- Left the fetch/cache/warmup logic together in `api.ts`; the current split removes the strict file-size breach without broad API-layer churn.
+
+### Session 358 — Web material page de-monolith split
+
+**Какво направихме:**
+- Split `apps/web/components/materials/material-page-client.tsx` into a thin client wrapper plus controller/header/shell modules.
+- Moved material draft state, save/pin/delete/share actions, AI output insertion, and toast state into `material-page-controller.ts`.
+- Moved breadcrumbs/title/status badges into `material-page-header.tsx`.
+- Moved AI tools card, edit/view mode card, modals, toast, scroll-to-top, and lottie decoration into `material-page-shell.tsx`.
+- Replaced a mojibake share-success message with ASCII copy: `Material shared successfully.`
+- Reduced `material-page-client.tsx` from 313 lines to 20 lines; no new material page helper function is over 60 lines.
+
+**Файлове:**
+- [ADD] apps/web/components/materials/material-page-controller.ts
+- [ADD] apps/web/components/materials/material-page-header.tsx
+- [ADD] apps/web/components/materials/material-page-shell.tsx
+- [MODIFY] apps/web/components/materials/material-page-client.tsx
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd run typecheck:web` -> pass
+- Material page line-count check -> `material-page-client.tsx` 20, `material-page-controller.ts` 276, `material-page-header.tsx` 67, `material-page-shell.tsx` 143
+- Custom TypeScript AST check for new material page files -> no functions over 60 lines
+- Focused text-only active source/docs mojibake scan -> pass
+- Repo-wide TypeScript/TSX file-size scan -> remaining >300 files: `drizzle/schema.ts`, `milestone-timeline-item.tsx`, `hero-3d.tsx`, `admin/members-tab.tsx`
+
+**Решения:**
+- Kept material save/pin/delete/share endpoint calls unchanged and preserved the existing view/edit UI behavior.
+- Did not split known exception files in this pass; the active strict material/upload finding is now closed.
+
+### Session 359 — README Mermaid diagram hardening
+
+**Какво направихме:**
+- Simplified the README System Architecture Mermaid graph labels to avoid HTML tags (`<b>`, `<i>`, `<br/>`) inside nodes.
+- Replaced em-dash / HTML-heavy graph labels with plain ASCII Mermaid-safe labels.
+- Simplified the README Database Schema ER diagram by removing enum comments from fields and replacing quoted multi-word relationship labels with single-token labels.
+- Kept the schema content and relationships intact; this was a rendering compatibility fix only.
+
+**Файлове:**
+- [MODIFY] README.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd run check:mojibake` -> pass
+- README Mermaid fence scan -> 4 Mermaid blocks found; no HTML labels, quoted ER relationship labels, or pipe enum comments remain in the diagrams
+
+**Решения:**
+- Preferred GitHub-safe Mermaid syntax over decorative multiline HTML labels so the diagrams render reliably in the README.

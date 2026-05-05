@@ -1,6 +1,3 @@
-import * as SecureStore from "expo-secure-store";
-import { Platform } from "react-native";
-
 import {
   clearCacheScope,
   getCacheKey,
@@ -15,7 +12,6 @@ import {
   DEFAULT_CACHE_TTL_MS,
   DEFAULT_GET_REQUEST_TIMEOUT_MS,
   DEFAULT_MUTATION_REQUEST_TIMEOUT_MS,
-  TOKEN_KEY,
 } from "./api.constants";
 import {
   ApiError,
@@ -23,10 +19,13 @@ import {
   createNetworkError,
   shouldCaptureApiError,
 } from "./api.errors";
+import { getToken } from "./api.token";
 import { tryParseJson } from "./api.utils";
 import { captureTelemetryException } from "./telemetry";
 
 export { ApiError, getUserFriendlyError } from "./api.errors";
+export { getToken, removeToken, setToken } from "./api.token";
+export { uploadFile, type UploadableFile } from "./api.upload";
 
 type FetchOptions = {
   method?: string;
@@ -188,32 +187,6 @@ async function fetchWithTimeout(
   }
 }
 
-export async function getToken(): Promise<string | null> {
-  if (Platform.OS === "web") {
-    return localStorage.getItem(TOKEN_KEY);
-  }
-
-  return SecureStore.getItemAsync(TOKEN_KEY);
-}
-
-export async function setToken(token: string): Promise<void> {
-  if (Platform.OS === "web") {
-    localStorage.setItem(TOKEN_KEY, token);
-    return;
-  }
-
-  await SecureStore.setItemAsync(TOKEN_KEY, token);
-}
-
-export async function removeToken(): Promise<void> {
-  if (Platform.OS === "web") {
-    localStorage.removeItem(TOKEN_KEY);
-    return;
-  }
-
-  await SecureStore.deleteItemAsync(TOKEN_KEY);
-}
-
 export async function apiFetch<T>(
   path: string,
   opts: FetchOptions = {}
@@ -266,60 +239,6 @@ export async function clearApiCache(): Promise<void> {
   const token = await getToken();
   const scope = getCacheScope(token);
   await clearCacheScope(scope);
-}
-
-type UploadableFile = {
-  uri: string;
-  name: string;
-  type: string;
-};
-
-export async function uploadFile(
-  endpoint: string,
-  file: UploadableFile
-): Promise<{ url: string }> {
-  const token = await getToken();
-
-  const formData = new FormData();
-  if (Platform.OS === "web") {
-    const response = await fetch(file.uri);
-    const blob = await response.blob();
-    const uploadBlob = new File([blob], file.name, { type: blob.type || file.type });
-    formData.append("file", uploadBlob);
-  } else {
-    // React Native FormData accepts a uri/name/type object instead of a File.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    formData.append("file", { uri: file.uri, name: file.name, type: file.type } as any);
-  }
-
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 60_000); // 60s for larger files
-
-  try {
-    const response = await fetch(`${API_BASE}${endpoint}`, {
-      method: "POST",
-      headers: {
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        // Do not set Content-Type manually; fetch adds the multipart boundary.
-      },
-      body: formData,
-      signal: controller.signal,
-    });
-
-    clearTimeout(timeoutId);
-
-    if (!response.ok) {
-      const text = await response.text();
-      const payload = text ? tryParseJson(text) : null;
-      throw createApiErrorFromResponse(response.status, payload);
-    }
-
-    return response.json() as Promise<{ url: string }>;
-  } catch (err) {
-    clearTimeout(timeoutId);
-    if (err instanceof ApiError) throw err;
-    throw createNetworkError(err, "POST");
-  }
 }
 
 // Fire-and-forget DB warmup. Hits /api/ping (no auth) to pre-warm the
