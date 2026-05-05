@@ -15,6 +15,7 @@ import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useTheme, useThemedStyles } from "../../lib/app-preferences";
 import {
   getMaterialTypeConfig,
+  isWordFileUrl,
   normalizeMaterialType,
   splitTags,
 } from "../../lib/material-utils";
@@ -80,10 +81,13 @@ export default function MaterialScreen() {
   const cfg = getMaterialTypeConfig(material.materialType, colors);
   const tags = splitTags(material.tags);
   const isFileMaterial = normalizeMaterialType(material.materialType) === "file";
+  const isWordFile = isWordFileUrl(material.fileUrl);
   const openLabel = isFileMaterial
     ? openMaterialBusy
       ? "Preparing File..."
-      : "Open File"
+      : isWordFile
+        ? "Download File"
+        : "Open File"
     : "Open Link";
 
   return (
@@ -214,7 +218,11 @@ export default function MaterialScreen() {
           activeOpacity={0.7}
           accessibilityRole="button"
           accessibilityLabel={
-            isFileMaterial ? "Open material file" : "Open material link"
+            isFileMaterial && isWordFile
+              ? "Download material file"
+              : isFileMaterial
+                ? "Open material file"
+                : "Open material link"
           }
           accessibilityHint="Opens the URL with your device browser or file handler"
         >

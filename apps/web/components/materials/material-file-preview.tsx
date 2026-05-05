@@ -4,13 +4,22 @@ type MaterialFilePreviewProps = {
   href: string;
   title: string;
   isImage: boolean;
+  isDownloadOnly: boolean;
 };
 
 export function MaterialFilePreview({
   href,
   title,
   isImage,
+  isDownloadOnly,
 }: MaterialFilePreviewProps) {
+  const attachmentLabel = isImage
+    ? "Image preview"
+    : isDownloadOnly
+      ? "Document download"
+      : "File attachment";
+  const actionLabel = isDownloadOnly ? "Download file" : "Open file";
+
   return (
     <section className="mt-6 overflow-hidden rounded-[1.6rem] border border-slate-200/80 bg-[linear-gradient(160deg,rgba(255,255,255,0.96)_0%,rgba(248,250,252,0.92)_100%)] shadow-sm dark:border-slate-800 dark:bg-[linear-gradient(160deg,rgba(15,23,42,0.82)_0%,rgba(15,23,42,0.62)_100%)]">
       {isImage ? (
@@ -35,7 +44,7 @@ export function MaterialFilePreview({
             Attached file
           </p>
           <p className="mt-1 text-sm font-semibold text-slate-800 dark:text-slate-100">
-            {isImage ? "Image preview" : "File attachment"}
+            {attachmentLabel}
           </p>
         </div>
 
@@ -45,7 +54,7 @@ export function MaterialFilePreview({
           rel="noopener noreferrer"
           className="inline-flex items-center justify-center gap-2 rounded-full bg-[linear-gradient(135deg,#6366f1_0%,#8b5cf6_55%,#06b6d4_100%)] px-4 py-2 text-sm font-semibold text-white shadow-[0_16px_35px_rgba(99,102,241,0.22)] transition hover:-translate-y-0.5 hover:shadow-[0_20px_45px_rgba(99,102,241,0.28)]"
         >
-          Open file
+          {actionLabel}
           <ExternalLinkIcon />
         </a>
       </div>

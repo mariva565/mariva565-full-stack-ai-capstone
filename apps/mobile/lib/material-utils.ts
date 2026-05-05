@@ -33,6 +33,7 @@ export function getMaterialTypeOptions(colors: AppColors = COLORS) {
 
 const URL_MATERIAL_TYPES: ReadonlySet<MaterialType> = new Set(["link", "file"]);
 const IMAGE_FILE_EXTENSION_REGEX = /\.(avif|gif|jpe?g|png|webp)$/i;
+const WORD_FILE_EXTENSION_REGEX = /\.docx?$/i;
 
 export function isMaterialType(value: string): value is MaterialType {
   return value in MATERIAL_TYPE_CONFIG;
@@ -68,6 +69,22 @@ export function isImageFileUrl(fileUrl: string | null | undefined): boolean {
   }
 
   return IMAGE_FILE_EXTENSION_REGEX.test(pathname);
+}
+
+export function isWordFileUrl(fileUrl: string | null | undefined): boolean {
+  const trimmedUrl = fileUrl?.trim();
+  if (!trimmedUrl) {
+    return false;
+  }
+
+  let pathname = trimmedUrl;
+  try {
+    pathname = new URL(trimmedUrl).pathname;
+  } catch {
+    pathname = trimmedUrl.split(/[?#]/, 1)[0];
+  }
+
+  return WORD_FILE_EXTENSION_REGEX.test(pathname);
 }
 
 export function getMaterialTypeConfig(

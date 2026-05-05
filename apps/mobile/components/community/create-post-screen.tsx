@@ -16,6 +16,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { apiFetch, getUserFriendlyError } from "../../lib/api";
 import { useTheme } from "../../lib/app-preferences";
 import { makeCreatePostStyles } from "./create-post-screen.styles";
+import { PostImageUpload } from "./post-image-upload";
 
 const POST_TYPES = [
   { value: "discussion", label: "Discussion" },
@@ -30,6 +31,27 @@ type CreatePostResponse = {
   post: { id: number };
 };
 
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function buildPostHtml(content: string, imageUrls: string[]): string {
+  const trimmedContent = content.trim();
+  const textHtml = trimmedContent
+    ? `<p>${escapeHtml(trimmedContent).replace(/\r?\n/g, "<br>")}</p>`
+    : "";
+  const imageHtml = imageUrls
+    .map((url, index) => `<p><img src="${url}" alt="Post image ${index + 1}"></p>`)
+    .join("");
+
+  return `${textHtml}${imageHtml}`;
+}
+
 export function CreatePostScreen() {
   const { colors } = useTheme();
   const styles = useMemo(() => makeCreatePostStyles(colors), [colors]);
@@ -40,6 +62,8 @@ export function CreatePostScreen() {
   const [postType, setPostType] = useState<PostType>("discussion");
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
+  const [imageUploading, setImageUploading] = useState(false);
   const [error, setError] = useState("");
 
   const publishMutation = useMutation({
@@ -48,7 +72,7 @@ export function CreatePostScreen() {
         method: "POST",
         body: {
           title: title.trim(),
-          content: content.trim(),
+          content: buildPostHtml(content, imageUrls),
           postType,
         },
       }),
@@ -68,12 +92,13 @@ export function CreatePostScreen() {
 
   const canSubmit =
     title.trim().length > 0 &&
-    content.trim().length > 0 &&
-    !publishMutation.isPending;
+    (content.trim().length > 0 || imageUrls.length > 0) &&
+    !publishMutation.isPending &&
+    !imageUploading;
 
   function submit() {
-    if (!title.trim() || !content.trim()) {
-      setError("Title and content are required.");
+    if (!title.trim() || (!content.trim() && imageUrls.length === 0)) {
+      setError("Title and content or at least one image are required.");
       return;
     }
 
@@ -156,6 +181,17 @@ export function CreatePostScreen() {
             maxLength={4000}
           />
           <Text style={styles.helperText}>{content.length}/4000</Text>
+        </View>
+
+        <View>
+          <Text style={styles.label}>Images</Text>
+          <PostImageUpload
+            imageUrls={imageUrls}
+            disabled={publishMutation.isPending}
+            onImagesChange={setImageUrls}
+            onUploadingChange={setImageUploading}
+            onError={setError}
+          />
         </View>
 
         {error ? (

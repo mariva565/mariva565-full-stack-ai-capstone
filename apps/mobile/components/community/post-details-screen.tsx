@@ -154,6 +154,7 @@ export function PostDetailsScreen({ postId }: { postId: number }) {
               ul: { paddingLeft: 16 },
               ol: { paddingLeft: 16 },
               li: { color: colors.textSecondary, fontSize: 14, lineHeight: 22, marginBottom: 2 },
+              img: { borderRadius: 12, marginVertical: 8 },
               code: { fontFamily: "monospace", backgroundColor: colors.canvas, paddingHorizontal: 4, borderRadius: 4, fontSize: 13 },
               pre: { backgroundColor: colors.canvas, borderRadius: 8, padding: 12, overflow: "hidden" },
             }}

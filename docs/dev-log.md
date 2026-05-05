@@ -10365,3 +10365,104 @@ Page routes обхождат API guard-ите (зареждат директно
 
 **Решения:**
 - `Remove file` detaches the file from the material record; it does not delete the underlying private Blob object in this pass.
+
+### Session 349 — Mobile camera/gallery material uploads
+
+**Какво направихме:**
+- Added a reusable mobile `ImageUploadButton` for material photo capture and gallery selection using `expo-image-picker`.
+- Wired image uploads through the existing authenticated `uploadFile("/api/upload", ...)` helper so mobile continues sending the JWT Bearer token and storing the returned private Blob pathname in `fileUrl`.
+- Updated the mobile file-material upload area with visible attachment status, filename preview, loading state, permission-denied messages, inline upload errors, and always-visible 3 MB helper text.
+- Kept the existing PDF/Word document upload option in the same file-material area while adding the requested camera/gallery image flow.
+- Ran the requested `npm install --workspaces=false expo-image-picker` from `apps/mobile`, which synchronized the mobile lockfile with the package already declared in `apps/mobile/package.json`.
+
+**Файлове:**
+- [ADD] apps/mobile/components/material-form/image-upload-button.tsx
+- [MODIFY] apps/mobile/components/material-form/file-upload-picker.tsx
+- [MODIFY] apps/mobile/package-lock.json
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm run typecheck:mobile` -> pass
+- `npm run typecheck:web` -> pass
+
+**Решения:**
+- Reused `POST /api/upload`; no new API endpoint and no change to the server-side 3 MB `validateMaterialBlob` limit.
+- Upload failures surface the API error message inline and in an alert so `INVALID_FILE` / `UPLOAD_FAILED` responses are visible on mobile.
+- Camera and gallery permission denial messages explain why access is needed and point users to Settings.
+
+### Session 350 — Word attachment download label clarity
+
+**Какво направихме:**
+- Clarified web material attachment labels so Word `.doc` / `.docx` files are presented as downloads instead of browser-openable previews.
+- Updated course row and material detail source labels to say `Download attached file` for Word attachments.
+- Updated mobile material detail CTA to show `Download File` for Word attachments while keeping `Open File` for previewable file types.
+
+**Файлове:**
+- [MODIFY] apps/web/lib/materials.ts
+- [MODIFY] apps/web/components/materials/material-file-preview.tsx
+- [MODIFY] apps/web/components/materials/material-view-panel.tsx
+- [MODIFY] apps/web/components/course/material-row.tsx
+- [MODIFY] apps/mobile/lib/material-utils.ts
+- [MODIFY] apps/mobile/app/material/[id].tsx
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm run typecheck:web` -> pass
+- `npm run typecheck:mobile` -> pass
+
+**Решения:**
+- The private material file endpoint remains unchanged; Word documents are still served through the protected file flow, but the UI no longer implies the browser can preview them inline.
+### Session 351 — Remove duplicate material file action
+
+**Какво направихме:**
+- Removed the small header source-action icon from web material detail pages for file materials.
+- Kept the header icon for link materials, while file materials now use only the attachment card CTA (`Open file` for previewable files, `Download file` for Word documents).
+
+**Файлове:**
+- [MODIFY] apps/web/components/materials/material-view-panel.tsx
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm run typecheck:web` -> pass
+
+**Решения:**
+- Avoided showing two buttons that point to the same protected attachment URL, especially for Word documents where browser behavior is download-only.
+## 2026-05-05
+
+### Session 352 — Android image picker crop workaround
+
+**Какво направихме:**
+- Disabled the native `expo-image-picker` crop step on Android for material camera/gallery uploads.
+- Kept image quality compression at `0.7` and left iOS editing enabled, while Android now returns directly from camera/gallery selection to upload.
+
+**Файлове:**
+- [MODIFY] apps/mobile/components/material-form/image-upload-button.tsx
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm run typecheck:mobile` -> pass
+
+**Решения:**
+- Android/Expo Go crop UI can open as a blank/obscured overlay on some devices; bypassing `allowsEditing` on Android avoids blocking upload selection.
+### Session 353 — Mobile community post image uploads
+
+**Какво направихме:**
+- Added mobile community post image uploads with `Take Photo` and `Choose from Gallery` actions.
+- Reused the existing authenticated `POST /api/upload/post-image` endpoint and `uploadFile` mobile helper; no new API route was added.
+- Added composer previews, remove controls, 3-image cap, always-visible `Max 2 MB` helper text, permission-denied messages, and server error surfacing for failed uploads.
+- Built submitted mobile post content as sanitized-friendly HTML with uploaded `<img>` tags so web and mobile render the same stored post body.
+- Updated mobile post cards/details so image-only posts show a meaningful list preview and rendered post images have mobile-friendly spacing.
+
+**Файлове:**
+- [ADD] apps/mobile/components/community/post-image-upload.tsx
+- [MODIFY] apps/mobile/components/community/create-post-screen.tsx
+- [MODIFY] apps/mobile/components/community/post-card.tsx
+- [MODIFY] apps/mobile/components/community/post-details-screen.tsx
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm run typecheck:mobile` -> pass
+
+**Решения:**
+- Android keeps the crop step disabled for community image picking as well, matching the material upload workaround for the Expo Go crop overlay issue.
+- Mobile community images use the public post image Blob flow; material uploads remain on the private material Blob flow.

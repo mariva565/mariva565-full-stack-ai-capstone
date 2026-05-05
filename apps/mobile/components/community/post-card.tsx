@@ -5,7 +5,10 @@ import { useTheme } from "../../lib/app-preferences";
 
 /** Strip HTML tags so Tiptap content displays as plain text on mobile */
 function stripHtml(html: string): string {
-  return html.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+  const hasImage = /<img\b/i.test(html);
+  const text = html.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+
+  return text || (hasImage ? "Image post" : "");
 }
 
 type PostCardData = {

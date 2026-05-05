@@ -2,139 +2,251 @@ import { useState } from "react";
 import {
   ActivityIndicator,
   Alert,
-  Platform,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
-import * as ImagePicker from "expo-image-picker";
 import * as DocumentPicker from "expo-document-picker";
-import { uploadFile } from "../../lib/api";
+
+import { ApiError, uploadFile } from "../../lib/api";
+import { useThemedStyles } from "../../lib/app-preferences";
+import type { AppColors } from "../../lib/colors";
+import { ImageUploadButton } from "./image-upload-button";
 
 type FileUploadPickerProps = {
   currentUrl: string;
   onUploadSuccess: (url: string) => void;
 };
 
+type UploadableFile = {
+  uri: string;
+  name: string;
+  type: string;
+};
+
+const CHECK_MARK = "\u2713";
+const DOCUMENT_TYPES = [
+  "application/pdf",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+];
+
+function UploadStatus({ hasFile, fileName }: { hasFile: boolean; fileName: string | null }) {
+  const styles = useThemedStyles(makeFileUploadPickerStyles);
+
+  return (
+    <View style={[styles.statusBox, hasFile && styles.statusBoxSuccess]}>
+      <Text style={hasFile ? styles.statusTextSuccess : styles.statusText}>
+        {hasFile ? `File attached ${CHECK_MARK}` : "No file attached"}
+      </Text>
+      {fileName ? (
+        <Text style={styles.fileNameText} numberOfLines={1}>
+          {fileName}
+        </Text>
+      ) : null}
+    </View>
+  );
+}
+
+function DocumentUploadButton({
+  uploading,
+  onPress,
+}: {
+  uploading: boolean;
+  onPress: () => void;
+}) {
+  const styles = useThemedStyles(makeFileUploadPickerStyles);
+
+  if (uploading) {
+    return (
+      <View style={styles.loadingRow}>
+        <ActivityIndicator size="small" />
+        <Text style={styles.loadingText}>Uploading...</Text>
+      </View>
+    );
+  }
+
+  return (
+    <TouchableOpacity
+      style={styles.documentButton}
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel="Upload PDF or Word document"
+    >
+      <Text style={styles.documentButtonText}>Choose PDF / Word</Text>
+    </TouchableOpacity>
+  );
+}
+
+function UploadGuidance({ uploadError }: { uploadError: string }) {
+  const styles = useThemedStyles(makeFileUploadPickerStyles);
+
+  return (
+    <>
+      <Text style={styles.helperText}>Images are compressed automatically. Max 3 MB.</Text>
+      <Text style={styles.helperText}>
+        Max 3 MB {"\u00b7"} JPG, PNG, WebP, GIF, PDF, Word
+      </Text>
+      {uploadError ? (
+        <Text style={styles.errorText} accessibilityRole="alert">
+          {uploadError}
+        </Text>
+      ) : null}
+    </>
+  );
+}
+
+function getFileNameFromUrl(currentUrl: string): string | null {
+  const trimmedUrl = currentUrl.trim();
+  if (!trimmedUrl) return null;
+
+  const rawName = trimmedUrl.split(/[?#]/, 1)[0].split("/").pop();
+  return rawName ? decodeURIComponent(rawName) : null;
+}
+
+function getUploadErrorMessage(error: unknown): string {
+  if (error instanceof ApiError) {
+    return error.message || "Upload failed. Please try again.";
+  }
+
+  return "Upload failed. Please try again.";
+}
+
 export function FileUploadPicker({ currentUrl, onUploadSuccess }: FileUploadPickerProps) {
-  const [uploading, setUploading] = useState(false);
+  const [documentUploading, setDocumentUploading] = useState(false);
+  const [uploadError, setUploadError] = useState("");
+  const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
+  const styles = useThemedStyles(makeFileUploadPickerStyles);
+  const hasFile = currentUrl.trim().length > 0;
+  const fileName = hasFile ? uploadedFileName ?? getFileNameFromUrl(currentUrl) : null;
 
-  async function handlePickImage(source: "camera" | "library") {
-    const permissionResult =
-      source === "camera"
-        ? await ImagePicker.requestCameraPermissionsAsync()
-        : await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-    if (!permissionResult.granted) {
-      Alert.alert("Permission required", "Please allow access in Settings.");
-      return;
-    }
-
-    const result =
-      source === "camera"
-        ? await ImagePicker.launchCameraAsync({ mediaTypes: ["images"], quality: 0.85 })
-        : await ImagePicker.launchImageLibraryAsync({ mediaTypes: ["images"], quality: 0.85 });
-
-    if (result.canceled || !result.assets?.[0]) return;
-
-    const asset = result.assets[0];
-    const extension = asset.uri.split(".").pop() ?? "jpg";
-    const mimeType = asset.mimeType ?? `image/${extension}`;
-
-    await doUpload({ uri: asset.uri, name: `material-${Date.now()}.${extension}`, type: mimeType });
+  function handleUploadSuccess(url: string, fileName: string) {
+    setUploadError("");
+    setUploadedFileName(fileName);
+    onUploadSuccess(url);
   }
 
   async function handlePickDocument() {
+    setUploadError("");
     const result = await DocumentPicker.getDocumentAsync({
-      type: [
-        "application/pdf",
-        "application/msword",
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-      ],
+      type: DOCUMENT_TYPES,
       copyToCacheDirectory: true,
     });
 
     if (result.canceled || !result.assets?.[0]) return;
 
     const asset = result.assets[0];
-    await doUpload({ uri: asset.uri, name: asset.name, type: asset.mimeType ?? "application/octet-stream" });
+    await doDocumentUpload({
+      uri: asset.uri,
+      name: asset.name,
+      type: asset.mimeType ?? "application/octet-stream",
+    });
   }
 
-  async function doUpload(file: { uri: string; name: string; type: string }) {
-    setUploading(true);
+  async function doDocumentUpload(file: UploadableFile) {
+    setDocumentUploading(true);
     try {
       const { url } = await uploadFile("/api/upload", file);
-      onUploadSuccess(url);
-    } catch {
-      Alert.alert("Upload failed", "Could not upload file. Try again.");
+      handleUploadSuccess(url, file.name);
+    } catch (error) {
+      const message = getUploadErrorMessage(error);
+      setUploadError(message);
+      Alert.alert("Upload failed", message);
     } finally {
-      setUploading(false);
+      setDocumentUploading(false);
     }
   }
 
   return (
     <View style={styles.container}>
-      {currentUrl ? (
-        <Text style={styles.uploadedText} numberOfLines={1}>
-          ✅ File uploaded
-        </Text>
-      ) : null}
-      {uploading ? (
-        <View style={styles.loadingRow}>
-          <ActivityIndicator size="small" />
-          <Text style={styles.loadingText}>Uploading…</Text>
-        </View>
-      ) : (
-        <View style={styles.buttonRow}>
-          <TouchableOpacity
-            style={styles.btn}
-            onPress={() => void handlePickImage("library")}
-            accessibilityRole="button"
-            accessibilityLabel="Upload image from gallery"
-          >
-            <Text style={styles.btnText}>📷 Image</Text>
-          </TouchableOpacity>
-          {Platform.OS !== "web" ? (
-            <TouchableOpacity
-              style={styles.btn}
-              onPress={() => void handlePickImage("camera")}
-              accessibilityRole="button"
-              accessibilityLabel="Take photo"
-            >
-              <Text style={styles.btnText}>Camera</Text>
-            </TouchableOpacity>
-          ) : null}
-          <TouchableOpacity
-            style={styles.btn}
-            onPress={() => void handlePickDocument()}
-            accessibilityRole="button"
-            accessibilityLabel="Upload PDF or Word document"
-          >
-            <Text style={styles.btnText}>📄 PDF / Word</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+      <UploadStatus hasFile={hasFile} fileName={fileName} />
+      <ImageUploadButton
+        disabled={documentUploading}
+        onUploadSuccess={handleUploadSuccess}
+        onUploadError={setUploadError}
+      />
+      <DocumentUploadButton
+        uploading={documentUploading}
+        onPress={() => void handlePickDocument()}
+      />
+      <UploadGuidance uploadError={uploadError} />
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: { marginVertical: 8 },
-  uploadedText: { fontSize: 13, color: "#22c55e", marginBottom: 6 },
-  loadingRow: { flexDirection: "row", alignItems: "center", gap: 8 },
-  loadingText: { fontSize: 13, color: "#94a3b8" },
-  buttonRow: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
-  btn: {
-    flex: 1,
-    minWidth: 140,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-    backgroundColor: "#1e293b",
-    borderRadius: 8,
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#334155",
-  },
-  btnText: { fontSize: 13, color: "#e2e8f0" },
-});
+function makeFileUploadPickerStyles(colors: AppColors) {
+  return StyleSheet.create({
+    container: {
+      gap: 10,
+      marginBottom: 16,
+    },
+    statusBox: {
+      borderWidth: 1,
+      borderColor: colors.borderMuted,
+      backgroundColor: colors.surfaceSoft,
+      borderRadius: 10,
+      paddingHorizontal: 12,
+      paddingVertical: 10,
+    },
+    statusBoxSuccess: {
+      borderColor: colors.successBorder,
+      backgroundColor: colors.successSoft,
+    },
+    statusText: {
+      color: colors.textSecondary,
+      fontSize: 13,
+      fontWeight: "700",
+    },
+    statusTextSuccess: {
+      color: colors.textStrong,
+      fontSize: 13,
+      fontWeight: "800",
+    },
+    fileNameText: {
+      marginTop: 4,
+      color: colors.textSecondary,
+      fontSize: 12,
+      fontWeight: "600",
+    },
+    documentButton: {
+      minHeight: 44,
+      paddingVertical: 10,
+      paddingHorizontal: 12,
+      borderRadius: 10,
+      borderWidth: 1.5,
+      borderColor: colors.borderMuted,
+      backgroundColor: colors.surface,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    documentButtonText: {
+      color: colors.textStrong,
+      fontSize: 13,
+      fontWeight: "700",
+    },
+    loadingRow: {
+      minHeight: 44,
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 8,
+    },
+    loadingText: {
+      color: colors.textSecondary,
+      fontSize: 13,
+      fontWeight: "600",
+    },
+    helperText: {
+      color: colors.textMuted,
+      fontSize: 12,
+      lineHeight: 17,
+    },
+    errorText: {
+      color: colors.danger,
+      fontSize: 13,
+      lineHeight: 18,
+      fontWeight: "600",
+    },
+  });
+}

@@ -6,6 +6,7 @@ import { ExternalLinkIcon, PinAngleIcon } from "../ui/action-icons";
 import {
   getMaterialSourceHref,
   isImageFileUrl,
+  isWordFileUrl,
   normalizeMaterialType,
 } from "../../lib/materials";
 
@@ -46,9 +47,15 @@ export function MaterialViewPanel({
   const normalizedType = normalizeMaterialType(materialType);
   const sourceHref = getMaterialSourceHref(materialId, materialType, fileUrl);
   const isFileMaterial = normalizedType === "file";
+  const isWordFile = isWordFileUrl(fileUrl);
+  const headerSourceHref = isFileMaterial ? null : sourceHref;
   const pinLabel = isPinned ? "Remove from quick access" : "Pin to quick access";
   const sourceLabel =
-    isFileMaterial ? "Open attached file" : "Open saved link";
+    isFileMaterial && isWordFile
+      ? "Download attached file"
+      : isFileMaterial
+        ? "Open attached file"
+        : "Open saved link";
 
   return (
     <div>
@@ -62,9 +69,9 @@ export function MaterialViewPanel({
           </h2>
           <div className="mt-3 flex flex-wrap items-center gap-2">
             <MaterialTypePill type={materialType} />
-            {sourceHref ? (
+            {headerSourceHref ? (
               <a
-                href={sourceHref}
+                href={headerSourceHref}
                 target="_blank"
                 rel="noopener noreferrer"
                 title={sourceLabel}
@@ -127,6 +134,7 @@ export function MaterialViewPanel({
           href={sourceHref}
           title={title}
           isImage={isImageFileUrl(fileUrl)}
+          isDownloadOnly={isWordFile}
         />
       ) : null}
 
