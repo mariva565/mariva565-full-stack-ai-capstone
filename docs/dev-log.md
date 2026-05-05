@@ -10496,3 +10496,58 @@ Page routes обхождат API guard-ите (зареждат директно
 **Решения:**
 - Historical dev-log references to the old R2 implementation were left intact as project history.
 - No `CLAUDE.md` file exists in the repo, so the persistent handoff update was made in `AGENTS.md` only.
+
+### Session 355 — Focused monolithic-code audit
+
+**Какво направихме:**
+- Ran a repo-wide TypeScript/TSX line-count audit for files over the 300-line guardrail.
+- Ran a TypeScript AST pass for functions/components over the 60-line guardrail, then narrowed findings to recent upload/material/community/Blob-related flows.
+- Produced an audit-only prioritized refactor plan; no application code was changed.
+
+**Файлове:**
+- [AUDIT] apps/web/components/materials/material-page-client.tsx
+- [AUDIT] apps/mobile/lib/api.ts
+- [AUDIT] apps/mobile/app/material/[id].tsx
+- [AUDIT] apps/mobile/components/material/use-material-screen.ts
+- [AUDIT] apps/mobile/components/community/post-details-screen.tsx
+- [AUDIT] apps/mobile/components/community/create-post-screen.tsx
+- [AUDIT] apps/mobile/components/community/post-image-upload.tsx
+- [AUDIT] apps/web/components/ui/rich-text-editor.tsx
+- [AUDIT] apps/web/components/community/create-post-form.tsx
+- [AUDIT] apps/web/components/community/edit-post-form.tsx
+- [AUDIT] apps/web/app/api/materials/[id]/file/route.ts
+- [AUDIT] apps/web/app/api/materials/[id]/file-link/route.ts
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `rg --files -g "*.ts" -g "*.tsx"` scope scan -> pass
+- Custom Node/TypeScript AST line-count audit -> pass
+- Application typecheck not run because this was an audit-only session with no app code changes.
+
+**Решения:**
+- Prioritize splitting `MaterialPageClient`, mobile `MaterialScreen`, and mobile community detail/create image flows before broad cosmetic cleanup.
+- Treat duplicated private-material access helpers in file/file-link routes as a security-maintainability refactor candidate even though each route is under 300 lines.
+
+### Session 356 — Mojibake hardening cleanup
+
+**Какво направихме:**
+- Replaced non-ASCII upload helper comments in the mobile API client with ASCII English comments to avoid PowerShell/editor mis-detection.
+- Removed the emoji prefix from the mobile material `AI Study Tools` button label.
+- Replaced the `— none —` course select option text in web community create/edit post forms with ASCII `- none -`.
+- Confirmed the active source/docs mojibake scan is clean; historical dev-log backup artifacts remain ignored/local history.
+
+**Файлове:**
+- [MODIFY] apps/mobile/lib/api.ts
+- [MODIFY] apps/mobile/app/material/[id].tsx
+- [MODIFY] apps/web/components/community/create-post-form.tsx
+- [MODIFY] apps/web/components/community/edit-post-form.tsx
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Focused active source/docs mojibake scan -> pass
+- `npm.cmd run check:mojibake` -> pass
+- `npm.cmd run typecheck:mobile` -> pass
+- `npm.cmd run typecheck:web` -> pass
+
+**Решения:**
+- Kept this as text-only encoding hygiene; no upload, Blob, or post-form behavior was changed.

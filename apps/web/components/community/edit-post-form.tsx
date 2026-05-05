@@ -125,7 +125,7 @@ export function EditPostForm({ postId }: { postId: number }) {
             onChange={(e) => setCourseId(e.target.value)}
             className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm dark:border-slate-700 dark:bg-slate-800 dark:text-white"
           >
-            <option value="">— none —</option>
+            <option value="">- none -</option>
             {courses.map((c) => <option key={c.id} value={c.id}>{c.title}</option>)}
           </select>
         </div>

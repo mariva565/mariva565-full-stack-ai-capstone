@@ -287,20 +287,20 @@ export async function uploadFile(
     const uploadBlob = new File([blob], file.name, { type: blob.type || file.type });
     formData.append("file", uploadBlob);
   } else {
-    // React Native FormData приема обект с uri/name/type, не File обект
+    // React Native FormData accepts a uri/name/type object instead of a File.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     formData.append("file", { uri: file.uri, name: file.name, type: file.type } as any);
   }
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 60_000); // 60s за по-големи файлове
+  const timeoutId = setTimeout(() => controller.abort(), 60_000); // 60s for larger files
 
   try {
     const response = await fetch(`${API_BASE}${endpoint}`, {
       method: "POST",
       headers: {
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        // Content-Type НЕ се слага ръчно — fetch го генерира автоматично с boundary
+        // Do not set Content-Type manually; fetch adds the multipart boundary.
       },
       body: formData,
       signal: controller.signal,
