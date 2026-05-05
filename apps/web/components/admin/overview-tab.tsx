@@ -9,6 +9,29 @@ import { StatsCards } from "./stats-cards";
 import { PREMIUM_DARK_BUTTON, PREMIUM_DARK_CARD_BG } from "../layout/premium-dark-styles";
 import { useAdminRefresh } from "./admin-refresh";
 
+type StorageData = { usedBytes: number; limitBytes: number; percent: number };
+
+function formatBytes(bytes: number): string {
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+}
+
+function useStorageUsage() {
+  const [data, setData] = useState<StorageData | null>(null);
+
+  const fetch_ = () => {
+    void fetch("/api/admin/storage-usage")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((json) => { if (json) setData(json); });
+  };
+
+  useEffect(() => { fetch_(); }, []);
+  useAdminRefresh({ onManualRefresh: fetch_ });
+
+  return data;
+}
+
 type ModerationQueueData = {
   pendingPosts: number;
   newUsers: number;
@@ -33,6 +56,7 @@ export function OverviewTab({ onNavigateToModeration }: { onNavigateToModeration
   const { viewAsFilter } = useAdminContext();
   const isGlobalView = viewAsFilter === "all";
   const queue = useModerationQueue();
+  const storage = useStorageUsage();
 
   return (
     <div className="space-y-8">
@@ -109,18 +133,37 @@ export function OverviewTab({ onNavigateToModeration }: { onNavigateToModeration
                 transition={{ delay: 0.8 }}
                 className={`rounded-3xl border border-white/20 bg-primary-500/5 p-6 shadow-glass backdrop-blur-md dark:border-primary-500/10 ${PREMIUM_DARK_CARD_BG}`}
               >
-                <div className="flex items-center justify-between mb-2">
-                  <h4 className="font-bold text-slate-900 dark:text-white">Storage Usage</h4>
-                  <span className="rounded-md bg-primary-500/10 px-1.5 py-0.5 text-[0.65rem] font-black uppercase tracking-wider text-primary-600 dark:bg-primary-500/20 dark:text-primary-400">
-                    Mock
-                  </span>
-                </div>
-                <div className="mt-4 h-2 w-full rounded-full bg-indigo-100 dark:bg-slate-700 overflow-hidden text-transparent">
-                  <div className="h-full w-[12%] bg-gradient-to-r from-primary-500 to-cyan-500" />
-                </div>
-                <p className="mt-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
-                  Storage powered by Vercel Blob
-                </p>
+                <h4 className="font-bold text-slate-900 dark:text-white mb-4">Storage Usage</h4>
+                {storage ? (
+                  <>
+                    <div className="flex items-center justify-between text-sm mb-2">
+                      <span className="font-bold text-slate-700 dark:text-slate-300">
+                        {formatBytes(storage.usedBytes)}
+                      </span>
+                      <span className="text-slate-500 dark:text-slate-400">
+                        {formatBytes(storage.limitBytes)}
+                      </span>
+                    </div>
+                    <div className="h-2 w-full rounded-full bg-indigo-100 dark:bg-slate-700 overflow-hidden">
+                      <div
+                        className="h-full bg-gradient-to-r from-primary-500 to-cyan-500 transition-all duration-700"
+                        style={{ width: `${storage.percent.toFixed(1)}%` }}
+                      />
+                    </div>
+                    <p className="mt-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
+                      {storage.percent.toFixed(2)}% used · Vercel Blob
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <div className="h-2 w-full rounded-full bg-indigo-100 dark:bg-slate-700 overflow-hidden">
+                      <div className="h-full w-0 bg-gradient-to-r from-primary-500 to-cyan-500" />
+                    </div>
+                    <p className="mt-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
+                      Loading · Vercel Blob
+                    </p>
+                  </>
+                )}
               </motion.div>
             </div>
           </div>
