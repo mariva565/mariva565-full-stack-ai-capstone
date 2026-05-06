@@ -22,6 +22,7 @@ tmp-*.log
 .logs/
 .npm-cache/
 apps/web/dev-server*.log
+test-output*.log
 
 # Internal/scratch (kept locally, not in repo)
 scratch/

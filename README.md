@@ -1140,7 +1140,15 @@ The Load More pattern was chosen over numbered pagination for the Community Feed
 
 ### Why Vercel Blob for File Storage
 
-StudyHub uses Vercel Blob because the app has two different storage needs with different privacy requirements:
+Several storage providers were evaluated for StudyHub v2, including AWS S3 and Cloudflare R2. Vercel Blob was chosen for the following reasons:
+
+1. **No credit card required.** AWS S3 and Cloudflare R2 both require a credit card on signup, even for their free tiers. Vercel's Hobby plan includes Blob storage at no cost and with no payment method, which matters for a student capstone project.
+2. **Native integration with the deployment target.** StudyHub is deployed on Vercel. Using Vercel Blob means one provider, one dashboard, and one set of credentials — no separate AWS IAM policies, no CORS configuration, and no cross-provider networking.
+3. **Built-in public/private store separation.** Vercel Blob stores are created as either public or private at the store level. This maps directly to StudyHub's two storage needs (public avatars vs. private course materials) without writing custom bucket policies.
+4. **Simpler API surface.** The Vercel Blob SDK exposes `put()`, `del()`, `list()`, and `head()` — a minimal interface compared to the AWS S3 SDK, which reduces the chance of misconfiguration in a capstone codebase.
+5. **Continuity with v1 architecture.** StudyHub v1 used private Supabase Storage buckets with signed URLs. Vercel Blob's private stores follow the same pattern — files are never publicly accessible, and downloads go through authenticated API routes.
+
+Specifically, StudyHub uses Vercel Blob because the app has two different storage needs with different privacy requirements:
 
 - **Profile avatars** are public identity assets, so they can be stored in a public Blob store and rendered directly by URL.
 - **Learning material files** are private user content, so they are stored in a private Blob store and served only through protected API routes.
