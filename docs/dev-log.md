@@ -10851,3 +10851,29 @@ Page routes обхождат API guard-ите (зареждат директно
 - Kept test setup through real API calls and used direct DB access only for `cleanTestDb()`.
 - Used `POST /api/modules/:moduleId/materials` with `materialType: "note"` for materials, and skipped Blob upload/share coverage.
 - Left the already-running port 3001 test server untouched after verification.
+
+### Session 362 — Deployment plan + health endpoint + Vercel Blob justification
+
+**Какво направихме:**
+- Strengthened Vercel Blob justification in README with 5 numbered arguments comparing Blob vs S3/R2 (no credit card, native integration, public/private separation, simpler SDK, v1 continuity).
+- Created comprehensive deployment plan in scratch/deployment-plan.md — 14 steps covering web (Vercel) and mobile (EAS), with rollback plan, migration safety, env var audit, demo freeze, and troubleshooting table.
+- Expanded /api/health endpoint to check database connectivity, Blob tokens, Gemini API key, and SMTP config (returns 200/ok or 503/degraded).
+- Added android.versionCode to app.json for APK upgrade support.
+- Cleaned up stray test-output*.log files and added gitignore pattern.
+
+**Файлове:**
+- [MODIFY] README.md — Vercel Blob justification section
+- [MODIFY] apps/web/app/api/health/route.ts — full health check
+- [MODIFY] apps/mobile/app.json — added versionCode: 1
+- [MODIFY] .gitignore — test-output*.log pattern
+- [ADD] scratch/deployment-plan.md — full deployment checklist
+
+**Verification:**
+- `npm run build:web` not run yet (planned as deployment step 1)
+
+**Решения:**
+- Collected deployment advice from Opus, Codex, Gemini, and GPT into a single plan.
+- Confirmed Expo username is `mariva` (via `eas whoami`) — redirect URI correct.
+- Mobile Google OAuth uses only Web Client ID (AuthSession flow), not native Android client — SHA-1 not critical for login.
+- Neon pooled connection string required for Vercel serverless (noted in plan).
+- Demo freeze set to 48 hours (from 2026-05-25 16:00).
