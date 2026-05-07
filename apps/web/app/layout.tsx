@@ -21,6 +21,7 @@ const rubik = Rubik({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"),
   title: "Study Hub | Master Your Learning Journey",
   description: "The ultimate platform for students and educators to organize courses and materials.",
   icons: {

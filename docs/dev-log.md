@@ -10877,3 +10877,35 @@ Page routes обхождат API guard-ите (зареждат директно
 - Mobile Google OAuth uses only Web Client ID (AuthSession flow), not native Android client — SHA-1 not critical for login.
 - Neon pooled connection string required for Vercel serverless (noted in plan).
 - Demo freeze set to 48 hours (from 2026-05-25 16:00).
+
+## 2026-05-07
+
+### Session 363 — Next.js lecture alignment pass
+
+**Какво направихме:**
+- Reviewed `docs/13.Next.js-Apps.pdf` (SoftUni Next.js Apps lecture) against the current StudyHub web architecture.
+- Added root `metadataBase` in the web app metadata so OpenGraph/Twitter metadata can resolve absolute URLs in deployment from `NEXT_PUBLIC_APP_URL`, with a localhost fallback for development.
+- Added route-level loading skeletons for heavier authenticated web surfaces: dashboard, community, messages, and admin.
+- Kept the loading UI lightweight (`animate-pulse` only), dark-mode ready, and accessibility-labeled with `aria-busy` / `aria-label`.
+- Extended the local deployment plan with a Next.js build output audit after `npm run build:web`, checking static vs dynamic route modes.
+- Corrected the deployment plan route audit list to use actual public routes (`/`, `/how-it-works`, `/contact`, `/api-docs`, `/login`, `/register`) and authenticated routes (`/dashboard`, `/courses/[id]`, `/community`, `/messages`, `/admin`).
+- Replaced non-ASCII ellipsis characters in the new loading labels with ASCII `...` to avoid encoding/mojibake risk.
+
+**Файлове:**
+- [MODIFY] apps/web/app/layout.tsx
+- [ADD] apps/web/app/dashboard/loading.tsx
+- [ADD] apps/web/app/community/loading.tsx
+- [ADD] apps/web/app/messages/loading.tsx
+- [ADD] apps/web/app/admin/loading.tsx
+- [MODIFY] scratch/deployment-plan.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm --workspace @studyhub/web run typecheck` -> pass
+- Focused mojibake scan over the touched web files and `scratch/deployment-plan.md` -> pass
+
+**Решения:**
+- Did not introduce Server Actions before the demo because the existing REST API contract is shared by web and mobile.
+- Did not add ISR to authenticated/user-specific pages because StudyHub has roles, private materials, sharing, and per-user state.
+- Used route-level `loading.tsx` only on selected heavier surfaces instead of adding skeletons everywhere.
+- Kept `docs/13.Next.js-Apps.pdf` out of GitHub through the existing `.gitignore` rule `docs/*.pdf`.
