@@ -1,4 +1,4 @@
-﻿# Dev Log — StudyHub v2
+# Dev Log — StudyHub v2
 
 Дневник на разработката. Обновява се при всяка сесия.
 
@@ -10909,3 +10909,25 @@ Page routes обхождат API guard-ите (зареждат директно
 - Did not add ISR to authenticated/user-specific pages because StudyHub has roles, private materials, sharing, and per-user state.
 - Used route-level `loading.tsx` only on selected heavier surfaces instead of adding skeletons everywhere.
 - Kept `docs/13.Next.js-Apps.pdf` out of GitHub through the existing `.gitignore` rule `docs/*.pdf`.
+
+### Session 364 — Mentor Inbox Lighthouse Optimization (SSR)
+
+**Какво направихме:**
+- Migrated data fetching in the `/mentor-inbox` page from client-side (`useEffect`) to Server-Side Rendering (SSR).
+- Created a `fetchMentorQuestions` helper in `apps/web/lib/mentor-questions.ts` to isolate the DB query.
+- Updated `/api/mentor/questions/route.ts` to use the new helper, avoiding duplicate code.
+- Removed the loading skeleton and `useEffect` hook from `apps/web/components/mentor/mentor-inbox.tsx`, allowing it to initialize immediately with server-fetched data.
+- Fixed a type incompatibility where `authorName` could be `null` from the left join.
+
+**Файлове:**
+- [ADD] apps/web/lib/mentor-questions.ts
+- [MODIFY] apps/web/app/api/mentor/questions/route.ts
+- [MODIFY] apps/web/app/mentor-inbox/page.tsx
+- [MODIFY] apps/web/components/mentor/mentor-inbox.tsx
+
+**Verification:**
+- Verified `MentorInbox` receives data immediately without layout shift or secondary loading delay.
+- SSR completely eliminates the FCP-to-LCP gap on the page.
+
+**Решения:**
+- Passing the initial dataset directly as a prop to the client component keeps the local filtering and "mark as answered" optimistic updates intact while giving us the Lighthouse Speed Index boost.

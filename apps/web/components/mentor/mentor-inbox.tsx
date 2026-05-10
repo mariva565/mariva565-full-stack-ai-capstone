@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { PageBackgroundShell } from "../layout/page-background-shell";
 import {
@@ -16,7 +16,7 @@ type Question = {
   questionStatus: string | null;
   courseId: number | null;
   courseTitle: string | null;
-  authorName: string;
+  authorName: string | null;
   authorAvatarUrl: string | null;
   createdAt: string;
   likeCount: number;
@@ -45,21 +45,10 @@ function timeAgo(dateStr: string) {
   return `${Math.floor(h / 24)}d ago`;
 }
 
-export function MentorInbox() {
-  const [allQuestions, setAllQuestions] = useState<Question[]>([]);
-  const [loading, setLoading]           = useState(true);
+export function MentorInbox({ initialQuestions }: { initialQuestions: Question[] }) {
+  const [allQuestions, setAllQuestions] = useState<Question[]>(initialQuestions);
   const [filter, setFilter]             = useState("");
   const [updating, setUpdating]         = useState<number | null>(null);
-
-  const load = useCallback(async () => {
-    setLoading(true);
-    const res = await fetch("/api/mentor/questions");
-    const data = await res.json();
-    setAllQuestions(data.questions ?? []);
-    setLoading(false);
-  }, []);
-
-  useEffect(() => { load(); }, [load]);
 
   async function setStatus(questionId: number, questionStatus: string) {
     setUpdating(questionId);
@@ -115,13 +104,7 @@ export function MentorInbox() {
       </div>
 
       {/* List */}
-      {loading ? (
-        <div className="space-y-3">
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className={`h-28 animate-pulse rounded-2xl bg-slate-100 dark:border dark:border-slate-800/80 ${PREMIUM_DARK_CARD_BG}`} />
-          ))}
-        </div>
-      ) : questions.length === 0 ? (
+      {questions.length === 0 ? (
         <div className={`flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-slate-300 py-20 dark:border-slate-700/80 ${PREMIUM_DARK_CARD_BG}`}>
           <svg className="h-10 w-10 text-slate-300 dark:text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" />

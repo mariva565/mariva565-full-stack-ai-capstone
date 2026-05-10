@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getRequestUserOrRedirect } from "../../lib/server-auth";
+import { fetchMentorQuestions } from "../../lib/mentor-questions";
 import { MentorInbox } from "../../components/mentor/mentor-inbox";
 
 export const metadata: Metadata = {
@@ -12,5 +13,8 @@ export default async function MentorInboxPage() {
   if (user.role !== "mentor" && user.role !== "admin") {
     redirect("/forbidden");
   }
-  return <MentorInbox />;
+
+  const initialQuestions = await fetchMentorQuestions(user.sub, user.role);
+
+  return <MentorInbox initialQuestions={initialQuestions} />;
 }
