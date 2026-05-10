@@ -77,8 +77,8 @@ function StatCard({ label, icon, gradient, value }: {
   );
 }
 
-export function StatsCards() {
-  const [stats, setStats] = useState<Stats>({ users: 0, courses: 0, modules: 0, materials: 0 });
+export function StatsCards({ initialStats }: { initialStats?: Stats }) {
+  const [stats, setStats] = useState<Stats>(initialStats ?? { users: 0, courses: 0, modules: 0, materials: 0 });
 
   const fetchStats = useCallback(() => {
     void fetch("/api/admin/stats")

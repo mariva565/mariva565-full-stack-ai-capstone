@@ -53,6 +53,8 @@ const config: Config = {
         "float": "float 6s ease-in-out infinite",
         "float-delay": "float 6s ease-in-out 2s infinite",
         "fade-in-up": "fadeInUp 0.8s ease forwards",
+        "fade-in-left": "fadeInLeft 0.8s ease-out both",
+        "fade-in-scale-hero": "fadeInScale 0.8s ease-out 0.15s both",
         "fade-in-scale": "fadeInScale 0.4s ease forwards",
         "slide-in-up": "slideInUp 0.3s ease forwards",
         "pulse-glow": "pulseGlow 4s ease-in-out infinite",
@@ -76,6 +78,10 @@ const config: Config = {
         pulseRing: {
           "0%": { transform: "scale(0.8)", opacity: "1" },
           "100%": { transform: "scale(1.5)", opacity: "0" },
+        },
+        fadeInLeft: {
+          from: { opacity: "0", transform: "translateX(-40px)" },
+          to: { opacity: "1", transform: "translateX(0)" },
         },
         fadeInUp: {
           from: { opacity: "0", transform: "translateY(30px)" },

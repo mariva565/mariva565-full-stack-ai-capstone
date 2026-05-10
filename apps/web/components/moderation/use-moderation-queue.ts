@@ -33,19 +33,17 @@ type QueueState = {
   deletePost: (postId: number) => Promise<void>;
 };
 
-export function useModerationQueue(role: ModerationRole): QueueState {
-  const [posts, setPosts] = useState<ModerationPost[]>([]);
-  const [statusCounts, setStatusCounts] = useState<StatusCounts>({
-    pending: 0,
-    approved: 0,
-    hidden: 0,
-  });
+export function useModerationQueue(role: ModerationRole, initialQueue?: QueueResponse): QueueState {
+  const [posts, setPosts] = useState<ModerationPost[]>(initialQueue?.posts ?? []);
+  const [statusCounts, setStatusCounts] = useState<StatusCounts>(
+    initialQueue?.statusCounts ? toStatusCounts(initialQueue.statusCounts) : { pending: 0, approved: 0, hidden: 0 }
+  );
   const [statusFilter, setStatusFilter] = useState("pending");
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(initialQueue?.page ?? 1);
+  const [hasMore, setHasMore] = useState(Boolean(initialQueue?.hasMore));
+  const [loading, setLoading] = useState(!initialQueue);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [actionId, setActionId] = useState<number | null>(null);
@@ -81,6 +79,13 @@ export function useModerationQueue(role: ModerationRole): QueueState {
   );
 
   useEffect(() => {
+    // If we have initial data, we don't need to fetch on the first mount
+    // UNLESS the filter or search changes.
+    // The easiest way to handle this is tracking if it's the first mount with initial data
+    if (initialQueue && statusFilter === "pending" && search === "") {
+      return;
+    }
+
     let cancelled = false;
     setLoading(true);
     setError(null);
@@ -100,7 +105,7 @@ export function useModerationQueue(role: ModerationRole): QueueState {
     return () => {
       cancelled = true;
     };
-  }, [fetchPage]);
+  }, [fetchPage, initialQueue, statusFilter, search]);
 
   useAdminRefresh({
     onManualRefresh: () => {

@@ -1,10 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
 
 import dynamic from "next/dynamic";
-import { useVisibleAnimation } from "../ui/use-visible-animation";
+import { useReducedMotion } from "../ui/use-reduced-motion";
 
 const Hero3dScene = dynamic(
   () => import("./hero-3d-scene").then((m) => m.Hero3dScene),
@@ -50,12 +49,11 @@ function HeroStars() {
 }
 
 export function HowItWorksHero() {
-  const { ref, shouldAnimate, hasEntered } =
-    useVisibleAnimation<HTMLElement>({ mode: "once", threshold: 0.15 });
+  const reducedMotion = useReducedMotion();
+  const animate = !reducedMotion;
 
   return (
     <section
-      ref={ref}
       className="relative isolate flex min-h-[60vh] flex-col justify-center overflow-clip px-4 py-24 lg:py-32 bg-[#0f172a] bg-[linear-gradient(135deg,rgba(99,102,241,0.95)_0%,rgba(139,92,246,0.9)_50%,rgba(6,182,212,0.85)_100%)]"
     >
       {/* Full-width background stars */}
@@ -63,12 +61,7 @@ export function HowItWorksHero() {
 
       <div className="container relative z-10 mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-2">
         {/* Left — content */}
-        <motion.div
-          initial={shouldAnimate ? { opacity: 0, x: -40 } : false}
-          animate={hasEntered ? { opacity: 1, x: 0 } : undefined}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="text-center lg:text-left"
-        >
+        <div className={`text-center lg:text-left ${animate ? "animate-fade-in-left" : ""}`}>
           <span className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/20 px-5 py-2 text-sm font-semibold text-white shadow-sm backdrop-blur-sm">
             <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 16 16">
               <path d="M2 6a6 6 0 1 1 10.174 4.31c-.203.196-.359.4-.453.619l-.762 1.769A.5.5 0 0 1 10.5 13a.5.5 0 0 1 0 1 .5.5 0 0 1 0 1l-.224.447a1 1 0 0 1-.894.553H6.618a1 1 0 0 1-.894-.553L5.5 15a.5.5 0 0 1 0-1 .5.5 0 0 1 0-1 .5.5 0 0 1-.46-.302l-.761-1.77a1.964 1.964 0 0 0-.453-.618A5.984 5.984 0 0 1 2 6zm6-5a5 5 0 0 0-3.479 8.592c.263.254.514.564.676.941L5.83 12h4.342l.632-1.467c.162-.377.413-.687.676-.941A5 5 0 0 0 8 1z" />
@@ -87,16 +80,12 @@ export function HowItWorksHero() {
           <p className="mx-auto max-w-xl text-lg font-medium leading-relaxed text-white/85 lg:mx-0 lg:text-xl [text-shadow:0_1px_2px_rgba(0,0,0,0.3)]">
             От хаос до организирано учене само в 4 прости стъпки. Нека ти покажем как да трансформираш своето образователно пътешествие.
           </p>
-        </motion.div>
+        </div>
 
         {/* Right — Three.js holographic mascot */}
-        <motion.div
-          initial={shouldAnimate ? { opacity: 0, scale: 0.85 } : false}
-          animate={hasEntered ? { opacity: 1, scale: 1 } : undefined}
-          transition={{ duration: 0.8, delay: 0.15, ease: "easeOut" }}
-        >
+        <div className={animate ? "animate-fade-in-scale-hero" : ""}>
           <Hero3dScene />
-        </motion.div>
+        </div>
       </div>
     </section>
   );

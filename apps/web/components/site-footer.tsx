@@ -45,7 +45,7 @@ export function SiteFooter() {
           <span className="home-ink-title text-xl">Study Hub</span>
         </div>
 
-        <p className="text-slate-400 text-sm font-medium">
+        <p className="text-slate-500 text-sm font-medium">
           &copy; {new Date().getFullYear()} Study Hub. Built with ❤️ for excellence.
         </p>
 

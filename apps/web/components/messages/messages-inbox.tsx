@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { PageBackgroundShell } from "../layout/page-background-shell";
 import {
   PREMIUM_DARK_CARD_BG,
@@ -24,6 +24,11 @@ type Conversation = {
   id: number;
   other: OtherUser | null;
   lastMessage: LastMessage | null;
+};
+
+type MessagesInboxProps = {
+  currentUserId?: number;
+  initialConversations?: Conversation[];
 };
 
 function timeAgo(dateStr: string) {

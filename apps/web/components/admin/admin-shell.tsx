@@ -31,7 +31,14 @@ const PostsTab      = dynamic(() => import("./posts-tab").then((m) => m.PostsTab
 const TABS = ["Overview", "Users", "Materials", "Courses", "Modules", "Members", "Moderation", "Activity Logs", "Network Map"] as const;
 type Tab = (typeof TABS)[number];
 
-function AdminContent() {
+type AdminDataProps = {
+  initialStats: any;
+  initialQueue: any;
+  initialStorage: any;
+  initialActivity: any;
+};
+
+function AdminContent({ initialStats, initialQueue, initialStorage, initialActivity }: AdminDataProps) {
   const [activeTab, setActiveTab] = useState<Tab>("Overview");
   const [showSettings, setShowSettings] = useState(false);
   const { searchQuery, setSearchQuery } = useAdminContext();
@@ -132,7 +139,7 @@ function AdminContent() {
             transition={{ duration: 0.3, ease: "easeInOut" }}
             className={`rounded-[2rem] border border-white/20 bg-white/40 p-8 shadow-glass backdrop-blur-xl dark:border-cyan-400/10 ${PREMIUM_DARK_PANEL_BG}`}
           >
-            {activeTab === "Overview" && <OverviewTab onNavigateToModeration={() => setActiveTab("Moderation")} />}
+            {activeTab === "Overview" && <OverviewTab onNavigateToModeration={() => setActiveTab("Moderation")} initialStats={initialStats} initialQueue={initialQueue} initialStorage={initialStorage} initialActivity={initialActivity} />}
             {activeTab === "Users" && <UsersTab />}
             {activeTab === "Materials" && <MaterialsTab />}
             {activeTab === "Courses" && <CoursesTab />}
@@ -151,10 +158,10 @@ function AdminContent() {
   );
 }
 
-export function AdminShell() {
+export function AdminShell(props: AdminDataProps) {
   return (
     <AdminProvider>
-      <AdminContent />
+      <AdminContent {...props} />
     </AdminProvider>
   );
 }

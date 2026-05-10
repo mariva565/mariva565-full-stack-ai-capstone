@@ -20,6 +20,7 @@ import {
 type ModerationQueueProps = {
   role: ModerationRole;
   embedded?: boolean;
+  initialQueue?: any;
 };
 
 function QueueHeader({ role, pendingRatioLabel }: { role: ModerationRole; pendingRatioLabel: string }) {
@@ -69,8 +70,8 @@ function StatusCards({
   );
 }
 
-export function ModerationQueue({ role, embedded = false }: ModerationQueueProps) {
-  const state = useModerationQueue(role);
+export function ModerationQueue({ role, embedded = false, initialQueue }: ModerationQueueProps) {
+  const state = useModerationQueue(role, initialQueue);
   const content = (
     <div className={embedded ? "space-y-4" : "space-y-5"}>
       {!embedded ? (

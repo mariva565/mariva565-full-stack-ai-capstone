@@ -87,10 +87,11 @@ function FormContent({
   return (
     <motion.form
       onSubmit={onSubmit}
-      initial={{ opacity: 0, scale: 0.95 }}
+      initial={false}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.3 }}
+      className="animate-fade-in-scale"
     >
       <h1 className="font-shantell text-[2rem] font-bold text-white">
         Contact Us

@@ -17,8 +17,8 @@ function formatBytes(bytes: number): string {
   return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
 }
 
-function useStorageUsage() {
-  const [data, setData] = useState<StorageData | null>(null);
+function useStorageUsage(initialData?: StorageData) {
+  const [data, setData] = useState<StorageData | null>(initialData ?? null);
 
   const fetch_ = () => {
     void fetch("/api/admin/storage-usage")
@@ -37,8 +37,8 @@ type ModerationQueueData = {
   newUsers: number;
 };
 
-function useModerationQueue() {
-  const [data, setData] = useState<ModerationQueueData | null>(null);
+function useModerationQueue(initialData?: ModerationQueueData) {
+  const [data, setData] = useState<ModerationQueueData | null>(initialData ?? null);
 
   const fetch_ = () => {
     void fetch("/api/admin/moderation-queue")
@@ -52,11 +52,19 @@ function useModerationQueue() {
   return data;
 }
 
-export function OverviewTab({ onNavigateToModeration }: { onNavigateToModeration?: () => void }) {
+type OverviewTabProps = {
+  onNavigateToModeration?: () => void;
+  initialStats?: any;
+  initialQueue?: any;
+  initialStorage?: any;
+  initialActivity?: any;
+};
+
+export function OverviewTab({ onNavigateToModeration, initialStats, initialQueue, initialStorage, initialActivity }: OverviewTabProps) {
   const { viewAsFilter } = useAdminContext();
   const isGlobalView = viewAsFilter === "all";
-  const queue = useModerationQueue();
-  const storage = useStorageUsage();
+  const queue = useModerationQueue(initialQueue);
+  const storage = useStorageUsage(initialStorage);
 
   return (
     <div className="space-y-8">
@@ -73,7 +81,7 @@ export function OverviewTab({ onNavigateToModeration }: { onNavigateToModeration
                 Key Metrics
               </h3>
             </div>
-            <StatsCards />
+            <StatsCards initialStats={initialStats} />
           </div>
 
           {/* Main Grid: Activity & Insights */}
@@ -86,7 +94,7 @@ export function OverviewTab({ onNavigateToModeration }: { onNavigateToModeration
                   Activity Overview
                 </h3>
               </div>
-              <ActivityChart />
+              <ActivityChart initialActivity={initialActivity} />
             </div>
 
             {/* Quick Insights - 1/3 width */}

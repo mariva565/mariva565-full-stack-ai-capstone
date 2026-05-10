@@ -11,9 +11,9 @@ const HEIGHT = 200;
 const WIDTH = 600;
 const ACTIVITY_CHART_POLL_MS = 60_000;
 
-export function ActivityChart() {
-  const [data, setData] = useState<ActivityData[]>([]);
-  const [loading, setLoading] = useState(true);
+export function ActivityChart({ initialActivity }: { initialActivity?: ActivityData[] }) {
+  const [data, setData] = useState<ActivityData[]>(initialActivity ?? []);
+  const [loading, setLoading] = useState(!initialActivity);
   const [error, setError] = useState(false);
 
   const fetchActivityStats = useCallback(() => {

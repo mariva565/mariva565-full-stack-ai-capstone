@@ -11,9 +11,16 @@ import {
 import { type Post } from "./post-types";
 import { PostCard } from "./post-card";
 
-export function CommunityFeed({ currentUser }: { currentUser: { id: number; role: string } }) {
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [loading, setLoading] = useState(true);
+type CommunityFeedProps = {
+  currentUser: { id: number; role: string };
+  initialPosts?: Post[];
+  initialHasMore?: boolean;
+};
+
+export function CommunityFeed({ currentUser, initialPosts, initialHasMore }: CommunityFeedProps) {
+  const hasInitial = initialPosts !== undefined;
+  const [posts, setPosts] = useState<Post[]>(initialPosts ?? []);
+  const [loading, setLoading] = useState(!hasInitial);
   const [showScrollTop, setShowScrollTop] = useState(false);
 
   useEffect(() => {
@@ -25,14 +32,21 @@ export function CommunityFeed({ currentUser }: { currentUser: { id: number; role
   const [search, setSearch] = useState("");
   const [filterType, setFilterType] = useState("");
   const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(false);
+  const [hasMore, setHasMore] = useState(initialHasMore ?? false);
   const searchRef = useRef(search);
   const filterRef = useRef(filterType);
+  const skipInitialFetch = useRef(hasInitial);
 
   searchRef.current = search;
   filterRef.current = filterType;
 
   useEffect(() => {
+    // Skip the first fetch if we already have server-rendered data
+    if (skipInitialFetch.current) {
+      skipInitialFetch.current = false;
+      return;
+    }
+
     let cancelled = false;
     setLoading(true);
     setPage(1);

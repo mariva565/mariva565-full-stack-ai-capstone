@@ -188,11 +188,8 @@ function HeroHeading({ greeting }: { greeting: string }) {
         </div>
       </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.35, duration: 0.5 }}
-        className="mt-4 flex items-center gap-4"
+      <div
+        className="mt-4 flex items-center gap-4 animate-fade-in-up"
       >
         <div className="hidden flex-shrink-0 sm:block">
           <ZiksiMascot src="/assets/v1/ziksi-explaining-2.png" size="md" />
@@ -206,7 +203,7 @@ function HeroHeading({ greeting }: { greeting: string }) {
             — {quote.author}
           </footer>
         </blockquote>
-      </motion.div>
+      </div>
     </div>
   );
 }

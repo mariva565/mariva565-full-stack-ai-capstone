@@ -10930,4 +10930,37 @@ Page routes обхождат API guard-ите (зареждат директно
 - SSR completely eliminates the FCP-to-LCP gap on the page.
 
 **Решения:**
-- Passing the initial dataset directly as a prop to the client component keeps the local filtering and "mark as answered" optimistic updates intact while giving us the Lighthouse Speed Index boost.
+### Session 364 — Admin & Moderation Lighthouse Optimization (SSR)
+
+**Какво направихме:**
+- Migrated data fetching for `/moderation` to Server-Side Rendering (SSR).
+- Created a `fetchModerationQueuePage` helper in `apps/web/lib/admin-queries.ts` to isolate the DB query.
+- Updated `/api/admin/posts/route.ts` to use the new helper, avoiding duplicate code.
+- Removed the initial loading skeleton from `apps/web/components/moderation/moderation-queue.tsx` and updated `useModerationQueue` hook to accept `initialQueue`.
+- Applied the exact same SSR pattern to the `/admin` dashboard.
+- Extracted `fetchAdminStats`, `fetchStorageUsage`, `fetchModerationQueueOverview`, and `fetchActivityStats` to `admin-queries.ts`.
+- Pre-fetched all these stats in `AdminPage` and passed them down through `AdminShell` to the `OverviewTab`, `StatsCards`, and `ActivityChart` components, eliminating FCP-to-LCP gaps.
+
+**Файлове:**
+- [ADD] apps/web/lib/admin-queries.ts
+- [MODIFY] apps/web/app/api/admin/posts/route.ts
+- [MODIFY] apps/web/app/api/admin/stats/route.ts
+- [MODIFY] apps/web/app/api/admin/moderation-queue/route.ts
+- [MODIFY] apps/web/app/api/admin/storage-usage/route.ts
+- [MODIFY] apps/web/app/api/admin/activity-stats/route.ts
+- [MODIFY] apps/web/app/moderation/page.tsx
+- [MODIFY] apps/web/components/moderation/moderation-queue.tsx
+- [MODIFY] apps/web/components/moderation/use-moderation-queue.ts
+- [MODIFY] apps/web/app/admin/page.tsx
+- [MODIFY] apps/web/components/admin/admin-shell.tsx
+- [MODIFY] apps/web/components/admin/overview-tab.tsx
+- [MODIFY] apps/web/components/admin/stats-cards.tsx
+- [MODIFY] apps/web/components/admin/activity-chart.tsx
+
+**Verification:**
+- Verified both `/moderation` and `/admin` no longer load their initial data with `useEffect`.
+- `npm run typecheck` passes cleanly for the modified files.
+
+**Решения:**
+- Passing the initial data payloads to the client components drastically improves the Lighthouse Speed Index by preventing the layout shift associated with client-side hydration fetching.
+

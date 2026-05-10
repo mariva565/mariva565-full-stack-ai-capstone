@@ -127,7 +127,7 @@ export function HomeFaq() {
     <section id="faq" className="scroll-mt-28 bg-slate-50 py-24">
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         <div className="mb-14 text-center">
-          <span className="mb-4 inline-block text-sm font-bold uppercase tracking-[0.2em] text-indigo-500">
+          <span className="mb-4 inline-block text-sm font-bold uppercase tracking-[0.2em] text-indigo-600">
             Support
           </span>
           <h2 className="home-display-title text-3xl sm:text-4xl lg:text-5xl">
