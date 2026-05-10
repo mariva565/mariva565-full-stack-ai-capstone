@@ -11048,3 +11048,37 @@ Page routes обхождат API guard-ите (зареждат директно
 **Решения:**
 - Keep `docs/security-release-readiness.md` as the detailed operational checklist.
 - Keep the deployment/finalization plan as a short execution summary with a link to the checklist.
+
+## 2026-05-10
+
+### Session 368 — README rendering performance note
+
+**Какво направихме:**
+- Added a concise README note explaining the current Next.js rendering/performance approach.
+- Documented async Server Components, route-level `loading.tsx` Suspense boundaries, and dynamic imports without overstating component-level streaming.
+
+**Файлове:**
+- [MODIFY] README.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Docs-only change; no app typecheck/build was run.
+
+**Решения:**
+- Kept the wording defense-friendly and accurate: StudyHub uses route-level Suspense/loading states and lazy loading, not a broad claim of fine-grained component streaming across every page.
+
+### Session 369 — Pre-deploy docs and repo hygiene checklist
+
+**Какво направихме:**
+- Added a pre-deploy documentation and repository hygiene checklist to the local deployment plan.
+- Captured final README refresh, schema/diagram updates, `AGENTS.md` sync, final monolithic-code audit, GitHub cleanup, protected-docs preservation, and final git diff review.
+
+**Файлове:**
+- [MODIFY] scratch/deployment-plan.md (local deployment plan)
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Docs-only planning update; no app typecheck/build was run.
+
+**Решения:**
+- Kept this as a pre-deploy checklist item rather than doing the cleanup immediately, because README/AGENTS/schema screenshots should reflect the final deployed state and release links.

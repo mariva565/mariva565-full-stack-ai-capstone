@@ -223,6 +223,12 @@ graph TB
 | Mobile | React Native + Expo SDK 54 + TanStack React Query + AsyncStorage persistence + Expo notifications |
 | Monorepo | npm workspaces (`apps/web`, `apps/mobile`, `packages/shared`) |
 
+### Rendering & Performance
+
+- Async Server Components prepare authenticated initial data on the server, then hand it to focused client shells for mutations and realtime UI.
+- Route-level `loading.tsx` Suspense boundaries let Next.js show immediate skeleton/loading feedback while heavier pages such as dashboard, community, messages, and admin prepare data.
+- Dynamic imports lazy-load below-the-fold landing sections, visual effects, chat, and admin tabs so the initial client bundle stays lighter.
+
 ---
 
 ## Authentication Flow
