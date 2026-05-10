@@ -87,7 +87,7 @@ export function useWeather() {
   useEffect(() => {
     const syncNow = () => setNow(new Date());
     const delayToNextMinute = CLOCK_TICK_MS - (Date.now() % CLOCK_TICK_MS);
-    let intervalId: ReturnType<typeof setInterval> | null = null;
+    let intervalId: number | null = null;
 
     const timeoutId = window.setTimeout(() => {
       syncNow();

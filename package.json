@@ -14,6 +14,12 @@
     "start:web": "npm --workspace @studyhub/web run start -- --port 3000",
     "lint:web": "npm --workspace @studyhub/web run lint",
     "typecheck:web": "npm --workspace @studyhub/web run typecheck",
+    "typecheck": "npm run typecheck:web && npm run typecheck:mobile && npm run typecheck:shared",
+    "deps:inventory": "npm ls --workspaces --depth=0",
+    "deps:outdated": "npm outdated --workspaces",
+    "deps:audit": "npm audit --audit-level=moderate",
+    "deps:audit:runtime": "npm audit --omit=dev --audit-level=high",
+    "deps:review:release": "npm run deps:audit:runtime",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:seed": "tsx drizzle/seed.ts",
@@ -34,7 +40,8 @@
   "overrides": {
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "@types/react": "~19.1.10"
+    "@types/react": "~19.1.10",
+    "@xmldom/xmldom": "0.8.13"
   },
   "devDependencies": {
     "@types/nodemailer": "^8.0.0",

@@ -1,4 +1,4 @@
-# Dev Log — StudyHub v2
+﻿# Dev Log — StudyHub v2
 
 Дневник на разработката. Обновява се при всяка сесия.
 
@@ -10965,3 +10965,86 @@ Page routes обхождат API guard-ите (зареждат директно
 **Решения:**
 - Passing the initial data payloads to the client components drastically improves the Lighthouse Speed Index by preventing the layout shift associated with client-side hydration fetching.
 
+
+### Session 365 — Legacy security docs reuse review
+
+**Какво направихме:**
+- Reviewed the v1 legacy security archive snapshot and active legacy security docs to evaluate what can be reused for StudyHub v2.
+- Compared the reusable process/docs themes against the current v2 audit plan and a light sanity check of `next.config.ts`, root scripts, rate-limit/sanitization helpers, and environment guardrails.
+- Identified reusable security documentation patterns: release checklist, dependency cadence, observability/alerting model, CSP rollout method, anti-abuse review flow, and security playbook principles.
+- Identified non-reusable v1 specifics: Supabase Edge/RLS/MFA `aal2` implementation details, Vanilla JS file-level CSP migrations, and Vite/Supabase-specific env contracts.
+
+**Файлове:**
+- [AUDIT] docs/legacy-notes/archive/security-chat-snapshot-2026-03.md
+- [AUDIT] docs/legacy-notes/security-playbook-bg.md
+- [AUDIT] docs/legacy-notes/production-security-release-checklist.md
+- [AUDIT] docs/legacy-notes/dependency-security-audit-cadence.md
+- [AUDIT] docs/legacy-notes/security-observability-baseline.md
+- [AUDIT] docs/audit-fix-plan.md
+- [AUDIT] apps/web/next.config.ts
+- [AUDIT] package.json
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- No typecheck was run because this was a documentation/security-reuse review with no application code changes.
+- Devlog encoding was rewritten explicitly as UTF-8 with BOM while appending this entry.
+- `npm run check:mojibake` -> pass
+
+**Решения:**
+- Treat the v1 security archive as a reusable process/checklist source, not as implementation code for v2.
+- For v2, adapt Supabase/RLS/Edge-function guidance to Next.js API Routes, JWT auth, Drizzle/Neon, Vercel Blob, Expo, and the existing REST contract.
+- Prioritize low-risk documentation reuse before any new hardening implementation: v2 security release checklist, dependency audit scripts/checklist, CSP report-only rollout plan, and security event taxonomy.
+
+### Session 366 — Security release readiness pass
+
+**Какво направихме:**
+- Added an active v2 security release readiness checklist adapted from the v1 audit/process docs.
+- Documented pre-deploy gates for auth guards, admin role checks, sanitized rich text, private material Blob access, headers, env ownership, dependency review, and staged CSP rollout.
+- Recorded admin 2FA as intentionally deferred until after the capstone defense because it adds demo friction and the v1 Supabase `aal2` model does not transfer directly to v2 JWT/Next.
+- Added root dependency review shortcuts: `deps:inventory`, `deps:outdated`, `deps:audit`, `deps:audit:runtime`, and `deps:review:release`.
+- Added a root `typecheck` aggregate script for web, mobile, and shared workspaces.
+- Updated `.env.example` with missing v2 placeholders for app URLs, Google OAuth, Pusher, Expo Google OAuth, Sentry, and local integration tests.
+- Cleared high runtime dependency audit findings by patching Next from `15.5.14` to `15.5.18` and overriding transitive `@xmldom/xmldom` to `0.8.13`.
+- Fixed a web typecheck blocker in `use-weather.ts` by using a browser timer handle type for `window.setInterval`.
+
+**Файлове:**
+- [ADD] docs/security-release-readiness.md
+- [MODIFY] .env.example
+- [MODIFY] package.json
+- [MODIFY] package-lock.json
+- [MODIFY] apps/web/package.json
+- [MODIFY] apps/web/components/calendar/use-weather.ts
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `node -e "JSON.parse(require('fs').readFileSync('package.json','utf8'))"` -> pass
+- `npm run deps:audit:runtime` -> pass at high threshold; only moderate transitive PostCSS advisories remain
+- `npm run typecheck` -> pass (web, mobile, shared)
+- `npm run build:web` -> pass; build still reports non-blocking Edge Runtime warnings from `jose` `CompressionStream`/`DecompressionStream` imports through `lib/jwt.ts`
+- `npm run check:mojibake` -> pass
+- Env placeholder scan now leaves only system/internal values not intended for `.env.example`: `ANDROID_HOME`, `ANDROID_SDK_ROOT`, `LOCALAPPDATA`, `NODE_ENV`, `STUDYHUB_TEST_SERVER`
+
+**Решения:**
+- Do not add admin 2FA before the capstone defense; keep it as post-defense hardening.
+- Do not force-fix the remaining moderate PostCSS audit output before demo because npm suggests breaking/force changes through Next/Expo paths.
+- Keep CSP enforcement as a staged post-deploy task: report-only first, triage, then enforce after OAuth/Pusher/Blob/Expo/Three.js smoke checks.
+
+### Session 367 — Finalization plan security readiness link
+
+**Какво направихме:**
+- Added the pre-deploy security readiness item to Phase 6 in the local implementation/finalization plan.
+- Added a concise security release readiness section to the local deployment plan, linking to `docs/security-release-readiness.md` instead of duplicating the full checklist.
+- Added live-domain security headers verification to the post-deploy smoke checklist.
+
+**Файлове:**
+- [MODIFY] docs/implementation-plan.md (local-only continuity doc)
+- [MODIFY] scratch/deployment-plan.md (local deployment plan)
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Docs-only follow-up; no app typecheck/build was run after this small planning update.
+- `npm run check:mojibake` -> pass
+
+**Решения:**
+- Keep `docs/security-release-readiness.md` as the detailed operational checklist.
+- Keep the deployment/finalization plan as a short execution summary with a link to the checklist.

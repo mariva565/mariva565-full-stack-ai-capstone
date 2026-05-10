@@ -39,7 +39,7 @@
     "google-auth-library": "^10.6.2",
     "isomorphic-dompurify": "^3.10.0",
     "jose": "^6.2.2",
-    "next": "^15.5.14",
+    "next": "^15.5.18",
     "pusher": "^5.2.0",
     "pusher-js": "^8.4.0",
     "react": "19.1.0",
