@@ -84,19 +84,8 @@ function EmptyStateIcon() {
   );
 }
 
-export function MessagesInbox() {
-  const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch("/api/conversations")
-      .then((r) => r.json())
-      .then((data) => {
-        setConversations(data);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, []);
+export function MessagesInbox({ currentUserId, initialConversations }: MessagesInboxProps) {
+  const [conversations, setConversations] = useState<Conversation[]>(initialConversations ?? []);
 
   return (
     <PageBackgroundShell contentClassName="max-w-2xl px-4 py-8 sm:px-6">
@@ -109,16 +98,7 @@ export function MessagesInbox() {
         </p>
       </div>
 
-      {loading ? (
-        <div className="space-y-3">
-          {[...Array(4)].map((_, i) => (
-            <div
-              key={i}
-              className={`h-20 rounded-2xl border border-slate-200/80 bg-white/80 animate-pulse dark:border-slate-700/60 ${PREMIUM_DARK_CARD_BG}`}
-            />
-          ))}
-        </div>
-      ) : conversations.length === 0 ? (
+      {conversations.length === 0 ? (
         <div className="py-20 text-center">
           <div className={`mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl border border-slate-200/80 bg-white/80 shadow-sm dark:border-slate-700/60 ${PREMIUM_DARK_ICON_SURFACE}`}>
             <EmptyStateIcon />

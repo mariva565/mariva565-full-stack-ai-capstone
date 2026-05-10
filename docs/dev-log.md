@@ -10959,6 +10959,7 @@ Page routes обхождат API guard-ите (зареждат директно
 
 **Verification:**
 - Verified both `/moderation` and `/admin` no longer load their initial data with `useEffect`.
+- Fixed leftover TypeScript error in `app/messages/page.tsx` from the previous session (updated `MessagesInbox` component to accept the new SSR props: `currentUserId` and `initialConversations`, and removed its client-side `useEffect`).
 - `npm run typecheck` passes cleanly for the modified files.
 
 **Решения:**
