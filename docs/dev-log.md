@@ -11072,6 +11072,7 @@ Page routes обхождат API guard-ите (зареждат директно
 **Какво направихме:**
 - Added a pre-deploy documentation and repository hygiene checklist to the local deployment plan.
 - Captured final README refresh, schema/diagram updates, `AGENTS.md` sync, final monolithic-code audit, GitHub cleanup, protected-docs preservation, and final git diff review.
+- Clarified that README badges must be refreshed separately for final status, commit count, framework versions, table/API/page counts, and mobile wording.
 
 **Файлове:**
 - [MODIFY] scratch/deployment-plan.md (local deployment plan)
@@ -11082,3 +11083,22 @@ Page routes обхождат API guard-ите (зареждат директно
 
 **Решения:**
 - Kept this as a pre-deploy checklist item rather than doing the cleanup immediately, because README/AGENTS/schema screenshots should reflect the final deployed state and release links.
+
+### Session 370 — README Vercel Blob architecture diagrams
+
+**Какво направихме:**
+- Added Vercel Blob to the README System Architecture Mermaid diagram.
+- Split storage visually into public Blob store for avatars/post images and private Blob store for material files.
+- Added Vercel Blob to the Content Access Flow sequence diagram for file upload and protected download.
+- Added a Storage row to the README Tech Stack table.
+
+**Файлове:**
+- [MODIFY] README.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Docs-only README update; no app typecheck/build was run.
+- `npm run check:mojibake` -> pass
+
+**Решения:**
+- Kept the ER diagram database-only; Blob is external storage, while the DB stores metadata/pathnames.

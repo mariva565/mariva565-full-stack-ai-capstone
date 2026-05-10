@@ -188,6 +188,12 @@ graph TB
         DRIZZLE["TypeScript schema + migrations"]
     end
 
+    subgraph STORAGE["File Storage - Vercel Blob"]
+        direction LR
+        PUBLIC_BLOB["Public store<br/>avatars + post images"]
+        PRIVATE_BLOB["Private store<br/>material files"]
+    end
+
     subgraph DATA["Data Layer"]
         DB[("Neon PostgreSQL")]
     end
@@ -196,10 +202,13 @@ graph TB
     MOBILE -->|"REST API - same backend"| SERVER
     SERVER --> ORM
     ORM --> DB
+    SERVER -->|"public uploads"| PUBLIC_BLOB
+    SERVER -->|"private upload + protected proxy"| PRIVATE_BLOB
 
     style CLIENT fill:#1e1b4b,stroke:#7c3aed,color:#e0e7ff
     style SERVER fill:#0c4a6e,stroke:#0ea5e9,color:#e0f2fe
     style ORM fill:#1a2e05,stroke:#84cc16,color:#ecfccb
+    style STORAGE fill:#312e81,stroke:#818cf8,color:#eef2ff
     style DATA fill:#1c1917,stroke:#f59e0b,color:#fef3c7
     style WEB fill:#2e1065,stroke:#a78bfa,color:#ede9fe
     style MOBILE fill:#2e1065,stroke:#a78bfa,color:#ede9fe
@@ -209,6 +218,8 @@ graph TB
     style AI fill:#0c4a6e,stroke:#38bdf8,color:#e0f2fe
     style ADMIN fill:#0c4a6e,stroke:#38bdf8,color:#e0f2fe
     style DRIZZLE fill:#1a2e05,stroke:#a3e635,color:#ecfccb
+    style PUBLIC_BLOB fill:#312e81,stroke:#a5b4fc,color:#eef2ff
+    style PRIVATE_BLOB fill:#1e1b4b,stroke:#818cf8,color:#eef2ff
     style DB fill:#422006,stroke:#fbbf24,color:#fef9c3
 ```
 
@@ -220,6 +231,7 @@ graph TB
 | Backend API | Next.js API Routes — core + social + messaging route groups |
 | Database | Neon PostgreSQL (serverless) + Drizzle ORM + SQL migrations (21 tables) |
 | Auth | Custom JWT (jose, HS256, httpOnly cookies) + Google OAuth |
+| Storage | Vercel Blob — public avatars/post images + private material files |
 | Mobile | React Native + Expo SDK 54 + TanStack React Query + AsyncStorage persistence + Expo notifications |
 | Monorepo | npm workspaces (`apps/web`, `apps/mobile`, `packages/shared`) |
 
@@ -295,6 +307,7 @@ sequenceDiagram
     participant F as Frontend
     participant A as API
     participant D as Database
+    participant B as Vercel Blob
 
     U->>F: Opens Dashboard
     F->>A: GET /api/courses
@@ -316,6 +329,21 @@ sequenceDiagram
     D-->>A: Return materials
     A-->>F: JSON response
     F-->>U: Render materials (text / link / file)
+
+    Note over U,B: File material upload and protected download
+    U->>F: Uploads a file material
+    F->>A: POST /api/upload
+    A->>B: Store file in private material Blob store
+    B-->>A: Return private Blob pathname
+    A->>D: Save material metadata and pathname
+    A-->>F: Return created material
+
+    U->>F: Opens a file material
+    F->>A: GET /api/materials/[id]/file
+    A->>D: Verify owner/shared access and load pathname
+    A->>B: Fetch private Blob server-side
+    B-->>A: Return file body
+    A-->>F: Stream protected file response
 
     U->>F: Bookmarks a Material
     F->>A: POST /api/favorites {materialId}
