@@ -82,7 +82,17 @@ function useAiOutputActions(
     pushToast("AI result inserted into the editor. Save material to keep it.", "success");
   }
 
-  return { savedAiOutputs, handleAiOutputSaved, handleInsertAiOutput };
+  function handleExtractedText(text: string) {
+    setDraft((current) => {
+      const trimmedCurrent = current.content.trim();
+      const content = trimmedCurrent ? `${trimmedCurrent}\n\n${text}` : text;
+      return { ...current, content };
+    });
+    setIsEditing(true);
+    pushToast("Text extracted from file. Save material to keep it.", "success");
+  }
+
+  return { savedAiOutputs, handleAiOutputSaved, handleInsertAiOutput, handleExtractedText };
 }
 
 function useSaveMaterialAction(

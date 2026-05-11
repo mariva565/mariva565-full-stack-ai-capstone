@@ -16,6 +16,7 @@ const TAG_SPLIT_REGEX = /[,;]/;
 const TITLE_PREVIEW_MAX_LENGTH = 80;
 const IMAGE_FILE_EXTENSION_REGEX = /\.(avif|gif|jpe?g|png|webp)$/i;
 const WORD_FILE_EXTENSION_REGEX = /\.docx?$/i;
+const EXTRACTABLE_FILE_EXTENSION_REGEX = /\.(pdf|docx?)$/i;
 
 function trimToNull(value: string | null | undefined): string | null {
   const trimmed = value?.trim();
@@ -105,6 +106,22 @@ export function isWordFileUrl(fileUrl: string | null | undefined): boolean {
   }
 
   return WORD_FILE_EXTENSION_REGEX.test(pathname);
+}
+
+export function isExtractableFileUrl(fileUrl: string | null | undefined): boolean {
+  const trimmedUrl = trimToNull(fileUrl);
+  if (!trimmedUrl) {
+    return false;
+  }
+
+  let pathname = trimmedUrl;
+  try {
+    pathname = new URL(trimmedUrl).pathname;
+  } catch {
+    pathname = trimmedUrl.split(/[?#]/, 1)[0];
+  }
+
+  return EXTRACTABLE_FILE_EXTENSION_REGEX.test(pathname);
 }
 
 export function resolveMaterialTitle(

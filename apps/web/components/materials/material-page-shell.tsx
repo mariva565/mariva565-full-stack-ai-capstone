@@ -8,6 +8,7 @@ import { ConfirmModal } from "../ui/confirm-modal";
 import { LottieDecoration } from "../ui/lottie-decoration";
 import { ScrollToTop } from "../ui/scroll-to-top";
 import { Toast } from "../ui/toast";
+import { isExtractableFileUrl } from "../../lib/materials";
 
 type MaterialPageShellProps = {
   controller: MaterialPageController;
@@ -17,7 +18,7 @@ function MaterialAiToolsCard({ controller }: MaterialPageShellProps) {
   const shouldShow =
     !controller.isEditing &&
     controller.isOwner &&
-    (controller.material.content || controller.savedAiOutputs.length > 0);
+    (controller.material.content || controller.savedAiOutputs.length > 0 || isExtractableFileUrl(controller.material.fileUrl));
 
   if (!shouldShow) return null;
 
@@ -26,9 +27,11 @@ function MaterialAiToolsCard({ controller }: MaterialPageShellProps) {
       <AiToolsPanel
         content={controller.material.content ?? ""}
         materialId={controller.material.id}
+        fileUrl={controller.material.fileUrl}
         savedOutputs={controller.savedAiOutputs}
         onOutputSaved={controller.handleAiOutputSaved}
         onInsertIntoNote={controller.handleInsertAiOutput}
+        onExtractedText={controller.handleExtractedText}
       />
     </div>
   );

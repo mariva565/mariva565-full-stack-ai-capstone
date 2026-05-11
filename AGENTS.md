@@ -8,7 +8,7 @@ This is a capstone project for the SoftUni "Full Stack Apps with AI" course.
 It is a rewrite of a previous project (StudyHub v1, Vanilla JS + Supabase) using a completely new tech stack.
 The old project is at `C:\Users\mariy\Projects\Visual-Studio-Capstone-Project-StudyHub-interface-v3\` and should be used **only as a visual/logical reference** — no code should be copied.
 
-## Current Status (2026-04-30)
+## Current Status (2026-05-11)
 
 - **Phases 0–4:** Complete (foundation, auth, content CRUD, AI tools, social features)
 - **Phase 5 (Mobile):** In progress — Auth, Courses, Favorites, Community, Messages, Push notifications all working
@@ -16,6 +16,8 @@ The old project is at `C:\Users\mariy\Projects\Visual-Studio-Capstone-Project-St
 - **Lesson 09 deliverables:** Postman collection, `/api-docs` page, OpenAPI contract — all done
 - **Security audit (#52):** Complete — 14 findings closed across 3 rounds (5 HIGH + 8 MEDIUM + 1 LOW)
 - **Phase 9 (Vercel Blob):** Done — avatars use the public Blob store and material files use the private Blob store
+- **PDF/DOCX text extraction:** Done — server-side extraction (pdf-parse + mammoth) with UI on web and mobile
+- **Note → PDF export:** Done — browser-native print with @media print CSS (no libraries)
 - **Pending:** Mobile polish, final UI polish, deployment
 
 ## Tech Stack (mandatory)
@@ -25,7 +27,7 @@ The old project is at `C:\Users\mariy\Projects\Visual-Studio-Capstone-Project-St
 - **Database:** Neon serverless PostgreSQL + Drizzle ORM
 - **Auth:** JWT tokens (register, login, logout) + Google OAuth + roles (user, mentor, admin)
 - **Mobile:** React Native + Expo + TanStack React Query
-- **AI:** Google Gemini API (chat, summarize, quiz generation)
+- **AI:** Google Gemini API (chat, summarize, quiz generation) + pdf-parse (PDF text extraction) + mammoth (DOCX text extraction)
 - **Realtime & Notifications:** Pusher (web realtime), Browser Notification API, Expo notifications + Expo push tokens
 - **3D/Visuals:** Three.js (landing page scenes)
 - **Storage:** Vercel Blob (`studyhub-avatars` with `AVATAR_BLOB_READ_WRITE_TOKEN`, `studyhub-materials` with `MATERIAL_BLOB_READ_WRITE_TOKEN`)

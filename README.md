@@ -795,6 +795,7 @@ Manual testing artifacts for backend demos live in [`docs/StudyHub.postman_colle
 |---|---|---|
 | `POST` | `/api/ai/chat` | Gemini-powered chat about material content |
 | `POST` | `/api/ai/tools` | AI analysis tools (summarize, quiz, explain) |
+| `POST` | `/api/materials/[id]/extract-text` | Extract text from attached PDF/DOCX file (pdf-parse + mammoth) |
 | `GET` | `/api/materials/search?q=...` | Search current user's materials (title/content/tags) with ranked top matches |
 | `POST` | `/api/assistant/material-finder` | Isolated material finder assistant (search-first, Gemini optional for phrasing) |
 | `GET/POST` | `/api/materials/[id]/ai-outputs` | Saved AI results per material |

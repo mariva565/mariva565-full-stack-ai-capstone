@@ -4,6 +4,57 @@
 
 ---
 
+## 2026-05-11
+
+### Session 353 — Note → PDF Export (Print-based)
+
+**Какво направихме:**
+- Добавихме бутон "Save as PDF" в Material View панела (web).
+- Ползва `window.print()` с `@media print` CSS — без допълнителни библиотеки.
+- Създава временен print-root елемент с заглавие, дата и съдържание, извиква print, после почиства DOM-а.
+- Кирилицата работи перфектно (браузърът ползва системните шрифтове).
+- Избягва проблемите от v1 (html2pdf + html2canvas = truncation на мобилни, чупене след deploy).
+
+**Файлове:**
+- [MODIFY] apps/web/components/materials/material-view-panel.tsx — handlePrint() + бутон "Save as PDF"
+- [MODIFY] apps/web/app/styles/globals-content.css — @media print стилове (скрива UI, форматира за A4)
+
+**Verification:**
+- `tsc --noEmit` → 0 errors
+
+---
+
+### Session 352 — PDF/DOCX Text Extraction Feature
+
+**Какво направихме:**
+- Добавихме нова функционалност: извличане на текст от прикачени PDF и DOCX файлове, който се вмъква в бележките на материала.
+- Извлеченият текст може веднага да се подаде на AI Study Tools (summarize, quiz, flashcards, definitions).
+- Работи и на web, и на mobile (Expo) — екстракцията е изцяло server-side.
+
+**Файлове:**
+- [NEW] apps/web/app/api/materials/[id]/extract-text/route.ts — POST endpoint: чете файл от Vercel Blob, парсва PDF (pdf-parse v1) или DOCX (mammoth), връща текст
+- [MODIFY] apps/web/components/materials/ai-tools-panel.tsx — нов бутон "Extract text from file" (голям при празен content, малък при наличен)
+- [MODIFY] apps/web/components/materials/material-page-controller.ts — handleExtractedText() — вмъква текста в editor draft
+- [MODIFY] apps/web/components/materials/material-page-shell.tsx — AI Tools картата се показва и при extractable файл без content
+- [MODIFY] apps/web/lib/materials.ts — isExtractableFileUrl() helper
+- [MODIFY] apps/mobile/components/material/ai-tools/use-ai-tools.ts — extractMutation (POST → extract-text → PUT обратно в материала)
+- [MODIFY] apps/mobile/components/material/ai-tools/ai-tools-screen.tsx — бутон "Extract text from file" с ActivityIndicator
+
+**Нови зависимости (apps/web):**
+- pdf-parse@1.1.1 — PDF text extraction
+- mammoth — DOCX/DOC text extraction
+- @types/pdf-parse — TypeScript types
+
+**Verification:**
+- `tsc --noEmit` → 0 errors (web + mobile)
+
+**Сигурност:**
+- Auth (requireAuth) + ownership проверка (само собственикът може да извлича)
+- Rate limit: 10 заявки/час на потребител
+- Максимум 15 000 символа от файл (предпазва от огромни документи)
+
+---
+
 ## 2026-05-05
 
 ### Session 351 — Automated Testing: Playwright E2E (Session C)

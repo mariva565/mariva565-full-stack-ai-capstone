@@ -47,6 +47,38 @@ export function useAiTools(materialId: number) {
     },
   });
 
+  const extractMutation = useMutation({
+    mutationFn: async () => {
+      const response = await apiFetch<{ text: string }>(`/api/materials/${materialId}/extract-text`, {
+        method: "POST",
+        timeoutMs: 30000,
+      });
+      return response.text;
+    },
+    onSuccess: async (text) => {
+      showToast("Text extracted! Updating material...", "success");
+      const current = materialQuery.data?.material;
+      if (!current) return;
+      const existingContent = current.content?.trim() ?? "";
+      const newContent = existingContent ? `${existingContent}\n\n${text}` : text;
+      await apiFetch(`/api/materials/${materialId}`, {
+        method: "PUT",
+        body: {
+          title: current.title,
+          content: newContent,
+          materialType: current.materialType,
+          fileUrl: current.fileUrl,
+          tags: current.tags,
+        },
+      });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.materials.detail(materialId) });
+      showToast("Text saved to material notes.", "success");
+    },
+    onError: (error) => {
+      showToast(getUserFriendlyError(error, "Could not extract text from file"), "error");
+    },
+  });
+
   const saveMutation = useMutation({
     mutationFn: async () => {
       if (!activeResult) throw new Error("No active result to save");
@@ -76,5 +108,7 @@ export function useAiTools(materialId: number) {
     isGenerating: generateMutation.isPending,
     saveActiveResult: () => saveMutation.mutateAsync(),
     isSaving: saveMutation.isPending,
+    extractText: () => extractMutation.mutateAsync(),
+    isExtracting: extractMutation.isPending,
   };
 }

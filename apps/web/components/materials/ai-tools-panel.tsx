@@ -14,13 +14,16 @@ import {
   isSavedAiToolOutput,
   isToolData,
 } from "../../lib/ai-tool-outputs";
+import { isExtractableFileUrl } from "../../lib/materials";
 
 type AiToolsPanelProps = {
   content: string;
   materialId: number;
+  fileUrl: string | null;
   savedOutputs: SavedAiToolOutput[];
   onOutputSaved: (output: SavedAiToolOutput) => void;
   onInsertIntoNote: (result: ToolResult | SavedAiToolOutput) => void;
+  onExtractedText: (text: string) => void;
 };
 
 const TOOLS: { name: ToolName; label: string; icon: string }[] = [
@@ -57,15 +60,19 @@ function buildToolResult(tool: ToolName, data: unknown): ToolResult | null {
 export function AiToolsPanel({
   content,
   materialId,
+  fileUrl,
   savedOutputs,
   onOutputSaved,
   onInsertIntoNote,
+  onExtractedText,
 }: AiToolsPanelProps) {
   const hasSourceContent = content.trim().length > 0;
+  const canExtract = isExtractableFileUrl(fileUrl);
   const [loading, setLoading] = useState<ToolName | null>(null);
   const [result, setResult] = useState<ToolResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [saveBusy, setSaveBusy] = useState(false);
+  const [extracting, setExtracting] = useState(false);
 
   async function runTool(tool: ToolName) {
     setLoading(tool);
@@ -135,6 +142,37 @@ export function AiToolsPanel({
     }
   }
 
+  async function handleExtractText() {
+    setExtracting(true);
+    setError(null);
+
+    try {
+      const response = await fetch(`/api/materials/${materialId}/extract-text`, {
+        method: "POST",
+      });
+
+      if (!response.ok) {
+        const payload = await response.json().catch(() => null);
+        throw new Error(payload?.message || `Error ${response.status}`);
+      }
+
+      const payload = await response.json();
+      if (typeof payload?.text !== "string" || !payload.text.trim()) {
+        throw new Error("Could not extract any text from the file.");
+      }
+
+      onExtractedText(payload.text);
+    } catch (extractError) {
+      setError(
+        extractError instanceof Error
+          ? extractError.message
+          : "Failed to extract text from file",
+      );
+    } finally {
+      setExtracting(false);
+    }
+  }
+
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2">
@@ -189,10 +227,47 @@ export function AiToolsPanel({
         ))}
       </div>
 
-      {!hasSourceContent ? (
+      {!hasSourceContent && canExtract ? (
+        <div className="rounded-xl border border-dashed border-brand-300/80 bg-brand-50/80 px-4 py-3 dark:border-brand-700 dark:bg-brand-900/20">
+          <p className="text-sm text-brand-700 dark:text-brand-300">
+            This material has an attached document. Extract its text to use it with AI tools or as notes.
+          </p>
+          <button
+            type="button"
+            disabled={extracting}
+            onClick={handleExtractText}
+            className="mt-3 inline-flex items-center gap-2 rounded-full bg-[linear-gradient(135deg,#6366f1_0%,#8b5cf6_55%,#06b6d4_100%)] px-5 py-2.5 text-sm font-semibold text-white shadow-md transition hover:-translate-y-0.5 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {extracting ? (
+              <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
+            ) : (
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+              </svg>
+            )}
+            {extracting ? "Extracting..." : "Extract text from file"}
+          </button>
+        </div>
+      ) : !hasSourceContent ? (
         <div className="rounded-xl border border-dashed border-slate-300/80 bg-slate-50/80 px-4 py-3 text-sm text-slate-500 dark:border-slate-700 dark:bg-slate-900/50 dark:text-slate-400">
           Add or restore some material notes if you want to generate new AI results. Your saved AI entries stay available below.
         </div>
+      ) : canExtract ? (
+        <button
+          type="button"
+          disabled={extracting}
+          onClick={handleExtractText}
+          className="inline-flex items-center gap-2 rounded-full border border-brand-200/80 bg-brand-50/90 px-4 py-2 text-xs font-semibold text-brand-700 transition hover:-translate-y-0.5 dark:border-brand-400/20 dark:bg-brand-500/10 dark:text-brand-200 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {extracting ? (
+            <div className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-brand-400/40 border-t-brand-600" />
+          ) : (
+            <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+            </svg>
+          )}
+          {extracting ? "Extracting..." : "Extract text from file"}
+        </button>
       ) : null}
 
       {error ? (

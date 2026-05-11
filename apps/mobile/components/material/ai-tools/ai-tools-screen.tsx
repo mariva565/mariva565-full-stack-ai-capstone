@@ -24,6 +24,8 @@ export function AiToolsScreen({ materialId }: { materialId: number }) {
     isGenerating,
     saveActiveResult,
     isSaving,
+    extractText,
+    isExtracting,
   } = useAiTools(materialId);
 
   if (loadingInitial) {
@@ -45,15 +47,41 @@ export function AiToolsScreen({ materialId }: { materialId: number }) {
   }
 
   const hasContent = (material.content?.trim()?.length ?? 0) > 0;
+  const canExtract = /\.(pdf|docx?)$/i.test(material.fileUrl ?? "");
 
   return (
     <ScrollView style={[styles.container, { backgroundColor: colors.canvas }]} contentContainerStyle={styles.content}>
       
+      {/* Extract from file */}
+      {canExtract ? (
+        <TouchableOpacity
+          style={[
+            styles.extractBtn,
+            { backgroundColor: colors.brandPrimary },
+            isExtracting && styles.disabled,
+          ]}
+          disabled={isExtracting}
+          activeOpacity={0.7}
+          onPress={extractText}
+        >
+          {isExtracting ? (
+            <ActivityIndicator size="small" color="#fff" />
+          ) : (
+            <Text style={styles.extractIcon}>📄</Text>
+          )}
+          <Text style={styles.extractLabel}>
+            {isExtracting ? "Extracting..." : "Extract text from file"}
+          </Text>
+        </TouchableOpacity>
+      ) : null}
+
       {/* Generate Section */}
       <Text style={[styles.sectionTitle, { color: colors.titlePrimary }]}>GENERATE NEW</Text>
       {!hasContent ? (
         <Text style={[styles.warningText, { color: colors.textMuted }]}>
-          Add text content to this material to generate AI results.
+          {canExtract
+            ? "Extract text from your file first, then use AI tools."
+            : "Add text content to this material to generate AI results."}
         </Text>
       ) : null}
 
@@ -266,5 +294,23 @@ const styles = StyleSheet.create({
   },
   spacer: {
     height: 40,
+  },
+  extractBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 10,
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    borderRadius: 16,
+    marginBottom: 24,
+  },
+  extractIcon: {
+    fontSize: 20,
+  },
+  extractLabel: {
+    color: "#fff",
+    fontSize: 15,
+    fontWeight: "700",
   },
 });
