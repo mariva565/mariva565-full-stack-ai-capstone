@@ -1,10 +1,9 @@
 "use client";
 
-import { useGoogleLogin } from "@react-oauth/google";
 import { useRouter } from "next/navigation";
 import { readErrorMessage } from "@/lib/http";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { GoogleIcon } from "./auth-icons";
 
 type AuthGoogleSignInProps = {
@@ -20,6 +19,7 @@ export function AuthGoogleSignIn({
 }: AuthGoogleSignInProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const handledRef = useRef(false);
   const isLoginVariant = variant === "login";
 
   async function handleSuccess(token: string, type: "id_token" | "access_token" = "id_token") {
@@ -42,19 +42,37 @@ export function AuthGoogleSignIn({
     }
   }
 
-  const login = useGoogleLogin({
-    onSuccess: (tokenResponse) => {
-      console.log("[Google OAuth] onSuccess fired, has access_token:", !!tokenResponse.access_token);
-      handleSuccess(tokenResponse.access_token, "access_token");
-    },
-    onError: (err) => {
-      console.error("[Google OAuth] onError fired:", err);
-      onError("Google login was cancelled or failed.");
-    },
-    onNonOAuthError: (err) => {
-      console.error("[Google OAuth] onNonOAuthError:", err);
-    },
-  });
+  // Handle redirect callback: Google returns access_token in URL hash
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (!hash || handledRef.current) return;
+
+    const params = new URLSearchParams(hash.substring(1));
+    const accessToken = params.get("access_token");
+    if (accessToken) {
+      handledRef.current = true;
+      window.history.replaceState(null, "", window.location.pathname);
+      handleSuccess(accessToken, "access_token");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  function login() {
+    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+    if (!clientId) {
+      onError("Google Client ID is not configured.");
+      return;
+    }
+    const redirectUri = window.location.origin + "/login";
+    const url =
+      "https://accounts.google.com/o/oauth2/v2/auth" +
+      `?client_id=${encodeURIComponent(clientId)}` +
+      `&redirect_uri=${encodeURIComponent(redirectUri)}` +
+      "&response_type=token" +
+      "&scope=openid%20email%20profile" +
+      "&prompt=select_account";
+    window.location.href = url;
+  }
 
   return (
     <motion.button
