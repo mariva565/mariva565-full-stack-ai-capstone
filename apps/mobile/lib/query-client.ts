@@ -40,6 +40,7 @@ export const queryClient = new QueryClient({
       gcTime: REACT_QUERY_MAX_AGE_MS,
       refetchOnReconnect: true,
       refetchOnMount: true,
+      refetchOnWindowFocus: false,
     },
     mutations: {
       retry: 0,
