@@ -43,8 +43,17 @@ export function AuthGoogleSignIn({
   }
 
   const login = useGoogleLogin({
-    onSuccess: (tokenResponse) => handleSuccess(tokenResponse.access_token, "access_token"),
-    onError: () => onError("Google login was cancelled or failed."),
+    onSuccess: (tokenResponse) => {
+      console.log("[Google OAuth] onSuccess fired, has access_token:", !!tokenResponse.access_token);
+      handleSuccess(tokenResponse.access_token, "access_token");
+    },
+    onError: (err) => {
+      console.error("[Google OAuth] onError fired:", err);
+      onError("Google login was cancelled or failed.");
+    },
+    onNonOAuthError: (err) => {
+      console.error("[Google OAuth] onNonOAuthError:", err);
+    },
   });
 
   return (
