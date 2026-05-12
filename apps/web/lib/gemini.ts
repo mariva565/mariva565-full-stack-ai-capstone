@@ -1,4 +1,5 @@
 const GEMINI_MODELS = [
+  "gemini-2.5-flash-lite",
   "gemini-2.0-flash",
   "gemini-2.5-flash",
 ];
@@ -98,11 +99,6 @@ async function requestGemini(options: GeminiOptions): Promise<string> {
       }
 
       const candidate = data?.candidates?.[0];
-      if (candidate?.finishReason === "MAX_TOKENS") {
-        lastError = `Response from ${model} was truncated`;
-        continue;
-      }
-
       const parts = candidate?.content?.parts;
       if (!Array.isArray(parts)) continue;
 
