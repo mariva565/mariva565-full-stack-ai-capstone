@@ -9,6 +9,20 @@ export function makeMaterialScreenStyles(colors: AppColors) {
       flex: 1,
       backgroundColor: colors.canvas,
     },
+    backBtn: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 6,
+      paddingHorizontal: 16,
+      paddingTop: 12,
+      paddingBottom: 4,
+    },
+    backBtnText: {
+      fontSize: 14,
+      fontWeight: "600",
+      color: colors.brandPrimary,
+      flexShrink: 1,
+    },
     centered: {
       flex: 1,
       justifyContent: "center",
@@ -128,6 +142,24 @@ export function makeMaterialScreenStyles(colors: AppColors) {
       color: colors.textMuted,
       textAlign: "center",
       paddingVertical: 12,
+    },
+    extractBtn: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 8,
+      backgroundColor: colors.brandPrimary,
+      paddingVertical: 14,
+      paddingHorizontal: 20,
+      borderRadius: 12,
+    },
+    extractBtnIcon: {
+      fontSize: 18,
+    },
+    extractBtnText: {
+      color: colors.textOnBrand,
+      fontSize: 15,
+      fontWeight: "600",
     },
     filePreviewCard: {
       backgroundColor: colors.surface,

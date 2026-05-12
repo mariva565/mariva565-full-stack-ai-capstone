@@ -22,6 +22,16 @@ export function MaterialPageHeader({
 }: MaterialPageHeaderProps) {
   return (
     <div className="rounded-[2rem] border border-white/60 bg-[linear-gradient(160deg,rgba(255,255,255,0.96)_0%,rgba(248,250,252,0.94)_58%,rgba(238,242,255,0.92)_100%)] p-6 shadow-[0_30px_80px_rgba(15,23,42,0.08)] dark:border-cyan-400/10 dark:bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.12)_0%,rgba(34,211,238,0)_26%),linear-gradient(160deg,rgba(15,23,42,0.97)_0%,rgba(9,17,34,0.96)_55%,rgba(6,12,28,0.98)_100%)]">
+      <a
+        href={`/modules/${moduleInfo.id}/${slugify(moduleInfo.title)}`}
+        className="mb-4 inline-flex items-center gap-1.5 text-sm font-semibold text-brand-600 transition hover:-translate-x-0.5 hover:text-brand-700 dark:text-brand-400 dark:hover:text-brand-300"
+      >
+        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+        </svg>
+        Back to {moduleInfo.title}
+      </a>
+
       <WayfindingBreadcrumbs
         items={[
           { label: "Dashboard", href: "/dashboard" },

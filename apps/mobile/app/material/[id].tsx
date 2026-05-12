@@ -42,12 +42,15 @@ export default function MaterialScreen() {
     error,
     offline,
     isPinned,
+    moduleInfo,
     toggleFavoriteBusy,
     openMaterialBusy,
+    extractingText,
     filePreviewUrl,
     filePreviewLoading,
     openMaterialUrl,
     toggleFavorite,
+    extractText,
     refresh,
   } = useMaterialScreen(routeId);
 
@@ -185,6 +188,24 @@ export default function MaterialScreen() {
       <View style={styles.contentCard}>
         {material.content ? (
           <Text style={styles.contentText}>{material.content}</Text>
+        ) : /\.(pdf|docx?)$/i.test(material.fileUrl ?? "") ? (
+          <TouchableOpacity
+            style={styles.extractBtn}
+            onPress={() => void extractText()}
+            disabled={extractingText}
+            activeOpacity={0.7}
+            accessibilityRole="button"
+            accessibilityLabel="Extract text from file and convert to note"
+          >
+            {extractingText ? (
+              <ActivityIndicator size="small" color={colors.textOnBrand} />
+            ) : (
+              <Text style={styles.extractBtnIcon}>📄</Text>
+            )}
+            <Text style={styles.extractBtnText} maxFontSizeMultiplier={1.2}>
+              {extractingText ? "Extracting..." : "Extract text from file"}
+            </Text>
+          </TouchableOpacity>
         ) : (
           <Text style={styles.noContent}>No content</Text>
         )}
@@ -240,7 +261,7 @@ export default function MaterialScreen() {
         </TouchableOpacity>
       ) : null}
 
-      {material.content ? (
+      {material.content || /\.(pdf|docx?)$/i.test(material.fileUrl ?? "") ? (
         <TouchableOpacity
           style={styles.aiToolsBtn}
           onPress={() => router.push(`/material/${material.id}/ai-tools`)}

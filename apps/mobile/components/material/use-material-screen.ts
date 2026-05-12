@@ -59,6 +59,37 @@ export function useMaterialScreen(routeId: string) {
       }),
   });
 
+  const extractTextMutation = useMutation({
+    mutationFn: async (materialId: number) => {
+      const res = await apiFetch<{ text: string }>(`/api/materials/${materialId}/extract-text`, {
+        method: "POST",
+        cache: false,
+      });
+      return res.text;
+    },
+    onSuccess: async (text) => {
+      const current = materialQuery.data?.material;
+      if (!current) return;
+      const existing = current.content?.trim() ?? "";
+      const newContent = existing ? `${existing}\n\n${text}` : text;
+      await apiFetch(`/api/materials/${current.id}`, {
+        method: "PUT",
+        body: {
+          title: current.title,
+          content: newContent,
+          materialType: current.materialType,
+          fileUrl: current.fileUrl,
+          tags: current.tags,
+        },
+      });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.materials.detail(routeId) });
+      showToast("Text extracted and saved to material.", "success");
+    },
+    onError: (error) => {
+      showToast(getUserFriendlyError(error, "Could not extract text from file"), "error");
+    },
+  });
+
   const favoritesQuery = useQuery({
     queryKey: queryKeys.favorites.lists(),
     queryFn: fetchFavorites,
@@ -126,6 +157,7 @@ export function useMaterialScreen(routeId: string) {
 
   const materialData = materialQuery.data ?? null;
   const material = materialData?.material ?? null;
+  const moduleInfo = materialData?.module ?? null;
   const isFileMaterial = material
     ? normalizeMaterialType(material.materialType) === "file"
     : false;
@@ -199,8 +231,14 @@ export function useMaterialScreen(routeId: string) {
     void materialQuery.refetch();
   }, [materialQuery]);
 
+  const extractText = useCallback(async () => {
+    if (!material || extractTextMutation.isPending) return;
+    await extractTextMutation.mutateAsync(material.id);
+  }, [material, extractTextMutation]);
+
   return {
     material,
+    moduleInfo,
     loading,
     refreshing,
     error,
@@ -208,10 +246,12 @@ export function useMaterialScreen(routeId: string) {
     isPinned,
     toggleFavoriteBusy: toggleFavoriteMutation.isPending,
     openMaterialBusy,
+    extractingText: extractTextMutation.isPending,
     filePreviewUrl: filePreviewQuery.data?.url ?? null,
     filePreviewLoading: filePreviewQuery.isPending && canPreviewImageFile,
     openMaterialUrl,
     toggleFavorite,
+    extractText,
     refresh,
   };
 }
