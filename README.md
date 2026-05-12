@@ -40,7 +40,7 @@
 
 | Platform | Link |
 |---|---|
-| Web App | `TBD — Vercel deployment in progress` |
+| Web App | [mariva565-full-stack-ai-capstone-we.vercel.app](https://mariva565-full-stack-ai-capstone-we.vercel.app) |
 | Mobile APK | `TBD — EAS Build planned` |
 
 Demo credentials: see [Demo Credentials](#demo-credentials)
