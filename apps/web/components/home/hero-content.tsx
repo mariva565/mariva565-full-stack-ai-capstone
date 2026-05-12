@@ -49,11 +49,11 @@ export function HeroContent() {
         className="flex flex-col sm:flex-row items-center gap-6 justify-center lg:justify-start hero-actions"
       >
         <Link
-          href="/dashboard"
+          href="/login"
           className="btn-gradient-primary group"
         >
-          <i className="bi bi-journal-bookmark-fill group-hover:rotate-12 transition-transform"></i>
-          Open Dashboard
+          <i className="bi bi-rocket-takeoff-fill group-hover:rotate-12 transition-transform"></i>
+          Get Started
         </Link>
 
         <Link

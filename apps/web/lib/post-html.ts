@@ -1,4 +1,4 @@
-import DOMPurify from "isomorphic-dompurify";
+import sanitize from "sanitize-html";
 import { hasPostImage } from "./post-images";
 
 const EMPTY_INLINE_FRAGMENT = "(?:\\s|&nbsp;|<br\\s*/?>)*";
@@ -33,17 +33,13 @@ const ALLOWED_TAGS = [
   "td",
   "img",
 ];
-const ALLOWED_ATTR = [
-  "href",
-  "target",
-  "rel",
-  "colspan",
-  "rowspan",
-  "src",
-  "alt",
-  "width",
-  "height",
-];
+const ALLOWED_ATTRIBUTES: Record<string, string[]> = {
+  a: ["href", "target", "rel"],
+  table: [],
+  th: ["colspan", "rowspan"],
+  td: ["colspan", "rowspan"],
+  img: ["src", "alt", "width", "height"],
+};
 
 function collapseWhitespace(value: string): string {
   return value.replace(/\s+/g, " ").trim();
@@ -67,10 +63,10 @@ export function normalizePostHtmlContent(rawContent: string): string {
 export function sanitizePostHtml(rawContent: string): string {
   const normalized = normalizePostHtmlContent(rawContent);
 
-  return DOMPurify.sanitize(normalized, {
-    ALLOWED_TAGS,
-    ALLOWED_ATTR,
-    ALLOW_DATA_ATTR: false,
+  return sanitize(normalized, {
+    allowedTags: ALLOWED_TAGS,
+    allowedAttributes: ALLOWED_ATTRIBUTES,
+    disallowedTagsMode: "discard",
   });
 }
 
