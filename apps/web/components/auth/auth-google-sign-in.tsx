@@ -22,13 +22,14 @@ export function AuthGoogleSignIn({
   const handledRef = useRef(false);
   const isLoginVariant = variant === "login";
 
-  async function handleSuccess(token: string, type: "id_token" | "access_token" = "id_token") {
+  async function handleGoogleCode(code: string) {
     setIsLoading(true);
     try {
+      const redirectUri = window.location.origin + "/login";
       const response = await fetch("/api/auth/google", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token, type }),
+        body: JSON.stringify({ token: code, type: "code", redirectUri }),
       });
 
       if (!response.ok) {
@@ -42,17 +43,14 @@ export function AuthGoogleSignIn({
     }
   }
 
-  // Handle redirect callback: Google returns access_token in URL hash
+  // Handle redirect callback: Google returns ?code= in URL
   useEffect(() => {
-    const hash = window.location.hash;
-    if (!hash || handledRef.current) return;
-
-    const params = new URLSearchParams(hash.substring(1));
-    const accessToken = params.get("access_token");
-    if (accessToken) {
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code");
+    if (code && !handledRef.current) {
       handledRef.current = true;
       window.history.replaceState(null, "", window.location.pathname);
-      handleSuccess(accessToken, "access_token");
+      handleGoogleCode(code);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -68,9 +66,10 @@ export function AuthGoogleSignIn({
       "https://accounts.google.com/o/oauth2/v2/auth" +
       `?client_id=${encodeURIComponent(clientId)}` +
       `&redirect_uri=${encodeURIComponent(redirectUri)}` +
-      "&response_type=token" +
+      "&response_type=code" +
       "&scope=openid%20email%20profile" +
-      "&prompt=select_account";
+      "&prompt=select_account" +
+      "&access_type=online";
     window.location.href = url;
   }
 
