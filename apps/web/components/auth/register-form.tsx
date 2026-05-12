@@ -5,7 +5,6 @@ import { EmailIcon, LockIcon, UserIcon } from "./auth-icons";
 import { RegisterFormHeader } from "./register-form-header";
 import { useRegisterForm } from "./use-register-form";
 import { Toast } from "../ui/toast";
-import { ZiksiMascot } from "../ui/ziksi-mascot";
 import { AuthSectionDivider } from "./auth-section-divider";
 import { AuthGoogleSignIn } from "./auth-google-sign-in";
 import { PASSWORD_POLICY_MESSAGE } from "../../lib/password-validation";
@@ -29,16 +28,13 @@ export function RegisterForm() {
 
   if (success) {
     return (
-      <div className="flex flex-col items-center justify-center gap-4 py-8 text-center">
-        <ZiksiMascot src="/assets/v1/ziksi-celebration.png" size="lg" />
-        <div>
-          <p className="text-xl font-bold text-slate-900 dark:text-white">
-            Welcome aboard, {name.split(" ")[0]}! 🎉
-          </p>
-          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-            Taking you to your dashboard...
-          </p>
-        </div>
+      <div className="flex flex-col items-center justify-center gap-2 py-8 text-center">
+        <p className="text-xl font-bold text-slate-900 dark:text-white">
+          Welcome aboard, {name.split(" ")[0]}! 🎉
+        </p>
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+          Taking you to your dashboard...
+        </p>
       </div>
     );
   }

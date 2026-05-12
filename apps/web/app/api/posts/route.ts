@@ -19,6 +19,7 @@ export async function GET(request: NextRequest) {
   const postType = searchParams.get("type");
   const courseId = searchParams.get("courseId");
   const search = searchParams.get("search");
+  const bookmarked = searchParams.get("bookmarked");
   const page = parseInt(searchParams.get("page") ?? "1", 10);
   const limit = 20;
   const offset = (page - 1) * limit;
@@ -39,6 +40,19 @@ export async function GET(request: NextRequest) {
         ilike(posts.content, `%${search}%`)
       )!
     );
+  }
+
+  // Filter to only bookmarked posts for the current user
+  if (bookmarked === "true") {
+    const userBookmarks = await db
+      .select({ postId: postBookmarks.postId })
+      .from(postBookmarks)
+      .where(eq(postBookmarks.userId, auth.user.sub));
+    const bookmarkedIds = userBookmarks.map((b) => b.postId);
+    if (bookmarkedIds.length === 0) {
+      return NextResponse.json({ posts: [], page, hasMore: false });
+    }
+    conditions.push(inArray(posts.id, bookmarkedIds));
   }
 
   const rows = await db

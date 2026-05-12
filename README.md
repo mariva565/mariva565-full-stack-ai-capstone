@@ -163,58 +163,21 @@ Most tools make you choose: Notion gives you flexibility but no structure. Googl
 
 ```mermaid
 graph TB
-    subgraph CLIENT["Client Layer"]
-        direction LR
-        WEB["Next.js Web App"]
-        MOBILE["Expo Mobile App"]
-    end
+    WEB["Next.js Web App"] -->|REST API| SERVER
+    MOBILE["Expo Mobile App"] -->|REST API| SERVER
 
-    subgraph SERVER["Server Layer - Next.js API Routes"]
-        direction LR
-        AUTH["Auth"]
+    subgraph SERVER["Server Layer — 71 API Routes"]
+        AUTH["Auth + OAuth"]
         CRUD["Courses / Modules / Materials"]
-        FEATURES["Favorites / Milestones / Events"]
+        SOCIAL["Community / Messages / Mentoring"]
         AI["AI Tools"]
-        ADMIN["Admin"]
+        ADMIN["Admin Panel"]
     end
 
-    subgraph ORM["Data Access - Drizzle ORM"]
-        DRIZZLE["TypeScript schema + migrations"]
-    end
-
-    subgraph STORAGE["File Storage - Vercel Blob"]
-        direction LR
-        PUBLIC_BLOB["Public store<br/>avatars + post images"]
-        PRIVATE_BLOB["Private store<br/>material files"]
-    end
-
-    subgraph DATA["Data Layer"]
-        DB[("Neon PostgreSQL")]
-    end
-
-    WEB -->|"REST API - 71 routes"| SERVER
-    MOBILE -->|"REST API - same backend"| SERVER
-    SERVER --> ORM
-    ORM --> DB
-    SERVER -->|"public uploads"| PUBLIC_BLOB
-    SERVER -->|"private upload + protected proxy"| PRIVATE_BLOB
-
-    style CLIENT fill:#1e1b4b,stroke:#7c3aed,color:#e0e7ff
-    style SERVER fill:#0c4a6e,stroke:#0ea5e9,color:#e0f2fe
-    style ORM fill:#1a2e05,stroke:#84cc16,color:#ecfccb
-    style STORAGE fill:#312e81,stroke:#818cf8,color:#eef2ff
-    style DATA fill:#1c1917,stroke:#f59e0b,color:#fef3c7
-    style WEB fill:#2e1065,stroke:#a78bfa,color:#ede9fe
-    style MOBILE fill:#2e1065,stroke:#a78bfa,color:#ede9fe
-    style AUTH fill:#0c4a6e,stroke:#38bdf8,color:#e0f2fe
-    style CRUD fill:#0c4a6e,stroke:#38bdf8,color:#e0f2fe
-    style FEATURES fill:#0c4a6e,stroke:#38bdf8,color:#e0f2fe
-    style AI fill:#0c4a6e,stroke:#38bdf8,color:#e0f2fe
-    style ADMIN fill:#0c4a6e,stroke:#38bdf8,color:#e0f2fe
-    style DRIZZLE fill:#1a2e05,stroke:#a3e635,color:#ecfccb
-    style PUBLIC_BLOB fill:#312e81,stroke:#a5b4fc,color:#eef2ff
-    style PRIVATE_BLOB fill:#1e1b4b,stroke:#818cf8,color:#eef2ff
-    style DB fill:#422006,stroke:#fbbf24,color:#fef9c3
+    SERVER --> DRIZZLE["Drizzle ORM"]
+    DRIZZLE --> DB[("Neon PostgreSQL — 21 tables")]
+    SERVER --> PUBLIC_BLOB["Vercel Blob — Public\navatars + post images"]
+    SERVER --> PRIVATE_BLOB["Vercel Blob — Private\nmaterial files"]
 ```
 
 ### Tech Stack
@@ -305,45 +268,25 @@ sequenceDiagram
 
     U->>F: Opens Dashboard
     F->>A: GET /api/courses
-    A->>D: SELECT courses WHERE created_by = user.id
-    D-->>A: Return courses list
+    A->>D: Query user's courses
     A-->>F: JSON response
-    F-->>U: Render course cards
 
-    U->>F: Clicks on a Course
-    F->>A: GET /api/courses/[id]/modules
-    A->>D: SELECT modules WHERE course_id = id ORDER BY order_index
-    D-->>A: Return modules
+    U->>F: Navigate Course → Module → Material
+    F->>A: GET /api/courses/[id]/modules → /modules/[id]/materials
+    A->>D: Query with ownership check
     A-->>F: JSON response
-    F-->>U: Render modules list
 
-    U->>F: Clicks on a Module
-    F->>A: GET /api/modules/[id]/materials
-    A->>D: SELECT materials WHERE module_id = id
-    D-->>A: Return materials
-    A-->>F: JSON response
-    F-->>U: Render materials (text / link / file)
-
-    Note over U,B: File material upload and protected download
-    U->>F: Uploads a file material
+    Note over U,B: Protected file flow
+    U->>F: Upload file
     F->>A: POST /api/upload
-    A->>B: Store file in private material Blob store
-    B-->>A: Return private Blob pathname
-    A->>D: Save material metadata and pathname
-    A-->>F: Return created material
+    A->>B: Store in private Blob
+    A->>D: Save metadata + pathname
 
-    U->>F: Opens a file material
+    U->>F: Download file
     F->>A: GET /api/materials/[id]/file
-    A->>D: Verify owner/shared access and load pathname
-    A->>B: Fetch private Blob server-side
-    B-->>A: Return file body
-    A-->>F: Stream protected file response
-
-    U->>F: Bookmarks a Material
-    F->>A: POST /api/favorites {materialId}
-    A->>D: INSERT favorite (unique constraint)
-    A-->>F: 201 Created
-    F-->>U: Show filled bookmark icon
+    A->>D: Verify access
+    A->>B: Fetch private Blob
+    A-->>F: Stream file
 ```
 
 ---
@@ -410,231 +353,34 @@ Current schema includes 21 tables with foreign key relationships, cascade delete
 
 ```mermaid
 erDiagram
-    users {
-        serial id PK
-        varchar email UK
-        varchar name
-        text password_hash
-        varchar role
-        text avatar_url
-        timestamp created_at
-    }
-
-    courses {
-        serial id PK
-        varchar title
-        text description
-        integer created_by FK
-        boolean is_public
-        varchar status
-        timestamp created_at
-    }
-
-    modules {
-        serial id PK
-        integer course_id FK
-        varchar title
-        text description
-        integer order_index
-        integer created_by FK
-    }
-
-    materials {
-        serial id PK
-        integer module_id FK
-        varchar title
-        text content
-        varchar material_type
-        text file_url
-        text tags
-        integer created_by FK
-        timestamp created_at
-    }
-
-    favorites {
-        serial id PK
-        integer user_id FK
-        integer material_id FK
-        timestamp created_at
-    }
-
-    milestones {
-        serial id PK
-        integer user_id FK
-        varchar title
-        text description
-        varchar status
-        date due_date
-        timestamp completed_at
-        integer order_index
-        timestamp created_at
-    }
-
-    events {
-        serial id PK
-        integer user_id FK
-        varchar title
-        text description
-        date date
-        varchar type
-        varchar color
-        integer course_id FK
-        integer milestone_id FK
-        timestamp created_at
-    }
-
-    activity_logs {
-        serial id PK
-        integer user_id FK
-        varchar action_type
-        integer target_id
-        jsonb details
-        timestamp created_at
-    }
-
-    ai_tool_outputs {
-        serial id PK
-        integer user_id FK
-        integer material_id FK
-        varchar tool
-        jsonb data
-        timestamp created_at
-    }
-
-    course_members {
-        serial id PK
-        integer course_id FK
-        integer user_id FK
-        varchar role
-        timestamp joined_at
-    }
-
-    posts {
-        serial id PK
-        integer author_id FK
-        varchar title
-        text content
-        varchar post_type
-        varchar status
-        integer course_id FK
-        boolean is_pinned
-        varchar question_status
-        timestamp created_at
-    }
-
-    comments {
-        serial id PK
-        integer post_id FK
-        integer author_id FK
-        text content
-        timestamp created_at
-    }
-
-    post_likes {
-        serial id PK
-        integer post_id FK
-        integer user_id FK
-        timestamp created_at
-    }
-
-    post_bookmarks {
-        serial id PK
-        integer post_id FK
-        integer user_id FK
-        timestamp created_at
-    }
-
-    oauth_accounts {
-        serial id PK
-        integer user_id FK
-        varchar provider
-        varchar provider_user_id
-        varchar provider_email
-        timestamp created_at
-    }
-
-    password_reset_tokens {
-        serial id PK
-        integer user_id FK
-        text token_hash UK
-        timestamp expires_at
-        boolean used
-        timestamp created_at
-    }
-
-    shared_materials {
-        serial id PK
-        integer material_id FK
-        integer shared_by FK
-        integer shared_with FK
-        timestamp created_at
-    }
-
-    conversations {
-        serial id PK
-        timestamp created_at
-    }
-
-    conversation_members {
-        serial id PK
-        integer conversation_id FK
-        integer user_id FK
-        timestamp joined_at
-        timestamp last_read_at
-    }
-
-    messages {
-        serial id PK
-        integer conversation_id FK
-        integer sender_id FK
-        text content
-        timestamp created_at
-    }
-
-    user_push_tokens {
-        serial id PK
-        integer user_id FK
-        text token
-        varchar platform
-        boolean is_active
-        timestamp created_at
-    }
-
     users ||--o{ courses : creates
     users ||--o{ modules : creates
     users ||--o{ materials : creates
-    users ||--o{ favorites : has
+    users ||--o{ favorites : bookmarks
     users ||--o{ milestones : tracks
     users ||--o{ events : schedules
     users ||--o{ activity_logs : generates
     users ||--o{ oauth_accounts : authenticates
+    users ||--o{ password_reset_tokens : requests
+    users ||--o{ posts : writes
+    users ||--o{ comments : writes
+    users ||--o{ messages : sends
+    users ||--o{ user_push_tokens : registers
 
     courses ||--o{ modules : contains
     modules ||--o{ materials : contains
     materials ||--o{ favorites : bookmarked
-    materials ||--o{ ai_tool_outputs : analyzed_by
-    users ||--o{ ai_tool_outputs : generates
+    materials ||--o{ ai_tool_outputs : analyzed
+    materials ||--o{ shared_materials : shared
 
-    courses ||--o{ events : linked_to
-    milestones ||--o{ events : linked_to
     courses ||--o{ course_members : has
-    users ||--o{ course_members : joins
-    users ||--o{ posts : writes
     courses ||--o{ posts : discussed_in
     posts ||--o{ comments : has
-    users ||--o{ comments : writes
     posts ||--o{ post_likes : receives
-    users ||--o{ post_likes : gives
-    posts ||--o{ post_bookmarks : saved_in
-    users ||--o{ post_bookmarks : saves
-    users ||--o{ password_reset_tokens : requests
-    materials ||--o{ shared_materials : shared
-    users ||--o{ shared_materials : shares
+    posts ||--o{ post_bookmarks : saved
+
     conversations ||--o{ conversation_members : has
     conversations ||--o{ messages : contains
-    users ||--o{ conversation_members : joins
-    users ||--o{ messages : sends
-    users ||--o{ user_push_tokens : registers
 ```
 
 ### Table Descriptions
@@ -1085,7 +831,7 @@ Prerequisites: USB debugging enabled, `adb devices` shows the device.
 | Deployment | Netlify + Vercel (dual) | Vercel (monorepo) |
 | Security | RLS + CSP + MFA (partial) | JWT guards + middleware + role-based endpoints |
 
-> **\*** Two files intentionally exceed 300 lines with documented justification (`milestone-timeline-item.tsx` — AnimatePresence context, `drizzle/schema.ts` — single-file FK contract). All other files were refactored to sub-300 LOC during the April 2026 audit cycle.
+> **\*** A few files intentionally exceed 300 lines: `drizzle/schema.ts` (367 — single-file FK contract), `milestone-timeline-item.tsx` (340 — AnimatePresence context), `ai-tools-panel.tsx` (320 — tightly coupled AI tool tabs), `hero-3d.tsx` (310 — Three.js scene), `members-tab.tsx` (309 — admin data table). All other files stay under 300 LOC.
 
 ---
 

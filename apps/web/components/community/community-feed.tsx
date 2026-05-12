@@ -52,7 +52,11 @@ export function CommunityFeed({ currentUser, initialPosts, initialHasMore }: Com
     setPage(1);
 
     const params = new URLSearchParams({ page: "1" });
-    if (filterType) params.set("type", filterType);
+    if (filterType === "saved") {
+      params.set("bookmarked", "true");
+    } else if (filterType) {
+      params.set("type", filterType);
+    }
     if (search) params.set("search", search);
 
     fetch(`/api/posts?${params}`)
@@ -83,7 +87,11 @@ export function CommunityFeed({ currentUser, initialPosts, initialHasMore }: Com
     setPage(next);
     setLoading(true);
     const params = new URLSearchParams({ page: String(next) });
-    if (filterRef.current) params.set("type", filterRef.current);
+    if (filterRef.current === "saved") {
+      params.set("bookmarked", "true");
+    } else if (filterRef.current) {
+      params.set("type", filterRef.current);
+    }
     if (searchRef.current) params.set("search", searchRef.current);
     const res = await fetch(`/api/posts?${params}`);
     const data = await res.json();
@@ -129,6 +137,7 @@ export function CommunityFeed({ currentUser, initialPosts, initialHasMore }: Com
           className={`rounded-xl border border-slate-200 bg-white/80 px-4 py-2.5 text-sm shadow-sm dark:border-cyan-400/10 ${PREMIUM_DARK_INPUT}`}
         >
           <option value="">All types</option>
+          <option value="saved">Saved</option>
           <option value="discussion">Discussion</option>
           <option value="question">Question</option>
           <option value="resource">Resource</option>
@@ -147,10 +156,14 @@ export function CommunityFeed({ currentUser, initialPosts, initialHasMore }: Com
           <svg className="h-10 w-10 text-slate-300 dark:text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
           </svg>
-          <p className="text-slate-500 dark:text-slate-400">No posts yet - be the first!</p>
-          <Link href="/community/new" className="text-sm font-semibold text-brand-600 hover:underline dark:text-brand-400">
-            Create a post
-          </Link>
+          <p className="text-slate-500 dark:text-slate-400">
+            {filterType === "saved" ? "No saved posts yet — bookmark posts to see them here!" : "No posts yet - be the first!"}
+          </p>
+          {filterType !== "saved" && (
+            <Link href="/community/new" className="text-sm font-semibold text-brand-600 hover:underline dark:text-brand-400">
+              Create a post
+            </Link>
+          )}
         </div>
       ) : (
         <div className="space-y-4">
