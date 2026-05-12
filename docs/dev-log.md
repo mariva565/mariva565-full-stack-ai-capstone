@@ -4,6 +4,31 @@
 
 ---
 
+## 2026-05-12
+
+### Session 354 — Mobile: Extract Text + Metro Fixes
+
+**Какво направихме:**
+- Добавихме бутон "Extract text from file" директно на material страницата в mobile (за PDF/DOCX без content).
+- Extract mutation вече записва текста в базата с PUT заявка (преди само го връщаше без persist).
+- AI Tools бутонът се показва и за file материали без content.
+- Оправихме Metro bundler: `react-refresh` липсваше от диска (npm hoisting бъг), `watchFolders` в metro.config.js не включваше workspace root node_modules.
+- Back бутон в web material header (навигация към модула).
+
+**Файлове:**
+- [MODIFY] apps/mobile/app/material/[id].tsx — extract бутон в content card, AI Tools условие за files
+- [MODIFY] apps/mobile/components/material/use-material-screen.ts — extractTextMutation с PUT, moduleInfo expose
+- [MODIFY] apps/mobile/components/material/material-screen.styles.ts — extractBtn стилове
+- [MODIFY] apps/mobile/metro.config.js — watchFolders включва workspace node_modules
+- [MODIFY] apps/web/components/materials/material-page-header.tsx — back бутон към модула
+- [ADD] package.json — react-refresh@0.14.2 explicit dependency
+
+**Verification:**
+- `tsc --noEmit` (mobile) → 0 errors
+- Metro bundler стартира успешно, AI tools работят на mobile
+
+---
+
 ## 2026-05-11
 
 ### Session 353 — Note → PDF Export (Print-based)

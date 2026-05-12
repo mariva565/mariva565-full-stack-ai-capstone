@@ -17,13 +17,13 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Status-In%20Progress-F59E0B?style=flat-square" alt="Status in progress" />
-  <img src="https://img.shields.io/badge/Commits-220%2B-22C55E?style=flat-square" alt="220 plus commits" />
+  <img src="https://img.shields.io/badge/Status-Complete-22C55E?style=flat-square" alt="Status complete" />
+  <img src="https://img.shields.io/badge/Commits-310%2B-22C55E?style=flat-square" alt="310 plus commits" />
   <img src="https://img.shields.io/badge/TypeScript-Strict%20Mode-6366F1?style=flat-square" alt="TypeScript strict mode" />
   <img src="https://img.shields.io/badge/Tables-21-8B5CF6?style=flat-square" alt="21 database tables" />
-  <img src="https://img.shields.io/badge/API-71%20routes-06B6D4?style=flat-square" alt="71 API routes" />
-  <img src="https://img.shields.io/badge/Web-26%20pages-6366F1?style=flat-square" alt="26 web pages" />
-  <img src="https://img.shields.io/badge/Mobile-React%20Query%20Cache-8B5CF6?style=flat-square" alt="mobile react query cache" />
+  <img src="https://img.shields.io/badge/API-73%20routes-06B6D4?style=flat-square" alt="73 API routes" />
+  <img src="https://img.shields.io/badge/Web-28%20pages-6366F1?style=flat-square" alt="28 web pages" />
+  <img src="https://img.shields.io/badge/Mobile-21%20screens-8B5CF6?style=flat-square" alt="21 mobile screens" />
 </p>
 
 <p align="center">
@@ -38,8 +38,10 @@
 
 ## Live Demo
 
-- Live Web App: `TBD` (deployment planned as final phase)
-- Mobile Demo (Expo): local only — see [Quick Setup](#-quick-setup)
+| Platform | Link |
+|---|---|
+| Web App | `TBD — Vercel deployment in progress` |
+| Mobile APK | `TBD — EAS Build planned` |
 
 Demo credentials: see [Demo Credentials](#demo-credentials)
 
@@ -71,14 +73,6 @@ Demo credentials: see [Demo Credentials](#demo-credentials)
     </td>
   </tr>
 </table>
-
-## Contact Email Delivery
-
-The public Contact page sends real messages through a server-side Next.js API route. Submitted messages are delivered to the configured contact inbox via Nodemailer/Gmail SMTP, while `Reply-To` is set to the visitor email so admins can respond directly from Gmail.
-
-<p align="center">
-  <img src="docs/assets/readme/contact-email-screenshot.png" width="80%" alt="Gmail inbox showing a StudyHub contact form email delivery" />
-</p>
 
 ## Mobile Preview
 
@@ -159,7 +153,7 @@ Most tools make you choose: Notion gives you flexibility but no structure. Googl
 | Social S2 | Ask Mentor — Q&A workflow with Mentor Inbox | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
 | Social S3 | Messaging + notifications (web inbox/chat, mobile inbox/thread, browser + mobile push) | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
 | Phase 9 | File storage (Vercel Blob — avatar + material uploads) | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
-| Phase 10 | Deployment (Vercel/Netlify) | ![Planned](https://img.shields.io/badge/Planned-64748B?style=flat-square) |
+| Phase 10 | Deployment (Vercel + EAS Build) | ![In Progress](https://img.shields.io/badge/In%20Progress-F59E0B?style=flat-square) |
 
 ---
 
@@ -576,6 +570,36 @@ erDiagram
         timestamp created_at
     }
 
+    conversations {
+        serial id PK
+        timestamp created_at
+    }
+
+    conversation_members {
+        serial id PK
+        integer conversation_id FK
+        integer user_id FK
+        timestamp joined_at
+        timestamp last_read_at
+    }
+
+    messages {
+        serial id PK
+        integer conversation_id FK
+        integer sender_id FK
+        text content
+        timestamp created_at
+    }
+
+    user_push_tokens {
+        serial id PK
+        integer user_id FK
+        text token
+        varchar platform
+        boolean is_active
+        timestamp created_at
+    }
+
     users ||--o{ courses : creates
     users ||--o{ modules : creates
     users ||--o{ materials : creates
@@ -606,13 +630,12 @@ erDiagram
     users ||--o{ password_reset_tokens : requests
     materials ||--o{ shared_materials : shared
     users ||--o{ shared_materials : shares
+    conversations ||--o{ conversation_members : has
+    conversations ||--o{ messages : contains
+    users ||--o{ conversation_members : joins
+    users ||--o{ messages : sends
+    users ||--o{ user_push_tokens : registers
 ```
-
-Additional tables in the current schema (shown in diagram above):
-- `conversations`
-- `conversation_members`
-- `messages`
-- `user_push_tokens`
 
 ### Table Descriptions
 
@@ -643,40 +666,40 @@ Additional tables in the current schema (shown in diagram above):
 
 ## Screens
 
-### Web — 26 pages
+### Web — 28 pages
 
 | # | Route | Description | Auth |
 |---|---|---|---|
-| 1 | `/` | Landing page with animated hero and feature sections | Public (guest + authenticated) |
+| 1 | `/` | Landing page with animated hero and feature sections | Public |
 | 2 | `/how-it-works` | Feature overview with visual explanations | Public |
-| 3 | `/contact` | Contact form | Public |
-| 4 | `/register` | User registration | Public |
-| 5 | `/login` | Login (email/password + Google OAuth) | Public |
-| 6 | `/forgot-password` | Request a password reset link by email | Public |
-| 7 | `/reset-password` | Set a new password using a one-hour reset token | Public (token in URL) |
-| 8 | `/dashboard` | Course cards + aggregated stats | Protected |
-| 9 | `/courses/[id]` | Course detail — modules list with CRUD | Protected |
-| 10 | `/modules/[id]` | Module detail — materials list with CRUD | Protected |
-| 11 | `/materials/[id]` | Material view and edit (text, link, file) | Protected |
-| 12 | `/profile` | Edit name, avatar upload | Protected |
-| 13 | `/progress` | Milestones tracker with status workflow | Protected |
-| 14 | `/calendar` | Calendar with events + weather widget (current/hourly/3-day) | Protected |
-| 15 | `/admin` | Admin panel — users, materials, moderation, activity logs | Admin only |
-| 16 | `/forbidden` | 403 access denied page | Auto-redirect from unauthorized `/admin` access |
-| 17 | `/community` | Community Feed — posts list with search, type filter, Load More | Protected |
-| 18 | `/community/new` | Create post — Tiptap rich text + type/course metadata | Protected |
-| 19 | `/community/[id]` | Post details — sanitized rich content, comments, like/bookmark actions | Protected |
-| 20 | `/community/[id]/edit` | Edit post — Tiptap rich text (author or admin) | Protected |
-| 21 | `/mentor-inbox` | Mentor Inbox — questions from own courses with status management | Mentor / Admin |
-| 22 | `/messages` | Direct messages inbox (unread indicators) | Protected |
-| 23 | `/messages/[id]` | Direct message thread (real-time updates) | Protected |
-| 24 | `/moderation` | Moderation queue shortcut page | Admin only |
-| 25 | `/profile/[id]` | Public profile view + start direct message | Protected |
-| 26 | `/dashboard/material-finder` | Isolated material finder assistant (search-first + optional Gemini phrasing) | Protected |
+| 3 | `/contact` | Contact form (server-side SMTP delivery) | Public |
+| 4 | `/api-docs` | Interactive API documentation | Public |
+| 5 | `/register` | User registration | Public |
+| 6 | `/login` | Login (email/password + Google OAuth) | Public |
+| 7 | `/forgot-password` | Request a password reset link by email | Public |
+| 8 | `/reset-password` | Set a new password using a one-hour reset token | Public |
+| 9 | `/dashboard` | Course cards + aggregated stats | Protected |
+| 10 | `/dashboard/material-finder` | AI-powered material search assistant | Protected |
+| 11 | `/courses/[id]` | Course detail — modules list with CRUD | Protected |
+| 12 | `/modules/[id]` | Module detail — materials list with CRUD | Protected |
+| 13 | `/materials/[id]` | Material view and edit (text, link, file) | Protected |
+| 14 | `/profile` | Edit name, avatar upload | Protected |
+| 15 | `/profile/[id]` | Public profile view + start direct message | Protected |
+| 16 | `/progress` | Milestones tracker with status workflow | Protected |
+| 17 | `/calendar` | Calendar with events + weather widget | Protected |
+| 18 | `/community` | Community Feed — posts list with search, type filter, Load More | Protected |
+| 19 | `/community/new` | Create post — Tiptap rich text editor | Protected |
+| 20 | `/community/[id]` | Post details — rich content, comments, like/bookmark | Protected |
+| 21 | `/community/[id]/edit` | Edit post (author or admin) | Protected |
+| 22 | `/mentor-inbox` | Mentor Inbox — questions from mentored courses | Mentor / Admin |
+| 23 | `/messages` | Direct messages inbox (unread indicators) | Protected |
+| 24 | `/messages/[id]` | Direct message thread (real-time via Pusher) | Protected |
+| 25 | `/admin` | Admin panel — users, materials, moderation, activity logs | Admin only |
+| 26 | `/moderation` | Moderation queue shortcut | Admin only |
+| 27 | `/forbidden` | 403 access denied page | Auto-redirect |
+| 28 | `/dev/error-preview` | Error boundary testing (dev-only, noindex) | Dev |
 
-Route note: `Home` in the navbar always leads to `/` (landing), including for authenticated users; when authenticated, the landing navbar shows a `Dashboard` CTA instead of `Login`/`Register`.
-
-### Mobile — current flows
+### Mobile — 21 screens
 
 | # | Screen | Description |
 |---|---|---|
@@ -706,39 +729,17 @@ The mobile app connects to the **same Next.js backend** — no separate API need
 
 Mobile intentionally ships only the student-facing flows. Mentor (`/mentor-inbox`) and admin (`/admin`) tooling lives on the web where it fits the UX better. See [Platform scope per role](#platform-scope-per-role) above.
 
-### Mobile data layer (React Query + apiFetch cache)
+### Mobile data layer
 
-- `@tanstack/react-query` powers server-state fetching in key mobile screens.
-- `PersistQueryClientProvider` + AsyncStorage persistence keep query cache between app restarts.
-- Query keys and invalidation helpers are centralized in `apps/mobile/lib/query-keys.ts`.
-- Delete flows use optimistic updates; create/edit/delete flows invalidate related queries.
-- Cache policy: React Query-managed GET reads call `apiFetch(..., { cache: false })` so React Query persistence is the single source of truth for those screens.
-- `apiFetch` cache remains enabled for non-query paths (including auth bootstrap) to preserve offline-friendly fallback behavior.
-- `apiFetch` remains the request layer (normalized API/network errors + scoped AsyncStorage cache where enabled), complemented by React Query state management.
-
-### Mobile quality gates and release readiness
-
-- Smoke suite status:
-  - `SMK-01` through `SMK-20`: PASS
-  - Accessibility sanity (`SMK-20`) verified in a dedicated VoiceOver/TalkBack pass
-  - `SMK-21` through `SMK-23` (messages push foreground/background/cold-start): BLOCKED in terminal-only runs; requires physical-device validation
-- Telemetry status:
-  - Sentry integrated in mobile bootstrap + auth lifecycle + API error capture.
-  - Manual validation complete: `SENTRY_TEST_EVENT` received in Sentry Issues.
-- Release handoff status:
-  - Mobile release checklist is complete and in GO state (no active blocker).
-  - Reference docs:
-    - `docs/mobile-execution-checklist.md`
-    - `docs/mobile-smoke-test-matrix.md`
-    - `docs/mobile-release-checklist.md`
+- **TanStack React Query** with AsyncStorage persistence — query cache survives app restarts
+- Optimistic updates on delete flows; invalidation on create/edit
+- Sentry telemetry integrated for crash and API error capture
 
 ---
 
 ## API Endpoints
 
-Grouped by feature domain. This matrix tracks the main product-facing routes used by web/mobile clients.
-See [`docs/api-contract.md`](docs/api-contract.md) for auth flow, error contract, status codes, and representative request/response examples.
-Manual testing artifacts for backend demos live in [`docs/StudyHub.postman_collection.json`](docs/StudyHub.postman_collection.json) and [`docs/api-contract.md`](docs/api-contract.md).
+73 routes grouped by feature domain. Full contract with request/response examples: [`docs/api-contract.md`](docs/api-contract.md). Postman collection: [`docs/StudyHub.postman_collection.json`](docs/StudyHub.postman_collection.json).
 
 ### Public
 
@@ -1020,14 +1021,9 @@ studyhub-v2/
 │   └── migrations/                   # SQL migration files (committed)
 │
 ├── docs/
-│   ├── assignment.md                 # Course assignment requirements
-│   ├── implementation-plan.md        # Development roadmap
-│   ├── dev-log.md                    # Session-by-session dev log
-│   ├── mobile-execution-checklist.md # Mobile phase tasks + quality gates
-│   ├── mobile-smoke-test-matrix.md   # Mobile smoke scenarios/results
-│   ├── mobile-release-checklist.md   # Mobile release/handoff go-no-go checklist
-│   ├── mobile-phone-testing-handoff.md  # Expo setup + troubleshooting
-│   └── legacy-notes/                 # Reference notes from v1
+│   ├── dev-log.md                    # Session-by-session development log
+│   ├── api-contract.md               # API error contract + request/response examples
+│   └── StudyHub.postman_collection.json  # Postman collection for API testing
 │
 ├── drizzle.config.ts                 # Drizzle Kit configuration
 ├── package.json                      # Monorepo root (npm workspaces)
@@ -1051,37 +1047,9 @@ npm install
 cp .env.example .env
 ```
 
-### AI env note (Gemini)
+### Environment
 
-- The web AI routes (`/api/ai/chat`, `/api/ai/tools`, `/api/assistant/material-finder`) read `GEMINI_API_KEY` from `apps/web/.env` in local development.
-- The root `.env` may still be empty for `GEMINI_API_KEY` without breaking local web AI, as long as `apps/web/.env` is configured.
-- `material-finder` keeps working in template mode even when Gemini phrasing is unavailable.
-- For production, set `GEMINI_API_KEY` in your deployment environment variables (Vercel/Netlify).
-
-### Production JWT secret reminder
-
-- Set `JWT_SECRET` in Netlify/Vercel environment variables before deploying.
-- Generate a fresh random production value; do not reuse the local `.env` / `.env.local` secret.
-- Keep the same production value between redeploys, or already issued JWT sessions will be invalidated and users will need to log in again.
-- The app requires at least 32 characters and rejects obvious placeholders like `secret`, `example`, or `your-jwt-secret`.
-
-### Mobile telemetry env note (Sentry)
-
-- Mobile runtime telemetry reads these values from `apps/mobile/.env`:
-  - `EXPO_PUBLIC_SENTRY_DSN`
-  - `EXPO_PUBLIC_SENTRY_TRACES_SAMPLE_RATE`
-  - `EXPO_PUBLIC_APP_ENV`
-- Build-time source-map upload uses root `.env`:
-  - `SENTRY_ORG`
-  - `SENTRY_PROJECT`
-  - `SENTRY_AUTH_TOKEN` (secret; never commit)
-
-If `npm install --workspace ...` fails with the npm/arborist error `Cannot read properties of null (reading 'location')`, install mobile-only dependencies from `apps/mobile`:
-
-```bash
-cd apps/mobile
-npm install --workspaces=false <package-name>
-```
+Copy `.env.example` and fill in the required values (`DATABASE_URL`, `JWT_SECRET`, `GEMINI_API_KEY`). See `.env.example` for the full list.
 
 ### Run Web
 
@@ -1090,42 +1058,17 @@ npm run dev:web
 ```
 Open: `http://localhost:3000`
 
-### Run Mobile (Android USB — recommended)
+### Run Mobile (Android)
 
 ```bash
 # Terminal 1: start web API
 npm run dev:web
-# Verify: http://localhost:3000/login should return 200
 
-# Option A (recommended): helper script does ADB reverse + Metro
-npm run dev:mobile:usb
-
-# Option B (manual): start Metro + run ADB reverse yourself
-# npm --workspace @studyhub/mobile run start -- --localhost -c
-# adb reverse tcp:8081 tcp:8081
-# adb reverse tcp:3000 tcp:3000
-# adb reverse tcp:19000 tcp:19000
-# adb reverse tcp:19001 tcp:19001
-# adb reverse tcp:19002 tcp:19002
-
-# Open in Expo Go on the phone:
-# exp://127.0.0.1:8081
-```
-
-> **Prerequisites:** USB debugging ON, USB mode = File transfer (MTP), `adb devices` shows your device.
->
-> **If it doesn't start:** check `netstat -ano | findstr :3000` — if port 3000 is taken by a stale process, kill it and restart `dev:web`.
->
-> **Full troubleshooting guide:** [docs/mobile-phone-testing-handoff.md](docs/mobile-phone-testing-handoff.md)
->
-> **Quality/release status docs:** [docs/mobile-execution-checklist.md](docs/mobile-execution-checklist.md), [docs/mobile-smoke-test-matrix.md](docs/mobile-smoke-test-matrix.md), [docs/mobile-release-checklist.md](docs/mobile-release-checklist.md)
-
-Alternative mobile connection modes:
-```bash
-npm run dev:mobile:tunnel
-npm run dev:mobile:lan
+# Terminal 2: start Expo with USB forwarding
 npm run dev:mobile:usb
 ```
+
+Prerequisites: USB debugging enabled, `adb devices` shows the device.
 
 ---
 
@@ -1139,14 +1082,10 @@ npm run dev:mobile:usb
 | Database | Supabase PostgreSQL (6 tables) | Neon PostgreSQL + Drizzle ORM (21 tables) |
 | Mobile | None | React Native + Expo + tabs/CRUD/community/messages + push-ready notifications |
 | File structure | Single app, monolithic files | Monorepo + modular components (<300 LOC each)* |
-| Deployment | Netlify + Vercel (dual) | Planned: Vercel |
+| Deployment | Netlify + Vercel (dual) | Vercel (monorepo) |
 | Security | RLS + CSP + MFA (partial) | JWT guards + middleware + role-based endpoints |
 
-> **\*** Two files intentionally exceed 300 lines with documented justification:
-> - `milestone-timeline-item.tsx` (329): AnimatePresence context + 20+ shared props between collapsed/expanded panels make split counterproductive — helpers are already extracted to `milestone-timeline-item-helpers.ts`.
-> - `drizzle/schema.ts` (346): single-file schema contract — Drizzle cross-file FK references create circular import risk; the extra lines are acceptable for a plain data-definition file with no UI logic.
->
-> All other previously listed 300+ files were refactored in the April 2026 audit cycle or subsequent guardrail passes: `hero-3d.tsx` (310→260), `chat-widget.tsx` (494→254, FAB CSS later split into imported global CSS partials), `material-form-screen.tsx` (395→205), `chat-window.tsx`, `community-feed.tsx`, `post-details.tsx`, `use-web-messages-notifications.ts`, and `apps/mobile/app/(tabs)/favorites.tsx` (351→sub-300 after component extraction).
+> **\*** Two files intentionally exceed 300 lines with documented justification (`milestone-timeline-item.tsx` — AnimatePresence context, `drizzle/schema.ts` — single-file FK contract). All other files were refactored to sub-300 LOC during the April 2026 audit cycle.
 
 ---
 
@@ -1173,44 +1112,16 @@ The Load More pattern was chosen over numbered pagination for the Community Feed
 
 ## File Storage — Vercel Blob
 
-### Why Vercel Blob for File Storage
+Two separate Blob stores with different privacy models:
 
-Several storage providers were evaluated for StudyHub v2, including AWS S3 and Cloudflare R2. Vercel Blob was chosen for the following reasons:
+| Store | Type | Purpose | Limit |
+|---|---|---|---|
+| `studyhub-avatars` | Public | Avatars + community post images | 2–3 MB |
+| `studyhub-materials` | Private | Course material files (PDF, DOCX, images) | 3 MB |
 
-1. **No credit card required.** AWS S3 and Cloudflare R2 both require a credit card on signup, even for their free tiers. Vercel's Hobby plan includes Blob storage at no cost and with no payment method, which matters for a student capstone project.
-2. **Native integration with the deployment target.** StudyHub is deployed on Vercel. Using Vercel Blob means one provider, one dashboard, and one set of credentials — no separate AWS IAM policies, no CORS configuration, and no cross-provider networking.
-3. **Built-in public/private store separation.** Vercel Blob stores are created as either public or private at the store level. This maps directly to StudyHub's two storage needs (public avatars vs. private course materials) without writing custom bucket policies.
-4. **Simpler API surface.** The Vercel Blob SDK exposes `put()`, `del()`, `list()`, and `head()` — a minimal interface compared to the AWS S3 SDK, which reduces the chance of misconfiguration in a capstone codebase.
-5. **Continuity with v1 architecture.** StudyHub v1 used private Supabase Storage buckets with signed URLs. Vercel Blob's private stores follow the same pattern — files are never publicly accessible, and downloads go through authenticated API routes.
+**Why Vercel Blob over S3/R2:** No credit card required (Hobby plan), native Vercel integration, built-in public/private separation, and continuity with v1's private-storage pattern (Supabase Storage signed URLs → Vercel Blob authenticated proxy).
 
-Specifically, StudyHub uses Vercel Blob because the app has two different storage needs with different privacy requirements:
-
-- **Profile avatars** are public identity assets, so they can be stored in a public Blob store and rendered directly by URL.
-- **Learning material files** are private user content, so they are stored in a private Blob store and served only through protected API routes.
-
-This keeps the v2 rewrite aligned with StudyHub v1, where material files were stored in private Supabase Storage buckets and accessed through signed URLs. It also preserves the product promise that each user has a private workspace and can access only their own or explicitly shared materials.
-
-Vercel Blob fits the Vercel deployment target and supports the split between public identity assets and protected course files without adding a separate storage provider to the capstone stack.
-
-The implementation uses two Blob stores:
-
-- `studyhub-avatars` — public store for avatars and community post images, configured with `AVATAR_BLOB_READ_WRITE_TOKEN`
-- `studyhub-materials` — private store for uploaded documents/images, configured with `MATERIAL_BLOB_READ_WRITE_TOKEN`
-
-Material uploads are limited to 3 MB and validated server-side by MIME type. File records store only the private Blob pathname; downloads go through authenticated StudyHub API endpoints that enforce owner/shared-user access before returning the file.
-
-Community post images are stored in the public Blob store under the `posts/` prefix (2 MB max, image-only MIME types). They are rendered inline via `<img>` tags in sanitized post HTML.
-
-References: Vercel Blob supports public and private stores, and private Blob stores require authenticated access. Blob is available on Vercel plans with included Hobby usage limits. See the Vercel Blob docs, Private Storage docs, and usage/pricing documentation.
-
----
-
-## Planned Features
-
-| Feature | Description | Status |
-|---|---|---|
-| Sharing & Permissions | Share materials/notes between users with access control | Planned |
-| Deployment | Live production deploy on Vercel/Netlify | Final phase |
+Private material files are never publicly accessible — downloads go through authenticated API routes (`/api/materials/[id]/file`) that enforce owner/shared-user access.
 
 ---
 

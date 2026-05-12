@@ -6,19 +6,16 @@
 This is a capstone project for the SoftUni "Full Stack Apps with AI" course.
 
 It is a rewrite of a previous project (StudyHub v1, Vanilla JS + Supabase) using a completely new tech stack.
-The old project is at `C:\Users\mariy\Projects\Visual-Studio-Capstone-Project-StudyHub-interface-v3\` and should be used **only as a visual/logical reference** — no code should be copied.
+The old project should be used **only as a visual/logical reference** — no code should be copied.
 
-## Current Status (2026-05-11)
+## Current Status (2026-05-12)
 
-- **Phases 0–4:** Complete (foundation, auth, content CRUD, AI tools, social features)
-- **Phase 5 (Mobile):** In progress — Auth, Courses, Favorites, Community, Messages, Push notifications all working
-- **Social features:** S0 (community board), S1 (mentor Q&A), S2 (direct messaging) shipped
-- **Lesson 09 deliverables:** Postman collection, `/api-docs` page, OpenAPI contract — all done
+- **Phases 0–9:** Complete (foundation, auth, CRUD, AI tools, social, mobile, admin, UI polish, Vercel Blob storage)
+- **Phase 10 (Deployment):** In progress — DB migrations applied, Vercel deploy next
+- **Social features:** S0–S3 shipped (community board, mentor Q&A, direct messaging, push notifications)
 - **Security audit (#52):** Complete — 14 findings closed across 3 rounds (5 HIGH + 8 MEDIUM + 1 LOW)
-- **Phase 9 (Vercel Blob):** Done — avatars use the public Blob store and material files use the private Blob store
-- **PDF/DOCX text extraction:** Done — server-side extraction (pdf-parse + mammoth) with UI on web and mobile
-- **Note → PDF export:** Done — browser-native print with @media print CSS (no libraries)
-- **Pending:** Mobile polish, final UI polish, deployment
+- **Mobile:** Auth, Courses, Favorites, Community, Messages, Push notifications, AI tools — all working
+- **28 web pages, 73 API routes, 21 DB tables, 312+ commits**
 
 ## Tech Stack (mandatory)
 
@@ -31,7 +28,7 @@ The old project is at `C:\Users\mariy\Projects\Visual-Studio-Capstone-Project-St
 - **Realtime & Notifications:** Pusher (web realtime), Browser Notification API, Expo notifications + Expo push tokens
 - **3D/Visuals:** Three.js (landing page scenes)
 - **Storage:** Vercel Blob (`studyhub-avatars` with `AVATAR_BLOB_READ_WRITE_TOKEN`, `studyhub-materials` with `MATERIAL_BLOB_READ_WRITE_TOKEN`)
-- **Deploy:** Vercel or Netlify
+- **Deploy:** Vercel (monorepo, vercel.json config)
 
 ## Neon MCP Database Access Rules
 
@@ -144,7 +141,7 @@ capstone/
 
 Every schema change MUST use Drizzle migrations. Migration SQL scripts must be committed.
 
-## Web Screens (28 screens, responsive)
+## Web Pages (28 pages, responsive)
 
 | # | Screen | Path | Access |
 |---|---|---|---|
@@ -180,7 +177,7 @@ Every schema change MUST use Drizzle migrations. Migration SQL scripts must be c
 Additional: `/forbidden` is the unauthorized destination for role-guarded pages. Unauthorized `/admin` access redirects to `/forbidden` via middleware.
 Navigation parity note: navbar `Home` always points to `/` even for authenticated users; authenticated navbar should expose `Dashboard` CTA instead of `Login`/`Register`.
 
-## Mobile Scope (Current, 2026-04-30)
+## Mobile Scope (Final, 2026-05-12)
 
 In-scope mobile product flows:
 1. Auth (`/login`, `/register`)
