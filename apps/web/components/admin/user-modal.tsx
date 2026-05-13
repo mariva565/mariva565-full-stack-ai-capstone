@@ -168,6 +168,7 @@ export function UserModal({ isOpen, user, onClose, onSaved }: UserModalProps) {
               className={`mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-cyan-400/10 ${PREMIUM_DARK_INPUT}`}
             >
               <option value="user">User</option>
+              <option value="mentor">Mentor</option>
               <option value="admin">Administrator</option>
             </select>
           </div>
