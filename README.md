@@ -810,11 +810,19 @@ Open: `http://localhost:3000`
 # Terminal 1: start web API
 npm run dev:web
 
-# Terminal 2: start Expo with USB forwarding
-npm run dev:mobile:usb
+# Terminal 2: start Expo on LAN
+npm --workspace @studyhub/mobile run dev:mobile:lan
 ```
 
-Prerequisites: USB debugging enabled, `adb devices` shows the device.
+Prerequisites: phone and PC on the same Wi-Fi network; scan the QR code with Expo Go.
+
+### Production Build (local preview)
+
+```bash
+npm run prod:web
+```
+
+Builds the Next.js app and starts it in production mode on `http://localhost:3000`.
 
 ---
 

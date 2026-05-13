@@ -63,9 +63,8 @@ export function UsersTab() {
   useEffect(() => { fetchUsers(); }, [fetchUsers]);
   useAdminRefresh({ onManualRefresh: fetchUsers });
 
-  async function confirmRoleChange() {
+  async function confirmRoleChange(newRole: string) {
     if (!roleChangeUser) return;
-    const newRole = roleChangeUser.role === "admin" ? "user" : "admin";
     setRoleBusy(true);
     const res = await fetch(`/api/admin/users/${roleChangeUser.id}`, {
       method: "PUT",
