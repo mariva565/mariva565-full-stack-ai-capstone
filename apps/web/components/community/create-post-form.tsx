@@ -26,7 +26,7 @@ export function CreatePostForm() {
   const [error, setError]       = useState("");
 
   useEffect(() => {
-    fetch("/api/courses").then((r) => r.json()).then((d) => setCourses(d.courses ?? []));
+    fetch("/api/courses?page=1&limit=100").then((r) => r.json()).then((d) => setCourses(d.courses ?? []));
   }, []);
 
   async function handleSubmit(e: React.FormEvent) {

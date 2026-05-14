@@ -3,7 +3,9 @@ import { db } from "../../../../lib/db";
 import { courseMembers, users, courses } from "../../../../../../drizzle/schema";
 import { requireAuth, requireAdmin } from "../../../../lib/api-utils";
 import { logActivity } from "../../../../lib/activity";
-import { and, eq } from "drizzle-orm";
+import { buildPageMeta, normalizeSearch, readPaginationParams } from "../../../../lib/pagination";
+import { combineConditions } from "../../../../lib/query-conditions";
+import { and, count, desc, eq, ilike, or } from "drizzle-orm";
 
 // GET /api/admin/members — list all memberships (optionally filter by courseId)
 export async function GET(request: NextRequest) {
@@ -15,32 +17,56 @@ export async function GET(request: NextRequest) {
 
   const { searchParams } = new URL(request.url);
   const courseIdParam = searchParams.get("courseId");
+  const { page, limit, offset } = readPaginationParams(searchParams, {
+    defaultLimit: 50,
+    maxLimit: 200,
+  });
+  const search = normalizeSearch(searchParams.get("search"));
+  const courseId = Number(courseIdParam);
+  const where = combineConditions([
+    Number.isInteger(courseId) && courseId > 0
+      ? eq(courseMembers.courseId, courseId)
+      : undefined,
+    search
+      ? or(
+          ilike(users.name, `%${search}%`),
+          ilike(users.email, `%${search}%`),
+          ilike(courses.title, `%${search}%`)
+        )
+      : undefined,
+  ]);
 
-  let query = db
-    .select({
-      id: courseMembers.id,
-      courseId: courseMembers.courseId,
-      courseTitle: courses.title,
-      userId: courseMembers.userId,
-      userName: users.name,
-      userEmail: users.email,
-      role: courseMembers.role,
-      joinedAt: courseMembers.joinedAt,
-    })
-    .from(courseMembers)
-    .innerJoin(courses, eq(courseMembers.courseId, courses.id))
-    .innerJoin(users, eq(courseMembers.userId, users.id))
-    .$dynamic();
+  const [members, [totalRow]] = await Promise.all([
+    db
+      .select({
+        id: courseMembers.id,
+        courseId: courseMembers.courseId,
+        courseTitle: courses.title,
+        userId: courseMembers.userId,
+        userName: users.name,
+        userEmail: users.email,
+        role: courseMembers.role,
+        joinedAt: courseMembers.joinedAt,
+      })
+      .from(courseMembers)
+      .innerJoin(courses, eq(courseMembers.courseId, courses.id))
+      .innerJoin(users, eq(courseMembers.userId, users.id))
+      .where(where)
+      .orderBy(desc(courseMembers.joinedAt))
+      .limit(limit)
+      .offset(offset),
+    db
+      .select({ value: count() })
+      .from(courseMembers)
+      .innerJoin(courses, eq(courseMembers.courseId, courses.id))
+      .innerJoin(users, eq(courseMembers.userId, users.id))
+      .where(where),
+  ]);
 
-  if (courseIdParam) {
-    const courseId = parseInt(courseIdParam, 10);
-    if (Number.isInteger(courseId) && courseId > 0) {
-      query = query.where(eq(courseMembers.courseId, courseId));
-    }
-  }
-
-  const members = await query;
-  return NextResponse.json({ members });
+  return NextResponse.json({
+    members,
+    ...buildPageMeta(page, limit, totalRow.value),
+  });
 }
 
 // POST /api/admin/members — add membership

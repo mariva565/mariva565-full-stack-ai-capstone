@@ -8,6 +8,7 @@ type ExportButtonProps = {
   headers: string[];
   keys: string[];
   filename: string;
+  loadData?: () => Promise<Record<string, unknown>[]>;
 };
 
 function formatCsvValue(val: unknown): string {
@@ -26,14 +27,24 @@ function formatDate(val: unknown): string {
   return d.toLocaleDateString("en-GB"); // DD/MM/YYYY
 }
 
-export function ExportButton({ data, headers, keys, filename }: ExportButtonProps) {
+export function ExportButton({ data, headers, keys, filename, loadData }: ExportButtonProps) {
   const [exporting, setExporting] = useState(false);
 
-  function handleExport() {
+  async function handleExport() {
     setExporting(true);
+    let rows = data;
+
+    try {
+      if (loadData) {
+        rows = await loadData();
+      }
+    } catch {
+      setExporting(false);
+      return;
+    }
 
     const headerRow = headers.map(formatCsvValue).join(",");
-    const dataRows = data.map((item) =>
+    const dataRows = rows.map((item) =>
       keys.map((key) => {
         const val = item[key];
         if (key.toLowerCase().includes("date") || key.toLowerCase().includes("createdat")) {

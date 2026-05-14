@@ -5,7 +5,9 @@ import { requireAuth, requireAdmin } from "../../../../lib/api-utils";
 import { logActivity } from "../../../../lib/activity";
 import { hashPassword } from "../../../../lib/auth";
 import { isStrongPassword } from "../../../../lib/password-validation";
-import { desc, eq } from "drizzle-orm";
+import { buildPageMeta, normalizeSearch, readPaginationParams } from "../../../../lib/pagination";
+import { combineConditions } from "../../../../lib/query-conditions";
+import { count, desc, eq, ilike, or } from "drizzle-orm";
 
 export async function GET(request: NextRequest) {
   const auth = await requireAuth(request);
@@ -14,20 +16,47 @@ export async function GET(request: NextRequest) {
   const forbidden = requireAdmin(auth.user);
   if (forbidden) return forbidden;
 
-  const allUsers = await db
-    .select({
-      id: users.id,
-      email: users.email,
-      name: users.name,
-      role: users.role,
-      avatarUrl: users.avatarUrl,
-      blocked: users.blocked,
-      createdAt: users.createdAt,
-    })
-    .from(users)
-    .orderBy(desc(users.createdAt));
+  const { searchParams } = new URL(request.url);
+  const { page, limit, offset } = readPaginationParams(searchParams, {
+    defaultLimit: 50,
+    maxLimit: 200,
+  });
+  const search = normalizeSearch(searchParams.get("search"));
+  const viewAs = normalizeSearch(searchParams.get("viewAs"));
+  const where = combineConditions([
+    viewAs ? eq(users.email, viewAs) : undefined,
+    search
+      ? or(
+          ilike(users.name, `%${search}%`),
+          ilike(users.email, `%${search}%`),
+          ilike(users.role, `%${search}%`)
+        )
+      : undefined,
+  ]);
 
-  return NextResponse.json({ users: allUsers });
+  const [allUsers, [totalRow]] = await Promise.all([
+    db
+      .select({
+        id: users.id,
+        email: users.email,
+        name: users.name,
+        role: users.role,
+        avatarUrl: users.avatarUrl,
+        blocked: users.blocked,
+        createdAt: users.createdAt,
+      })
+      .from(users)
+      .where(where)
+      .orderBy(desc(users.createdAt))
+      .limit(limit)
+      .offset(offset),
+    db.select({ value: count() }).from(users).where(where),
+  ]);
+
+  return NextResponse.json({
+    users: allUsers,
+    ...buildPageMeta(page, limit, totalRow.value),
+  });
 }
 
 export async function POST(request: NextRequest) {

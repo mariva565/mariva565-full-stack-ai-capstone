@@ -6,6 +6,59 @@
 
 ## 2026-05-14
 
+### Session 359 — Security release readiness pass
+
+**Какво направихме:**
+- Прегледахме `docs/security-release-readiness.md` като оперативния security checklist за текущия deployment flow.
+- Попълнихме release metadata за текущия pass: branch `main`, commit `98bdcf9`, target `Vercel production web + EAS preview APK preparation`.
+- Маркирахме required gates като verified за текущия release candidate след реално изпълнение на командите.
+- Проверихме live security headers на `https://mariva565-full-stack-ai-capstone-we.vercel.app` с `HEAD /`; домейнът върна `200` и има `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`, `X-DNS-Prefetch-Control`, `Cross-Origin-Opener-Policy` и `Strict-Transport-Security`.
+- Добавихме ясна бележка, че CSP rollout остава staged/deferred и не трябва да се enforcement-ва преди OAuth/Pusher/Blob/Expo/Three.js smoke покритие.
+- Добавихме изричен pending item за EAS preview env values преди APK build: `EXPO_PUBLIC_API_URL`, `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID`, optional `EXPO_PUBLIC_SENTRY_DSN`.
+- Потвърдихме, че tracked env файловете са само `.env.example` и `apps/mobile/.env.example`; real `.env` / `.env.local` не са tracked.
+
+**Файлове:**
+- [MODIFY] docs/security-release-readiness.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm run check:mojibake` -> pass
+- `npm run deps:audit:runtime` -> pass at high threshold; remaining output is moderate `postcss` advisories through Next/Expo
+- `npm run typecheck` -> pass for web, mobile, and shared workspaces
+- `npm run build:web` -> pass; known non-blocking `jose` Edge Runtime warnings remain through `lib/jwt.ts`
+- `git ls-files | rg '(^|/)\.env(\.|$)'` -> only `.env.example` and `apps/mobile/.env.example`
+
+**Решения:**
+- Текущият security pass покрива web production release readiness; Expo/EAS остава следващата стъпка чрез mobile release checklist-а.
+- Не форсирахме `npm audit fix --force`, защото npm предлага breaking downgrade/change path за moderate `postcss` advisory през Next/Expo.
+- Не маркирахме CSP като завършен release blocker; оставяме го staged, защото може да счупи OAuth/Pusher/Blob/Expo потоците без отделен smoke pass.
+
+### Session 358 — Mobile Expo/EAS deployment checklist prep
+
+**Какво направихме:**
+- Прегледахме текущата Expo mobile release конфигурация спрямо deployment плана, за да видим какво вече е подготвено за EAS build.
+- Потвърдихме, че `apps/mobile/app.json` вече има стабилен Expo identity setup: `slug`, `scheme`, Android package, iOS bundle ID и EAS `projectId`.
+- Потвърдихме, че `apps/mobile/eas.json` вече има `preview` профил с Android `apk` build, подходящ за първи installable preview artifact.
+- Добавихме практична секция `Expo / EAS Deployment Checklist (2026-05-14)` в `docs/mobile-release-checklist.md` с:
+  - текущ config snapshot
+  - pre-build env setup
+  - точни EAS команди
+  - post-build validation
+  - актуалните blockers до full mobile release signoff
+- Отбелязахме и един release hygiene detail: `apps/mobile/app.json` е `1.0.0`, а `apps/mobile/package.json` още е `0.1.0`, което е добре да се синхронизира преди финален release.
+
+**Файлове:**
+- [MODIFY] docs/mobile-release-checklist.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Docs/config review only; не е пускан typecheck/build, защото няма runtime code changes.
+- Checklist съдържанието е сверено срещу `apps/mobile/app.json`, `apps/mobile/eas.json`, `apps/mobile/.env.example` и `apps/mobile/lib/api.constants.ts`.
+
+**Решения:**
+- Запазихме Expo deploy стъпките в protected mobile release checklist-а, а не в scratch-only doc, за да останат част от реалния handoff trail.
+- Фокусът е върху `preview` APK flow-а, защото това е най-полезният next step за capstone demo/device validation.
+
 ### Session 357 — Navbar responsive layout fix
 
 **Какво направихме:**
@@ -13,7 +66,7 @@
 - Сменихме top row-а от wrapping flex към стабилен two-column grid: brand вляво, theme/profile/logout actions вдясно.
 - Намалихме brand mark-а и StudyHub title-а на малки екрани, за да не избутват action групата.
 - Скрихме profile name/role текста до `md`, така че mobile/tablet navbar-ът да остане компактен без да губи avatar/logout affordance.
-- Подредихме navigation links като 2-column/3-column responsive grid на mobile/tablet и запазихме flex layout-а за desktop.
+- Запазихме navigation links като compact wrapping chips; след кратък grid вариант върнахме chip layout-а, защото 2-column grid правеше активния линк прекалено широк на tablet/mobile.
 - Оправихме Admin Overview `Key Metrics` cards при тесни ширини: grid-ът вече минава 1 -> 2 -> 4 колони, card padding-ът се свива на mobile, а label/value колоната използва `min-w-0` + `truncate`, за да няма text overflow.
 - Оправихме Mentor Inbox cards при responsive ширини: content и status actions вече са stacked на mobile и side-by-side само от `sm`, така че заглавията/метаданните да не се притискат от бутоните.
 - Добавихме mobile-friendly spacing за Mentor Inbox stats row-а и допълнителен bottom padding, за да не се сблъскват последните actions с floating assistant бутона.
@@ -29,6 +82,7 @@
 
 **Решения:**
 - Предпочетохме стабилна grid подредба пред flex-wrap, за да изглежда responsive поведението планирано, а не разместено.
+- Ограничихме grid решението само до top row-а; link bar-ът остава flex-wrap, защото там compact chip behavior е по-подходящ.
 - За metrics cards запазихме съществуващия visual design и коригирахме само layout constraints, вместо да сменяме admin overview структурата.
 - За Mentor Inbox запазихме текущия Q&A interaction model, но отделихме action controls от текстовата колона на mobile.
 - Не променяхме navbar data/auth flow-а; промяната е само layout/responsive.
@@ -11263,3 +11317,437 @@ Page routes обхождат API guard-ите (зареждат директно
 
 **Решения:**
 - Kept the ER diagram database-only; Blob is external storage, while the DB stores metadata/pathnames.
+
+## 2026-05-14
+
+### Session 371 — Mobile deliverable policy docs
+
+**Какво направихме:**
+- Documented that the EAS Android APK is the primary mobile deliverable for capstone submission.
+- Added Expo web export as a fallback-only option when browser access to the mobile app is explicitly required.
+- Corrected the Expo SDK 54 web export command to `npx expo export --platform web --output-dir dist`.
+
+**Файлове:**
+- [MODIFY] scratch/deployment-plan.md (local deployment plan)
+- [MODIFY] docs/mobile-release-checklist.md
+- [MODIFY] project_finalization_plan.md (local Claude memory plan)
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Docs-only planning update; no app typecheck/build was run.
+
+**Решения:**
+- Keep APK first because the StudyHub mobile app uses native/mobile flows that are best validated on device.
+- Treat Expo web export as a compliance/accessibility backup, not as a replacement for the APK.
+
+## 2026-05-16
+
+### Session 372 — Final assignment delta review
+
+**Какво направихме:**
+- Reviewed the new final capstone assignment document (`Final-version-Full-Stack-Apps-with-AI-Capstone-Project-1.docx`) against the earlier assignment baseline and the current StudyHub implementation.
+- Confirmed that StudyHub already exceeds the new minimums for web screens, mobile screens, database tables, auth/roles, documentation, storage, and repo history.
+- Identified the meaningful new gaps/risk areas:
+  - final brief now expects a live Expo web deployment, while current release docs still describe Expo web export as fallback-only and keep APK as the primary mobile deliverable
+  - scalability is now a scored category, but the current committed load-test evidence only documents 150 seeded posts rather than the newly requested 10,000-record validation
+  - server-side pagination exists on some high-traffic surfaces, but several admin collections still fetch full datasets and paginate only in the client
+- Noted the assignment's internally mixed wording around `Server Actions` versus `RESTful API` / `Server Components`, so no architectural refactor should be started without either explicit instructor clarification or a very small, deliberate compatibility slice.
+
+**Файлове:**
+- [AUDIT] docs/Final-version-Full-Stack-Apps-with-AI-Capstone-Project-1.docx
+- [AUDIT] docs/assignment.md
+- [AUDIT] README.md
+- [AUDIT] docs/mobile-release-checklist.md
+- [AUDIT] drizzle/seed.ts
+- [AUDIT] drizzle/seeds/community_demo.sql
+- [AUDIT] apps/web/app/api/posts/route.ts
+- [AUDIT] apps/web/app/api/admin/activity-logs/route.ts
+- [AUDIT] apps/web/app/api/admin/users/route.ts
+- [AUDIT] apps/web/app/api/admin/courses/route.ts
+- [AUDIT] apps/web/app/api/admin/modules/route.ts
+- [AUDIT] apps/web/app/api/admin/materials/route.ts
+- [AUDIT] drizzle/schema.ts
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Docs/code review only; no app typecheck/build was run in this session.
+- `npm run check:mojibake` -> pass
+
+**Решения:**
+- Treat the new final assignment as a focused release-alignment pass, not a reason to rebuild the project.
+- Prioritize Expo web publication, 10k-load validation evidence, and stronger server-side pagination coverage before spending time on optional extras.
+
+### Session 373 — Stress-test rescue plan reassessment
+
+**Какво направихме:**
+- Re-evaluated the earlier "safe large-data test" fallback plan against the new final assignment and the current StudyHub codebase.
+- Confirmed that the plan remains directionally correct: use a separate Neon branch, seed in batches, test locally first when useful, and avoid heavy writes on production.
+- Reframed the plan from optional fallback to likely required release work because the final assignment now scores scalability explicitly and asks for paging plus a 10,000-record validation dataset.
+- Identified that the current implementation already proves paging on some high-traffic surfaces (`/api/posts`, admin activity logs), but several admin collections still fetch full datasets before client-side pagination, so pagination work should happen before any broad stress seed.
+- Noted that public Neon Free-plan documentation now differs from the older local budget note, so the actual quota shown in the `studyhub` Neon console should be checked before execution instead of assuming the older 100 CU-hour figure is still authoritative.
+
+**Файлове:**
+- [AUDIT] docs/Final-version-Full-Stack-Apps-with-AI-Capstone-Project-1.docx
+- [AUDIT] AGENTS.md
+- [AUDIT] README.md
+- [AUDIT] drizzle/seed.ts
+- [AUDIT] drizzle/seeds/community_demo.sql
+- [AUDIT] apps/web/app/api/posts/route.ts
+- [AUDIT] apps/web/app/api/admin/activity-logs/route.ts
+- [AUDIT] apps/web/app/api/admin/users/route.ts
+- [AUDIT] apps/web/app/api/admin/courses/route.ts
+- [AUDIT] apps/web/app/api/admin/modules/route.ts
+- [AUDIT] apps/web/app/api/admin/materials/route.ts
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Analysis-only follow-up; no app typecheck/build was run.
+- `npm run check:mojibake` -> pass
+
+**Решения:**
+- Keep the branch-and-batch strategy, but update the execution plan before using it: first harden pagination, then run a short controlled branch-based stress validation, then document results and remove the branch.
+- Do not treat "10k rows exist somewhere" as enough evidence by itself; the final defense should show which user-visible surfaces remain responsive with large datasets.
+
+### Session 374 — Cross-agent final assignment review synthesis
+
+**Какво направихме:**
+- Compared Claude Opus's independent final-assignment review with the current repository state and the earlier Codex analysis.
+- Confirmed the strong overlap on the three real release gaps: Expo web publication, 10k-load validation evidence, and stronger server-side pagination coverage.
+- Corrected several stale or over-broad claims from the secondary review:
+  - the Next.js web app is already live, so deployment is not accurately described as `0/5`
+  - Expo web is not starting from zero; the repo already has a browser-safe mobile shell and prior Expo web preview validation, but it still needs an official live deployment and explicit release positioning
+  - pagination priority should focus first on visibly large/high-risk collections rather than mechanically touching every endpoint
+- Re-checked larger collection behavior:
+  - confirmed current whole-dataset admin fetches for users, courses, modules, materials, and members
+  - confirmed unbounded per-user/per-thread reads in favorites, shared-materials, conversations, and messages
+  - identified `/api/conversations` as a separate scalability concern because it currently loads all messages across all of the user's conversations to derive last-message/unread state
+- Confirmed that current Expo documentation expects `expo.web.output` to be configured for web deployment workflows, while the current mobile app already has the packages and layout work needed to make export a bounded task.
+
+**Файлове:**
+- [AUDIT] README.md
+- [AUDIT] apps/mobile/app.json
+- [AUDIT] apps/mobile/app/_layout.tsx
+- [AUDIT] apps/web/app/api/admin/users/route.ts
+- [AUDIT] apps/web/app/api/admin/courses/route.ts
+- [AUDIT] apps/web/app/api/admin/modules/route.ts
+- [AUDIT] apps/web/app/api/admin/materials/route.ts
+- [AUDIT] apps/web/app/api/admin/members/route.ts
+- [AUDIT] apps/web/app/api/favorites/route.ts
+- [AUDIT] apps/web/app/api/materials/shared/route.ts
+- [AUDIT] apps/web/app/api/materials/shared-by-me/route.ts
+- [AUDIT] apps/web/app/api/conversations/route.ts
+- [AUDIT] apps/web/app/api/conversations/[id]/messages/route.ts
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `Invoke-WebRequest https://mariva565-full-stack-ai-capstone-we.vercel.app` -> `200`, title `Study Hub | Master Your Learning Journey`
+- `git rev-list --count HEAD` -> `332`
+- unique commit-day count -> `45`
+- Analysis-only follow-up; no app typecheck/build was run.
+- `npm run check:mojibake` -> pass
+
+**Решения:**
+- Keep the same top-level priorities, but sequence them by dependency: pagination/indexing first, stress dataset second, Expo web publication third.
+- Treat GitHub Actions as an easy optional bonus if time remains; continue skipping backups before the capstone defense.
+
+### Session 375 — Final assignment execution plan
+
+**Какво направихме:**
+- Drafted a concrete final-assignment execution plan for the remaining StudyHub release work.
+- Fixed the official stress-test dataset shape to:
+  - `10,000` users
+  - `1,000` courses
+  - `3,000` modules
+  - `10,000` materials
+  - `10,000` posts
+  - `20,000` comments
+  - supporting favorites, memberships, likes, bookmarks, and activity logs
+- Defined the execution order:
+  1. safety setup on a dedicated Neon branch
+  2. backend pagination + index hardening
+  3. deterministic stress seeder
+  4. dry run
+  5. official branch validation
+  6. documentation sync
+  7. Expo web publication
+- Split the work into practical slices so the mandatory rubric work is completed before optional extras.
+
+**Файлове:**
+- [ADD] scratch/final-assignment-execution-plan.md (local-only working plan)
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Planning-only session; no app typecheck/build was run.
+- `npm run check:mojibake` -> pass
+
+**Решения:**
+- Use `materials` and `posts` as the two clearest primary product tables to demonstrate 10k-scale behavior.
+- Include `10,000` users as well so admin user paging is proven at the same scale, while keeping `courses` and `modules` proportionate instead of artificially inflating them.
+- Keep conversations/messages hardening as a second-wave scalability item unless they become part of the official demo story.
+
+### Session 376 — Server Actions insurance assessment
+
+**Какво направихме:**
+- Reviewed whether StudyHub should add a small isolated Server Actions slice because the final assignment mentions Server Actions for the web client while the project already uses REST APIs plus Server Components.
+- Confirmed from current Next.js docs that Server Actions are server-executed mutation functions, commonly invoked through forms, and must still perform authentication/authorization checks like public endpoints.
+- Evaluated low-risk insertion points in the existing product and identified the public Contact page as the best bounded candidate because it is already an isolated form flow and does not participate in the shared mobile REST contract.
+- Rejected the idea of refactoring core course/favorite flows just for showcase value because that would duplicate or split mutation paths already used by web and mobile.
+
+**Файлове:**
+- [AUDIT] apps/web/app/contact/page.tsx
+- [AUDIT] apps/web/components/contact/contact-form.tsx
+- [AUDIT] apps/web/app/api/contact/route.ts
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Analysis-only follow-up; no app typecheck/build was run.
+- `npm run check:mojibake` -> pass
+
+**Решения:**
+- If the user wants "insurance" against the ambiguous assignment wording, the best option is a tiny additive `Contact` Server Action slice that reuses shared validation/service helpers while keeping the existing REST endpoint intact.
+- Do not add Server Actions merely as decorative duplicate code; either make one small real flow fully correct or skip them entirely.
+
+### Session 377 — Server Actions deferral strategy
+
+**Какво направихме:**
+- Decided to defer any Server Actions experiment until after the mandatory final-assignment work is complete.
+- Reviewed the existing contact flow and confirmed that the SMTP helper itself is already safely server-side, while the current public route also includes request-based IP rate limiting that should not be disturbed casually near release.
+- Chose an isolation strategy for any future Server Actions proof-of-concept:
+  - finish required work on the main release line first
+  - create a separate Git branch only after the required release scope is stable
+  - implement the tiny contact-only experiment there
+  - merge it only if full live verification passes and it still feels worth the risk
+
+**Файлове:**
+- [AUDIT] apps/web/components/contact/contact-form.tsx
+- [AUDIT] apps/web/app/api/contact/route.ts
+- [AUDIT] apps/web/lib/email.ts
+- [AUDIT] apps/web/lib/rate-limit.ts
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Analysis-only follow-up; no app typecheck/build was run.
+- `npm run check:mojibake` -> pass
+
+**Решения:**
+- Prioritize mandatory rubric work first: pagination, stress validation, Expo web deployment.
+- Treat the Server Actions idea as an optional post-core experiment, not a release blocker.
+
+### Session 378 — Final release master plan consolidation
+
+**Какво направихме:**
+- Consolidated the remaining final-release work into a new single source-of-truth checklist: `docs/final-release-master-plan.md`.
+- Folded together the open items from:
+  - the local deployment plan
+  - the active mobile release/smoke checklists
+  - the security readiness checklist
+  - the final-assignment delta review
+  - the earlier stress-test execution plan
+- Kept both mobile outputs in scope:
+  - Expo web export as the now-required live deliverable from the final assignment
+  - Android APK as the additional native deliverable already planned for GitHub Releases and physical-device validation
+- Updated the mobile release checklist and local deployment plan so they no longer describe Expo web as fallback-only.
+- Updated `AGENTS.md` handoff instructions and protected-docs list so future agents read the new master plan before continuing.
+- Confirmed that no separate `finalization-plan` file currently exists in the workspace; the new master plan now captures the active finalization state explicitly.
+
+**Файлове:**
+- [ADD] docs/final-release-master-plan.md
+- [MODIFY] docs/mobile-release-checklist.md
+- [MODIFY] scratch/deployment-plan.md (local-only deployment plan)
+- [MODIFY] AGENTS.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Docs/planning session only; no app typecheck/build was run.
+- `npm run check:mojibake` -> pass
+
+**Решения:**
+- Use `docs/final-release-master-plan.md` as the release-stream source of truth from now until the capstone handoff.
+- Keep optional Server Actions work last and isolated; do not let it compete with mandatory release work.
+
+### Session 379 — Master plan refinement from peer review
+
+**Какво направихме:**
+- Reviewed a follow-up peer note against the current codebase and accepted the useful corrections.
+- Added authenticated `GET /api/courses` to the mandatory pagination scope because it is still unbounded and is consumed directly by mobile course listing plus several web course-selection flows.
+- Added an explicit Expo web preflight item to review browser-safe fallbacks for native-only capabilities before publishing the static export:
+  - push notifications
+  - camera/image picker
+  - document picker / file handling
+- Reconfirmed the other peer points:
+  - the 81k-row stress dataset is intentionally substantial but still acceptable with batching and branch quota monitoring
+  - conversations/messages hardening remains important second-wave work, not a blocker before the primary scalability proof
+
+**Файлове:**
+- [MODIFY] docs/final-release-master-plan.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Analysis/docs follow-up only; no app typecheck/build was run.
+- `npm run check:mojibake` -> pass
+
+**Решения:**
+- Treat `/api/courses` as part of the official pagination slice, even though the server-rendered dashboard itself currently reads courses via `getDashboardData()` rather than through that API route.
+- Keep stress-dataset counts unchanged for now; monitor branch compute during execution instead of weakening the evidence preemptively.
+
+### Session 380 — Next-chat execution split
+
+**Какво направихме:**
+- Defined the next-chat starting point and the division of labor for quota-efficient execution.
+- Locked the next mandatory slice as `Phase B1 — backend pagination work` from `docs/final-release-master-plan.md`.
+- Marked the first decision-heavy work as high-model ownership:
+  - one shared pagination contract
+  - route/UI behavior for `/api/courses` plus admin list endpoints
+  - server-side search/filter strategy
+  - index/migration decisions
+- Identified safe lower-model work only after the contract is fixed:
+  - repetitive route/component conversion following the agreed template
+  - docs/checklist sync
+  - mechanical verification runs and result capture
+  - later README/result-table updates after numbers are known
+
+**Файлове:**
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Planning-only handoff; no app typecheck/build was run.
+- `npm run check:mojibake` -> pass
+
+**Решения:**
+- Start the next chat with high-model work, not delegation, because the first slice contains the API-contract decisions that everything else depends on.
+- Use lower-cost models only for bounded follow-up tasks after the template is explicit and reviewable.
+
+### Session 381 — Release resource guardrails
+
+**Какво направихме:**
+- Added explicit Neon and Vercel budget guardrails to `docs/final-release-master-plan.md` so the remaining release work cannot accidentally overrun free-plan limits.
+- Recorded the current public reference values directly in the master plan so future agents do not have to reconstruct the same free-tier research before acting.
+- Clarified the operational rules for stress validation:
+  - check the real Neon console quota before heavy work
+  - use a short-lived stress branch only
+  - dry-run first
+  - monitor compute while the branch is active
+  - delete the branch after evidence is captured
+- Added Vercel-specific protections:
+  - do not run bulk jobs through Vercel Functions
+  - keep live smoke finite instead of load-testing production
+  - keep paginated responses small
+  - confirm the active function-runtime mode before relying on long execution windows
+- Updated the stale Neon budget wording in `AGENTS.md`:
+  - the live Neon console is now the source of truth
+  - current public Free-plan docs differ from the older local 100-CU note
+  - non-default branch compute remains a tight resource and must still be monitored carefully
+
+**Файлове:**
+- [MODIFY] docs/final-release-master-plan.md
+- [MODIFY] AGENTS.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Docs/planning session only; no app typecheck/build was run.
+- `npm run check:mojibake` -> pass
+
+**Решения:**
+- Treat both Neon and Vercel free-tier budgets as explicit release constraints, not background trivia.
+- Use conservative execution even when current public plan limits look more generous than older notes, because the live project dashboard is the only reliable source for this specific account.
+
+### Session 382 — Master-plan handoff sync
+
+**Какво направихме:**
+- Closed the remaining Phase A2 planning-doc sync in `docs/final-release-master-plan.md`.
+- Updated `docs/implementation-plan.md` so future sessions now start from the final release master plan instead of treating the older assignment-locked plan as the active driver.
+- Added explicit reference-only notes to the older local planning docs so they remain useful without overriding the master plan:
+  - `scratch/deployment-plan.md`
+  - `scratch/final-assignment-execution-plan.md`
+- Rechecked the active mobile/deployment docs and confirmed Expo web is already positioned as a required final deliverable there, not a fallback-only artifact.
+
+**Файлове:**
+- [MODIFY] docs/final-release-master-plan.md
+- [MODIFY] docs/implementation-plan.md
+- [MODIFY] scratch/deployment-plan.md
+- [MODIFY] scratch/final-assignment-execution-plan.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Docs-only sync; no app typecheck/build was run.
+- `npm run check:mojibake` -> pass
+
+**Решения:**
+- Treat `docs/final-release-master-plan.md` as the single active release-stream authority from now until final handoff.
+- Preserve older planning docs as reference material instead of deleting or rewriting them wholesale.
+- Next exact step: start `Phase B1 — backend pagination work` with `/api/courses` plus the remaining admin list endpoints.
+
+### Session 383 — Public-repo release reminder
+
+**Какво направихме:**
+- Added an explicit final-release checklist item in `docs/final-release-master-plan.md` to make the GitHub repository public for examiner review.
+- Placed the item after the final secret/artifact review so repository visibility changes happen only after release hygiene is complete.
+
+**Файлове:**
+- [MODIFY] docs/final-release-master-plan.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Docs-only update; no app typecheck/build was run.
+- `npm run check:mojibake` -> pass
+
+**Решения:**
+- Treat public repository visibility as a deliberate end-of-release action, not an early deployment prerequisite.
+
+### Session 384 — Backend pagination foundation
+
+**Какво направихме:**
+- Completed `Phase B1 — backend pagination work` from `docs/final-release-master-plan.md`.
+- Added shared pagination/query helpers and converted the required list endpoints to server-side paging:
+  - `/api/courses`
+  - `/api/admin/users`
+  - `/api/admin/courses`
+  - `/api/admin/modules`
+  - `/api/admin/materials`
+  - `/api/admin/members`
+- Updated the admin tabs to request backend pages instead of slicing full datasets in memory, while preserving existing filtered CSV export behavior.
+- Moved list search/filter handling server-side for the touched routes and updated dependent course consumers to request bounded pages explicitly.
+- Refreshed the public API docs plus in-app API docs to match the new paged contracts.
+- Added focused integration coverage for course pagination and admin-user pagination/search.
+- Split the members admin UI while touching it so the main tab file remains under the project file-size ceiling.
+
+**Файлове:**
+- [ADD] apps/web/lib/pagination.ts
+- [ADD] apps/web/lib/query-conditions.ts
+- [ADD] apps/web/components/admin/paged-list-utils.ts
+- [ADD] apps/web/components/admin/member-add-form.tsx
+- [ADD] apps/web/components/admin/member-role-badge.tsx
+- [ADD] apps/web/lib/__tests__/integration/admin-pagination.test.ts
+- [MODIFY] apps/web/app/api/courses/route.ts
+- [MODIFY] apps/web/app/api/admin/users/route.ts
+- [MODIFY] apps/web/app/api/admin/courses/route.ts
+- [MODIFY] apps/web/app/api/admin/modules/route.ts
+- [MODIFY] apps/web/app/api/admin/materials/route.ts
+- [MODIFY] apps/web/app/api/admin/members/route.ts
+- [MODIFY] apps/web/components/admin/users-tab.tsx
+- [MODIFY] apps/web/components/admin/courses-tab.tsx
+- [MODIFY] apps/web/components/admin/modules-tab.tsx
+- [MODIFY] apps/web/components/admin/materials-tab.tsx
+- [MODIFY] apps/web/components/admin/members-tab.tsx
+- [MODIFY] apps/web/components/admin/export-button.tsx
+- [MODIFY] apps/web/components/admin/view-as-filter.tsx
+- [MODIFY] apps/web/components/community/create-post-form.tsx
+- [MODIFY] apps/web/components/community/edit-post-form.tsx
+- [MODIFY] apps/mobile/components/courses-list/use-courses-list.ts
+- [MODIFY] apps/web/lib/__tests__/integration/courses.test.ts
+- [MODIFY] docs/api-contract.md
+- [MODIFY] apps/web/components/api-docs/api-docs-content.ts
+- [MODIFY] docs/final-release-master-plan.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd run typecheck` -> pass
+- `npm.cmd --workspace @studyhub/web run test:integration -- --runTestsByPath lib/__tests__/integration/courses.test.ts lib/__tests__/integration/admin-pagination.test.ts` -> pass (`2` suites, `9` tests)
+- `npm.cmd run build:web` -> pass
+- `npm.cmd run check:mojibake` -> pass
+
+**Решения:**
+- Use one shared page contract across the touched routes and include `total` in addition to `page`, `limit`, and `hasMore` so the existing paginator UX remains exact.
+- Keep CSV exports complete by lazily fetching every filtered page only when an export is requested, instead of restoring full in-memory list loading during normal browsing.
+- Keep conversations/message-history hardening as second-wave work, matching the master plan instead of widening the first mandatory slice.
+- Next exact step: continue with `Phase B2 — index audit and migrations`.

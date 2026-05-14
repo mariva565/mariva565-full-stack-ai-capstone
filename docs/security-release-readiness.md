@@ -8,31 +8,41 @@ Neon/Drizzle, Vercel Blob, Expo, Pusher, and Gemini.
 
 | Field | Value |
 | --- | --- |
-| Date | |
-| Branch | |
-| Commit | |
-| Checked by | |
-| Target | Vercel / Netlify / other |
+| Date | 2026-05-14 |
+| Branch | `main` |
+| Commit | `98bdcf9` |
+| Checked by | Codex |
+| Target | Vercel production web + EAS preview APK preparation |
 
 ## Required Gates
 
-- [ ] `npm run check:mojibake` passes.
-- [ ] `npm run typecheck` passes, or each workspace typecheck result is recorded.
-- [ ] `npm run build:web` passes for the release candidate.
-- [ ] `npm run deps:audit:runtime` has no unapproved high/critical runtime advisory.
-- [ ] Any skipped mobile physical-device checks are documented with reason and follow-up.
-- [ ] No `.env`, `.env.local`, secrets, tokens, screenshots, or logs with secrets are included in git.
+- [x] `npm run check:mojibake` passes.
+- [x] `npm run typecheck` passes, or each workspace typecheck result is recorded.
+- [x] `npm run build:web` passes for the release candidate.
+- [x] `npm run deps:audit:runtime` has no unapproved high/critical runtime advisory.
+- [x] Any skipped mobile physical-device checks are documented with reason and follow-up.
+- [x] No `.env`, `.env.local`, secrets, tokens, screenshots, or logs with secrets are included in git.
+
+Current pass notes (2026-05-14):
+- `npm run check:mojibake` -> pass.
+- `npm run typecheck` -> pass for web, mobile, and shared workspaces.
+- `npm run build:web` -> pass. Build still emits the known non-blocking `jose` Edge Runtime warnings through `lib/jwt.ts`.
+- `npm run deps:audit:runtime` -> pass at high threshold. Remaining output is moderate `postcss` advisories through Next/Expo; npm suggests a breaking forced fix, so this remains tracked but non-blocking for the capstone demo.
+- `git ls-files | rg '(^|/)\.env(\.|$)'` -> only `.env.example` and `apps/mobile/.env.example` are tracked.
+- Mobile physical-device push checks are documented as pending in `docs/mobile-release-checklist.md` and `docs/mobile-execution-checklist.md` (`SMK-21`..`SMK-23`).
 
 ## Web/API Security Checks
 
-- [ ] Authenticated API routes verify JWT server-side before returning private data.
-- [ ] Admin routes verify `role === "admin"` server-side.
-- [ ] Mentor/admin-only pages redirect unauthorized users to `/forbidden` or return `403`.
-- [ ] Error responses keep the `{ code, message }` contract and do not expose stack traces.
-- [ ] Public abuse-prone routes keep rate limiting enabled: login, register, contact, AI chat/tools.
-- [ ] User rich text is sanitized before render and before persistence where applicable.
-- [ ] Material file access stays behind the private Blob flow; public post/avatar images use the public Blob flow intentionally.
-- [ ] Pusher private-channel auth validates channel membership and does not authorize arbitrary channels.
+- [x] Authenticated API routes verify JWT server-side before returning private data.
+- [x] Admin routes verify `role === "admin"` server-side.
+- [x] Mentor/admin-only pages redirect unauthorized users to `/forbidden` or return `403`.
+- [x] Error responses keep the `{ code, message }` contract and do not expose stack traces.
+- [x] Public abuse-prone routes keep rate limiting enabled: login, register, contact, AI chat/tools.
+- [x] User rich text is sanitized before render and before persistence where applicable.
+- [x] Material file access stays behind the private Blob flow; public post/avatar images use the public Blob flow intentionally.
+- [x] Pusher private-channel auth validates channel membership and does not authorize arbitrary channels.
+
+Status note: these checks are carried forward from the completed security audit (#52) and the 2026-05-12 deployment smoke pass. No fresh route-by-route code review was performed in the 2026-05-14 documentation pass.
 
 ## Headers And CSP
 
@@ -44,10 +54,16 @@ Current pre-deploy baseline:
 - `X-DNS-Prefetch-Control`
 
 Before final public launch:
-- [ ] Confirm headers on the deployed domain.
-- [ ] Add `Strict-Transport-Security` only after HTTPS deployment is stable.
+- [x] Confirm headers on the deployed domain.
+- [x] Add `Strict-Transport-Security` only after HTTPS deployment is stable.
 - [ ] Roll out CSP in stages: `Content-Security-Policy-Report-Only`, triage, then enforced policy.
 - [ ] Test CSP with Google OAuth, Pusher, Vercel Blob images/files, Gemini calls, Expo Web, and Three.js assets.
+
+Current deployed header check (2026-05-14):
+- Target: `https://mariva565-full-stack-ai-capstone-we.vercel.app`
+- `HEAD /` returned `200`.
+- Present: `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`, `X-DNS-Prefetch-Control`, `Cross-Origin-Opener-Policy`, and `Strict-Transport-Security`.
+- CSP rollout remains staged/deferred; do not enforce CSP before OAuth/Pusher/Blob/Expo/Three.js smoke coverage.
 
 ## Environment Contract
 
@@ -79,10 +95,16 @@ Public client values:
 - `EXPO_PUBLIC_SENTRY_*`
 
 Release checks:
-- [ ] `.env.example` contains placeholders for required values only.
-- [ ] Vercel/hosting env vars match the release target.
-- [ ] `ALLOWED_ORIGINS` includes only intended web/mobile origins for the target environment.
-- [ ] `ALLOW_DEMO_SEED` is not enabled for production.
+- [x] `.env.example` contains placeholders for required values only.
+- [x] Vercel/hosting env vars match the deployed web release target.
+- [x] `ALLOWED_ORIGINS` includes only intended web/mobile origins for the target environment.
+- [x] `ALLOW_DEMO_SEED` is not enabled for production.
+- [ ] EAS preview env values still need final confirmation before the APK build:
+  - `EXPO_PUBLIC_API_URL`
+  - `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID`
+  - optional `EXPO_PUBLIC_SENTRY_DSN`
+
+Status note: web production env was validated during the 2026-05-12 deploy smoke pass. Expo/EAS env setup is tracked separately in `docs/mobile-release-checklist.md`.
 
 ## Dependency Review
 

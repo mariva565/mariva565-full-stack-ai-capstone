@@ -6,13 +6,15 @@ import { ConfirmModal } from "../ui/confirm-modal";
 import { Toast, type ToastTone } from "../ui/toast";
 import { SkeletonTable } from "./skeleton-table";
 import { Pagination } from "./pagination";
+import { MemberAddForm } from "./member-add-form";
+import { MemberRoleBadge } from "./member-role-badge";
 import {
   dispatchAdminDataChanged,
   useAdminRefresh,
 } from "./admin-refresh";
 import { useAdminContext } from "./admin-context";
+import { buildPagedListUrl } from "./paged-list-utils";
 import {
-  PREMIUM_DARK_BUTTON,
   PREMIUM_DARK_CARD_BG,
   PREMIUM_DARK_INPUT,
 } from "../layout/premium-dark-styles";
@@ -35,6 +37,7 @@ const PAGE_SIZE = 15;
 
 export function MembersTab() {
   const [members, setMembers] = useState<Membership[]>([]);
+  const [totalMembers, setTotalMembers] = useState(0);
   const [courses, setCourses] = useState<CourseOption[]>([]);
   const [users, setUsers] = useState<UserOption[]>([]);
   const [loading, setLoading] = useState(true);
@@ -57,35 +60,29 @@ export function MembersTab() {
     void (async () => {
       setLoading(true);
       const [mRes, cRes, uRes] = await Promise.all([
-        fetch("/api/admin/members"),
-        fetch("/api/admin/courses"),
-        fetch("/api/admin/users"),
+        fetch(buildPagedListUrl("/api/admin/members", {
+          page,
+          limit: PAGE_SIZE,
+          search: searchQuery,
+          courseId: courseFilter,
+        })),
+        fetch("/api/admin/courses?page=1&limit=200"),
+        fetch("/api/admin/users?page=1&limit=200"),
       ]);
-      if (mRes.ok) setMembers((await mRes.json()).members ?? []);
+      if (mRes.ok) {
+        const data = await mRes.json();
+        setMembers(data.members ?? []);
+        setTotalMembers(data.total ?? 0);
+      }
       if (cRes.ok) setCourses((await cRes.json()).courses ?? []);
       if (uRes.ok) setUsers((await uRes.json()).users ?? []);
       setLoading(false);
     })();
-  }, []);
+  }, [courseFilter, page, searchQuery]);
 
   useEffect(() => { fetchAll(); }, [fetchAll]);
   useEffect(() => { setPage(1); }, [searchQuery, courseFilter]);
   useAdminRefresh({ onManualRefresh: fetchAll });
-
-  const filtered = members.filter((m) => {
-    if (courseFilter && m.courseId !== parseInt(courseFilter, 10)) return false;
-    if (searchQuery) {
-      const q = searchQuery.toLowerCase();
-      return (
-        m.userName.toLowerCase().includes(q) ||
-        m.userEmail.toLowerCase().includes(q) ||
-        m.courseTitle.toLowerCase().includes(q)
-      );
-    }
-    return true;
-  });
-
-  const paged = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   async function handleAdd() {
     if (!addCourseId || !addUserId) {
@@ -134,8 +131,12 @@ export function MembersTab() {
     const res = await fetch(`/api/admin/members/${toDelete.id}`, { method: "DELETE" });
     setDeleteBusy(false);
     if (res.ok) {
-      setMembers((prev) => prev.filter((m) => m.id !== toDelete.id));
       setToDelete(null);
+      if (members.length === 1 && page > 1) {
+        setPage((current) => current - 1);
+      } else {
+        await fetchAll();
+      }
       dispatchAdminDataChanged();
     } else {
       setToast({ tone: "error", message: await readErrorMessage(res, "Failed to remove membership.") });
@@ -146,48 +147,18 @@ export function MembersTab() {
 
   return (
     <>
-      {/* Add membership form */}
-      <div className={`mb-6 rounded-2xl border border-slate-200 bg-white/60 p-4 dark:border-slate-700/60 ${PREMIUM_DARK_CARD_BG}`}>
-        <h3 className="mb-3 text-sm font-semibold text-slate-700 dark:text-slate-200">Add Membership</h3>
-        <div className="grid grid-cols-1 gap-2 sm:grid-cols-[1fr_1fr_auto_auto]">
-          <select
-            value={addCourseId}
-            onChange={(e) => setAddCourseId(e.target.value)}
-            className={`min-w-0 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm dark:border-cyan-400/10 ${PREMIUM_DARK_INPUT}`}
-          >
-            <option value="">Select course…</option>
-            {courses.map((c) => (
-              <option key={c.id} value={c.id}>{c.title}</option>
-            ))}
-          </select>
-          <select
-            value={addUserId}
-            onChange={(e) => setAddUserId(e.target.value)}
-            className={`min-w-0 truncate rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm dark:border-cyan-400/10 ${PREMIUM_DARK_INPUT}`}
-          >
-            <option value="">Select user…</option>
-            {users.map((u) => (
-              <option key={u.id} value={u.id}>{u.name} ({u.email})</option>
-            ))}
-          </select>
-          <select
-            value={addRole}
-            onChange={(e) => setAddRole(e.target.value)}
-            className={`rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm dark:border-cyan-400/10 ${PREMIUM_DARK_INPUT}`}
-          >
-            <option value="student">student</option>
-            <option value="mentor">mentor</option>
-          </select>
-          <button
-            type="button"
-            onClick={handleAdd}
-            disabled={addBusy}
-            className="rounded-xl bg-brand-500 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-600 disabled:opacity-50"
-          >
-            {addBusy ? "Adding…" : "Add"}
-          </button>
-        </div>
-      </div>
+      <MemberAddForm
+        courses={courses}
+        users={users}
+        courseId={addCourseId}
+        userId={addUserId}
+        role={addRole}
+        busy={addBusy}
+        onCourseChange={setAddCourseId}
+        onUserChange={setAddUserId}
+        onRoleChange={setAddRole}
+        onAdd={handleAdd}
+      />
 
       {/* Course filter */}
       <div className="mb-4 flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-2">
@@ -203,13 +174,13 @@ export function MembersTab() {
               <option key={c.id} value={c.id}>{c.title}</option>
             ))}
           </select>
-          <span className="text-xs text-slate-400 shrink-0">{filtered.length} memberships</span>
+          <span className="text-xs text-slate-400 shrink-0">{totalMembers} memberships</span>
         </div>
       </div>
 
       {/* Mobile cards */}
       <div className="md:hidden space-y-3">
-        {paged.map((m) => (
+        {members.map((m) => (
           <div key={m.id} className={`rounded-2xl border border-slate-200 bg-white/60 p-4 dark:border-slate-700/60 ${PREMIUM_DARK_CARD_BG}`}>
             <div className="flex items-start justify-between gap-2">
               <div>
@@ -224,7 +195,7 @@ export function MembersTab() {
             </div>
           </div>
         ))}
-        {filtered.length === 0 && <p className="text-center text-slate-500 dark:text-slate-400">No memberships found.</p>}
+        {totalMembers === 0 && <p className="text-center text-slate-500 dark:text-slate-400">No memberships found.</p>}
       </div>
 
       {/* Desktop table */}
@@ -240,7 +211,7 @@ export function MembersTab() {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
-            {paged.map((m) => (
+            {members.map((m) => (
               <tr key={m.id} className="transition-colors hover:bg-slate-50/60 dark:hover:bg-white/5">
                 <td className="py-3">
                   <p className="font-medium text-slate-900 dark:text-white">{m.userName}</p>
@@ -260,12 +231,12 @@ export function MembersTab() {
             ))}
           </tbody>
         </table>
-        {filtered.length === 0 && (
+        {totalMembers === 0 && (
           <p className="mt-4 text-center text-slate-500 dark:text-slate-400">No memberships found.</p>
         )}
       </div>
 
-      <Pagination currentPage={page} totalItems={filtered.length} itemsPerPage={PAGE_SIZE} onPageChange={setPage} />
+      <Pagination currentPage={page} totalItems={totalMembers} itemsPerPage={PAGE_SIZE} onPageChange={setPage} />
 
       <ConfirmModal
         isOpen={toDelete !== null}
@@ -279,31 +250,5 @@ export function MembersTab() {
 
       {toast ? <Toast message={toast.message} tone={toast.tone} onClose={() => setToast(null)} /> : null}
     </>
-  );
-}
-
-function MemberRoleBadge({ role, busy, onClick }: { role: string; busy: boolean; onClick: () => void }) {
-  const isMentor = role === "mentor";
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={busy}
-      title="Click to toggle role"
-      className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold transition-colors disabled:opacity-50 ${
-        isMentor
-          ? "bg-brand-100 text-brand-700 hover:bg-brand-200 dark:bg-brand-500/20 dark:text-brand-100 dark:hover:bg-brand-500/30"
-          : `bg-slate-100 text-slate-600 hover:bg-slate-200 dark:border dark:border-slate-700/60 ${PREMIUM_DARK_BUTTON}`
-      }`}
-    >
-      <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        {isMentor ? (
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-        ) : (
-          <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-        )}
-      </svg>
-      {role}
-    </button>
   );
 }

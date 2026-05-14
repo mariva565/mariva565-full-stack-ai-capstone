@@ -13,11 +13,11 @@ import { EditModal } from "./edit-modal";
 import { BulkActionToolbar } from "./bulk-action-toolbar";
 import { useBulkSelection } from "./use-bulk-selection";
 import { useAdminContext } from "./admin-context";
-import { useFilteredData } from "./use-filtered-data";
 import { Pagination } from "./pagination";
 import { ExportButton } from "./export-button";
 import { SkeletonTable } from "./skeleton-table";
 import { AdminMobileCard } from "./admin-mobile-card";
+import { buildPagedListUrl, fetchAllPagedItems } from "./paged-list-utils";
 import { PREMIUM_DARK_CARD_BG } from "../layout/premium-dark-styles";
 
 type AdminModule = {
@@ -31,10 +31,9 @@ type AdminModule = {
   authorEmail: string;
 };
 
-const SEARCHABLE: (keyof AdminModule)[] = ["title", "courseTitle", "authorName"];
-
 export function ModulesTab() {
   const [modulesList, setModulesList] = useState<AdminModule[]>([]);
+  const [totalModules, setTotalModules] = useState(0);
   const [loading, setLoading] = useState(true);
   const [moduleToDelete, setModuleToDelete] = useState<Pick<AdminModule, "id" | "title"> | null>(null);
   const [deleteBusy, setDeleteBusy] = useState(false);
@@ -45,25 +44,28 @@ export function ModulesTab() {
   const headerCheckboxRef = useRef<HTMLInputElement>(null);
 
   const { searchQuery, viewAsFilter, settings } = useAdminContext();
-  const filtered = useFilteredData(modulesList, searchQuery, SEARCHABLE, viewAsFilter, "authorEmail");
-  const paged = filtered.slice((page - 1) * settings.itemsPerPage, page * settings.itemsPerPage);
-  const pagedIds = useMemo(() => paged.map((m) => m.id), [paged]);
+  const pagedIds = useMemo(() => modulesList.map((mod) => mod.id), [modulesList]);
   const bulk = useBulkSelection(pagedIds);
 
-  useEffect(() => { setPage(1); }, [searchQuery]);
-  const fetchModules = useCallback(() => {
-    void (async () => {
-      const res = await fetch("/api/admin/modules");
-      if (res.ok) {
-        const data = await res.json();
-        setModulesList(data.modules || []);
-      }
-      setLoading(false);
-    })();
-  }, []);
+  const fetchModules = useCallback(async () => {
+    setLoading(true);
+    const res = await fetch(buildPagedListUrl("/api/admin/modules", {
+      page,
+      limit: settings.itemsPerPage,
+      search: searchQuery,
+      viewAs: viewAsFilter,
+    }));
+    if (res.ok) {
+      const data = await res.json();
+      setModulesList(data.modules || []);
+      setTotalModules(data.total || 0);
+    }
+    setLoading(false);
+  }, [page, searchQuery, settings.itemsPerPage, viewAsFilter]);
 
-  useEffect(() => { fetchModules(); }, [fetchModules]);
-  useAdminRefresh({ onManualRefresh: fetchModules });
+  useEffect(() => { setPage(1); }, [searchQuery, viewAsFilter, settings.itemsPerPage]);
+  useEffect(() => { void fetchModules(); }, [fetchModules]);
+  useAdminRefresh({ onManualRefresh: () => void fetchModules() });
 
   useEffect(() => {
     if (headerCheckboxRef.current) {
@@ -77,8 +79,12 @@ export function ModulesTab() {
     const res = await fetch(`/api/admin/modules/${moduleToDelete.id}`, { method: "DELETE" });
     setDeleteBusy(false);
     if (res.ok) {
-      setModulesList((prev) => prev.filter((m) => m.id !== moduleToDelete.id));
       setModuleToDelete(null);
+      if (modulesList.length === 1 && page > 1) {
+        setPage((current) => current - 1);
+      } else {
+        await fetchModules();
+      }
       dispatchAdminDataChanged();
     } else {
       setToast({ tone: "error", message: await readErrorMessage(res, "Failed to delete module.") });
@@ -109,15 +115,21 @@ export function ModulesTab() {
     <>
       <div className="mb-4">
         <ExportButton
-          data={filtered as unknown as Record<string, unknown>[]}
+          data={modulesList as unknown as Record<string, unknown>[]}
           headers={["Title", "Course", "Author", "Order", "Created"]}
           keys={["title", "courseTitle", "authorName", "orderIndex"]}
           filename="modules"
+          loadData={() =>
+            fetchAllPagedItems<AdminModule>("/api/admin/modules", "modules", {
+              search: searchQuery,
+              viewAs: viewAsFilter,
+            }) as Promise<Record<string, unknown>[]>
+          }
         />
       </div>
       {/* Mobile card view */}
       <div className="md:hidden space-y-3">
-        {paged.map((mod) => (
+        {modulesList.map((mod) => (
           <AdminMobileCard
             key={mod.id}
             checked={bulk.isSelected(mod.id)}
@@ -132,7 +144,7 @@ export function ModulesTab() {
             onDelete={() => setModuleToDelete({ id: mod.id, title: mod.title })}
           />
         ))}
-        {filtered.length === 0 && <p className="text-center text-slate-500 dark:text-slate-400">No modules found.</p>}
+        {totalModules === 0 && <p className="text-center text-slate-500 dark:text-slate-400">No modules found.</p>}
       </div>
 
       {/* Desktop table view */}
@@ -151,7 +163,7 @@ export function ModulesTab() {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
-            {paged.map((mod) => (
+            {modulesList.map((mod) => (
               <tr key={mod.id} className={`transition-colors hover:bg-slate-50/60 dark:hover:bg-white/5 ${bulk.isSelected(mod.id) ? "bg-brand-50/50 dark:bg-brand-500/5" : ""}`}>
                 <td className="py-3">
                   <input type="checkbox" checked={bulk.isSelected(mod.id)} onChange={() => bulk.toggle(mod.id)} className="rounded border-slate-300 dark:border-slate-600" />
@@ -168,12 +180,12 @@ export function ModulesTab() {
             ))}
           </tbody>
         </table>
-        {filtered.length === 0 && (
+        {totalModules === 0 && (
           <p className="mt-4 text-center text-slate-500 dark:text-slate-400">No modules found.</p>
         )}
       </div>
 
-      <Pagination currentPage={page} totalItems={filtered.length} itemsPerPage={settings.itemsPerPage} onPageChange={setPage} />
+      <Pagination currentPage={page} totalItems={totalModules} itemsPerPage={settings.itemsPerPage} onPageChange={setPage} />
 
       <BulkActionToolbar selectedCount={bulk.selectedIds.size} onDelete={handleBulkDelete} onCancel={bulk.deselectAll} busy={bulkDeleteBusy} />
 
@@ -187,7 +199,7 @@ export function ModulesTab() {
         onConfirm={confirmDeleteModule}
       />
 
-      <EditModal isOpen={editingModule !== null} entityType="module" entity={editingModule} onClose={() => setEditingModule(null)} onSaved={fetchModules} />
+      <EditModal isOpen={editingModule !== null} entityType="module" entity={editingModule} onClose={() => setEditingModule(null)} onSaved={() => void fetchModules()} />
 
       {toast ? <Toast message={toast.message} tone={toast.tone} onClose={() => setToast(null)} /> : null}
     </>

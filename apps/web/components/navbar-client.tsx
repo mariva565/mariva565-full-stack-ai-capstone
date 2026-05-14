@@ -135,7 +135,7 @@ export function NavbarClient({ initialUser }: NavbarClientProps) {
   }
 
   function navLinkClass(active: boolean): string {
-    return `relative block w-full whitespace-nowrap rounded-full px-3 py-1.5 text-center text-sm font-medium transition lg:w-auto ${
+    return `relative whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-medium transition ${
       active
         ? "bg-[linear-gradient(135deg,#6366f1_0%,#8b5cf6_55%,#06b6d4_100%)] text-white shadow-[0_12px_30px_rgba(99,102,241,0.22)]"
         : "text-slate-600 hover:bg-white/70 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-900/60 dark:hover:text-white"
@@ -233,7 +233,7 @@ export function NavbarClient({ initialUser }: NavbarClientProps) {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:flex lg:flex-wrap lg:items-center lg:justify-end">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3 lg:justify-end">
             {coreLinks.map((link) => (
               <Link key={link.href} href={link.href} className={navLinkClass(isActive(link.href))}>
                 {link.label}
@@ -241,7 +241,7 @@ export function NavbarClient({ initialUser }: NavbarClientProps) {
             ))}
 
             {/* Visual separator between core and social groups */}
-            <span className="hidden text-slate-300 dark:text-slate-600 lg:inline" aria-hidden="true">·</span>
+            <span className="hidden text-slate-300 dark:text-slate-600 sm:inline" aria-hidden="true">·</span>
 
             {socialLinks.map((link) => (
               <Link key={link.href} href={link.href} className={navLinkClass(isActive(link.href))}>

@@ -190,6 +190,8 @@ Keeping the API as the shared boundary also avoids duplicating business logic in
 
 On the web, authenticated pages still use async Server Components for server-side initial data where it improves first render. Client-side mutations, realtime updates, file uploads, AI tools, and all mobile flows go through the shared REST API. The actual business/data access logic lives behind that boundary in `apps/web/lib`, then persists through Drizzle ORM to Neon PostgreSQL.
 
+This is a deliberate architectural choice over the alternative of using Server Actions for web and a separate REST API for mobile. In this particular project, that dual-entry approach would duplicate validation, error handling, and auth logic across two boundaries serving the same service layer. A single shared REST contract is simpler to maintain, easier to test (Postman, curl, automated tests), and standard practice for products with multiple client platforms.
+
 This matches the capstone requirement for a client-server architecture where the React web frontend and React Native mobile client communicate with the Next.js backend through a RESTful API.
 
 ### Tech Stack

@@ -27,7 +27,7 @@ export function EditPostForm({ postId }: { postId: number }) {
   useEffect(() => {
     Promise.all([
       fetch(`/api/posts/${postId}`).then((r) => r.json()),
-      fetch("/api/courses").then((r) => r.json()),
+      fetch("/api/courses?page=1&limit=100").then((r) => r.json()),
     ]).then(([postData, coursesData]) => {
       const p = postData.post;
       if (p) {

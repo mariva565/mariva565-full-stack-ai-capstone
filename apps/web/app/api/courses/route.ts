@@ -3,12 +3,21 @@ import { db } from "../../../lib/db";
 import { courseMembers, courses } from "../../../../../drizzle/schema";
 import { requireAuth } from "../../../lib/api-utils";
 import { logActivity } from "../../../lib/activity";
-import { desc, eq, inArray, or } from "drizzle-orm";
+import { buildPageMeta, normalizeSearch, readPaginationParams } from "../../../lib/pagination";
+import { desc, eq, inArray, or, ilike, count } from "drizzle-orm";
+import { combineConditions } from "../../../lib/query-conditions";
 
 // GET /api/courses — list all courses for the user
 export async function GET(request: NextRequest) {
   const auth = await requireAuth(request);
   if ("error" in auth) return auth.error;
+
+  const { searchParams } = new URL(request.url);
+  const { page, limit, offset } = readPaginationParams(searchParams, {
+    defaultLimit: 50,
+    maxLimit: 100,
+  });
+  const search = normalizeSearch(searchParams.get("search"));
 
   const memberships = await db
     .select({ courseId: courseMembers.courseId })
@@ -24,13 +33,31 @@ export async function GET(request: NextRequest) {
         )
       : eq(courses.createdBy, auth.user.sub);
 
-  const rows = await db
-    .select()
-    .from(courses)
-    .where(condition)
-    .orderBy(desc(courses.createdAt));
+  const where = combineConditions([
+    condition,
+    search
+      ? or(
+          ilike(courses.title, `%${search}%`),
+          ilike(courses.description, `%${search}%`)
+        )
+      : undefined,
+  ]);
 
-  return NextResponse.json({ courses: rows });
+  const [rows, [totalRow]] = await Promise.all([
+    db
+      .select()
+      .from(courses)
+      .where(where)
+      .orderBy(desc(courses.createdAt))
+      .limit(limit)
+      .offset(offset),
+    db.select({ value: count() }).from(courses).where(where),
+  ]);
+
+  return NextResponse.json({
+    courses: rows,
+    ...buildPageMeta(page, limit, totalRow.value),
+  });
 }
 
 // POST /api/courses — create a new course

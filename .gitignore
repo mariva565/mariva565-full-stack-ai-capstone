@@ -28,8 +28,9 @@ test-output*.log
 scratch/
 .gemini/
 
-# Course slides (not for GitHub)
+# Course slides and assignment files (not for GitHub)
 docs/*.pdf
+docs/*.docx
 
 # Playwright output
 apps/web/test-results/

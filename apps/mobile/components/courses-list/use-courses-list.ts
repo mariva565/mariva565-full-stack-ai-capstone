@@ -43,7 +43,7 @@ function useCoursesQuery() {
   return useQuery({
     queryKey: queryKeys.courses.lists(),
     queryFn: async () => {
-      const data = await apiFetch<{ courses: Course[] }>("/api/courses", { cache: false });
+      const data = await apiFetch<{ courses: Course[] }>("/api/courses?page=1&limit=100", { cache: false });
       return data.courses;
     },
   });

@@ -13,11 +13,11 @@ import { EditModal } from "./edit-modal";
 import { BulkActionToolbar } from "./bulk-action-toolbar";
 import { useBulkSelection } from "./use-bulk-selection";
 import { useAdminContext } from "./admin-context";
-import { useFilteredData } from "./use-filtered-data";
 import { Pagination } from "./pagination";
 import { ExportButton } from "./export-button";
 import { SkeletonTable } from "./skeleton-table";
 import { AdminMobileCard } from "./admin-mobile-card";
+import { buildPagedListUrl, fetchAllPagedItems } from "./paged-list-utils";
 import { PREMIUM_DARK_CARD_BG } from "../layout/premium-dark-styles";
 
 type AdminMaterial = {
@@ -31,10 +31,9 @@ type AdminMaterial = {
   authorEmail: string;
 };
 
-const SEARCHABLE: (keyof AdminMaterial)[] = ["title", "materialType", "courseTitle", "authorName"];
-
 export function MaterialsTab() {
   const [materials, setMaterials] = useState<AdminMaterial[]>([]);
+  const [totalMaterials, setTotalMaterials] = useState(0);
   const [loading, setLoading] = useState(true);
   const [materialToDelete, setMaterialToDelete] = useState<Pick<AdminMaterial, "id" | "title"> | null>(null);
   const [deleteBusy, setDeleteBusy] = useState(false);
@@ -45,25 +44,28 @@ export function MaterialsTab() {
   const headerCheckboxRef = useRef<HTMLInputElement>(null);
 
   const { searchQuery, viewAsFilter, settings } = useAdminContext();
-  const filtered = useFilteredData(materials, searchQuery, SEARCHABLE, viewAsFilter, "authorEmail");
-  const paged = filtered.slice((page - 1) * settings.itemsPerPage, page * settings.itemsPerPage);
-  const pagedIds = useMemo(() => paged.map((m) => m.id), [paged]);
+  const pagedIds = useMemo(() => materials.map((material) => material.id), [materials]);
   const bulk = useBulkSelection(pagedIds);
 
-  useEffect(() => { setPage(1); }, [searchQuery]);
-  const fetchMaterials = useCallback(() => {
-    void (async () => {
-      const res = await fetch("/api/admin/materials");
-      if (res.ok) {
-        const data = await res.json();
-        setMaterials(data.materials || []);
-      }
-      setLoading(false);
-    })();
-  }, []);
+  const fetchMaterials = useCallback(async () => {
+    setLoading(true);
+    const res = await fetch(buildPagedListUrl("/api/admin/materials", {
+      page,
+      limit: settings.itemsPerPage,
+      search: searchQuery,
+      viewAs: viewAsFilter,
+    }));
+    if (res.ok) {
+      const data = await res.json();
+      setMaterials(data.materials || []);
+      setTotalMaterials(data.total || 0);
+    }
+    setLoading(false);
+  }, [page, searchQuery, settings.itemsPerPage, viewAsFilter]);
 
-  useEffect(() => { fetchMaterials(); }, [fetchMaterials]);
-  useAdminRefresh({ onManualRefresh: fetchMaterials });
+  useEffect(() => { setPage(1); }, [searchQuery, viewAsFilter, settings.itemsPerPage]);
+  useEffect(() => { void fetchMaterials(); }, [fetchMaterials]);
+  useAdminRefresh({ onManualRefresh: () => void fetchMaterials() });
 
   useEffect(() => {
     if (headerCheckboxRef.current) {
@@ -77,8 +79,12 @@ export function MaterialsTab() {
     const res = await fetch(`/api/admin/materials/${materialToDelete.id}`, { method: "DELETE" });
     setDeleteBusy(false);
     if (res.ok) {
-      setMaterials((prev) => prev.filter((m) => m.id !== materialToDelete.id));
       setMaterialToDelete(null);
+      if (materials.length === 1 && page > 1) {
+        setPage((current) => current - 1);
+      } else {
+        await fetchMaterials();
+      }
       dispatchAdminDataChanged();
     } else {
       setToast({ tone: "error", message: await readErrorMessage(res, "Failed to delete material.") });
@@ -109,15 +115,21 @@ export function MaterialsTab() {
     <>
       <div className="mb-4">
         <ExportButton
-          data={filtered as unknown as Record<string, unknown>[]}
+          data={materials as unknown as Record<string, unknown>[]}
           headers={["Title", "Type", "Course", "Author", "Created"]}
           keys={["title", "materialType", "courseTitle", "authorName", "createdAt"]}
           filename="materials"
+          loadData={() =>
+            fetchAllPagedItems<AdminMaterial>("/api/admin/materials", "materials", {
+              search: searchQuery,
+              viewAs: viewAsFilter,
+            }) as Promise<Record<string, unknown>[]>
+          }
         />
       </div>
       {/* Mobile card view */}
       <div className="md:hidden space-y-3">
-        {paged.map((mat) => (
+        {materials.map((mat) => (
           <AdminMobileCard
             key={mat.id}
             checked={bulk.isSelected(mat.id)}
@@ -137,7 +149,7 @@ export function MaterialsTab() {
             onDelete={() => setMaterialToDelete({ id: mat.id, title: mat.title })}
           />
         ))}
-        {filtered.length === 0 && <p className="text-center text-slate-500 dark:text-slate-400">No materials found.</p>}
+        {totalMaterials === 0 && <p className="text-center text-slate-500 dark:text-slate-400">No materials found.</p>}
       </div>
 
       {/* Desktop table view */}
@@ -163,7 +175,7 @@ export function MaterialsTab() {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
-            {paged.map((mat) => (
+            {materials.map((mat) => (
               <tr key={mat.id} className={`transition-colors hover:bg-slate-50/60 dark:hover:bg-white/5 ${bulk.isSelected(mat.id) ? "bg-brand-50/50 dark:bg-brand-500/5" : ""}`}>
                 <td className="py-3">
                   <input
@@ -192,12 +204,12 @@ export function MaterialsTab() {
             ))}
           </tbody>
         </table>
-        {filtered.length === 0 && (
+        {totalMaterials === 0 && (
           <p className="mt-4 text-center text-slate-500 dark:text-slate-400">No materials found.</p>
         )}
       </div>
 
-      <Pagination currentPage={page} totalItems={filtered.length} itemsPerPage={settings.itemsPerPage} onPageChange={setPage} />
+      <Pagination currentPage={page} totalItems={totalMaterials} itemsPerPage={settings.itemsPerPage} onPageChange={setPage} />
 
       <BulkActionToolbar selectedCount={bulk.selectedIds.size} onDelete={handleBulkDelete} onCancel={bulk.deselectAll} busy={bulkDeleteBusy} />
 
@@ -211,7 +223,7 @@ export function MaterialsTab() {
         onConfirm={confirmDeleteMaterial}
       />
 
-      <EditModal isOpen={editingMaterial !== null} entityType="material" entity={editingMaterial} onClose={() => setEditingMaterial(null)} onSaved={fetchMaterials} />
+      <EditModal isOpen={editingMaterial !== null} entityType="material" entity={editingMaterial} onClose={() => setEditingMaterial(null)} onSaved={() => void fetchMaterials()} />
 
       {toast ? <Toast message={toast.message} tone={toast.tone} onClose={() => setToast(null)} /> : null}
     </>

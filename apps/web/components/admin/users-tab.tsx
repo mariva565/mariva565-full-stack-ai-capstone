@@ -13,11 +13,11 @@ import { UserModal } from "./user-modal";
 import { RoleBadge } from "./role-badge";
 import { RoleConfirmModal } from "./role-confirm-modal";
 import { useAdminContext } from "./admin-context";
-import { useFilteredData } from "./use-filtered-data";
 import { Pagination } from "./pagination";
 import { ExportButton } from "./export-button";
 import { SkeletonTable } from "./skeleton-table";
 import { AdminMobileCard } from "./admin-mobile-card";
+import { buildPagedListUrl, fetchAllPagedItems } from "./paged-list-utils";
 import { PREMIUM_DARK_CARD_BG } from "../layout/premium-dark-styles";
 
 type AdminUser = {
@@ -30,10 +30,9 @@ type AdminUser = {
   createdAt: string;
 };
 
-const SEARCHABLE: (keyof AdminUser)[] = ["name", "email", "role"];
-
 export function UsersTab() {
   const [users, setUsers] = useState<AdminUser[]>([]);
+  const [totalUsers, setTotalUsers] = useState(0);
   const [loading, setLoading] = useState(true);
   const [userToDelete, setUserToDelete] = useState<Pick<AdminUser, "id" | "email"> | null>(null);
   const [deleteBusy, setDeleteBusy] = useState(false);
@@ -45,23 +44,25 @@ export function UsersTab() {
   const [toast, setToast] = useState<{ tone: ToastTone; message: string } | null>(null);
 
   const { searchQuery, viewAsFilter, settings } = useAdminContext();
-  const filtered = useFilteredData(users, searchQuery, SEARCHABLE, viewAsFilter, "email");
-  const paged = filtered.slice((page - 1) * settings.itemsPerPage, page * settings.itemsPerPage);
+  const fetchUsers = useCallback(async () => {
+    setLoading(true);
+    const res = await fetch(buildPagedListUrl("/api/admin/users", {
+      page,
+      limit: settings.itemsPerPage,
+      search: searchQuery,
+      viewAs: viewAsFilter,
+    }));
+    if (res.ok) {
+      const data = await res.json();
+      setUsers(data.users || []);
+      setTotalUsers(data.total || 0);
+    }
+    setLoading(false);
+  }, [page, searchQuery, settings.itemsPerPage, viewAsFilter]);
 
-  useEffect(() => { setPage(1); }, [searchQuery]);
-  const fetchUsers = useCallback(() => {
-    void (async () => {
-      const res = await fetch("/api/admin/users");
-      if (res.ok) {
-        const data = await res.json();
-        setUsers(data.users || []);
-      }
-      setLoading(false);
-    })();
-  }, []);
-
-  useEffect(() => { fetchUsers(); }, [fetchUsers]);
-  useAdminRefresh({ onManualRefresh: fetchUsers });
+  useEffect(() => { setPage(1); }, [searchQuery, viewAsFilter, settings.itemsPerPage]);
+  useEffect(() => { void fetchUsers(); }, [fetchUsers]);
+  useAdminRefresh({ onManualRefresh: () => void fetchUsers() });
 
   async function confirmRoleChange(newRole: string) {
     if (!roleChangeUser) return;
@@ -100,8 +101,12 @@ export function UsersTab() {
     const res = await fetch(`/api/admin/users/${userToDelete.id}`, { method: "DELETE" });
     setDeleteBusy(false);
     if (res.ok) {
-      setUsers((prev) => prev.filter((u) => u.id !== userToDelete.id));
       setUserToDelete(null);
+      if (users.length === 1 && page > 1) {
+        setPage((current) => current - 1);
+      } else {
+        await fetchUsers();
+      }
       dispatchAdminDataChanged();
     } else {
       setToast({ tone: "error", message: await readErrorMessage(res, "Failed to delete user.") });
@@ -116,10 +121,16 @@ export function UsersTab() {
     <>
       <div className="mb-4 flex items-center justify-between">
         <ExportButton
-          data={filtered as unknown as Record<string, unknown>[]}
+          data={users as unknown as Record<string, unknown>[]}
           headers={["Name", "Email", "Role", "Status", "Joined"]}
           keys={["name", "email", "role", "blocked", "createdAt"]}
           filename="users"
+          loadData={() =>
+            fetchAllPagedItems<AdminUser>("/api/admin/users", "users", {
+              search: searchQuery,
+              viewAs: viewAsFilter,
+            }) as Promise<Record<string, unknown>[]>
+          }
         />
         <button
           onClick={() => setShowCreateModal(true)}
@@ -131,7 +142,7 @@ export function UsersTab() {
 
       {/* Mobile card view */}
       <div className="md:hidden space-y-3">
-        {paged.map((user) => (
+        {users.map((user) => (
           <AdminMobileCard
             key={user.id}
             dimmed={user.blocked}
@@ -162,7 +173,7 @@ export function UsersTab() {
             onDelete={() => setUserToDelete({ id: user.id, email: user.email })}
           />
         ))}
-        {filtered.length === 0 && <p className="text-center text-slate-500 dark:text-slate-400">No users found.</p>}
+        {totalUsers === 0 && <p className="text-center text-slate-500 dark:text-slate-400">No users found.</p>}
       </div>
 
       {/* Desktop table view */}
@@ -179,7 +190,7 @@ export function UsersTab() {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
-            {paged.map((user) => (
+            {users.map((user) => (
               <tr key={user.id} className={`transition-colors hover:bg-slate-50/60 dark:hover:bg-white/5 ${user.blocked ? "opacity-60" : ""}`}>
                 <td className="py-3">
                   <div className="flex items-center gap-3">
@@ -223,12 +234,12 @@ export function UsersTab() {
             ))}
           </tbody>
         </table>
-        {filtered.length === 0 && (
+        {totalUsers === 0 && (
           <p className="mt-4 text-center text-slate-500 dark:text-slate-400">No users found.</p>
         )}
       </div>
 
-      <Pagination currentPage={page} totalItems={filtered.length} itemsPerPage={settings.itemsPerPage} onPageChange={setPage} />
+      <Pagination currentPage={page} totalItems={totalUsers} itemsPerPage={settings.itemsPerPage} onPageChange={setPage} />
 
       <RoleConfirmModal
         isOpen={roleChangeUser !== null}
@@ -253,7 +264,7 @@ export function UsersTab() {
         isOpen={showCreateModal || editingUser !== null}
         user={editingUser}
         onClose={() => { setShowCreateModal(false); setEditingUser(null); }}
-        onSaved={fetchUsers}
+        onSaved={() => void fetchUsers()}
       />
 
       {toast ? <Toast message={toast.message} tone={toast.tone} onClose={() => setToast(null)} /> : null}

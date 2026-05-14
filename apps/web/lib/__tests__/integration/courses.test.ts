@@ -88,6 +88,34 @@ describe("courses API integration", () => {
         expect.objectContaining({ id: course.id, title: "Owned Course" }),
       ])
     );
+    expect(body).toMatchObject({
+      page: 1,
+      limit: 50,
+      total: 1,
+      hasMore: false,
+    });
+  });
+
+  it("paginates course lists with stable metadata", async () => {
+    await createCourse(user.token, { title: "Course 1" });
+    await createCourse(user.token, { title: "Course 2" });
+    await createCourse(user.token, { title: "Course 3" });
+
+    const firstPageRes = await fetch(`${BASE_URL}/api/courses?page=1&limit=2`, {
+      headers: authHeader(user.token),
+    });
+    const secondPageRes = await fetch(`${BASE_URL}/api/courses?page=2&limit=2`, {
+      headers: authHeader(user.token),
+    });
+    const firstPage = await parseJson(firstPageRes);
+    const secondPage = await parseJson(secondPageRes);
+
+    expect(firstPageRes.status).toBe(200);
+    expect(firstPage.courses).toHaveLength(2);
+    expect(firstPage).toMatchObject({ page: 1, limit: 2, total: 3, hasMore: true });
+    expect(secondPageRes.status).toBe(200);
+    expect(secondPage.courses).toHaveLength(1);
+    expect(secondPage).toMatchObject({ page: 2, limit: 2, total: 3, hasMore: false });
   });
 
   it("returns a single course to its creator", async () => {

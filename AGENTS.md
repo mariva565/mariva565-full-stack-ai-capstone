@@ -47,21 +47,28 @@ be specified explicitly to avoid accidental writes to unrelated databases.
 
 ### Free-tier compute budget — handle with care
 
-The `studyhub` project runs on the **Neon Free tier**, which has a hard cap of
-**100 compute-hours (CU-hrs) per calendar month**. As of 2026-04-30 the project has
-already consumed **~49 CU-hrs** in April. The capstone demo is on **2026-05-27**, so
-the entire May budget must last until then.
+The `studyhub` project runs on the **Neon Free tier**. Public Neon plan limits have
+changed over time, so **always check the actual quota and current usage in the Neon
+console before any heavy operation**. The live console is the source of truth for the
+account; older project notes may be stale.
 
-If the project hits the 100 CU-hr ceiling, **the compute is suspended** and the app
-**will not respond on demo day**. To stay safe:
+Current public Neon docs list:
+
+- `191.9` total compute hours/month on Free
+- up to `5` compute hours/month for non-default branch computes
+- up to `10` branches per Free-plan project
+
+If the active quota is exhausted, computes can be suspended and the app may not respond
+when it is needed. To stay safe:
 
 - Do **not** run heavy seed scripts or full re-migrations against the `production` branch
   without a real reason. Each big script burns CU-hrs.
 - For large tests, integration tests, or experimental migrations, **create a Neon
-  branch** (e.g. `dev`, `test`, `seed-experiment`). Branches share storage but have
-  their own compute, and a throw-away branch can be deleted to reclaim the slot
-  (free tier limit: 10 branches).
+  branch** (e.g. `dev`, `test`, `seed-experiment`). Branches are isolated from the
+  parent and suitable for safe experiments, but non-default branch compute has its own
+  tight Free-plan allowance, so branch work must still stay short-lived and monitored.
 - Prefer small, targeted queries over `SELECT *` on big tables when iterating.
+- Delete throw-away branches after evidence is captured and they are no longer useful.
 - Treat the production branch as read-mostly during the final two weeks before the demo.
 
 ## Development Environment
@@ -324,6 +331,7 @@ When doing cleanup, pruning, archiving, or "remove temporary docs" work, treat t
 > **Note:** Most internal working docs below are kept **locally only** (not tracked in git, see `.gitignore`). They exist on the developer's machine for handoff between AI sessions. Only `docs/dev-log.md`, `docs/api-contract.md`, and `docs/StudyHub.postman_collection.json` are committed to the repo.
 
 - `docs/dev-log.md` *(in repo)*
+- `docs/final-release-master-plan.md` *(in repo)*
 - `docs/api-contract.md` *(in repo)*
 - `docs/StudyHub.postman_collection.json` *(in repo)*
 - `docs/implementation-plan.md` *(local only)*
@@ -341,7 +349,7 @@ If a docs cleanup task touches `docs/`, first classify files into:
 
 When uncertain, prefer keeping docs and ask the user before deleting.
 
-**Prompt за нов чат:** "Read `docs/dev-log.md`, `docs/implementation-plan.md`, `docs/performance-guardrails.md`, `docs/mobile-execution-checklist.md`, and `docs/mobile-smoke-test-matrix.md`, then continue from the current phase."
+**Prompt за нов чат:** "Read `docs/dev-log.md`, `docs/final-release-master-plan.md`, `docs/implementation-plan.md`, `docs/performance-guardrails.md`, `docs/mobile-execution-checklist.md`, and `docs/mobile-smoke-test-matrix.md`, then continue from the first unchecked mandatory item."
 
 ## Legacy Reference
 

@@ -15,7 +15,7 @@ export function ViewAsFilter() {
   const [detectedUsers, setDetectedUsers] = useState<FilterUser[]>([]);
 
   const fetchUsers = useCallback(() => {
-    void fetch("/api/admin/users")
+    void fetch("/api/admin/users?page=1&limit=200")
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
         if (data?.users) {

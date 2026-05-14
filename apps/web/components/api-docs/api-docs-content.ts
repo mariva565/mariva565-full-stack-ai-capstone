@@ -95,11 +95,15 @@ export const apiDocsSections: ApiSectionDoc[] = [
     endpoints: [
       {
         method: "GET",
-        path: "/api/courses",
+        path: "/api/courses?page=1&limit=50&search=api",
         auth: "Bearer or cookie",
-        description: "List the current user's courses and memberships.",
+        description: "List the current user's courses and memberships with server-side paging and optional search.",
         responseExample: `{
-  "courses": []
+  "courses": [],
+  "page": 1,
+  "limit": 50,
+  "total": 0,
+  "hasMore": false
 }`,
         statusCodes: ["200 OK", "401 Unauthorized"],
       },
@@ -237,11 +241,15 @@ export const apiDocsSections: ApiSectionDoc[] = [
     endpoints: [
       {
         method: "GET",
-        path: "/api/admin/users",
+        path: "/api/admin/users?page=1&limit=50&search=ada",
         auth: "Admin",
-        description: "List all users for admin management.",
+        description: "List users for admin management with server-side paging and optional search.",
         responseExample: `{
-  "users": []
+  "users": [],
+  "page": 1,
+  "limit": 50,
+  "total": 0,
+  "hasMore": false
 }`,
         statusCodes: ["200 OK", "401 Unauthorized", "403 Forbidden"],
       },

@@ -13,11 +13,11 @@ import { EditModal } from "./edit-modal";
 import { BulkActionToolbar } from "./bulk-action-toolbar";
 import { useBulkSelection } from "./use-bulk-selection";
 import { useAdminContext } from "./admin-context";
-import { useFilteredData } from "./use-filtered-data";
 import { Pagination } from "./pagination";
 import { ExportButton } from "./export-button";
 import { SkeletonTable } from "./skeleton-table";
 import { AdminMobileCard } from "./admin-mobile-card";
+import { buildPagedListUrl, fetchAllPagedItems } from "./paged-list-utils";
 import { PREMIUM_DARK_CARD_BG } from "../layout/premium-dark-styles";
 
 type AdminCourse = {
@@ -31,10 +31,9 @@ type AdminCourse = {
   authorEmail: string;
 };
 
-const SEARCHABLE: (keyof AdminCourse)[] = ["title", "description", "authorName"];
-
 export function CoursesTab() {
   const [courses, setCourses] = useState<AdminCourse[]>([]);
+  const [totalCourses, setTotalCourses] = useState(0);
   const [loading, setLoading] = useState(true);
   const [courseToDelete, setCourseToDelete] = useState<Pick<AdminCourse, "id" | "title"> | null>(null);
   const [deleteBusy, setDeleteBusy] = useState(false);
@@ -45,25 +44,28 @@ export function CoursesTab() {
   const headerCheckboxRef = useRef<HTMLInputElement>(null);
 
   const { searchQuery, viewAsFilter, settings } = useAdminContext();
-  const filtered = useFilteredData(courses, searchQuery, SEARCHABLE, viewAsFilter, "authorEmail");
-  const paged = filtered.slice((page - 1) * settings.itemsPerPage, page * settings.itemsPerPage);
-  const pagedIds = useMemo(() => paged.map((c) => c.id), [paged]);
+  const pagedIds = useMemo(() => courses.map((course) => course.id), [courses]);
   const bulk = useBulkSelection(pagedIds);
 
-  useEffect(() => { setPage(1); }, [searchQuery]);
-  const fetchCourses = useCallback(() => {
-    void (async () => {
-      const res = await fetch("/api/admin/courses");
-      if (res.ok) {
-        const data = await res.json();
-        setCourses(data.courses || []);
-      }
-      setLoading(false);
-    })();
-  }, []);
+  const fetchCourses = useCallback(async () => {
+    setLoading(true);
+    const res = await fetch(buildPagedListUrl("/api/admin/courses", {
+      page,
+      limit: settings.itemsPerPage,
+      search: searchQuery,
+      viewAs: viewAsFilter,
+    }));
+    if (res.ok) {
+      const data = await res.json();
+      setCourses(data.courses || []);
+      setTotalCourses(data.total || 0);
+    }
+    setLoading(false);
+  }, [page, searchQuery, settings.itemsPerPage, viewAsFilter]);
 
-  useEffect(() => { fetchCourses(); }, [fetchCourses]);
-  useAdminRefresh({ onManualRefresh: fetchCourses });
+  useEffect(() => { setPage(1); }, [searchQuery, viewAsFilter, settings.itemsPerPage]);
+  useEffect(() => { void fetchCourses(); }, [fetchCourses]);
+  useAdminRefresh({ onManualRefresh: () => void fetchCourses() });
 
   useEffect(() => {
     if (headerCheckboxRef.current) {
@@ -77,8 +79,12 @@ export function CoursesTab() {
     const res = await fetch(`/api/admin/courses/${courseToDelete.id}`, { method: "DELETE" });
     setDeleteBusy(false);
     if (res.ok) {
-      setCourses((prev) => prev.filter((c) => c.id !== courseToDelete.id));
       setCourseToDelete(null);
+      if (courses.length === 1 && page > 1) {
+        setPage((current) => current - 1);
+      } else {
+        await fetchCourses();
+      }
       dispatchAdminDataChanged();
     } else {
       setToast({ tone: "error", message: await readErrorMessage(res, "Failed to delete course.") });
@@ -109,15 +115,21 @@ export function CoursesTab() {
     <>
       <div className="mb-4">
         <ExportButton
-          data={filtered as unknown as Record<string, unknown>[]}
+          data={courses as unknown as Record<string, unknown>[]}
           headers={["Title", "Description", "Author", "Created"]}
           keys={["title", "description", "authorName", "createdAt"]}
           filename="courses"
+          loadData={() =>
+            fetchAllPagedItems<AdminCourse>("/api/admin/courses", "courses", {
+              search: searchQuery,
+              viewAs: viewAsFilter,
+            }) as Promise<Record<string, unknown>[]>
+          }
         />
       </div>
       {/* Mobile card view */}
       <div className="md:hidden space-y-3">
-        {paged.map((course) => (
+        {courses.map((course) => (
           <AdminMobileCard
             key={course.id}
             checked={bulk.isSelected(course.id)}
@@ -133,7 +145,7 @@ export function CoursesTab() {
             onDelete={() => setCourseToDelete({ id: course.id, title: course.title })}
           />
         ))}
-        {filtered.length === 0 && <p className="text-center text-slate-500 dark:text-slate-400">No courses found.</p>}
+        {totalCourses === 0 && <p className="text-center text-slate-500 dark:text-slate-400">No courses found.</p>}
       </div>
 
       {/* Desktop table view */}
@@ -152,7 +164,7 @@ export function CoursesTab() {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
-            {paged.map((course) => (
+            {courses.map((course) => (
               <tr key={course.id} className={`transition-colors hover:bg-slate-50/60 dark:hover:bg-white/5 ${bulk.isSelected(course.id) ? "bg-brand-50/50 dark:bg-brand-500/5" : ""}`}>
                 <td className="py-3">
                   <input type="checkbox" checked={bulk.isSelected(course.id)} onChange={() => bulk.toggle(course.id)} className="rounded border-slate-300 dark:border-slate-600" />
@@ -169,12 +181,12 @@ export function CoursesTab() {
             ))}
           </tbody>
         </table>
-        {filtered.length === 0 && (
+        {totalCourses === 0 && (
           <p className="mt-4 text-center text-slate-500 dark:text-slate-400">No courses found.</p>
         )}
       </div>
 
-      <Pagination currentPage={page} totalItems={filtered.length} itemsPerPage={settings.itemsPerPage} onPageChange={setPage} />
+      <Pagination currentPage={page} totalItems={totalCourses} itemsPerPage={settings.itemsPerPage} onPageChange={setPage} />
 
       <BulkActionToolbar selectedCount={bulk.selectedIds.size} onDelete={handleBulkDelete} onCancel={bulk.deselectAll} busy={bulkDeleteBusy} />
 
@@ -188,7 +200,7 @@ export function CoursesTab() {
         onConfirm={confirmDeleteCourse}
       />
 
-      <EditModal isOpen={editingCourse !== null} entityType="course" entity={editingCourse} onClose={() => setEditingCourse(null)} onSaved={fetchCourses} />
+      <EditModal isOpen={editingCourse !== null} entityType="course" entity={editingCourse} onClose={() => setEditingCourse(null)} onSaved={() => void fetchCourses()} />
 
       {toast ? <Toast message={toast.message} tone={toast.tone} onClose={() => setToast(null)} /> : null}
     </>

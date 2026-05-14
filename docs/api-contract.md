@@ -145,7 +145,7 @@ Success: `200 OK`
 ### Courses
 
 ```http
-GET /api/courses
+GET /api/courses?page=1&limit=50&search=api
 Authorization: Bearer <jwt>
 ```
 
@@ -153,7 +153,11 @@ Success:
 
 ```json
 {
-  "courses": []
+  "courses": [],
+  "page": 1,
+  "limit": 50,
+  "total": 0,
+  "hasMore": false
 }
 ```
 
@@ -315,8 +319,20 @@ Success: `201 Created`
 Admin endpoints require an authenticated user with `role === "admin"`.
 
 ```http
-GET /api/admin/users
+GET /api/admin/users?page=1&limit=50&search=ada
 Authorization: Bearer <admin-jwt>
+```
+
+Success:
+
+```json
+{
+  "users": [],
+  "page": 1,
+  "limit": 50,
+  "total": 0,
+  "hasMore": false
+}
 ```
 
 Unauthorized role response:
@@ -331,6 +347,6 @@ Unauthorized role response:
 ## Notes
 
 - The API currently uses `PUT` for several partial updates. This is documented as an existing project convention.
-- Pagination exists on high-volume surfaces such as community posts and admin moderation views.
+- Pagination exists on high-volume surfaces such as community posts, admin moderation views, admin list views, and authenticated course lists.
 - Core personal lists currently return full scoped lists because they are smaller and user-scoped.
 - Persistent state is stored in Neon PostgreSQL through Drizzle ORM. The app does not rely on local JSON files, so it is compatible with serverless deployment constraints.
