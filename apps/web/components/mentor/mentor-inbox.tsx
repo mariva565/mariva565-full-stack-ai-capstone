@@ -74,7 +74,7 @@ export function MentorInbox({ initialQuestions }: { initialQuestions: Question[]
   const questions = filter ? allQuestions.filter((q) => q.questionStatus === filter) : allQuestions;
 
   return (
-    <PageBackgroundShell contentClassName="max-w-4xl px-4 py-8 sm:px-6">
+    <PageBackgroundShell contentClassName="max-w-4xl px-4 py-8 pb-28 sm:px-6">
       {/* Header */}
       <div className="mb-8">
         <h1 className="font-shantell text-3xl font-black tracking-tight bg-v1-gradient bg-clip-text text-transparent">
@@ -86,7 +86,7 @@ export function MentorInbox({ initialQuestions }: { initialQuestions: Question[]
       </div>
 
       {/* Stats row */}
-      <div className="mb-6 grid grid-cols-3 gap-3">
+      <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
         {(["open", "answered", "closed"] as const).map((s) => (
           <button
             key={s}
@@ -123,16 +123,16 @@ export function MentorInbox({ initialQuestions }: { initialQuestions: Question[]
           {questions.map((q) => (
             <div
               key={q.id}
-              className={`rounded-2xl border bg-white/80 p-5 shadow-sm backdrop-blur-sm transition ${PREMIUM_DARK_CARD_BG} ${
+              className={`rounded-2xl border bg-white/80 p-4 shadow-sm backdrop-blur-sm transition sm:p-5 ${PREMIUM_DARK_CARD_BG} ${
                 q.questionStatus === "open"
                   ? "border-amber-200 dark:border-amber-800/60"
                   : "border-slate-200/80 dark:border-slate-700/60"
               } ${updating === q.id ? "opacity-60" : ""}`}
             >
-              <div className="flex items-start justify-between gap-4">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div className="min-w-0 flex-1">
                   {/* Meta */}
-                  <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-slate-500 dark:text-slate-400">
                     <span className="font-semibold text-slate-700 dark:text-slate-300">{q.authorName}</span>
                     <span>·</span>
                     <span>{timeAgo(q.createdAt)}</span>
@@ -160,12 +160,12 @@ export function MentorInbox({ initialQuestions }: { initialQuestions: Question[]
                 </div>
 
                 {/* Status control */}
-                <div className="flex flex-col items-end gap-2 shrink-0">
+                <div className="flex shrink-0 flex-col items-start gap-2 sm:items-end">
                   <span className={`rounded-full border px-2.5 py-0.5 text-xs font-semibold ${Q_STATUS_COLORS[q.questionStatus ?? "open"] ?? ""}`}>
                     {Q_STATUS_LABELS[q.questionStatus ?? "open"] ?? q.questionStatus}
                   </span>
 
-                  <div className="flex gap-1.5">
+                  <div className="flex flex-wrap gap-2 sm:justify-end">
                     {q.questionStatus !== "answered" && (
                       <button
                         disabled={updating === q.id}

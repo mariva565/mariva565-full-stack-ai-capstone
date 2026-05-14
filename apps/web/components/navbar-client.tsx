@@ -36,7 +36,7 @@ function LogoutIcon() {
 
 function BrandMark() {
   return (
-    <span className="relative flex h-[3.2rem] w-[3.2rem] shrink-0 items-center justify-center overflow-visible">
+    <span className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-visible sm:h-[3.2rem] sm:w-[3.2rem]">
       <span className="pointer-events-none absolute -inset-[0.08rem] rounded-full bg-[radial-gradient(circle,rgba(34,211,238,0.18)_0%,rgba(99,102,241,0.14)_34%,rgba(168,85,247,0.08)_54%,rgba(34,211,238,0)_78%)] opacity-90 blur-[19px] transition duration-300 group-hover:opacity-100 group-hover:blur-[22px]" />
       <span className="pointer-events-none absolute left-[0.28rem] top-[0.32rem] h-[1.05rem] w-[1.05rem] rounded-full bg-cyan-300/20 blur-[12px] transition duration-300 group-hover:bg-cyan-200/24" />
       <span className="pointer-events-none absolute right-[0.24rem] bottom-[0.38rem] h-[1.15rem] w-[1.15rem] rounded-full bg-violet-400/16 blur-[13px] transition duration-300 group-hover:bg-violet-300/20" />
@@ -47,7 +47,7 @@ function BrandMark() {
         width={70}
         height={93}
         priority
-        className="relative z-10 h-[3.02rem] w-auto object-contain drop-shadow-[0_8px_18px_rgba(15,23,42,0.14)] transition duration-300 group-hover:-translate-y-[1px] group-hover:scale-[1.015] dark:drop-shadow-[0_10px_22px_rgba(6,182,212,0.08)]"
+        className="relative z-10 h-10 w-auto object-contain drop-shadow-[0_8px_18px_rgba(15,23,42,0.14)] transition duration-300 group-hover:-translate-y-[1px] group-hover:scale-[1.015] dark:drop-shadow-[0_10px_22px_rgba(6,182,212,0.08)] sm:h-[3.02rem]"
       />
     </span>
   );
@@ -135,7 +135,7 @@ export function NavbarClient({ initialUser }: NavbarClientProps) {
   }
 
   function navLinkClass(active: boolean): string {
-    return `relative rounded-full px-3 py-1.5 text-sm font-medium transition ${
+    return `relative block w-full whitespace-nowrap rounded-full px-3 py-1.5 text-center text-sm font-medium transition lg:w-auto ${
       active
         ? "bg-[linear-gradient(135deg,#6366f1_0%,#8b5cf6_55%,#06b6d4_100%)] text-white shadow-[0_12px_30px_rgba(99,102,241,0.22)]"
         : "text-slate-600 hover:bg-white/70 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-900/60 dark:hover:text-white"
@@ -170,15 +170,15 @@ export function NavbarClient({ initialUser }: NavbarClientProps) {
     <header ref={headerRef} className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/80 backdrop-blur-xl dark:border-cyan-400/10 dark:bg-[linear-gradient(180deg,rgba(2,8,22,0.94)_0%,rgba(3,11,28,0.88)_100%)]">
       <nav className="font-poppins mx-auto max-w-6xl px-4 py-3 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-2">
-          <div className="flex flex-wrap items-start justify-between gap-3">
-            <Link href="/" className="group inline-flex items-center gap-3" onClick={handleLogoClick}>
+          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
+            <Link href="/" className="group inline-flex min-w-0 items-center gap-3" onClick={handleLogoClick}>
               <BrandMark />
-              <span className="inline-block bg-[linear-gradient(135deg,#8b5cf6,#ec4899)] bg-[length:100%_100%] bg-no-repeat bg-clip-text pb-[0.16em] font-shantell text-[1.6rem] font-bold leading-[1.05] text-transparent [-webkit-text-fill-color:transparent] transition-all duration-300 group-hover:-translate-y-0.5 group-hover:scale-[1.02] dark:bg-[linear-gradient(135deg,#dccbff_0%,#c79dff_48%,#f4b4da_100%)]">
+              <span className="inline-block truncate bg-[linear-gradient(135deg,#8b5cf6,#ec4899)] bg-[length:100%_100%] bg-no-repeat bg-clip-text pb-[0.16em] font-shantell text-[1.35rem] font-bold leading-[1.05] text-transparent [-webkit-text-fill-color:transparent] transition-all duration-300 group-hover:-translate-y-0.5 group-hover:scale-[1.02] dark:bg-[linear-gradient(135deg,#dccbff_0%,#c79dff_48%,#f4b4da_100%)] sm:text-[1.6rem]">
                 StudyHub
               </span>
             </Link>
 
-            <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-2">
+            <div className="flex shrink-0 items-center justify-end gap-2">
               {notificationsSupported && notificationPermission === "default" ? (
                 <button
                   type="button"
@@ -211,7 +211,7 @@ export function NavbarClient({ initialUser }: NavbarClientProps) {
                     )}
                   </span>
 
-                  <span className="hidden min-w-0 text-left sm:block">
+                  <span className="hidden min-w-0 text-left md:block">
                     <span className="block truncate text-sm font-semibold leading-4 text-slate-800 group-hover:text-brand-700 dark:text-slate-100 dark:group-hover:text-cyan-200">
                       {user?.name ?? "My Profile"}
                     </span>
@@ -233,7 +233,7 @@ export function NavbarClient({ initialUser }: NavbarClientProps) {
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2 lg:justify-end">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:flex lg:flex-wrap lg:items-center lg:justify-end">
             {coreLinks.map((link) => (
               <Link key={link.href} href={link.href} className={navLinkClass(isActive(link.href))}>
                 {link.label}
@@ -241,7 +241,7 @@ export function NavbarClient({ initialUser }: NavbarClientProps) {
             ))}
 
             {/* Visual separator between core and social groups */}
-            <span className="hidden text-slate-300 dark:text-slate-600 sm:inline" aria-hidden="true">·</span>
+            <span className="hidden text-slate-300 dark:text-slate-600 lg:inline" aria-hidden="true">·</span>
 
             {socialLinks.map((link) => (
               <Link key={link.href} href={link.href} className={navLinkClass(isActive(link.href))}>

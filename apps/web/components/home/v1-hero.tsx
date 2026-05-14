@@ -1,9 +1,13 @@
 "use client";
 
-import { Hero3D } from "./hero-3d";
+import dynamic from "next/dynamic";
 import { WaveDivider } from "./wave-divider";
 import { HeroContent } from "./hero-content";
 import { HeroMascot } from "./hero-mascot";
+
+const Hero3D = dynamic(() => import("./hero-3d").then((m) => m.Hero3D), {
+  ssr: false,
+});
 
 export function V1Hero() {
   return (

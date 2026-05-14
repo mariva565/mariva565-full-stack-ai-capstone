@@ -4,6 +4,91 @@
 
 ---
 
+## 2026-05-14
+
+### Session 357 — Navbar responsive layout fix
+
+**Какво направихме:**
+- Оправихме authenticated navbar layout-а при tablet/mobile ширини, където profile/action групата падаше под brand-а като случайно flex-wrap разместване.
+- Сменихме top row-а от wrapping flex към стабилен two-column grid: brand вляво, theme/profile/logout actions вдясно.
+- Намалихме brand mark-а и StudyHub title-а на малки екрани, за да не избутват action групата.
+- Скрихме profile name/role текста до `md`, така че mobile/tablet navbar-ът да остане компактен без да губи avatar/logout affordance.
+- Подредихме navigation links като 2-column/3-column responsive grid на mobile/tablet и запазихме flex layout-а за desktop.
+- Оправихме Admin Overview `Key Metrics` cards при тесни ширини: grid-ът вече минава 1 -> 2 -> 4 колони, card padding-ът се свива на mobile, а label/value колоната използва `min-w-0` + `truncate`, за да няма text overflow.
+- Оправихме Mentor Inbox cards при responsive ширини: content и status actions вече са stacked на mobile и side-by-side само от `sm`, така че заглавията/метаданните да не се притискат от бутоните.
+- Добавихме mobile-friendly spacing за Mentor Inbox stats row-а и допълнителен bottom padding, за да не се сблъскват последните actions с floating assistant бутона.
+
+**Файлове:**
+- [MODIFY] apps/web/components/navbar-client.tsx
+- [MODIFY] apps/web/components/admin/stats-cards.tsx
+- [MODIFY] apps/web/components/mentor/mentor-inbox.tsx
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm --workspace @studyhub/web run typecheck` -> pass
+
+**Решения:**
+- Предпочетохме стабилна grid подредба пред flex-wrap, за да изглежда responsive поведението планирано, а не разместено.
+- За metrics cards запазихме съществуващия visual design и коригирахме само layout constraints, вместо да сменяме admin overview структурата.
+- За Mentor Inbox запазихме текущия Q&A interaction model, но отделихме action controls от текстовата колона на mobile.
+- Не променяхме navbar data/auth flow-а; промяната е само layout/responsive.
+
+---
+
+## 2026-05-13
+
+### Session 355 — README polish + 3-role admin fix
+
+**Какво направихме:**
+- README: коригирахме mobile командата на `npm --workspace @studyhub/mobile run dev:mobile:lan`, добавихме "Production Build" секция с `npm run prod:web`.
+- Admin Panel — Users tab: role dropdown в Edit User модала имаше само User/Administrator. Добавихме Mentor опция (user-modal.tsx).
+- Admin Panel — Users tab: role badge click модалът (role-confirm-modal.tsx) беше binary toggle user↔admin. Пренаписахме го като radio selector с 3 роли (user / mentor / admin) с описания.
+- Role badge (role-badge.tsx) — добавихме amber стил за mentor + book иконка (преди имаше само 2 цвята).
+- Smoke test: Mentor flow (promote → assign course → Mentor Inbox → mark answered → close/reopen) — ОК.
+- Smoke test: Admin flow (Users/Members/Moderation/Materials/Activity Logs tabs) — ОК.
+- Deploy без кеш (`vercel deploy --prod --force`) — успешен.
+
+**Файлове:**
+- [MODIFY] README.md — mobile command fix, production build section
+- [MODIFY] apps/web/components/admin/user-modal.tsx — добавена mentor option в role select
+- [MODIFY] apps/web/components/admin/role-confirm-modal.tsx — пренаписан като 3-role radio selector
+- [MODIFY] apps/web/components/admin/role-badge.tsx — 3 цвята/иконки (user/mentor/admin)
+- [MODIFY] apps/web/components/admin/users-tab.tsx — confirmRoleChange приема newRole параметър
+
+**Verification:**
+- `tsc --noEmit` (web) → 0 errors
+- Vercel prod deploy — успешен
+- Mentor + Admin smoke tests — passed
+
+### Session 356 — README shared REST backend rationale
+
+**Какво направихме:**
+- Добавихме професионална архитектурна аргументация в README защо StudyHub използва Next.js API Routes / REST API като основен backend boundary за web + mobile.
+- Обяснихме, че REST contract-ът държи auth, validation, permissions, error responses и data shapes еднакви за Next.js web app, Expo mobile app, Postman и live demo.
+- Добавихме explicit note, че shared API boundary избягва дублирането на бизнес логика в отделни web-only и mobile-only paths.
+- Уточнихме, че web частта все още използва async Server Components за initial data, но mutations/mobile/file uploads/AI tools минават през shared `/api/*` endpoints.
+- Добавихме кратък README bullet за metadata strategy: root OpenGraph/Twitter defaults + `generateMetadata()` за data-driven course/module/material pages.
+- Добавихме неутрален README контекст за Social S0-S3 timeline-а от April 2026 и LMS-specific purpose-а на community/mentor/messaging слоя.
+- Добавихме Material Finder към README demo walkthrough-а за student flow-а, за да не се пропуска search-first AI функцията по време на демонстрация.
+- Добавихме AI Chatbot към README demo walkthrough-а и уточнихме `/api/ai/chat` като authenticated floating StudyHub Mentor assistant.
+- Обновихме README architecture diagram label-а от 71 на 73 API routes, за да съвпада с текущия проектен статус.
+
+**Файлове:**
+- [MODIFY] README.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Docs-only change; app typecheck/build не е пускан.
+- Focused diff mojibake scan over `README.md` and `docs/dev-log.md` -> pass
+
+**Решения:**
+- Формулирахме избора като съзнателен cross-platform backend contract, не като липса на Server Actions.
+- Подчертахме, че централизираните server-side helpers пазят auth, permissions, validation, file access rules и DB queries от разминаване между двата клиента.
+- Описахме social layer-а през вътрешния продукт и project timeline-а, без да въвеждаме външни comparison claims.
+- Не променяхме runtime архитектурата след deploy; това е documentation/defense clarification.
+
+---
+
 ## 2026-05-12
 
 ### Session 354 — Mobile: Extract Text + Metro Fixes

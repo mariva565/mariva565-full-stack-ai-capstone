@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 
 function SocialLink({
@@ -37,10 +38,12 @@ export function SiteFooter() {
     <footer className="py-12 px-8 border-t border-slate-100 bg-white mt-auto">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
         <div className="flex items-center gap-3">
-          <img
+          <Image
             src="/assets/v1/icons/mascot-logo.png"
             alt="Logo"
-            className="w-8 h-8 object-contain"
+            width={32}
+            height={32}
+            className="object-contain"
           />
           <span className="home-ink-title text-xl">Study Hub</span>
         </div>

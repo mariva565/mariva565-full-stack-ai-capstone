@@ -29,7 +29,7 @@
 <p align="center">
   <a href="#system-architecture"><img src="https://img.shields.io/badge/Architecture-System%20Overview-8B5CF6?style=flat-square" alt="Architecture" /></a>
   <a href="#database-schema"><img src="https://img.shields.io/badge/DB-Schema%20Diagram-6366F1?style=flat-square" alt="DB schema diagram" /></a>
-  <a href="#user-roles"><img src="https://img.shields.io/badge/Roles-User%20%2B%20Mentor%20%2B%20Admin-06B6D4?style=flat-square" alt="User, mentor, and admin roles" /></a>
+  <a href="#user-roles"><img src="https://img.shields.io/badge/Roles-Visitor%20%2B%20User%20%2B%20Mentor%20%2B%20Admin-06B6D4?style=flat-square" alt="Visitor, user, mentor, and admin roles" /></a>
   <a href="#demo-walkthrough"><img src="https://img.shields.io/badge/Demo-Walkthrough-8B5CF6?style=flat-square" alt="Demo walkthrough" /></a>
   <a href="#api-endpoints"><img src="https://img.shields.io/badge/API-Endpoints-6366F1?style=flat-square" alt="API endpoints" /></a>
 </p>
@@ -155,6 +155,8 @@ Most tools make you choose: Notion gives you flexibility but no structure. Googl
 | Phase 9 | File storage (Vercel Blob — avatar + material uploads) | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
 | Phase 10 | Deployment (Vercel + EAS Build) | ![In Progress](https://img.shields.io/badge/In%20Progress-F59E0B?style=flat-square) |
 
+The social layer was introduced as a dedicated April 2026 expansion: Social S0 added course membership and the mentor role, Social S1 added the Community Board, Social S2 added the Ask Mentor workflow, and Social S3 completed direct messaging and notifications. It is designed as an LMS collaboration module rather than a standalone social network: posts can be linked to courses, questions have answer status, mentors work through a course-scoped inbox, and admins moderate platform-wide content.
+
 ---
 
 ## System Architecture
@@ -166,7 +168,7 @@ graph TB
     WEB["Next.js Web App"] -->|REST API| SERVER
     MOBILE["Expo Mobile App"] -->|REST API| SERVER
 
-    subgraph SERVER["Server Layer — 71 API Routes"]
+    subgraph SERVER["Server Layer — 73 API Routes"]
         AUTH["Auth + OAuth"]
         CRUD["Courses / Modules / Materials"]
         SOCIAL["Community / Messages / Mentoring"]
@@ -179,6 +181,16 @@ graph TB
     SERVER --> PUBLIC_BLOB["Vercel Blob — Public\navatars + post images"]
     SERVER --> PRIVATE_BLOB["Vercel Blob — Private\nmaterial files"]
 ```
+
+### Backend Boundary
+
+StudyHub intentionally uses **Next.js API Routes as the primary backend boundary** because the product has two first-class clients: the Next.js web app and the Expo mobile app. Both clients communicate with the same authenticated REST contract (`/api/*`), so validation, permissions, error responses, and data shapes stay consistent across web, mobile, Postman, and the live demo.
+
+Keeping the API as the shared boundary also avoids duplicating business logic into separate web-only and mobile-only paths. The clients stay thin, while authentication checks, role permissions, validation, file access rules, and database queries remain centralized in server-side helpers.
+
+On the web, authenticated pages still use async Server Components for server-side initial data where it improves first render. Client-side mutations, realtime updates, file uploads, AI tools, and all mobile flows go through the shared REST API. The actual business/data access logic lives behind that boundary in `apps/web/lib`, then persists through Drizzle ORM to Neon PostgreSQL.
+
+This matches the capstone requirement for a client-server architecture where the React web frontend and React Native mobile client communicate with the Next.js backend through a RESTful API.
 
 ### Tech Stack
 
@@ -195,6 +207,7 @@ graph TB
 ### Rendering & Performance
 
 - Async Server Components prepare authenticated initial data on the server, then hand it to focused client shells for mutations and realtime UI.
+- Root metadata defines deployment-safe OpenGraph/Twitter defaults, while data-driven course, module, and material pages use `generateMetadata()` for page-specific titles.
 - Route-level `loading.tsx` Suspense boundaries let Next.js show immediate skeleton/loading feedback while heavier pages such as dashboard, community, messages, and admin prepare data.
 - Dynamic imports lazy-load below-the-fold landing sections, visual effects, chat, and admin tabs so the initial client bundle stays lighter.
 
@@ -293,6 +306,23 @@ sequenceDiagram
 
 ## User Roles
 
+### Visitor (unauthenticated)
+
+No account required — public pages only.
+
+| Action | Where |
+|---|---|
+| Browse landing page | `/` |
+| Read feature overview | `/how-it-works` |
+| Send contact message | `/contact` |
+| Browse API documentation | `/api-docs` |
+| Register a new account | `/register` |
+| Login | `/login` |
+| Request password reset | `/forgot-password` |
+| Set new password via reset link | `/reset-password` |
+
+Visitors are redirected to `/login` when attempting to access any protected page.
+
 ### Student (role: `user`)
 
 | Action | Where |
@@ -339,6 +369,7 @@ Admin cannot delete themselves or change their own role (self-protection enforce
 
 | Role | Web | Mobile |
 |---|---|---|
+| Visitor | 8 public pages (landing, how-it-works, contact, api-docs, auth pages) | N/A — mobile requires login |
 | Student (`user`) | Full feature set | Full feature set |
 | Mentor (`mentor`) | Full feature set + Mentor Inbox + moderation actions | Same as student — mentor-specific screens are web-only by design |
 | Admin (`admin`) | Full feature set + Admin Panel (users, members, materials, moderation, activity logs) | Same as student — admin panel is web-only by design |
@@ -540,7 +571,7 @@ Mobile intentionally ships only the student-facing flows. Mentor (`/mentor-inbox
 
 | Method | Endpoint | Description |
 |---|---|---|
-| `POST` | `/api/ai/chat` | Gemini-powered chat about material content |
+| `POST` | `/api/ai/chat` | Authenticated floating StudyHub Mentor chat assistant |
 | `POST` | `/api/ai/tools` | AI analysis tools (summarize, quiz, explain) |
 | `POST` | `/api/materials/[id]/extract-text` | Extract text from attached PDF/DOCX file (pdf-parse + mammoth) |
 | `GET` | `/api/materials/search?q=...` | Search current user's materials (title/content/tags) with ranked top matches |
@@ -624,16 +655,26 @@ Mobile intentionally ships only the student-facing flows. Mentor (`/mentor-inbox
 
 > Step-by-step guide for testing the app (for jury review).
 
+### As a Visitor (no account)
+
+1. **Landing** — open `/` and browse the animated hero, feature sections, and footer
+2. **How It Works** — go to `/how-it-works` for a visual feature overview
+3. **Contact** — go to `/contact` and submit a test message
+4. **API Docs** — go to `/api-docs` and browse the interactive endpoint documentation
+5. **Protected redirect** — try opening `/dashboard` without logging in — you should be redirected to `/login`
+
 ### As a Student
 
 1. **Register** — go to `/register`, create a new account
 2. **Dashboard** — see the empty dashboard, create your first course
 3. **Course** — open the course, add a module
 4. **Module** — open the module, add materials (text note, link)
-5. **Favorites** — bookmark a material, see it highlighted
-6. **Progress** — go to `/progress`, create a milestone, change its status
-7. **Calendar** — go to `/calendar`, create an event and expand the weather widget (current + hourly + 3-day)
-8. **Profile** — go to `/profile`, change your name and upload an avatar
+5. **Material Finder** — go to `/dashboard/material-finder`, search across your saved materials, and review ranked matches
+6. **AI Chatbot** — open the floating StudyHub Mentor assistant on an authenticated page and ask a study question
+7. **Favorites** — bookmark a material, see it highlighted
+8. **Progress** — go to `/progress`, create a milestone, change its status
+9. **Calendar** — go to `/calendar`, create an event and expand the weather widget (current + hourly + 3-day)
+10. **Profile** — go to `/profile`, change your name and upload an avatar
 
 ### As a Community Member
 

@@ -63,14 +63,14 @@ function StatCard({ label, icon, gradient, value }: {
   const display = useAnimatedCounter(value);
 
   return (
-    <div className={`group relative overflow-hidden rounded-2xl border border-white/20 bg-white/70 p-5 shadow-glass backdrop-blur-xl transition-all duration-300 hover:scale-[1.03] hover:shadow-v1-glow dark:border-slate-700/50 ${PREMIUM_DARK_CARD_BG}`}>
-      <div className="flex items-center gap-4">
+    <div className={`group relative overflow-hidden rounded-2xl border border-white/20 bg-white/70 p-4 shadow-glass backdrop-blur-xl transition-all duration-300 hover:scale-[1.03] hover:shadow-v1-glow dark:border-slate-700/50 sm:p-5 ${PREMIUM_DARK_CARD_BG}`}>
+      <div className="flex min-w-0 items-center gap-3 sm:gap-4">
         <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${gradient} text-white shadow-lg`}>
           {icon}
         </div>
-        <div>
-          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{label}</p>
-          <p className="text-2xl font-bold text-slate-900 dark:text-white">{display}</p>
+        <div className="min-w-0">
+          <p className="truncate text-sm font-semibold text-slate-500 dark:text-slate-400">{label}</p>
+          <p className="text-2xl font-bold leading-tight text-slate-900 dark:text-white">{display}</p>
         </div>
       </div>
     </div>
@@ -99,7 +99,7 @@ export function StatsCards({ initialStats }: { initialStats?: Stats }) {
   });
 
   return (
-    <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
       {CARDS.map((card) => (
         <StatCard
           key={card.key}
