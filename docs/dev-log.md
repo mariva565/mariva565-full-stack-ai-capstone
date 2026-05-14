@@ -6,6 +6,32 @@
 
 ## 2026-05-14
 
+### Session 358 — Mobile Expo/EAS deployment checklist prep
+
+**Какво направихме:**
+- Прегледахме текущата Expo mobile release конфигурация спрямо deployment плана, за да видим какво вече е подготвено за EAS build.
+- Потвърдихме, че `apps/mobile/app.json` вече има стабилен Expo identity setup: `slug`, `scheme`, Android package, iOS bundle ID и EAS `projectId`.
+- Потвърдихме, че `apps/mobile/eas.json` вече има `preview` профил с Android `apk` build, подходящ за първи installable preview artifact.
+- Добавихме практична секция `Expo / EAS Deployment Checklist (2026-05-14)` в `docs/mobile-release-checklist.md` с:
+  - текущ config snapshot
+  - pre-build env setup
+  - точни EAS команди
+  - post-build validation
+  - актуалните blockers до full mobile release signoff
+- Отбелязахме и един release hygiene detail: `apps/mobile/app.json` е `1.0.0`, а `apps/mobile/package.json` още е `0.1.0`, което е добре да се синхронизира преди финален release.
+
+**Файлове:**
+- [MODIFY] docs/mobile-release-checklist.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Docs/config review only; не е пускан typecheck/build, защото няма runtime code changes.
+- Checklist съдържанието е сверено срещу `apps/mobile/app.json`, `apps/mobile/eas.json`, `apps/mobile/.env.example` и `apps/mobile/lib/api.constants.ts`.
+
+**Решения:**
+- Запазихме Expo deploy стъпките в protected mobile release checklist-а, а не в scratch-only doc, за да останат част от реалния handoff trail.
+- Фокусът е върху `preview` APK flow-а, защото това е най-полезният next step за capstone demo/device validation.
+
 ### Session 357 — Navbar responsive layout fix
 
 **Какво направихме:**
@@ -13,7 +39,7 @@
 - Сменихме top row-а от wrapping flex към стабилен two-column grid: brand вляво, theme/profile/logout actions вдясно.
 - Намалихме brand mark-а и StudyHub title-а на малки екрани, за да не избутват action групата.
 - Скрихме profile name/role текста до `md`, така че mobile/tablet navbar-ът да остане компактен без да губи avatar/logout affordance.
-- Подредихме navigation links като 2-column/3-column responsive grid на mobile/tablet и запазихме flex layout-а за desktop.
+- Запазихме navigation links като compact wrapping chips; след кратък grid вариант върнахме chip layout-а, защото 2-column grid правеше активния линк прекалено широк на tablet/mobile.
 - Оправихме Admin Overview `Key Metrics` cards при тесни ширини: grid-ът вече минава 1 -> 2 -> 4 колони, card padding-ът се свива на mobile, а label/value колоната използва `min-w-0` + `truncate`, за да няма text overflow.
 - Оправихме Mentor Inbox cards при responsive ширини: content и status actions вече са stacked на mobile и side-by-side само от `sm`, така че заглавията/метаданните да не се притискат от бутоните.
 - Добавихме mobile-friendly spacing за Mentor Inbox stats row-а и допълнителен bottom padding, за да не се сблъскват последните actions с floating assistant бутона.
@@ -29,6 +55,7 @@
 
 **Решения:**
 - Предпочетохме стабилна grid подредба пред flex-wrap, за да изглежда responsive поведението планирано, а не разместено.
+- Ограничихме grid решението само до top row-а; link bar-ът остава flex-wrap, защото там compact chip behavior е по-подходящ.
 - За metrics cards запазихме съществуващия visual design и коригирахме само layout constraints, вместо да сменяме admin overview структурата.
 - За Mentor Inbox запазихме текущия Q&A interaction model, но отделихме action controls от текстовата колона на mobile.
 - Не променяхме navbar data/auth flow-а; промяната е само layout/responsive.
