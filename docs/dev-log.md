@@ -11795,3 +11795,101 @@ Page routes обхождат API guard-ите (зареждат директно
 - Keep CSV exports complete by lazily fetching every filtered page only when an export is requested, instead of restoring full in-memory list loading during normal browsing.
 - Keep conversations/message-history hardening as second-wave work, matching the master plan instead of widening the first mandatory slice.
 - Next exact step: continue with `Phase B2 — index audit and migrations`.
+
+### Session 385 — Expo web publication
+
+**Какво направихме:**
+- Continued from the first open mandatory item in `docs/final-release-master-plan.md`: `Phase D — Expo Web Official Deliverable`.
+- Reviewed the browser-sensitive mobile paths before publication:
+  - push registration is already skipped on web in `use-push-notifications.ts`
+  - image/document upload flows already use web-capable picker APIs plus the browser `File` path in `api.upload.ts`
+  - no broad native-only rewrite was needed before export
+- Reused the already-committed explicit Expo web config in `apps/mobile/app.json` (`web.output: "single"`).
+- Added a Netlify SPA fallback file so direct deep links resolve back to the Expo router shell:
+  - `apps/mobile/public/_redirects`
+- Built the production web export with the production backend URL and published it to Netlify:
+  - `https://studyhub-mobile-mariva.netlify.app`
+- Added the Expo web URL to the README live-demo table and synced release checklists/master plan to reflect the real state.
+
+**Файлове:**
+- [ADD] apps/mobile/public/_redirects
+- [MODIFY] .gitignore
+- [MODIFY] README.md
+- [MODIFY] docs/final-release-master-plan.md
+- [MODIFY] docs/mobile-release-checklist.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npx expo export --platform web --output-dir dist` from `apps/mobile` with production `EXPO_PUBLIC_API_URL` -> pass
+- Netlify production deploy -> pass
+- `Invoke-WebRequest https://studyhub-mobile-mariva.netlify.app` -> `200`
+- `Invoke-WebRequest https://studyhub-mobile-mariva.netlify.app/messages/123` -> `200` (SPA redirect fallback works)
+- Full authenticated Expo web smoke is still pending because demo credentials are stored outside the repository.
+
+**Решения:**
+- Keep Expo web as an explicit SPA export because the mobile app is an authenticated client with dynamic routes, and preserve deep-link behavior through Netlify redirects.
+- Do not invent or commit demo credentials just to automate the remaining manual smoke step.
+- Next exact step: perform the authenticated Expo web smoke (`login`, `courses`, `community`, `messages inbox`, `profile/logout`), then close Phase D fully.
+
+### Session 386 — Expo web CORS unblock
+
+**Какво направихме:**
+- Investigated the first live Expo web smoke failure after publication.
+- Confirmed from the browser console and middleware code that the new Netlify origin was missing from the production `ALLOWED_ORIGINS` allowlist.
+- Updated the Vercel production env value so the backend now accepts both intended live browser origins:
+  - `https://mariva565-full-stack-ai-capstone-we.vercel.app`
+  - `https://studyhub-mobile-mariva.netlify.app`
+- Force redeployed the Vercel web backend so the updated production env is active for serverless/API responses.
+
+**Файлове:**
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `OPTIONS /api/auth/login` with `Origin: https://studyhub-mobile-mariva.netlify.app` -> `204`
+- response now includes `Access-Control-Allow-Origin: https://studyhub-mobile-mariva.netlify.app`
+- `GET /api/ping` with the same `Origin` -> `200`
+- authenticated Expo web smoke still needs to be re-run manually after browser refresh
+
+**Решения:**
+- Keep the production allowlist explicit and narrow; add only the official web app origin plus the official Expo web origin.
+- Treat this as a release-environment fix, not an application-code refactor.
+- Next exact step: refresh the Expo web app and re-run the authenticated Phase D smoke.
+
+### Session 387 — Expo web Google redirect fix
+
+**Какво направихме:**
+- Investigated the live Expo web Google login failure after CORS was fixed.
+- Confirmed the web export was still using the native/mobile `auth.expo.io` redirect, which sends browser users to the old Expo proxy completion page.
+- Added shared redirect selection in `apps/mobile/lib/google-auth.ts`:
+  - Expo web uses `EXPO_PUBLIC_GOOGLE_WEB_REDIRECT_URI` or a same-origin web fallback.
+  - Native builds keep the existing Expo redirect needed for the mobile build flow.
+- Rewired both auth screens to use the shared redirect helper:
+  - `apps/mobile/components/login/use-login-screen.ts`
+  - `apps/mobile/components/register/use-register-screen.ts`
+- Added the new web redirect env placeholder to root and mobile env examples.
+- Updated release docs so Expo web Google login is an explicit smoke item and the Google Console requirements are documented:
+  - authorized JavaScript origin `https://studyhub-mobile-mariva.netlify.app`
+  - authorized redirect URI `https://studyhub-mobile-mariva.netlify.app/login`
+- Rebuilt and redeployed the official Expo web site with the production web redirect URI.
+
+**Файлове:**
+- [ADD] apps/mobile/lib/google-auth.ts
+- [MODIFY] apps/mobile/components/login/use-login-screen.ts
+- [MODIFY] apps/mobile/components/register/use-register-screen.ts
+- [MODIFY] .env.example
+- [MODIFY] apps/mobile/.env.example
+- [MODIFY] docs/final-release-master-plan.md
+- [MODIFY] docs/mobile-release-checklist.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd run typecheck:mobile` -> pass
+- `npx expo export --platform web --output-dir dist` with production redirect env -> pass
+- Netlify production redeploy -> pass
+- Published JS bundle contains `https://studyhub-mobile-mariva.netlify.app/login`
+- Published JS bundle no longer contains `https://auth.expo.io/@mariva/studyhub-v2`
+
+**Решения:**
+- Use a platform-specific redirect contract instead of forcing one mobile redirect onto both native and browser clients.
+- Keep Google Console as the remaining external dependency for the web Google-login smoke; do not claim the flow is complete until the Netlify origin and redirect URI are actually registered there and re-tested live.
+- Next exact step: add the Netlify origin + `/login` redirect URI in the Google Web OAuth client, then re-test Expo web Google login.

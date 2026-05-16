@@ -73,3 +73,6 @@ Thumbs.db
 *.tsbuildinfo
 
 .vercel
+
+# Local Netlify folder
+.netlify

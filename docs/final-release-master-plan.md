@@ -247,24 +247,33 @@ Exit criteria:
 
 ### Phase D — Expo Web Official Deliverable
 
-- [ ] Review native-only modules for browser-safe fallbacks before publishing:
+- [x] Review native-only modules for browser-safe fallbacks before publishing:
   - push notifications
   - camera/image picker
   - document picker / file handling
-- [ ] Add explicit Expo web export configuration if still missing.
-- [ ] Run:
+- [x] Add explicit Expo web export configuration if still missing.
+- [x] Run:
   - `cd apps/mobile`
   - `npx expo export --platform web --output-dir dist`
-- [ ] Deploy `apps/mobile/dist` as a static site.
-- [ ] Record the public Expo web URL.
+- [x] Deploy `apps/mobile/dist` as a static site.
+- [x] Record the public Expo web URL.
 - [ ] Smoke test:
   - login
+  - Google login
   - courses
   - community
   - messages inbox
   - profile/logout
-- [ ] Add Expo web URL to README `Live Demo`.
-- [ ] Update release docs so Expo web is not described as fallback-only anymore.
+- [x] Add Expo web URL to README `Live Demo`.
+- [x] Update release docs so Expo web is not described as fallback-only anymore.
+
+Current public Expo web URL:
+- `https://studyhub-mobile-mariva.netlify.app`
+
+Manual authenticated smoke remains pending because demo credentials are intentionally stored outside the repository.
+For Expo web Google login, the Web OAuth client must also allow:
+- JavaScript origin `https://studyhub-mobile-mariva.netlify.app`
+- Redirect URI `https://studyhub-mobile-mariva.netlify.app/login`
 
 Exit criteria:
 - The assignment has two public live URLs: web and Expo web.
@@ -280,6 +289,7 @@ Exit criteria:
 - [ ] Confirm Google OAuth production setup:
   - consent screen `Published`
   - Expo redirect URI present
+  - Expo web origin and `/login` redirect URI present
   - correct Web OAuth client ID
 - [ ] Confirm EAS env vars:
   - `EXPO_PUBLIC_API_URL`

@@ -41,6 +41,7 @@
 | Platform | Link |
 |---|---|
 | Web App | [mariva565-full-stack-ai-capstone-we.vercel.app](https://mariva565-full-stack-ai-capstone-we.vercel.app) |
+| Expo Web | [studyhub-mobile-mariva.netlify.app](https://studyhub-mobile-mariva.netlify.app) |
 | Mobile APK | `TBD — EAS Build planned` |
 
 Demo credentials: see [Demo Credentials](#demo-credentials)
