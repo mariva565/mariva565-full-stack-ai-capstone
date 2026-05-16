@@ -925,8 +925,8 @@ All endpoints respond **under 250 ms** regardless of page depth or active search
 
 ### Evidence
 
-- Neon SQL Editor row counts: [`docs/Neon_SQL_editor_screenshot.png`](docs/Neon_SQL_editor_screenshot.png)
-- Neon Tables view: [`docs/Neon_Test_Tables_screenshot.png`](docs/Neon_Test_Tables_screenshot.png)
+![Neon SQL Editor — row counts](docs/Neon_SQL_editor_screenshot.png)
+![Neon Tables view](docs/Neon_Test_Tables_screenshot.png)
 - Validation ran on a short-lived Neon branch (`stress-test`), not production.
 - Seed script: `npm run db:seed:stress` (requires `ALLOW_STRESS_SEED=true`).
 
