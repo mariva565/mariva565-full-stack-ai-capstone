@@ -886,24 +886,55 @@ Builds the Next.js app and starts it in production mode on `http://localhost:300
 
 ---
 
-## Performance Testing with Large Data
+## Scalability Validation (10 000+ records)
 
-Per course requirement, the application was tested with a high volume of records to validate pagination, filtering, and query performance under realistic load.
+Per course requirement, the application was stress-tested with a large synthetic dataset to prove that pagination, filtering, and query performance hold under realistic load.
 
-### Community Board — Load Test
+### Dataset
 
-| Metric | Result |
-|---|---|
-| Posts seeded | 150 |
-| Comments seeded | ~300 (1–4 per post) |
-| Likes seeded | ~120 |
-| Bookmarks seeded | ~30 |
-| Pagination | Server-side, 20 posts/page — Load More button |
-| Type filter at 150 posts | Instant — single indexed WHERE clause |
-| Full-text search at 150 posts | Responsive — `ILIKE` on title + content |
-| Seed script | `drizzle/seeds/community_demo.sql` |
+A deterministic seed script (`drizzle/seed-stress.ts`) generated **91,000+ rows** across 11 tables on a dedicated Neon database branch:
 
-The Load More pattern was chosen over numbered pagination for the Community Feed (social UX — Reddit/Twitter style). Numbered pagination is used in the Admin Panel tables where precise navigation matters.
+| Table | Records |
+|---|---:|
+| users | 10,014 |
+| courses | 1,008 |
+| modules | 3,017 |
+| materials | 10,064 |
+| posts | 10,165 |
+| comments | 20,392 |
+| favorites | 5,000 |
+| course_members | 2,009 |
+| post_likes | 15,000 |
+| post_bookmarks | 5,000 |
+| activity_logs | 10,000 |
+
+### API Response Times (server-side paginated, 50 items/page)
+
+| Endpoint | Total Records | Page | Response Time |
+|---|---:|---:|---:|
+| `GET /api/admin/users` | 10,014 | 1 | 131 ms |
+| `GET /api/admin/users` (deep page) | 10,014 | 200 | 165 ms |
+| `GET /api/admin/users?search=stress` | 10,000 | 1 | 132 ms |
+| `GET /api/admin/courses` | 1,008 | 1 | 135 ms |
+| `GET /api/admin/modules` | 3,017 | 1 | 186 ms |
+| `GET /api/admin/materials` | 10,064 | 1 | 155 ms |
+| `GET /api/admin/materials` (deep page) | 10,064 | 200 | 153 ms |
+| `GET /api/admin/members` | 2,009 | 1 | 247 ms |
+
+All endpoints respond **under 250 ms** regardless of page depth or active search filters.
+
+### Evidence
+
+- Neon SQL Editor row counts: [`docs/Neon_SQL_editor_screenshot.png`](docs/Neon_SQL_editor_screenshot.png)
+- Neon Tables view: [`docs/Neon_Test_Tables_screenshot.png`](docs/Neon_Test_Tables_screenshot.png)
+- Validation ran on a short-lived Neon branch (`stress-test`), not production.
+- Seed script: `npm run db:seed:stress` (requires `ALLOW_STRESS_SEED=true`).
+
+### Pagination Strategy
+
+- **Admin Panel**: numbered server-side pagination with `page`, `limit`, `total`, `hasMore` metadata — suited for precise data navigation.
+- **Community Feed**: Load More pattern (social UX — Reddit/Twitter style) with server-side `OFFSET`/`LIMIT`.
+- **7 btree indexes** added via Drizzle migration to support the paginated queries.
 
 ---
 

@@ -6,14 +6,17 @@
 
 ## 2026-05-16
 
-### Session 360 — B1 review, B2 indexes, C1 stress tooling
+### Session 360 — Phase B2 indexes + Phase C stress validation (complete)
 
 **Какво направихме:**
 - Прегледахме работата на Codex по Phase B1 (server-side pagination на 6 admin API route-а + frontend tab компоненти). Код review: архитектурата е чиста и консистентна, pagination utils са споделени, search/filter е изнесен server-side с Drizzle `ilike()`, няма security проблеми.
-- Phase B2: добавихме 7 липсващи индекса в `drizzle/schema.ts`: `modules.course_id`, `modules.created_by`, `materials.module_id`, `materials.created_by`, `comments.post_id`, `course_members.user_id`, `activity_logs.created_at`.
-- Генерирахме Drizzle миграция `0008_add-pagination-indexes.sql` с 7-те CREATE INDEX statement-а. Ръчно махнахме дублирания `CREATE TABLE password_reset_tokens` (вече мигриран в `0011`), запазихме snapshot-а коректен.
-- Phase C1: създадохме `drizzle/seed-stress.ts` — stress seed скрипт с 86k+ реда за scalability validation. Един precomputed bcrypt hash, batch по 500, deterministic LCG RNG, `stress-` префикс, FK-respecting insert order, dedup за unique constraint таблици.
-- Добавихме `db:seed:stress` npm скрипт.
+- Phase B2: добавихме 7 липсващи индекса в `drizzle/schema.ts`: `modules.course_id`, `modules.created_by`, `materials.module_id`, `materials.created_by`, `comments.post_id`, `course_members.user_id`, `activity_logs.created_at`. Генерирахме Drizzle миграция `0008_add-pagination-indexes.sql`.
+- Phase C1: създадохме `drizzle/seed-stress.ts` — stress seed скрипт с 91k+ реда. Един precomputed bcrypt hash, batch по 500, deterministic LCG RNG, `stress-` префикс, FK-respecting insert order, dedup за unique constraint таблици.
+- Phase C2/C3: пуснахме seed-а срещу Neon branch `stress-test`. 91,000 реда за 17.3 секунди, 0.69 CU-hrs branch compute.
+- Phase C4: валидирахме всички paginated admin endpoints — всички под 250ms при 10k+ записи. Deep pagination (page 200) без деградация. Search филтри работят коректно.
+- Скрийншотове от Neon SQL Editor и Tables view записани в `docs/`.
+- Обновихме README — замених старата секция "Performance Testing with Large Data" (150 posts) с "Scalability Validation (10 000+ records)" с пълна таблица на dataset-а, API timings и evidence линкове.
+- Маркирахме Phase B2 и Phase C (C1–C4) като завършени в `docs/final-release-master-plan.md`.
 - Оправихме merge conflict в `docs/dev-log.md` от по-ранен merge.
 
 **Файлове:**
@@ -23,20 +26,26 @@
 - [MODIFY] drizzle/migrations/meta/_journal.json
 - [NEW] drizzle/seed-stress.ts
 - [MODIFY] package.json — db:seed:stress скрипт
+- [MODIFY] README.md — scalability validation секция с 10k+ evidence
+- [MODIFY] docs/final-release-master-plan.md — B2 + C1–C4 checked
+- [NEW] docs/Neon_SQL_editor_screenshot.png
+- [NEW] docs/Neon_Test_Tables_screenshot.png
 - [MODIFY] docs/dev-log.md — conflict fix + session 360
 
 **Verification:**
 - `npm run typecheck` -> pass (web, mobile, shared)
 - `npm run check:mojibake` -> pass
 - `npm run build:web` -> pass
+- Stress seed: 91,000 rows in 17.3s on Neon branch
+- All paginated API endpoints < 250ms with 10k+ records
 
 **Решения:**
-- Не пускаме миграцията срещу production сега — тя ще се приложи при следващия deploy или ръчно преди stress test.
-- `password_reset_tokens` остава извън Drizzle journal-а (мигрирана ръчно в `0011`), но е в snapshot-а, така че бъдещи generate няма да я дублират.
-- Stress seed-ът е готов за C2/C3 — чака Neon branch `stress-test`.
+- Stress branch изтрит след събиране на evidence (0.69 CU-hrs от 5-часов branch лимит).
+- `password_reset_tokens` остава извън Drizzle journal-а (мигрирана ръчно в `0011`), но е в snapshot-а — бъдещи generate няма да я дублират.
+- Индексната миграция ще се приложи към production при следващия deploy.
 
 **Следваща стъпка:**
-- Създай Neon branch `stress-test`, пусни seed-а, събери evidence (C2/C3/C4).
+- Phase D — Expo Web Official Deliverable.
 
 ---
 

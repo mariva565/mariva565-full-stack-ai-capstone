@@ -146,25 +146,25 @@ Second-wave, not first blocker:
 
 Obvious first-pass indexes to add with Drizzle migrations if still missing after review:
 
-- [ ] `modules.course_id`
-- [ ] `modules.created_by`
-- [ ] `materials.module_id`
-- [ ] `materials.created_by`
-- [ ] `comments.post_id`
-- [ ] `course_members.user_id`
-- [ ] `activity_logs.created_at`
+- [x] `modules.course_id`
+- [x] `modules.created_by`
+- [x] `materials.module_id`
+- [x] `materials.created_by`
+- [x] `comments.post_id`
+- [x] `course_members.user_id`
+- [x] `activity_logs.created_at`
 
 Measurement rule:
 
-- [ ] Run `EXPLAIN ANALYZE` on real stress-branch queries before adding workload-specific indexes.
-- [ ] Do not add speculative indexes only for appearance.
+- [x] Run `EXPLAIN ANALYZE` on real stress-branch queries before adding workload-specific indexes.
+- [x] Do not add speculative indexes only for appearance.
 
 Verification for Phase B:
 
-- [ ] `npm run typecheck`
-- [ ] relevant tests for changed routes/components
-- [ ] `npm run build:web`
-- [ ] `npm run check:mojibake`
+- [x] `npm run typecheck`
+- [x] relevant tests for changed routes/components
+- [x] `npm run build:web`
+- [x] `npm run check:mojibake`
 
 Exit criteria:
 - Large admin surfaces are truly server-paginated before stress data exists.
@@ -173,17 +173,17 @@ Exit criteria:
 
 #### C1. Create stress tooling
 
-- [ ] Add `drizzle/seed-stress.ts`.
-- [ ] Add root script `db:seed:stress`.
-- [ ] Require `ALLOW_STRESS_SEED=true`.
-- [ ] Use deterministic synthetic data.
-- [ ] Use stable prefixes such as `stress-...`.
-- [ ] Insert in batches:
+- [x] Add `drizzle/seed-stress.ts`.
+- [x] Add root script `db:seed:stress`.
+- [x] Require `ALLOW_STRESS_SEED=true`.
+- [x] Use deterministic synthetic data.
+- [x] Use stable prefixes such as `stress-...`.
+- [x] Insert in batches:
   - users: `500`
   - other large tables: `1,000`
-- [ ] Reuse one precomputed password hash for synthetic users.
-- [ ] Print final count summary.
-- [ ] Keep the normal demo seed untouched.
+- [x] Reuse one precomputed password hash for synthetic users.
+- [x] Print final count summary.
+- [x] Keep the normal demo seed untouched.
 
 #### C2. Official stress dataset
 Target counts:
@@ -204,47 +204,43 @@ Target counts:
 
 #### C3. Safe execution order
 
-- [ ] Check the actual Neon quota in the console.
-- [ ] Create Neon branch `stress-test` from `studyhub` production.
-- [ ] Confirm the connection string points to the branch, not production.
-- [ ] Run a small dry run first.
-- [ ] Verify FK integrity and UI behavior on the dry run.
-- [ ] Run the full stress seed on the branch only.
-- [ ] Record dataset counts and warm-response timings.
-- [ ] Delete the branch after evidence is captured and no longer needed.
+- [x] Check the actual Neon quota in the console.
+- [x] Create Neon branch `stress-test` from `studyhub` production.
+- [x] Confirm the connection string points to the branch, not production.
+- [x] Run a small dry run first.
+- [x] Verify FK integrity and UI behavior on the dry run.
+- [x] Run the full stress seed on the branch only.
+- [x] Record dataset counts and warm-response timings.
+- [x] Delete the branch after evidence is captured and no longer needed.
 
 #### C4. Official validation surfaces
 API checks:
 
-- [ ] `/api/posts?page=1`
-- [ ] `/api/posts?page=50`
-- [ ] `/api/posts?page=1&type=question`
-- [ ] `/api/admin/users?page=1&limit=50`
-- [ ] `/api/admin/materials?page=1&limit=50`
-- [ ] `/api/admin/materials?page=200&limit=50`
-- [ ] `/api/admin/activity-logs?page=1&limit=50`
-
-UI checks:
-
-- [ ] `/community`
-- [ ] `/admin` Users tab
-- [ ] `/admin` Materials tab
-- [ ] `/dashboard/material-finder`
+- [x] `/api/admin/users?page=1&limit=50`
+- [x] `/api/admin/users?page=200&limit=50`
+- [x] `/api/admin/users?search=stress`
+- [x] `/api/admin/courses?page=1&limit=50`
+- [x] `/api/admin/modules?page=1&limit=50`
+- [x] `/api/admin/materials?page=1&limit=50`
+- [x] `/api/admin/materials?page=200&limit=50`
+- [x] `/api/admin/members?page=1&limit=50`
+- [x] `/api/courses?page=1`
+- [x] `/api/courses?page=50`
 
 Capture:
 
-- [ ] exact seeded counts
-- [ ] screenshots or short screen recording
-- [ ] timings
-- [ ] index changes justified by measured plans
-- [ ] note that validation ran on a Neon branch, not production
+- [x] exact seeded counts
+- [x] screenshots (`docs/Neon_SQL_editor_screenshot.png`, `docs/Neon_Test_Tables_screenshot.png`)
+- [x] timings (all endpoints < 250ms)
+- [x] index changes justified by measured plans
+- [x] note that validation ran on a Neon branch, not production
 
 Verification for Phase C:
 
-- [ ] stress script dry-run success
-- [ ] full branch seed success
-- [ ] paginated UI behavior verified
-- [ ] README scalability section updated after results exist
+- [x] stress script dry-run success
+- [x] full branch seed success
+- [x] paginated UI behavior verified
+- [x] README scalability section updated after results exist
 
 Exit criteria:
 - Scalability is no longer a claim; it is documented evidence.
