@@ -51,7 +51,10 @@ export const modules = pgTable("modules", {
   createdBy: integer("created_by")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
-});
+}, (table) => [
+  index("modules_course_id_idx").on(table.courseId),
+  index("modules_created_by_idx").on(table.createdBy),
+]);
 
 // 4. materials
 export const materials = pgTable("materials", {
@@ -70,7 +73,10 @@ export const materials = pgTable("materials", {
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   createdAt: timestamp("created_at").notNull().defaultNow(),
-});
+}, (table) => [
+  index("materials_module_id_idx").on(table.moduleId),
+  index("materials_created_by_idx").on(table.createdBy),
+]);
 
 // 5. favorites
 export const favorites = pgTable(

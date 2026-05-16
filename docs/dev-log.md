@@ -6,6 +6,7 @@
 
 ## 2026-05-14
 
+<<<<<<< HEAD
 ### Session 359 — Security release readiness pass
 
 **Какво направихме:**
@@ -33,6 +34,8 @@
 - Не форсирахме `npm audit fix --force`, защото npm предлага breaking downgrade/change path за moderate `postcss` advisory през Next/Expo.
 - Не маркирахме CSP като завършен release blocker; оставяме го staged, защото може да счупи OAuth/Pusher/Blob/Expo потоците без отделен smoke pass.
 
+=======
+>>>>>>> 98bdcf9ce35c3372c5551fb1144f8fa33f5b8410
 ### Session 358 — Mobile Expo/EAS deployment checklist prep
 
 **Какво направихме:**
