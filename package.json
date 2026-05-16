@@ -23,6 +23,7 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:seed": "tsx drizzle/seed.ts",
+    "db:seed:stress": "tsx drizzle/seed-stress.ts",
     "dev:mobile": "npm --workspace @studyhub/mobile run start",
     "dev:mobile:tunnel": "npm --workspace @studyhub/mobile run start -- --tunnel -c",
     "dev:mobile:lan": "npm --workspace @studyhub/mobile run start -- --host lan",

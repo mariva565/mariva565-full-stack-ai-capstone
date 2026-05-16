@@ -4,9 +4,44 @@
 
 ---
 
+## 2026-05-16
+
+### Session 360 — B1 review, B2 indexes, C1 stress tooling
+
+**Какво направихме:**
+- Прегледахме работата на Codex по Phase B1 (server-side pagination на 6 admin API route-а + frontend tab компоненти). Код review: архитектурата е чиста и консистентна, pagination utils са споделени, search/filter е изнесен server-side с Drizzle `ilike()`, няма security проблеми.
+- Phase B2: добавихме 7 липсващи индекса в `drizzle/schema.ts`: `modules.course_id`, `modules.created_by`, `materials.module_id`, `materials.created_by`, `comments.post_id`, `course_members.user_id`, `activity_logs.created_at`.
+- Генерирахме Drizzle миграция `0008_add-pagination-indexes.sql` с 7-те CREATE INDEX statement-а. Ръчно махнахме дублирания `CREATE TABLE password_reset_tokens` (вече мигриран в `0011`), запазихме snapshot-а коректен.
+- Phase C1: създадохме `drizzle/seed-stress.ts` — stress seed скрипт с 86k+ реда за scalability validation. Един precomputed bcrypt hash, batch по 500, deterministic LCG RNG, `stress-` префикс, FK-respecting insert order, dedup за unique constraint таблици.
+- Добавихме `db:seed:stress` npm скрипт.
+- Оправихме merge conflict в `docs/dev-log.md` от по-ранен merge.
+
+**Файлове:**
+- [MODIFY] drizzle/schema.ts — 7 нови индекса
+- [NEW] drizzle/migrations/0008_add-pagination-indexes.sql
+- [NEW] drizzle/migrations/meta/0008_snapshot.json
+- [MODIFY] drizzle/migrations/meta/_journal.json
+- [NEW] drizzle/seed-stress.ts
+- [MODIFY] package.json — db:seed:stress скрипт
+- [MODIFY] docs/dev-log.md — conflict fix + session 360
+
+**Verification:**
+- `npm run typecheck` -> pass (web, mobile, shared)
+- `npm run check:mojibake` -> pass
+- `npm run build:web` -> pass
+
+**Решения:**
+- Не пускаме миграцията срещу production сега — тя ще се приложи при следващия deploy или ръчно преди stress test.
+- `password_reset_tokens` остава извън Drizzle journal-а (мигрирана ръчно в `0011`), но е в snapshot-а, така че бъдещи generate няма да я дублират.
+- Stress seed-ът е готов за C2/C3 — чака Neon branch `stress-test`.
+
+**Следваща стъпка:**
+- Създай Neon branch `stress-test`, пусни seed-а, събери evidence (C2/C3/C4).
+
+---
+
 ## 2026-05-14
 
-<<<<<<< HEAD
 ### Session 359 — Security release readiness pass
 
 **Какво направихме:**
@@ -33,9 +68,6 @@
 - Текущият security pass покрива web production release readiness; Expo/EAS остава следващата стъпка чрез mobile release checklist-а.
 - Не форсирахме `npm audit fix --force`, защото npm предлага breaking downgrade/change path за moderate `postcss` advisory през Next/Expo.
 - Не маркирахме CSP като завършен release blocker; оставяме го staged, защото може да счупи OAuth/Pusher/Blob/Expo потоците без отделен smoke pass.
-
-=======
->>>>>>> 98bdcf9ce35c3372c5551fb1144f8fa33f5b8410
 ### Session 358 — Mobile Expo/EAS deployment checklist prep
 
 **Какво направихме:**
