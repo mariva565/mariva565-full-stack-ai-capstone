@@ -51,7 +51,10 @@ export const modules = pgTable("modules", {
   createdBy: integer("created_by")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
-});
+}, (table) => [
+  index("modules_course_id_idx").on(table.courseId),
+  index("modules_created_by_idx").on(table.createdBy),
+]);
 
 // 4. materials
 export const materials = pgTable("materials", {
@@ -70,7 +73,10 @@ export const materials = pgTable("materials", {
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   createdAt: timestamp("created_at").notNull().defaultNow(),
-});
+}, (table) => [
+  index("materials_module_id_idx").on(table.moduleId),
+  index("materials_created_by_idx").on(table.createdBy),
+]);
 
 // 5. favorites
 export const favorites = pgTable(
@@ -153,7 +159,9 @@ export const activityLogs = pgTable("activity_logs", {
   targetId: integer("target_id"),
   details: jsonb("details"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
-});
+}, (table) => [
+  index("activity_logs_created_at_idx").on(table.createdAt),
+]);
 
 // 9. course_members
 export const courseMembers = pgTable(
@@ -171,6 +179,7 @@ export const courseMembers = pgTable(
   },
   (table) => [
     uniqueIndex("course_members_course_user_idx").on(table.courseId, table.userId),
+    index("course_members_user_id_idx").on(table.userId),
   ]
 );
 
@@ -200,6 +209,7 @@ export const comments = pgTable("comments", {
   content: text("content").notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 }, (table) => [
+  index("comments_post_id_idx").on(table.postId),
   index("comments_author_id_idx").on(table.authorId),
 ]);
 

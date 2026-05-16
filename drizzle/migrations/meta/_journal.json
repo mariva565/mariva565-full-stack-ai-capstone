@@ -57,6 +57,13 @@
       "when": 1776779887409,
       "tag": "0007_fat_menace",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1778938303274,
+      "tag": "0008_add-pagination-indexes",
+      "breakpoints": true
     }
   ]
 }
