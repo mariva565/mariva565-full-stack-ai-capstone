@@ -11893,3 +11893,55 @@ Page routes обхождат API guard-ите (зареждат директно
 - Use a platform-specific redirect contract instead of forcing one mobile redirect onto both native and browser clients.
 - Keep Google Console as the remaining external dependency for the web Google-login smoke; do not claim the flow is complete until the Netlify origin and redirect URI are actually registered there and re-tested live.
 - Next exact step: add the Netlify origin + `/login` redirect URI in the Google Web OAuth client, then re-test Expo web Google login.
+
+### Session 388 — Expo web smoke signoff
+
+**Какво направихме:**
+- Completed the remaining live Expo web smoke after the CORS and Google redirect fixes were deployed.
+- Confirmed the official Expo web deliverable now passes the release smoke path:
+  - email/password login
+  - Google login
+  - courses
+  - community
+  - messages inbox
+  - profile/logout
+- Marked the Phase D smoke item complete in the release master plan and mobile release checklist.
+
+**Файлове:**
+- [MODIFY] docs/final-release-master-plan.md
+- [MODIFY] docs/mobile-release-checklist.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Manual live smoke on `https://studyhub-mobile-mariva.netlify.app` -> pass
+- `npm run check:mojibake` -> pass
+
+**Решения:**
+- Treat `Phase D — Expo Web Official Deliverable` as complete.
+- Next exact step: continue with `Phase E — Native Mobile / APK Deliverable`.
+
+### Session 389 — Mobile release metadata alignment
+
+**Какво направихме:**
+- Continued from the first actionable unchecked item in `Phase E — Native Mobile / APK Deliverable`.
+- Aligned the mobile package metadata with the already-final Expo app metadata:
+  - `apps/mobile/app.json` was already at release version `1.0.0`
+  - `apps/mobile/package.json` now also uses `1.0.0`
+- Synced the related lockfiles and marked the version-alignment checklist item complete in the release docs.
+
+**Файлове:**
+- [MODIFY] apps/mobile/package.json
+- [MODIFY] apps/mobile/package-lock.json
+- [MODIFY] package-lock.json
+- [MODIFY] docs/final-release-master-plan.md
+- [MODIFY] docs/mobile-release-checklist.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd run typecheck:mobile` -> pass
+- `npm run check:mojibake` -> pass
+
+**Решения:**
+- Keep `1.0.0` as the first final-release mobile version and leave Android `versionCode` at `1` until an actual APK rebuild requires incrementing it.
+- Do not mark the remaining `Phase E` pre-build items complete without checking the live production/EAS/Google consoles.
+- Next exact step: confirm `EXPO_PUBLIC_API_URL`, Google OAuth production setup, and EAS preview env values before starting the APK build.

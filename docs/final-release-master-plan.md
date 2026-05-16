@@ -257,7 +257,7 @@ Exit criteria:
   - `npx expo export --platform web --output-dir dist`
 - [x] Deploy `apps/mobile/dist` as a static site.
 - [x] Record the public Expo web URL.
-- [ ] Smoke test:
+- [x] Smoke test:
   - login
   - Google login
   - courses
@@ -270,7 +270,6 @@ Exit criteria:
 Current public Expo web URL:
 - `https://studyhub-mobile-mariva.netlify.app`
 
-Manual authenticated smoke remains pending because demo credentials are intentionally stored outside the repository.
 For Expo web Google login, the Web OAuth client must also allow:
 - JavaScript origin `https://studyhub-mobile-mariva.netlify.app`
 - Redirect URI `https://studyhub-mobile-mariva.netlify.app/login`
@@ -282,7 +281,7 @@ Exit criteria:
 
 #### E1. Pre-build setup
 
-- [ ] Align version metadata if needed:
+- [x] Align version metadata if needed:
   - `apps/mobile/app.json`
   - `apps/mobile/package.json`
 - [ ] Confirm `EXPO_PUBLIC_API_URL` points to production.
