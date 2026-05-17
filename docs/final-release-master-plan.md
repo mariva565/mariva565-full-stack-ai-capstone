@@ -19,24 +19,18 @@ Before starting a new session, read:
 ## Current Snapshot
 ### Already done
 - Web production deployment is live.
+- Expo web deployment is live.
 - Production Drizzle migrations are applied.
 - Security audit is complete.
 - Web production smoke passed for auth, OAuth, Blob, AI, community, admin, password reset, and headers.
 - Core mobile scope is implemented.
-- Mobile smoke rows `SMK-01` through `SMK-20` are `PASS`.
+- Mobile smoke rows `SMK-01` through `SMK-23` are `PASS`.
+- Android APK build, device validation, GitHub Release upload, and README link are complete.
 - README, architecture diagrams, API docs, AGENTS, and repo hygiene had a strong pre-deploy pass.
 
 ### Still open
-- Final-assignment scalability proof:
-  - true server-side pagination on remaining large admin collections
-  - official 10k+ stress validation dataset and results
-- Android APK build, device validation, GitHub Release upload, and README link.
-- Physical-device message push validation:
-  - `SMK-21`
-  - `SMK-22`
-  - `SMK-23`
-- Final README/release docs update after all live URLs and artifact links exist.
 - Final release review, tag/release hygiene, and demo-freeze checks.
+- Final documentation closeout for any still-true limitations plus supporting-doc sync.
 
 ## Priority Model
 ### Mandatory for the updated assignment
@@ -315,20 +309,20 @@ Exit criteria:
 - [x] `eas build --platform android --profile preview`
 - [x] If rebuilding after fixes, increment Android `versionCode`.
 - [x] Download APK from EAS.
-- [ ] Create GitHub Release and upload APK.
-- [ ] Add APK link to README.
+- [x] Create GitHub Release and upload APK.
+- [x] Add APK link to README.
 
 #### E3. Physical-device validation
 
-- [ ] Install APK on a real Android phone.
-- [ ] Login/register against production backend.
-- [ ] Google login on device.
-- [ ] Avatar upload.
-- [ ] Material upload/download.
-- [ ] Community post create/like/bookmark.
-- [ ] Run `SMK-21`, `SMK-22`, `SMK-23` with two accounts after the Firebase/FCM-enabled APK registers a fresh native push token.
-- [ ] Re-test notification deep-link back navigation after the local replacement-navigation fix lands in the next rebuilt APK.
-- [ ] Update:
+- [x] Install APK on a real Android phone.
+- [x] Login/register against production backend.
+- [x] Google login on device.
+- [x] Avatar upload.
+- [x] Material upload/download.
+- [x] Community post create/like/bookmark.
+- [x] Run `SMK-21`, `SMK-22`, `SMK-23` with two accounts after the Firebase/FCM-enabled APK registers a fresh native push token.
+- [x] Re-test notification deep-link back navigation after the local replacement-navigation fix lands in the next rebuilt APK.
+- [x] Update:
   - `docs/mobile-smoke-test-matrix.md`
   - `docs/mobile-release-checklist.md`
   - `docs/dev-log.md`
@@ -340,12 +334,12 @@ Exit criteria:
 
 #### F1. README final pass
 
-- [ ] Add Expo web live URL.
-- [ ] Add APK release link in the README `Releases` section.
-- [ ] Update commits badge.
-- [ ] Mark Phase 10 `Done` only when all release deliverables are complete.
-- [ ] Replace old 150-post load-test section with official 10k+ validation results.
-- [ ] Document the final deployment package:
+- [x] Add Expo web live URL.
+- [x] Add APK release link in the README `Releases` section.
+- [x] Update commits badge.
+- [x] Mark Phase 10 `Done` only when all release deliverables are complete.
+- [x] Replace old 150-post load-test section with official 10k+ validation results.
+- [x] Document the final deployment package:
   - web URL
   - Expo web URL
   - APK link
@@ -353,11 +347,11 @@ Exit criteria:
 
 #### F2. Supporting docs
 
-- [ ] Update `docs/implementation-plan.md` final statuses if needed.
-- [ ] Update `docs/mobile-release-checklist.md`.
-- [ ] Update `docs/mobile-smoke-test-matrix.md`.
-- [ ] Keep `docs/security-release-readiness.md` aligned with final release metadata.
-- [ ] Update `AGENTS.md` counts/status only if shipped scope changes.
+- [x] Update `docs/implementation-plan.md` final statuses if needed.
+- [x] Update `docs/mobile-release-checklist.md`.
+- [x] Update `docs/mobile-smoke-test-matrix.md`.
+- [x] Keep `docs/security-release-readiness.md` aligned with final release metadata.
+- [x] Update `AGENTS.md` counts/status only if shipped scope changes.
 
 #### F3. Final repo hygiene
 
@@ -426,6 +420,7 @@ Only after Phases B through F are complete:
 - [ ] Add owner-only message deletion with a clear deleted-state treatment.
 - [ ] Add owner-only message editing with an `edited` indicator.
 - [ ] Wire the message actions end-to-end across API, realtime updates, web, and mobile before considering them shipped.
+- [ ] Fix the mobile empty-thread composer layout so the input stays above the keyboard even before the first message is sent.
 
 ## Session Handoff Template
 At the end of every session, append to `docs/dev-log.md`:

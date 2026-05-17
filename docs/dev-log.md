@@ -13158,3 +13158,180 @@ Page routes обхождат API guard-ите (зареждат директно
 **Решения:**
 - Treat this as a release blocker because it breaks ordinary manual login and new-user registration.
 - Use build `12` only to finish the already-needed notification-loop observation before deciding when to spend the next Android build slot.
+
+### Session 434 — Empty-thread composer keyboard follow-up
+
+**Какво направихме:**
+- Investigated new build-12 device feedback for the direct-message composer:
+  - before the first message in an empty thread, the keyboard still covers the composer
+  - after one message exists, the same screen reflows correctly
+- Fixed the empty-thread layout path by making the message-list content fill the available vertical space from the first render and align to the bottom.
+
+**Файлове:**
+- [MODIFY] apps/mobile/components/messages/messages.styles.ts
+- [MODIFY] docs/mobile-smoke-test-matrix.md
+- [MODIFY] docs/mobile-execution-checklist.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- User device report on build `12` -> composer hidden only before the first message
+- `npm --workspace @studyhub/mobile run typecheck` -> pass
+- `npm run check:mojibake` -> pass
+
+**Решения:**
+- Treat empty and non-empty threads as the same height contract so keyboard behavior does not change after the first message.
+- Carry this into the next rebuilt-APK retest set together with the auth password-field fix and push notification validation.
+
+### Session 435 — Build 13 readiness lock
+
+**Какво направихме:**
+- Froze the next Android candidate scope to the already found release fixes only:
+  - auth manual-password entry repair
+  - empty-thread composer keyboard repair
+  - previously queued notification back-stack repair
+- Incremented Expo Android `versionCode` from `10` to `11` for the next APK rebuild.
+
+**Файлове:**
+- [MODIFY] apps/mobile/app.json
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Source review confirmed the local auth and empty-thread composer fixes are present in the next build candidate.
+
+**Решения:**
+- Stop expanding scope before the next rebuild; use build `13` only to verify the known blocker set.
+
+### Session 436 — Build 13 launched
+
+**Какво направихме:**
+- Built the locked Android retest candidate after user approval:
+  - EAS build `ff1de579-0c0b-415d-9399-e13cbc43c1da`
+  - Android `versionCode: 11`
+  - direct APK artifact generated successfully
+- Synced the mobile release docs so build `13` is now the active physical-device candidate.
+
+**Файлове:**
+- [MODIFY] apps/mobile/app.json
+- [MODIFY] docs/mobile-release-checklist.md
+- [MODIFY] docs/mobile-smoke-test-matrix.md
+- [MODIFY] docs/mobile-execution-checklist.md
+- [MODIFY] docs/security-release-readiness.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm --workspace @studyhub/mobile run typecheck` -> pass
+- `npx expo config --type public --json` -> confirms Android `versionCode: 11`
+- `npm run check:mojibake` -> pass
+- `eas build --platform android --profile preview --non-interactive` -> finished successfully
+- `eas build:view ff1de579-0c0b-415d-9399-e13cbc43c1da --json` -> confirms `FINISHED`, Android `appBuildVersion: 11`, and generated APK artifact
+
+**Решения:**
+- Keep build `13` as the locked retest candidate and stop adding new mobile scope until the known blocker set is rechecked on device.
+
+### Session 437 — Build 13 device retest closeout
+
+**Какво направихме:**
+- Captured the physical-device retest results for build `13`:
+  - manual password entry on login works
+  - manual password entry on register works
+  - notification tap opens the thread and back navigation now exits correctly
+  - remaining push scenarios were reported working
+- Reclassified the mobile release state:
+  - `SMK-01`, `SMK-03`, and `SMK-21`..`SMK-23` are back to `PASS`
+  - the only remaining known mobile issue is a non-blocking UX quirk in an empty message thread before the first sent message
+
+**Файлове:**
+- [MODIFY] docs/mobile-smoke-test-matrix.md
+- [MODIFY] docs/mobile-release-checklist.md
+- [MODIFY] docs/mobile-execution-checklist.md
+- [MODIFY] docs/security-release-readiness.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- User physical-device report on build `13` -> auth password entry pass, notification tap/back pass, remaining push checks pass
+
+**Решения:**
+- Accept build `13` for now instead of spending another scarce Android build slot on the residual first-message composer layout quirk.
+- Keep the composer issue documented for later polish if another rebuild becomes necessary for a stronger reason.
+
+### Session 438 — Residual composer issue parked
+
+**Какво направихме:**
+- Added the remaining empty-thread composer keyboard issue to the post-release `Messaging polish` backlog in the final master plan.
+
+**Файлове:**
+- [MODIFY] docs/final-release-master-plan.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Documentation-only update
+
+**Решения:**
+- Keep the issue visible for later work without reopening the accepted build-13 release scope.
+
+### Session 439 — README and APK release publication
+
+**Какво направихме:**
+- Published the accepted Android APK as a GitHub Release artifact:
+  - release tag `v1.0.0`
+  - asset `StudyHub-v1.0.0-android.apk`
+- Downloaded the final APK artifact locally and recorded SHA-256:
+  - `1D9418906073860818F60CFB808B96DFA76852865F7B6DF8B91DEA8FB71E233B`
+- Updated `README.md` to reflect the delivered mobile release:
+  - live Android APK link
+  - release link
+  - commit badge updated to `346+`
+  - mobile screen count corrected from `21` to `23`
+  - mobile highlights and demo walkthrough expanded with AI chat, PDF extraction, AI summary, QR handoff, sent/seen states, and push notifications
+- Synced release planning docs now that the APK deliverable and README link are complete.
+
+**Файлове:**
+- [MODIFY] README.md
+- [MODIFY] docs/final-release-master-plan.md
+- [MODIFY] docs/mobile-release-checklist.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `gh release create v1.0.0 ...` -> GitHub Release published
+- `gh release view v1.0.0 --json ...` -> confirms uploaded APK asset and digest
+- Local APK SHA-256 -> `1D9418906073860818F60CFB808B96DFA76852865F7B6DF8B91DEA8FB71E233B`
+
+**Решения:**
+- Use the GitHub Release APK link in README as the durable public deliverable link instead of the temporary EAS artifact URL.
+- Correct the README mobile screen count to match the shipped user-facing routes now that AI Chatbot and Public Profile are included.
+
+### Session 440 — Expo web release docs closeout
+
+**Какво направихме:**
+- Re-read the active release handoff docs and verified that the live Expo web deployment itself is already healthy:
+  - Netlify root responds successfully
+  - direct Expo Router deep links resolve through the SPA fallback
+  - the production backend accepts the official Expo web origin through CORS
+- Closed the stale documentation gap left after the Expo web and APK delivery work:
+  - marked Phase 10 deployment complete in the public project status surfaces
+  - updated the assignment-locked implementation plan to reflect completed deployment/device validation
+  - synced the mobile release checklist with the accepted build-13 APK, completed Expo web OAuth confirmation, and published APK artifact
+  - aligned security release readiness with the final live deployment package
+
+**Файлове:**
+- [MODIFY] AGENTS.md
+- [MODIFY] README.md
+- [MODIFY] docs/implementation-plan.md
+- [MODIFY] docs/mobile-release-checklist.md
+- [MODIFY] docs/security-release-readiness.md
+- [MODIFY] docs/final-release-master-plan.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `Invoke-WebRequest https://studyhub-mobile-mariva.netlify.app` -> `200`
+- `Invoke-WebRequest https://studyhub-mobile-mariva.netlify.app/messages/123` -> `200`
+- `OPTIONS /api/auth/login` with `Origin: https://studyhub-mobile-mariva.netlify.app` -> `204`
+- `GET /api/ping` with the same origin -> `200`
+- `npm run check:mojibake` -> pass
+- `npm run typecheck` -> pass
+- `npm run build:web` -> pass; known non-blocking `jose` Edge Runtime warnings remain
+- `npm run deps:audit:runtime` -> pass at high threshold; existing moderate `postcss` advisories remain tracked
+
+**Решения:**
+- Treat the remaining work after the Expo web fix as release-truth synchronization, not a new runtime bug.
+- Keep the residual empty-thread composer issue documented as non-blocking post-release polish while Phase 10 itself is considered complete.

@@ -18,12 +18,12 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/Status-Complete-22C55E?style=flat-square" alt="Status complete" />
-  <img src="https://img.shields.io/badge/Commits-310%2B-22C55E?style=flat-square" alt="310 plus commits" />
+  <img src="https://img.shields.io/badge/Commits-346%2B-22C55E?style=flat-square" alt="346 plus commits" />
   <img src="https://img.shields.io/badge/TypeScript-Strict%20Mode-6366F1?style=flat-square" alt="TypeScript strict mode" />
   <img src="https://img.shields.io/badge/Tables-21-8B5CF6?style=flat-square" alt="21 database tables" />
   <img src="https://img.shields.io/badge/API-73%20routes-06B6D4?style=flat-square" alt="73 API routes" />
   <img src="https://img.shields.io/badge/Web-28%20pages-6366F1?style=flat-square" alt="28 web pages" />
-  <img src="https://img.shields.io/badge/Mobile-21%20screens-8B5CF6?style=flat-square" alt="21 mobile screens" />
+  <img src="https://img.shields.io/badge/Mobile-23%20screens-8B5CF6?style=flat-square" alt="23 mobile screens" />
 </p>
 
 <p align="center">
@@ -63,7 +63,7 @@
 |---|---|
 | Web App | [mariva565-full-stack-ai-capstone-we.vercel.app](https://mariva565-full-stack-ai-capstone-we.vercel.app) |
 | Expo Web | [studyhub-mobile-mariva.netlify.app](https://studyhub-mobile-mariva.netlify.app) |
-| Mobile APK | `TBD — EAS Build planned` |
+| Mobile APK | [StudyHub-v1.0.0-android.apk](https://github.com/mariva565/mariva565-full-stack-ai-capstone/releases/download/v1.0.0/StudyHub-v1.0.0-android.apk) |
 
 Demo credentials: see [Demo Credentials](#demo-credentials)
 
@@ -71,7 +71,7 @@ Demo credentials: see [Demo Credentials](#demo-credentials)
 
 | Artifact | Link |
 |---|---|
-| Android APK | `TBD - GitHub Release after final device validation` |
+| Android APK | [v1.0.0 release](https://github.com/mariva565/mariva565-full-stack-ai-capstone/releases/tag/v1.0.0) |
 
 ## Product Preview
 
@@ -145,6 +145,13 @@ Demo credentials: see [Demo Credentials](#demo-credentials)
 
 <video src="https://github.com/user-attachments/assets/4af18559-7e62-4ce6-9d9a-f30d5bf6656e" controls width="320"></video>
 
+### Mobile release highlights
+
+- Native Android APK with production auth, Google login, camera/QR handoff, and profile/avatar flows
+- Courses, modules, materials, favorites, community, and direct messaging on the same shared backend
+- Direct-message sent/seen states, unread badges, and Expo push notifications with deep-link handling
+- AI chatbot, PDF text extraction into notes, AI summaries, and material AI tools on mobile
+
 ---
 
 ## About the Project
@@ -181,7 +188,7 @@ Most tools make you choose: Notion gives you flexibility but no structure. Googl
 | Social S2 | Ask Mentor — Q&A workflow with Mentor Inbox | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
 | Social S3 | Messaging + notifications (web inbox/chat, mobile inbox/thread, browser + mobile push) | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
 | Phase 9 | File storage (Vercel Blob — avatar + material uploads) | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
-| Phase 10 | Deployment (Vercel + EAS Build) | ![In Progress](https://img.shields.io/badge/In%20Progress-F59E0B?style=flat-square) |
+| Phase 10 | Deployment (Vercel + Netlify Expo web + EAS Build) | ![Done](https://img.shields.io/badge/Done-22C55E?style=flat-square) |
 
 The social layer was introduced as a dedicated April 2026 expansion: Social S0 added course membership and the mentor role, Social S1 added the Community Board, Social S2 added the Ask Mentor workflow, and Social S3 completed direct messaging and notifications. It is designed as an LMS collaboration module rather than a standalone social network: posts can be linked to courses, questions have answer status, mentors work through a course-scoped inbox, and admins moderate platform-wide content.
 
@@ -506,7 +513,7 @@ erDiagram
 | 27 | `/forbidden` | 403 access denied page | Auto-redirect |
 | 28 | `/dev/error-preview` | Error boundary testing (dev-only, noindex) | Dev |
 
-### Mobile — 21 screens
+### Mobile — 23 screens
 
 | # | Screen | Description |
 |---|---|---|
@@ -515,7 +522,7 @@ erDiagram
 | 3 | Courses (tab) | Course list with create/edit/delete actions |
 | 4 | Community (tab) | Feed with filters/search + inbox CTA + new post CTA |
 | 5 | Favorites (tab) | Pinned materials list with quick navigation |
-| 6 | Profile (tab) | Profile details + edit name + logout |
+| 6 | Profile (tab) | Current signed-in user, avatar/name edit, and logout |
 | 7 | Create Course | Add a new course |
 | 8 | Course Detail | Manage modules inside a selected course |
 | 9 | Edit Course | Update course title/description |
@@ -528,9 +535,11 @@ erDiagram
 | 16 | Community Post Details | Read rich content + comments + direct message CTA |
 | 17 | Community Create Post | Create post with type/course selectors |
 | 18 | Messages Inbox | Conversation list with unread state and pull-to-refresh |
-| 19 | Message Thread | 1:1 thread with send + auto refetch + unread sync |
+| 19 | Message Thread | 1:1 thread with send, sent/seen receipts, push deep links, and unread sync |
 | 20 | Settings | Theme/debug/support actions |
-| 21 | AI Tools (Material) | Mobile material AI tools entry point |
+| 21 | AI Tools (Material) | Summaries, quizzes, and PDF-to-note text extraction entry point |
+| 22 | AI Chatbot | StudyHub Mentor chat assistant |
+| 23 | Public Profile | QR-opened profile handoff and direct-message entry point |
 
 The mobile app connects to the **same Next.js backend** — no separate API needed.
 
@@ -745,10 +754,13 @@ Mobile intentionally ships only the student-facing flows. Mentor (`/mentor-inbox
 3. **Courses tab** — browse courses, pull-to-refresh, open CRUD actions
 4. **Community tab** — browse/filter posts, open details, create post
 5. **Messages inbox** — open `/messages`, verify unread indicators
-6. **Message thread** — open a conversation and send/receive messages
-7. **Module Workspace** — manage materials with search/type filters
-8. **Material Detail** — open links/files and verify tags/content
-9. **Profile tab** — edit user name and logout
+6. **Message thread** — open a conversation, send/receive messages, and verify sent/seen states
+7. **Push notifications** — receive a message alert, tap into the thread, and return to inbox
+8. **Module Workspace** — manage materials with search/type filters
+9. **Material Detail** — open links/files, extract PDF text into a note, and run AI summary
+10. **AI Chatbot** — ask the mobile StudyHub Mentor assistant a study question
+11. **QR handoff** — scan a profile QR code and start a direct message
+12. **Profile tab** — confirm the signed-in user, edit avatar/name, and logout
 
 ---
 
@@ -905,9 +917,9 @@ Builds the Next.js app and starts it in production mode on `http://localhost:300
 | Backend | Supabase (BaaS) | Next.js API Routes (custom) |
 | Auth | Supabase Auth (GoTrue) | Custom JWT + Google OAuth |
 | Database | Supabase PostgreSQL (6 tables) | Neon PostgreSQL + Drizzle ORM (21 tables) |
-| Mobile | None | React Native + Expo + tabs/CRUD/community/messages + push-ready notifications |
+| Mobile | None | React Native + Expo + CRUD/community/messages + AI tools + push notifications |
 | File structure | Single app, monolithic files | Monorepo + modular components (<300 LOC each)* |
-| Deployment | Netlify + Vercel (dual) | Vercel (monorepo) |
+| Deployment | Netlify + Vercel (dual) | Vercel web + Netlify Expo web + EAS Build APK |
 | Security | RLS + CSP + MFA (partial) | JWT guards + middleware + role-based endpoints |
 
 > **\*** A few files intentionally exceed 300 lines: `drizzle/schema.ts` (367 — single-file FK contract), `milestone-timeline-item.tsx` (340 — AnimatePresence context), `ai-tools-panel.tsx` (320 — tightly coupled AI tool tabs), `hero-3d.tsx` (310 — Three.js scene), `members-tab.tsx` (309 — admin data table). All other files stay under 300 LOC.

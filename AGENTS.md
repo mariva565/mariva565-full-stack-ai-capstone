@@ -8,14 +8,14 @@ This is a capstone project for the SoftUni "Full Stack Apps with AI" course.
 It is a rewrite of a previous project (StudyHub v1, Vanilla JS + Supabase) using a completely new tech stack.
 The old project should be used **only as a visual/logical reference** — no code should be copied.
 
-## Current Status (2026-05-12)
+## Current Status (2026-05-17)
 
 - **Phases 0–9:** Complete (foundation, auth, CRUD, AI tools, social, mobile, admin, UI polish, Vercel Blob storage)
-- **Phase 10 (Deployment):** In progress — DB migrations applied, Vercel deploy next
+- **Phase 10 (Deployment):** Complete — Vercel web, Netlify Expo web, and GitHub Release APK are live
 - **Social features:** S0–S3 shipped (community board, mentor Q&A, direct messaging, push notifications)
 - **Security audit (#52):** Complete — 14 findings closed across 3 rounds (5 HIGH + 8 MEDIUM + 1 LOW)
 - **Mobile:** Auth, Courses, Favorites, Community, Messages, Push notifications, AI tools — all working
-- **28 web pages, 73 API routes, 21 DB tables, 312+ commits**
+- **28 web pages, 73 API routes, 21 DB tables, 346+ commits**
 
 ## Tech Stack (mandatory)
 
@@ -203,7 +203,7 @@ Out-of-scope on mobile for this capstone:
 Current mobile quality-gate status:
 - `SMK-01` through `SMK-20`: PASS
 - `SMK-20` accessibility sanity: PASS (VoiceOver/TalkBack sanity verification completed)
-- `SMK-21` through `SMK-23` (messages push foreground/background/cold-start): BLOCKED in terminal-only runs; requires physical-device validation
+- `SMK-21` through `SMK-23` (messages push foreground/background/cold-start): PASS on build `13`
 - Sentry telemetry integration: DONE and validated (`SENTRY_TEST_EVENT` received in Sentry Issues, test trigger removed)
 
 ## Key Rules

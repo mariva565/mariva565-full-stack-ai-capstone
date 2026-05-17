@@ -8,11 +8,11 @@ Neon/Drizzle, Vercel Blob, Expo, Pusher, and Gemini.
 
 | Field | Value |
 | --- | --- |
-| Date | 2026-05-14 |
+| Date | 2026-05-17 |
 | Branch | `main` |
-| Commit | `98bdcf9` |
+| Commit | `dc018a9` |
 | Checked by | Codex |
-| Target | Vercel production web + EAS preview APK preparation |
+| Target | Vercel production web + Netlify Expo web + GitHub Release APK |
 
 ## Required Gates
 
@@ -23,13 +23,13 @@ Neon/Drizzle, Vercel Blob, Expo, Pusher, and Gemini.
 - [x] Any skipped mobile physical-device checks are documented with reason and follow-up.
 - [x] No `.env`, `.env.local`, secrets, tokens, screenshots, or logs with secrets are included in git.
 
-Current pass notes (2026-05-14):
+Current pass notes (2026-05-17):
 - `npm run check:mojibake` -> pass.
 - `npm run typecheck` -> pass for web, mobile, and shared workspaces.
 - `npm run build:web` -> pass. Build still emits the known non-blocking `jose` Edge Runtime warnings through `lib/jwt.ts`.
 - `npm run deps:audit:runtime` -> pass at high threshold. Remaining output is moderate `postcss` advisories through Next/Expo; npm suggests a breaking forced fix, so this remains tracked but non-blocking for the capstone demo.
 - `git ls-files | rg '(^|/)\.env(\.|$)'` -> only `.env.example` and `apps/mobile/.env.example` are tracked.
-- Mobile physical-device push checks are documented as pending in `docs/mobile-release-checklist.md` and `docs/mobile-execution-checklist.md` (`SMK-21`..`SMK-23`); the concrete open prerequisite is native Android Firebase/FCM setup for the standalone APK.
+- Mobile physical-device push checks passed on build `13`; `SMK-21`..`SMK-23` are now recorded as `PASS` in `docs/mobile-release-checklist.md` and `docs/mobile-smoke-test-matrix.md`.
 
 ## Web/API Security Checks
 
@@ -117,8 +117,10 @@ Mobile push note (2026-05-17):
 - Build `11` / `versionCode 9` was generated with the Firebase config, but device testing found:
   - `testapk@test.test` initially showed stale registration evidence, but later received the manual push probe and the following two real message notifications
   - notification tap navigation reached the thread, but back navigation looped; a local fix is prepared for the next rebuild
-- Build `12` / `versionCode 10` is now generated with that navigation fix included.
-- `SMK-21`..`SMK-23` therefore remain blocked because the delivery path is alive but the rebuilt notification-tap behavior still needs physical-device validation.
+- Build `12` / `versionCode 10` included that navigation fix but exposed manual-password-entry and empty-thread composer regressions during follow-up testing.
+- Build `13` / `versionCode 11` is now generated with the navigation fix plus those follow-up mobile fixes included.
+- Build `13` device retest passed manual password entry, notification tap/back navigation, and `SMK-21`..`SMK-23`.
+- One residual non-blocking mobile UX issue remains documented: in an empty thread, the composer is still covered by the keyboard before the first message only.
 
 ## Dependency Review
 
