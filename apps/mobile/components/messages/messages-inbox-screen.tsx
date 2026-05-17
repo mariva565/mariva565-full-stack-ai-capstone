@@ -12,9 +12,11 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme, useThemedStyles } from "../../lib/app-preferences";
 import { RequestState } from "../request-state";
 import { BrandedSpinner } from "../branded-spinner";
+import { QrScannerScreen } from "../profile-tab/qr-scanner-screen";
 import { makeMessagesStyles } from "./messages.styles";
 import { useMessagesInbox } from "./use-messages-inbox";
 import type { ConversationListItem } from "./messages.types";
+import { useState } from "react";
 
 function getInitials(name: string): string {
   return name
@@ -40,24 +42,49 @@ export function MessagesInboxScreen() {
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
   const styles = useThemedStyles(makeMessagesStyles);
+  const [scannerOpen, setScannerOpen] = useState(false);
   const { conversations, loading, refreshing, error, refresh } =
     useMessagesInbox();
 
   const listHeader = useMemo(
     () => (
-      <View style={[styles.header, { paddingTop: Math.max(insets.top + 12, 56) }]}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => router.back()}
-          accessibilityRole="button"
-          accessibilityLabel="Go back"
-        >
-          <Ionicons name="arrow-back" size={20} color={colors.textPrimary} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Inbox</Text>
+      <View>
+        <View style={[styles.header, { paddingTop: Math.max(insets.top + 12, 56) }]}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => router.back()}
+            accessibilityRole="button"
+            accessibilityLabel="Go back"
+          >
+            <Ionicons name="arrow-back" size={20} color={colors.textPrimary} />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Inbox</Text>
+        </View>
+
+        <View style={styles.startChatRow}>
+          <TouchableOpacity
+            style={styles.startChatAction}
+            onPress={() => setScannerOpen(true)}
+            accessibilityRole="button"
+            accessibilityLabel="Scan QR code to start a chat"
+          >
+            <Ionicons name="qr-code-outline" size={22} color={colors.brandPrimary} />
+            <Text style={styles.startChatActionText}>Scan QR</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.startChatAction}
+            onPress={() => router.push("/community")}
+            accessibilityRole="button"
+            accessibilityLabel="Open community to find someone to message"
+          >
+            <Ionicons name="people-outline" size={22} color={colors.brandPrimary} />
+            <Text style={styles.startChatActionText}>Community</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     ),
-    [colors.textPrimary, insets.top, router, styles]
+    [colors.brandPrimary, colors.textPrimary, insets.top, router, styles]
   );
 
   function openThread(conversationId: number) {
@@ -136,7 +163,7 @@ export function MessagesInboxScreen() {
           <RequestState
             icon="\u{1F4AC}"
             title="No conversations yet"
-            subtitle="Open a community post and tap message to start."
+            subtitle="Use the buttons above to start a chat."
           />
         }
         contentContainerStyle={[
@@ -152,6 +179,7 @@ export function MessagesInboxScreen() {
           />
         }
       />
+      <QrScannerScreen visible={scannerOpen} onClose={() => setScannerOpen(false)} />
     </View>
   );
 }

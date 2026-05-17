@@ -12676,3 +12676,48 @@ Page routes обхождат API guard-ите (зареждат директно
 - Mark native Google login as passed.
 - Do not trigger another APK build for the message-composer keyboard issue by itself while only `5` Android build slots remain.
 - Carry this local fix into the next build only if a separate release blocker already requires one.
+
+### Session 415 — Community refresh-loop fix
+
+**Какво направихме:**
+- Investigated the user's report that a refresh spinner remained visible at the top of the Community screen.
+- Found a local state/query bug in `use-community-feed.ts`:
+  - `feedQueryKey` was recreated as a new array every render
+  - that unstable array was used in the `useFocusEffect` callback dependency list
+  - while focused, the screen could repeatedly invalidate and refetch itself
+- Memoized `feedQueryKey` by `postType` so focus invalidation runs only when the actual filter changes or focus changes.
+
+**Файлове:**
+- [MODIFY] apps/mobile/components/community/use-community-feed.ts
+- [MODIFY] docs/mobile-smoke-test-matrix.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Code inspection -> unstable query-key identity was the only Community-screen path that could continuously retrigger the feed refresh indicator without user action
+
+**Решения:**
+- Treat the Community spinner as a real bug, not expected background refresh behavior.
+- Keep the fix local for now and do not spend another Android build slot solely for this polish issue.
+
+### Session 416 — Inbox conversation-start discoverability
+
+**Какво направихме:**
+- Addressed second-tester feedback that `Inbox` looked like the place to begin messaging but gave no obvious way to start.
+- Added an always-visible start-chat action row to the mobile inbox:
+  - `Scan QR` with QR icon
+  - `Community` with people icon
+- Reused the existing QR scanner modal directly from Inbox and kept the Community route as the other existing entry path.
+- Simplified the empty-state copy so it refers to the visible actions instead of teaching a hidden path through posts.
+
+**Файлове:**
+- [MODIFY] apps/mobile/components/messages/messages-inbox-screen.tsx
+- [MODIFY] apps/mobile/components/messages/messages.styles.ts
+- [MODIFY] docs/mobile-smoke-test-matrix.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Code review -> Inbox now exposes both existing conversation-start paths without introducing new backend behavior
+
+**Решения:**
+- Prefer obvious icon-plus-label actions over relying on users to remember that chats can only begin from a post or QR handoff.
+- Keep the fix local for now; it belongs in the next build only if another blocker already requires one.

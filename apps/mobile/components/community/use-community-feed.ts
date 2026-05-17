@@ -1,6 +1,6 @@
 import { useFocusEffect } from "@react-navigation/native";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { apiFetch } from "../../lib/api";
 
 export type Post = {
@@ -26,7 +26,10 @@ export type CommunityPostTypeFilter =
 
 export function useCommunityFeed(postType: CommunityPostTypeFilter) {
   const queryClient = useQueryClient();
-  const feedQueryKey = ["community", "feed", postType] as const;
+  const feedQueryKey = useMemo(
+    () => ["community", "feed", postType] as const,
+    [postType]
+  );
 
   const query = useQuery({
     queryKey: feedQueryKey,
