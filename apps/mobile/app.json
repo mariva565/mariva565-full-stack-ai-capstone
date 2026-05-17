@@ -19,11 +19,11 @@
     "android": {
       "package": "com.studyhub.mobile",
       "scheme": "com.studyhub.mobile",
-      "versionCode": 9,
+      "versionCode": 10,
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/branding/adaptive-icon-foreground.png",
-        "backgroundColor": "#f8f6ff"
+        "backgroundColor": "#ece9ff"
       },
       "permissions": [
         "android.permission.CAMERA",

@@ -112,7 +112,13 @@ function MessageBubble({
   );
 }
 
-export function MessageThreadScreen({ conversationId }: { conversationId: number }) {
+export function MessageThreadScreen({
+  conversationId,
+  openedFromNotification = false,
+}: {
+  conversationId: number;
+  openedFromNotification?: boolean;
+}) {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
@@ -158,6 +164,14 @@ export function MessageThreadScreen({ conversationId }: { conversationId: number
     setInput("");
   }
 
+  function handleBack() {
+    if (openedFromNotification) {
+      router.replace("/messages");
+      return;
+    }
+    router.back();
+  }
+
   if (!Number.isInteger(conversationId) || conversationId <= 0) {
     return (
       <View style={styles.container}>
@@ -200,7 +214,7 @@ export function MessageThreadScreen({ conversationId }: { conversationId: number
       <View style={[styles.header, { paddingTop: Math.max(insets.top + 12, 56) }]}>
         <TouchableOpacity
           style={styles.backButton}
-          onPress={() => router.back()}
+          onPress={handleBack}
           accessibilityRole="button"
           accessibilityLabel="Go back"
         >

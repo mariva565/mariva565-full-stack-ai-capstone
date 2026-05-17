@@ -4,7 +4,13 @@ import { COLORS } from "../../lib/colors";
 
 export const styles = StyleSheet.create({
   gradient: { flex: 1 },
-  container: { flex: 1, justifyContent: "center", paddingHorizontal: 24, paddingVertical: 24 },
+  container: { flex: 1 },
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: "center",
+    paddingHorizontal: 24,
+    paddingVertical: 24,
+  },
   card: {
     width: "100%",
     maxWidth: 430,
@@ -48,21 +54,24 @@ export const styles = StyleSheet.create({
     color: COLORS.textPrimary,
   },
   passwordField: {
-    flexDirection: "row",
-    alignItems: "center",
+    position: "relative",
+  },
+  passwordInput: {
     backgroundColor: COLORS.surfaceSoft,
     borderWidth: 1.5,
     borderColor: COLORS.borderMuted,
     borderRadius: 12,
-  },
-  passwordInput: {
-    flex: 1,
     paddingLeft: 16,
+    paddingRight: 56,
     paddingVertical: 14,
     fontSize: 16,
     color: COLORS.textPrimary,
   },
   passwordToggle: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    bottom: 0,
     width: 48,
     alignItems: "center",
     justifyContent: "center",

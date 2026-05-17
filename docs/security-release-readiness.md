@@ -114,7 +114,11 @@ Mobile push note (2026-05-17):
 - Native Android Firebase/FCM setup is now complete for the next standalone APK:
   - `apps/mobile/google-services.json` and `android.googleServicesFile` are in place
   - EAS Credentials shows an FCM V1 service-account key for Firebase project `studyhub-56b8a`
-- `SMK-21`..`SMK-23` remain blocked only until a fresh FCM-enabled APK is built and validated on physical devices.
+- Build `11` / `versionCode 9` was generated with the Firebase config, but device testing found:
+  - `testapk@test.test` initially showed stale registration evidence, but later received the manual push probe and the following two real message notifications
+  - notification tap navigation reached the thread, but back navigation looped; a local fix is prepared for the next rebuild
+- Build `12` / `versionCode 10` is now generated with that navigation fix included.
+- `SMK-21`..`SMK-23` therefore remain blocked because the delivery path is alive but the rebuilt notification-tap behavior still needs physical-device validation.
 
 ## Dependency Review
 

@@ -129,6 +129,8 @@ export function makeMessagesStyles(colors: AppColors) {
       flex: 1,
     },
     threadContent: {
+      flexGrow: 1,
+      justifyContent: "flex-end",
       paddingHorizontal: 14,
       paddingVertical: 14,
       gap: 10,

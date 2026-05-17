@@ -85,14 +85,12 @@ function PasswordField({ viewModel }: RegisterScreenProps) {
   return (
     <View style={styles.inputGroup}>
       <Text style={styles.inputLabel}>Password</Text>
-      <View
-        style={[
-          styles.passwordField,
-          viewModel.focusedField === "password" && styles.inputFocused,
-        ]}
-      >
+      <View style={styles.passwordField}>
         <TextInput
-          style={styles.passwordInput}
+          style={[
+            styles.passwordInput,
+            viewModel.focusedField === "password" && styles.inputFocused,
+          ]}
           placeholder="Min. 6 characters"
           placeholderTextColor={COLORS.textMuted}
           value={viewModel.password}

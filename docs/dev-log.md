@@ -13014,3 +13014,147 @@ Page routes обхождат API guard-ите (зареждат директно
 **Решения:**
 - Keep the toggle local to each password field instead of widening the auth view-model surface for a tiny UI-only state.
 - Queue this for the next necessary rebuild rather than spending a fresh Android build slot only for a small auth polish item.
+
+### Session 429 — Notification deep-link back-stack fix
+
+**Какво направихме:**
+- Investigated the first real build-11 push test results:
+  - `testapk@test.test` initially appeared not to receive notifications
+  - tapping a received message notification on the other device opened the thread but back navigation looped instead of leaving the chat
+- Confirmed the back-stack bug source in mobile notification handling:
+  - both the live response listener and `getLastNotificationResponseAsync()` could process the same notification
+  - both used `router.push`, creating stacked copies of the same message thread
+- Fixed the mobile notification path:
+  - dedupe handled notification IDs
+  - clear the consumed last notification response
+  - use `router.replace` for notification-driven navigation
+  - tag message threads opened from notifications and make their back button return to `/messages`
+- Queried production token state and confirmed `testapk@test.test` still has no fresh post-build-11 registration timestamp, which matches the Sentry push-registration failure and explains the missing delivery on that account.
+- Follow-up device evidence changed the delivery diagnosis:
+  - the manual `StudyHub push check` probe later arrived on `testapk`
+  - the next two real message notifications also arrived there
+  - so the push delivery path is alive on build `11`; the confirmed remaining blocker is the notification-tap navigation behavior
+
+**Файлове:**
+- [MODIFY] apps/mobile/lib/use-push-notifications.ts
+- [MODIFY] apps/mobile/app/messages/[id].tsx
+- [MODIFY] apps/mobile/components/messages/message-thread-screen.tsx
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Production DB read for `testapk@test.test` -> only one active Android token, last seen before build 11
+- Manual Expo push ticket + receipt for `testapk@test.test` token -> `ok`
+- User device report -> manual probe plus the following two real message notifications arrived on `testapk`
+- Static code trace -> duplicate notification response handling could stack identical thread routes
+- `npm --workspace @studyhub/mobile run typecheck` -> pass after the navigation fix
+
+**Решения:**
+- Treat notification taps as replacement navigation into a destination, not as another ordinary push onto the stack.
+- Keep the transient registration/Sentry signal on the watch list, but do not describe build `11` as a delivery failure after real device notifications arrived successfully.
+
+### Session 430 — Adaptive icon background refinement
+
+**Какво направихме:**
+- Compared the existing transparent mascot foreground against several background options using the real asset, not a regenerated mascot.
+- Selected a softer lavender adaptive-icon background and updated Android config:
+  - from `#f8f6ff`
+  - to `#ece9ff`
+
+**Файлове:**
+- [MODIFY] apps/mobile/app.json
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Visual review against the real `adaptive-icon-foreground.png` asset
+
+**Решения:**
+- Keep the mascot unchanged and modernize only the background treatment so the phone icon gains a little more contrast without changing brand character.
+
+### Session 431 — Build 12 readiness prep
+
+**Какво направихме:**
+- Prepared the next Android rebuild by incrementing Expo Android `versionCode` from `9` to `10`.
+- Synced the mobile release docs with the current truth:
+  - Firebase/FCM setup is complete
+  - build `11` proved real push delivery
+  - the remaining mobile blocker is the notification-tap back-navigation loop, already fixed locally and awaiting rebuilt-APK validation
+
+**Файлове:**
+- [MODIFY] apps/mobile/app.json
+- [MODIFY] docs/mobile-release-checklist.md
+- [MODIFY] docs/mobile-smoke-test-matrix.md
+- [MODIFY] docs/mobile-execution-checklist.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm --workspace @studyhub/mobile run typecheck` -> pass
+- `npx expo config --type public --json` -> confirms `StudyHub`, `versionCode: 10`, Firebase config, and adaptive icon background `#ece9ff`
+- `npm run check:mojibake` -> pass
+
+**Решения:**
+- Build `12` is justified because it carries a confirmed user-blocking navigation fix after notification taps, plus already-queued low-risk polish.
+- Do not spend the build slot until the user explicitly says to launch the rebuild.
+
+### Session 432 — Build 12 launched and messaging polish parked
+
+**Какво направихме:**
+- Added a post-release messaging-polish backlog item to the master plan for:
+  - owner-only message deletion
+  - owner-only message editing with `edited` state
+  - full API/realtime/web/mobile follow-through before shipping
+- Built the next Android preview APK after user approval:
+  - EAS build `8a5de602-d2cc-46f5-8cd2-250e9bac14d4`
+  - Android `versionCode: 10`
+  - direct APK artifact generated successfully
+- Synced the mobile release docs so they now describe the new candidate as built and awaiting physical-device verification rather than still waiting for a rebuild.
+
+**Файлове:**
+- [MODIFY] docs/final-release-master-plan.md
+- [MODIFY] docs/mobile-release-checklist.md
+- [MODIFY] docs/mobile-smoke-test-matrix.md
+- [MODIFY] docs/mobile-execution-checklist.md
+- [MODIFY] docs/security-release-readiness.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `eas whoami` -> authenticated as `mariva`
+- `eas build --platform android --profile preview --non-interactive` -> finished successfully
+- `eas build:view 8a5de602-d2cc-46f5-8cd2-250e9bac14d4 --json` -> confirms `FINISHED`, Android `appBuildVersion: 10`, and generated APK artifact
+
+**Решения:**
+- Keep message edit/delete as post-release polish rather than widening the release candidate immediately before push verification.
+- Treat build `12` as the active physical-device candidate for the remaining message-push checks and notification back-navigation retest.
+
+### Session 433 — Auth password-field regression fix
+
+**Какво направихме:**
+- Investigated the first post-build-12 auth feedback:
+  - login works only with a saved password
+  - manual password entry cannot be focused
+  - register shows the same issue
+- Narrowed the regression to the shared password eye-toggle treatment used on both auth forms.
+- Fixed the local UI structure:
+  - restored the password `TextInput` as the full-width touch target
+  - kept the eye toggle as an absolutely positioned trailing button
+  - made the login form scrollable under the keyboard, matching the already scrollable register form
+- Reclassified the current build state:
+  - build `12` is useful only for narrow notification-loop observation
+  - it is not an acceptable release candidate until the auth fix is rebuilt and retested
+
+**Файлове:**
+- [MODIFY] apps/mobile/components/login/login-screen.tsx
+- [MODIFY] apps/mobile/components/login/login-screen.styles.ts
+- [MODIFY] apps/mobile/components/register/register-screen.tsx
+- [MODIFY] apps/mobile/components/register/register-screen.styles.ts
+- [MODIFY] docs/mobile-smoke-test-matrix.md
+- [MODIFY] docs/mobile-release-checklist.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- User device report on build `12` -> manual password entry blocked on login and register
+- `npm --workspace @studyhub/mobile run typecheck` -> pass
+- `npm run check:mojibake` -> pass
+
+**Решения:**
+- Treat this as a release blocker because it breaks ordinary manual login and new-user registration.
+- Use build `12` only to finish the already-needed notification-loop observation before deciding when to spend the next Android build slot.

@@ -327,6 +327,7 @@ Exit criteria:
 - [ ] Material upload/download.
 - [ ] Community post create/like/bookmark.
 - [ ] Run `SMK-21`, `SMK-22`, `SMK-23` with two accounts after the Firebase/FCM-enabled APK registers a fresh native push token.
+- [ ] Re-test notification deep-link back navigation after the local replacement-navigation fix lands in the next rebuilt APK.
 - [ ] Update:
   - `docs/mobile-smoke-test-matrix.md`
   - `docs/mobile-release-checklist.md`
@@ -419,6 +420,12 @@ Only after Phases B through F are complete:
 ### Automated backups
 
 - [ ] Explicitly post-defense unless the instructor requests them.
+
+### Messaging polish
+
+- [ ] Add owner-only message deletion with a clear deleted-state treatment.
+- [ ] Add owner-only message editing with an `edited` indicator.
+- [ ] Wire the message actions end-to-end across API, realtime updates, web, and mobile before considering them shipped.
 
 ## Session Handoff Template
 At the end of every session, append to `docs/dev-log.md`:

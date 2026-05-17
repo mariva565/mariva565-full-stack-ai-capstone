@@ -1,5 +1,14 @@
 import { useState } from "react";
-import { Animated, KeyboardAvoidingView, Platform, Text, TextInput, TouchableOpacity, View } from "react-native";
+import {
+  Animated,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { Stack } from "expo-router";
@@ -63,9 +72,9 @@ function PasswordField({ viewModel }: LoginScreenProps) {
   return (
     <View style={styles.inputGroup}>
       <Text style={styles.inputLabel}>Password</Text>
-      <View style={[styles.passwordField, viewModel.passwordFocused && styles.inputFocused]}>
+      <View style={styles.passwordField}>
         <TextInput
-          style={styles.passwordInput}
+          style={[styles.passwordInput, viewModel.passwordFocused && styles.inputFocused]}
           placeholder="********"
           placeholderTextColor={COLORS.textMuted}
           value={viewModel.password}
@@ -170,7 +179,9 @@ export function LoginScreen({ viewModel }: LoginScreenProps) {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <Stack.Screen options={{ headerShown: false }} />
-        <LoginCard viewModel={viewModel} />
+        <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
+          <LoginCard viewModel={viewModel} />
+        </ScrollView>
       </KeyboardAvoidingView>
     </LinearGradient>
   );

@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { Platform } from "react-native";
 import { usePathname, useRouter } from "expo-router";
 import Constants from "expo-constants";
+import type { NotificationResponse } from "expo-notifications";
 import { useAuth } from "./auth-context";
 import { apiFetch } from "./api";
 import { captureTelemetryException } from "./telemetry";
@@ -96,7 +97,39 @@ export function usePushNotifications(): void {
   const pathname = usePathname();
   const { showToast } = useToast();
   const registeredRef = useRef<string | null>(null);
+  const handledNotificationIdsRef = useRef<Set<string>>(new Set());
   const activeConversationId = getActiveConversationId(pathname);
+
+  const openNotificationTarget = async (
+    response: NotificationResponse
+  ) => {
+    const notificationId = response.notification.request.identifier;
+    if (handledNotificationIdsRef.current.has(notificationId)) {
+      return;
+    }
+    handledNotificationIdsRef.current.add(notificationId);
+
+    const data = response.notification.request.content
+      .data as PushNotificationData;
+    const type = typeof data?.type === "string" ? data.type : "";
+
+    if (type === "message") {
+      const conversationId = parseConversationId(data?.conversationId);
+      if (conversationId) {
+        router.replace({
+          pathname: "/messages/[id]",
+          params: { id: String(conversationId), fromNotification: "1" },
+        } as never);
+      }
+    } else if (type === "comment") {
+      const postId = parsePositiveInt(data?.postId);
+      if (postId) {
+        router.replace(`/community/${postId}` as never);
+      }
+    }
+
+    await Notifications?.clearLastNotificationResponseAsync();
+  };
 
   // Foreground notification listener — skipped entirely in Expo Go.
   useEffect(() => {
@@ -130,49 +163,13 @@ export function usePushNotifications(): void {
 
     const subscription = Notifications.addNotificationResponseReceivedListener(
       (response) => {
-        const data = response.notification.request.content
-          .data as PushNotificationData;
-        const type = typeof data?.type === "string" ? data.type : "";
-
-        if (type === "message") {
-          const conversationId = parseConversationId(data?.conversationId);
-          if (conversationId) {
-            router.push(`/messages/${conversationId}` as never);
-          }
-          return;
-        }
-
-        if (type === "comment") {
-          const postId = parsePositiveInt(data?.postId);
-          if (postId) {
-            router.push(`/community/${postId}` as never);
-          }
-          return;
-        }
+        void openNotificationTarget(response);
       }
     );
 
     void Notifications.getLastNotificationResponseAsync().then((response) => {
       if (!response) return;
-      const data = response.notification.request.content
-        .data as PushNotificationData;
-      const type = typeof data?.type === "string" ? data.type : "";
-
-      if (type === "message") {
-        const conversationId = parseConversationId(data?.conversationId);
-        if (conversationId) {
-          router.push(`/messages/${conversationId}` as never);
-        }
-        return;
-      }
-
-      if (type === "comment") {
-        const postId = parsePositiveInt(data?.postId);
-        if (postId) {
-          router.push(`/community/${postId}` as never);
-        }
-        return;
-      }
+      void openNotificationTarget(response);
     });
 
     return () => {
