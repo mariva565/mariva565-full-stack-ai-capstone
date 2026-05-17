@@ -27,17 +27,6 @@ export function makeModuleWorkspaceStyles(colors: AppColors) {
     },
     retryBtnText: { color: colors.textOnBrand, fontWeight: "600" },
     hero: { paddingTop: 24, paddingBottom: 28, paddingHorizontal: 20 },
-    coursePill: {
-      alignSelf: "flex-start",
-      backgroundColor: "rgba(255,255,255,0.14)",
-      borderWidth: 1,
-      borderColor: "rgba(255,255,255,0.22)",
-      borderRadius: 999,
-      paddingHorizontal: 12,
-      paddingVertical: 6,
-      marginBottom: 14,
-    },
-    coursePillText: { fontSize: 12, fontWeight: "700", color: colors.textOnBrand },
     heroTitle: {
       fontSize: 24,
       lineHeight: 30,

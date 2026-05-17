@@ -13447,3 +13447,26 @@ Page routes обхождат API guard-ите (зареждат директно
 **Решения:**
 - Prefer one shared context button over separate web/native variants now that both platforms need the same affordance.
 - Keep the change queued with the other mobile polish fixes for a possible later rebuild instead of spending a new APK build slot immediately.
+
+### Session 445 — Hero-integrated detail back navigation
+
+**Какво направихме:**
+- Refined the newly restored mobile detail navigation after visual review showed the separate light strip above the hero felt out of place.
+- Moved the back affordance inside the existing gradient heroes on course, module, and material detail screens.
+- Restyled `DetailBackButton` as a translucent on-hero breadcrumb pill with light text instead of a standalone surface button.
+- Reused the module hero breadcrumb for course navigation so the screen keeps one compact contextual chip instead of stacking two pills.
+
+**Файлове:**
+- [MODIFY] apps/mobile/components/detail-back-button.tsx
+- [MODIFY] apps/mobile/components/course-details/course-details-screen.tsx
+- [MODIFY] apps/mobile/components/module-workspace/module-workspace-screen.tsx
+- [MODIFY] apps/mobile/components/module-workspace/module-workspace.styles.ts
+- [MODIFY] apps/mobile/app/material/[id].tsx
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm --workspace @studyhub/mobile run typecheck` -> pass
+
+**Решения:**
+- Keep explicit drill-down exits for Expo web and native mobile, but make them part of the branded hero composition instead of adding a visually separate bar.
+- On the module screen, use the course title itself as the breadcrumb label so the navigation cue also preserves context.

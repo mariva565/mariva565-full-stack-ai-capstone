@@ -84,18 +84,11 @@ function ModuleHero({ viewModel }: ModuleHeroProps) {
 
   return (
     <LinearGradient colors={heroGradient} style={styles.hero}>
-      <TouchableOpacity
-        style={styles.coursePill}
+      <DetailBackButton
+        label={context.course.title}
         onPress={viewModel.openCourse}
-        activeOpacity={0.8}
-        accessibilityRole="button"
-        accessibilityLabel={`Open course ${context.course.title}`}
-        accessibilityHint="Navigates to the course details screen"
-      >
-        <Text style={styles.coursePillText} maxFontSizeMultiplier={1.2}>
-          {context.course.title}
-        </Text>
-      </TouchableOpacity>
+        accessibilityLabel={`Back to course ${context.course.title}`}
+      />
 
       <Text style={styles.heroTitle} maxFontSizeMultiplier={1.3}>
         {context.module.title}
@@ -250,7 +243,6 @@ export function ModuleWorkspaceScreen({ viewModel }: ModuleWorkspaceScreenProps)
         }
       >
         <Stack.Screen options={{ title: viewModel.context.module.title }} />
-        <DetailBackButton label="Back to course" onPress={viewModel.openCourse} />
         <ModuleHero viewModel={viewModel} />
         <MaterialsSection viewModel={viewModel} offline={offline} />
         <View style={styles.bottomSpacer} />

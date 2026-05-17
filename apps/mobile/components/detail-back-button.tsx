@@ -6,9 +6,14 @@ import type { AppColors } from "../lib/colors";
 type DetailBackButtonProps = {
   label: string;
   onPress: () => void;
+  accessibilityLabel?: string;
 };
 
-export function DetailBackButton({ label, onPress }: DetailBackButtonProps) {
+export function DetailBackButton({
+  label,
+  onPress,
+  accessibilityLabel = label,
+}: DetailBackButtonProps) {
   const styles = useThemedStyles(makeDetailBackButtonStyles);
 
   return (
@@ -17,7 +22,7 @@ export function DetailBackButton({ label, onPress }: DetailBackButtonProps) {
       onPress={onPress}
       activeOpacity={0.78}
       accessibilityRole="button"
-      accessibilityLabel={label}
+      accessibilityLabel={accessibilityLabel}
     >
       <Text style={styles.icon} aria-hidden>
         {"<-"}
@@ -36,25 +41,23 @@ function makeDetailBackButtonStyles(colors: AppColors) {
       flexDirection: "row",
       alignItems: "center",
       gap: 8,
-      marginHorizontal: 16,
-      marginTop: 16,
-      marginBottom: 12,
+      marginBottom: 16,
       borderWidth: 1,
-      borderColor: colors.borderMuted,
+      borderColor: "rgba(255,255,255,0.24)",
       borderRadius: 999,
-      backgroundColor: colors.surface,
-      paddingHorizontal: 14,
-      paddingVertical: 9,
+      backgroundColor: "rgba(255,255,255,0.14)",
+      paddingHorizontal: 12,
+      paddingVertical: 7,
     },
     icon: {
       fontSize: 13,
       fontWeight: "800",
-      color: colors.brandPrimary,
+      color: colors.textOnBrand,
     },
     label: {
       fontSize: 13,
       fontWeight: "700",
-      color: colors.brandPrimary,
+      color: colors.textOnBrand,
     },
   });
 }

@@ -106,14 +106,6 @@ export default function MaterialScreen() {
       }
     >
       <Stack.Screen options={{ title: material.title }} />
-      {moduleInfo ? (
-        <DetailBackButton
-          label="Back to module"
-          onPress={() =>
-            router.push({ pathname: "/module/[id]", params: { id: moduleInfo.id } })
-          }
-        />
-      ) : null}
 
       <LinearGradient
         colors={heroGradient}
@@ -121,6 +113,14 @@ export default function MaterialScreen() {
         end={{ x: 1, y: 1 }}
         style={styles.hero}
       >
+        {moduleInfo ? (
+          <DetailBackButton
+            label="Back to module"
+            onPress={() =>
+              router.push({ pathname: "/module/[id]", params: { id: moduleInfo.id } })
+            }
+          />
+        ) : null}
         <View style={[styles.typeBadge, { backgroundColor: cfg.bg }]}>
           <Text style={[styles.typeBadgeText, { color: cfg.color }]} maxFontSizeMultiplier={1.2}>
             {cfg.label}

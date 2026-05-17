@@ -25,6 +25,7 @@ function CourseHero({
   description,
   modulesCount,
   createdAt,
+  onBackToCourses,
   onEditCourse,
   onDeleteCourse,
 }: {
@@ -33,6 +34,7 @@ function CourseHero({
   description: string | null;
   modulesCount: number;
   createdAt: string;
+  onBackToCourses: () => void;
   onEditCourse: (routeId: string) => void;
   onDeleteCourse: () => void;
 }) {
@@ -41,6 +43,7 @@ function CourseHero({
   const heroGradient = [colors.brandDeep, colors.brandPrimary, colors.brandAccent] as const;
   return (
     <LinearGradient colors={heroGradient} style={styles.hero}>
+      <DetailBackButton label="Back to courses" onPress={onBackToCourses} />
       <Text style={styles.heroEyebrow}>Course overview</Text>
       <Text style={styles.heroTitle}>{title}</Text>
       {description ? <Text style={styles.heroDesc}>{description}</Text> : null}
@@ -194,13 +197,13 @@ function CourseDetailsContent({
         }
       >
         <Stack.Screen options={{ title: viewModel.course.title }} />
-        <DetailBackButton label="Back to courses" onPress={() => router.push("/")} />
         <CourseHero
           routeId={viewModel.routeId}
           title={viewModel.course.title}
           description={viewModel.course.description}
           modulesCount={viewModel.modules.length}
           createdAt={viewModel.course.createdAt}
+          onBackToCourses={() => router.push("/")}
           onEditCourse={(targetId) =>
             router.push({ pathname: "/course/[id]/edit", params: { id: targetId } })
           }
