@@ -30,7 +30,8 @@ Before starting a new session, read:
 
 ### Still open
 - Final release review, tag/release hygiene, and demo-freeze checks.
-- Make the GitHub repository public after the final secret/artifact review.
+- Make the GitHub repository public after the final secret/artifact review and before capstone submission.
+- Complete the official capstone submission form, upload it to OneDrive, and make the OneDrive share link public.
 
 ## Priority Model
 ### Mandatory for the updated assignment
@@ -358,7 +359,7 @@ Exit criteria:
 - [x] `git status` review.
 - [x] `git diff` review.
 - [x] Verify no secrets, logs, or scratch artifacts are staged.
-- [ ] After the final secret/artifact review, make the GitHub repository public so the examiners can inspect it.
+- [ ] After the final secret/artifact review and before capstone submission, make the GitHub repository public so the examiners can inspect it.
 - [x] Run:
   - `npm run check:mojibake`
   - `npm run typecheck`
@@ -370,6 +371,16 @@ Exit criteria:
 
 Exit criteria:
 - The repository tells the exact truth about the delivered project.
+
+#### F4. Capstone submission handoff
+
+- [ ] Fill in the official capstone submission form.
+- [ ] Upload the completed submission form to OneDrive.
+- [ ] Set the OneDrive share link to public / anyone with the link before submission.
+- [ ] Re-check that the GitHub repository is public before sending the final submission.
+
+Exit criteria:
+- The final submission package is accessible to the reviewers without extra permission requests.
 
 ### Phase G — Demo Readiness and Freeze
 

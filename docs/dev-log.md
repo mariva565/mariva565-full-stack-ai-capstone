@@ -13470,3 +13470,43 @@ Page routes обхождат API guard-ите (зареждат директно
 **Решения:**
 - Keep explicit drill-down exits for Expo web and native mobile, but make them part of the branded hero composition instead of adding a visually separate bar.
 - On the module screen, use the course title itself as the breadcrumb label so the navigation cue also preserves context.
+
+### Session 446 — Expo web publish for hero-integrated navigation
+
+**Какво направихме:**
+- Published the refined Expo web navigation treatment after the separate top strip was rejected in visual review.
+- Exported the mobile web bundle with explicit production Expo env values so the public build keeps the live API URL instead of the local LAN development URL.
+- Deployed the updated `dist` bundle to the existing Netlify production site.
+
+**Файлове:**
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npx expo export --platform web --output-dir dist` with explicit production web env -> pass
+- `netlify deploy --prod --no-build --dir <apps/mobile/dist>` -> pass
+- Live Expo web `/` and `/course/1` -> `200`
+- Live Expo web HTML now references `_expo/static/js/web/entry-fe9e204b70c6568c94b54da41bcfbe0c.js`
+
+**Решения:**
+- Keep this as the final planned Expo web publish for now, while leaving future native-mobile polish fixes queued for a later APK rebuild.
+
+### Session 447 — Capstone submission checklist sync
+
+**Какво направихме:**
+- Added the missing administrative submission steps to the final release master plan:
+  - fill in the official capstone submission form
+  - upload the completed form to OneDrive
+  - make the OneDrive share link public / anyone-with-link
+- Tightened the existing GitHub visibility reminders so they explicitly say the repository must be public before the final capstone submission.
+- Added a dedicated `F4. Capstone submission handoff` checklist so the last non-code delivery steps are visible in one place.
+
+**Файлове:**
+- [MODIFY] docs/final-release-master-plan.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm run check:mojibake` -> pass
+
+**Решения:**
+- Keep submission logistics in the release master plan rather than leaving them only in memory or scattered notes.
+- Treat GitHub-public visibility and OneDrive-public access as explicit pre-submission gates, not implicit assumptions.
