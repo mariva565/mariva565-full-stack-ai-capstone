@@ -6,6 +6,7 @@ import { BrandedSpinner } from "../branded-spinner";
 import { ConfirmModal } from "../confirm-modal";
 import { EmptyState } from "../empty-state";
 import { ModuleListCard } from "../module-list-card";
+import { DetailBackButton } from "../detail-back-button";
 import { useTheme, useThemedStyles } from "../../lib/app-preferences";
 import type { Module } from "../../lib/studyhub-types";
 import { makeCourseDetailsStyles } from "./course-details.styles";
@@ -193,6 +194,7 @@ function CourseDetailsContent({
         }
       >
         <Stack.Screen options={{ title: viewModel.course.title }} />
+        <DetailBackButton label="Back to courses" onPress={() => router.push("/")} />
         <CourseHero
           routeId={viewModel.routeId}
           title={viewModel.course.title}

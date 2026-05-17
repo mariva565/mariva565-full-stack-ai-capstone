@@ -152,6 +152,10 @@ Demo credentials: see [Demo Credentials](#demo-credentials)
 - Direct-message sent/seen states, unread badges, and Expo push notifications with deep-link handling
 - AI chatbot, PDF text extraction into notes, AI summaries, and material AI tools on mobile
 
+### Known limitations
+
+- In a brand-new empty direct-message thread on Android, the composer can still sit behind the keyboard until the first message is sent. After the first message exists, the thread reflows correctly; this is tracked as post-release polish rather than a release blocker.
+
 ---
 
 ## About the Project

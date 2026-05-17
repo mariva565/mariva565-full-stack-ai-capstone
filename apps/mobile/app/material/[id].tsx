@@ -25,6 +25,7 @@ import { MaterialScreenSkeleton } from "../../components/material/material-scree
 import { makeMaterialScreenStyles } from "../../components/material/material-screen.styles";
 import { useMaterialScreen } from "../../components/material/use-material-screen";
 import { ShareBottomSheet } from "../../components/material/share-bottom-sheet";
+import { DetailBackButton } from "../../components/detail-back-button";
 
 export default function MaterialScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -105,6 +106,14 @@ export default function MaterialScreen() {
       }
     >
       <Stack.Screen options={{ title: material.title }} />
+      {moduleInfo ? (
+        <DetailBackButton
+          label="Back to module"
+          onPress={() =>
+            router.push({ pathname: "/module/[id]", params: { id: moduleInfo.id } })
+          }
+        />
+      ) : null}
 
       <LinearGradient
         colors={heroGradient}

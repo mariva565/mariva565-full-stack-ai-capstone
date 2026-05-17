@@ -9,6 +9,7 @@ import { NetworkBanner } from "../network-banner";
 import { RequestState } from "../request-state";
 import { SearchBar } from "../search-bar";
 import { TypeFilterChips } from "../type-filter-chips";
+import { DetailBackButton } from "../detail-back-button";
 import { useTheme, useThemedStyles } from "../../lib/app-preferences";
 import { useIsOffline } from "../../lib/network";
 import { ModuleWorkspaceSkeleton } from "./module-workspace-skeleton";
@@ -249,6 +250,7 @@ export function ModuleWorkspaceScreen({ viewModel }: ModuleWorkspaceScreenProps)
         }
       >
         <Stack.Screen options={{ title: viewModel.context.module.title }} />
+        <DetailBackButton label="Back to course" onPress={viewModel.openCourse} />
         <ModuleHero viewModel={viewModel} />
         <MaterialsSection viewModel={viewModel} offline={offline} />
         <View style={styles.bottomSpacer} />

@@ -7,9 +7,22 @@ import {
   getCourseModules,
   userCanAccessCourse,
 } from "../../../../../lib/course-details-data";
-import { eq } from "drizzle-orm";
+import { eq, max } from "drizzle-orm";
 
 type Ctx = { params: Promise<{ id: string }> };
+
+async function getNextModuleOrderIndex(courseId: number) {
+  const [result] = await db
+    .select({ maxOrderIndex: max(modules.orderIndex) })
+    .from(modules)
+    .where(eq(modules.courseId, courseId));
+
+  return (result?.maxOrderIndex ?? -1) + 1;
+}
+
+function isValidOrderIndex(value: unknown): value is number {
+  return typeof value === "number" && Number.isInteger(value) && value >= 0;
+}
 
 // GET /api/courses/:id/modules
 export async function GET(request: NextRequest, { params }: Ctx) {
@@ -38,6 +51,7 @@ export async function POST(request: NextRequest, { params }: Ctx) {
   if ("error" in auth) return auth.error;
 
   const { id } = await params;
+  const courseId = Number(id);
   const body = await request.json();
   const { title, description, orderIndex } = body;
 
@@ -53,7 +67,7 @@ export async function POST(request: NextRequest, { params }: Ctx) {
     const [parentCourse] = await db
       .select({ createdBy: courses.createdBy })
       .from(courses)
-      .where(eq(courses.id, Number(id)))
+      .where(eq(courses.id, courseId))
       .limit(1);
 
     if (!parentCourse) {
@@ -64,18 +78,22 @@ export async function POST(request: NextRequest, { params }: Ctx) {
     }
 
     if (parentCourse.createdBy !== auth.user.sub) {
-      const mentorCheck = await requireCourseMentor(auth.user, Number(id));
+      const mentorCheck = await requireCourseMentor(auth.user, courseId);
       if (mentorCheck) return mentorCheck;
     }
   }
 
+  const nextOrderIndex = isValidOrderIndex(orderIndex)
+    ? orderIndex
+    : await getNextModuleOrderIndex(courseId);
+
   const [mod] = await db
     .insert(modules)
     .values({
-      courseId: Number(id),
+      courseId,
       title,
       description: description ?? null,
-      orderIndex: orderIndex ?? 0,
+      orderIndex: nextOrderIndex,
       createdBy: auth.user.sub,
     })
     .returning();
@@ -83,7 +101,7 @@ export async function POST(request: NextRequest, { params }: Ctx) {
   await logActivity(auth.user.sub, "create_module", mod.id, {
     title: mod.title,
     description: mod.description,
-    courseId: Number(id),
+    courseId,
   });
 
   return NextResponse.json({ module: mod }, { status: 201 });

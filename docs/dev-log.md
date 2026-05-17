@@ -13335,3 +13335,115 @@ Page routes обхождат API guard-ите (зареждат директно
 **Решения:**
 - Treat the remaining work after the Expo web fix as release-truth synchronization, not a new runtime bug.
 - Keep the residual empty-thread composer issue documented as non-blocking post-release polish while Phase 10 itself is considered complete.
+
+### Session 441 — Final hygiene pass after manual deploy smoke
+
+**Какво направихме:**
+- Recorded the user's manual live-deploy check as successful and continued with the final mandatory release hygiene pass.
+- Added an explicit `Known limitations` note to `README.md` for the one remaining true non-blocking mobile issue:
+  - empty Android message threads can still place the composer behind the keyboard until the first message is sent
+- Closed the master-plan hygiene items that were actually verified in this session:
+  - `git status`
+  - `git diff`
+  - no staged secret/log/scratch artifacts
+  - live health endpoint
+  - live security headers
+  - final command gate run
+
+**Файлове:**
+- [MODIFY] README.md
+- [MODIFY] docs/final-release-master-plan.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- User manual deploy smoke -> pass
+- `git status --short` -> clean
+- `git diff --stat` -> clean before this docs pass
+- `git diff --name-only --cached` -> empty
+- `git ls-files | rg '(^|/)\.env(\.|$)'` -> only `.env.example` and `apps/mobile/.env.example`
+- `GET https://mariva565-full-stack-ai-capstone-we.vercel.app/api/health` -> `200`
+- `HEAD https://mariva565-full-stack-ai-capstone-we.vercel.app` -> `200` with release security headers still present
+
+**Решения:**
+- Keep the final open items focused on human/demo preparation and repository publication, not code delivery.
+- Leave the residual mobile composer issue visible and honest instead of silently burying it in the handoff notes.
+
+### Session 442 — Cross-client module ordering fix
+
+**Какво направихме:**
+- Investigated duplicated module numbering visible after creating a module from the Expo web/mobile flow.
+- Confirmed the cause:
+  - desktop web create sent `orderIndex: modules.length`
+  - Expo web/mobile create omitted `orderIndex`
+  - the shared backend defaulted omitted values to `0`, so new modules could be inserted as a second first module
+- Moved the fallback ordering responsibility into the shared API:
+  - `POST /api/courses/[id]/modules` now appends after the current highest module order when the client omits or sends an invalid `orderIndex`
+  - the desktop web create flow no longer calculates order locally and uses the same server-side append behavior
+- Added integration coverage for the omitted-`orderIndex` path.
+
+**Файлове:**
+- [MODIFY] apps/web/app/api/courses/[id]/modules/route.ts
+- [MODIFY] apps/web/components/course/course-details-client-page.tsx
+- [MODIFY] apps/web/lib/__tests__/integration/courses.test.ts
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm --workspace @studyhub/web run typecheck` -> pass
+- `npm run build:web` -> pass
+- Integration test added for omitted `orderIndex`; not run in this session because the integration harness requires `TEST_DATABASE_URL` and a dedicated test server/database environment.
+
+**Решения:**
+- Treat module placement as a backend invariant so all clients create modules consistently.
+- Keep explicit valid `orderIndex` support for API compatibility, but make omitted values safe by default.
+
+### Session 443 — Expo web drill-down back navigation
+
+**Какво направихме:**
+- Added a minimal browser-only navigation pass for the official Expo web deliverable.
+- Introduced shared `WebBackButton`, which renders only when `Platform.OS === "web"` so native mobile tab behavior stays unchanged.
+- Added explicit browser back actions to the main drill-down screens:
+  - course detail -> `Back to courses`
+  - module workspace -> `Back to course`
+  - material detail -> `Back to module`
+
+**Файлове:**
+- [ADD] apps/mobile/components/web-back-button.tsx
+- [MODIFY] apps/mobile/components/course-details/course-details-screen.tsx
+- [MODIFY] apps/mobile/components/module-workspace/module-workspace-screen.tsx
+- [MODIFY] apps/mobile/app/material/[id].tsx
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm --workspace @studyhub/mobile run typecheck` -> pass
+- `npx expo export --platform web --output-dir dist` with explicit production web env -> pass
+- `netlify deploy --prod --no-build --dir <apps/mobile/dist>` -> pass
+- Live Expo web `/course/1` deep link -> `200`
+- Published Expo web bundle contains `Back to courses`, `Back to course`, and `Back to module`
+- Published Expo web bundle contains the production API URL and does not contain the local LAN API URL
+
+**Решения:**
+- Keep Expo web polish intentionally narrow: remove obvious browser dead-ends without turning it into a separately designed desktop client.
+- Use explicit destinations instead of browser-history back so direct-loaded Expo web routes still have a reliable way out.
+
+### Session 444 — Native mobile drill-down back navigation parity
+
+**Какво направихме:**
+- Extended the new drill-down back-navigation treatment from Expo web to native mobile too, after confirming the same discoverability issue exists there.
+- Replaced the browser-only helper with shared `DetailBackButton`, visible on all platforms.
+- Kept the same explicit destinations across course/module/material detail screens so users have a clear escape path even when tab navigation is not enough context.
+
+**Файлове:**
+- [ADD] apps/mobile/components/detail-back-button.tsx
+- [DELETE] apps/mobile/components/web-back-button.tsx
+- [MODIFY] apps/mobile/components/course-details/course-details-screen.tsx
+- [MODIFY] apps/mobile/components/module-workspace/module-workspace-screen.tsx
+- [MODIFY] apps/mobile/app/material/[id].tsx
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm --workspace @studyhub/mobile run typecheck` -> pass
+- `npm run check:mojibake` -> pass
+
+**Решения:**
+- Prefer one shared context button over separate web/native variants now that both platforms need the same affordance.
+- Keep the change queued with the other mobile polish fixes for a possible later rebuild instead of spending a new APK build slot immediately.

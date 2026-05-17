@@ -79,7 +79,6 @@ export function CourseDetailsClientPage({ initialData }: CourseDetailsClientPage
       body: JSON.stringify({
         title: newModuleTitle.trim(),
         description: newModuleDescription.trim() || null,
-        orderIndex: modules.length,
       }),
     });
 

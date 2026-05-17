@@ -30,7 +30,7 @@ Before starting a new session, read:
 
 ### Still open
 - Final release review, tag/release hygiene, and demo-freeze checks.
-- Final documentation closeout for any still-true limitations plus supporting-doc sync.
+- Make the GitHub repository public after the final secret/artifact review.
 
 ## Priority Model
 ### Mandatory for the updated assignment
@@ -343,7 +343,7 @@ Exit criteria:
   - web URL
   - Expo web URL
   - APK link
-- [ ] Add or refresh known limitations only if still true.
+- [x] Add or refresh known limitations only if still true.
 
 #### F2. Supporting docs
 
@@ -355,17 +355,17 @@ Exit criteria:
 
 #### F3. Final repo hygiene
 
-- [ ] `git status` review.
-- [ ] `git diff` review.
-- [ ] Verify no secrets, logs, or scratch artifacts are staged.
+- [x] `git status` review.
+- [x] `git diff` review.
+- [x] Verify no secrets, logs, or scratch artifacts are staged.
 - [ ] After the final secret/artifact review, make the GitHub repository public so the examiners can inspect it.
-- [ ] Run:
+- [x] Run:
   - `npm run check:mojibake`
   - `npm run typecheck`
   - `npm run build:web`
   - `npm run deps:audit:runtime`
-- [ ] Confirm live web health endpoint.
-- [ ] Confirm live security headers remain present.
+- [x] Confirm live web health endpoint.
+- [x] Confirm live security headers remain present.
 - [ ] Review final release notes / demo notes.
 
 Exit criteria:

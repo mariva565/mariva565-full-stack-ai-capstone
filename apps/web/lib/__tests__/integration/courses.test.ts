@@ -191,6 +191,28 @@ describe("courses API integration", () => {
     });
   });
 
+  it("appends modules when the client omits orderIndex", async () => {
+    const course = await createCourse(user.token);
+    await createModule(course.id, user.token, { title: "Existing Module", orderIndex: 3 });
+
+    const moduleRes = await fetch(`${BASE_URL}/api/courses/${course.id}/modules`, {
+      method: "POST",
+      headers: authHeader(user.token),
+      body: JSON.stringify({
+        title: "Auto-positioned Module",
+        description: "Should append after the highest existing order",
+      }),
+    });
+    const body = await parseJson(moduleRes);
+
+    expect(moduleRes.status).toBe(201);
+    expect(body.module).toMatchObject({
+      courseId: course.id,
+      title: "Auto-positioned Module",
+      orderIndex: 4,
+    });
+  });
+
   it("lists modules for an accessible course", async () => {
     const course = await createCourse(user.token);
     const mod = await createModule(course.id, user.token, { title: "Listed Module" });
