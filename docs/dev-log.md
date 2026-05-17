@@ -11945,3 +11945,734 @@ Page routes обхождат API guard-ите (зареждат директно
 - Keep `1.0.0` as the first final-release mobile version and leave Android `versionCode` at `1` until an actual APK rebuild requires incrementing it.
 - Do not mark the remaining `Phase E` pre-build items complete without checking the live production/EAS/Google consoles.
 - Next exact step: confirm `EXPO_PUBLIC_API_URL`, Google OAuth production setup, and EAS preview env values before starting the APK build.
+
+### Session 390 — Preview APK build preparation and artifact
+
+**Какво направихме:**
+- Continued `Phase E — Native Mobile / APK Deliverable` after the release metadata cleanup.
+- Confirmed the mobile production target and created the missing EAS `preview` env values:
+  - `EXPO_PUBLIC_API_URL=https://mariva565-full-stack-ai-capstone-we.vercel.app`
+  - `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID`
+  - `EXPO_PUBLIC_GOOGLE_WEB_REDIRECT_URI=https://studyhub-mobile-mariva.netlify.app/login`
+  - `EXPO_PUBLIC_SENTRY_DSN`
+- Ran `eas whoami` successfully for the `mariva` Expo account.
+- Started the first preview APK build; it reached Gradle but failed because Sentry source-map upload was enabled without `SENTRY_AUTH_TOKEN`.
+- Kept source maps optional for this preview release and added `SENTRY_DISABLE_AUTO_UPLOAD=true` to the EAS `preview` environment instead of fabricating a release-token requirement.
+- Re-ran `eas build --platform android --profile preview`; the build completed successfully:
+  - build ID `054ba9f8-89e9-4ba0-89b7-42ddddc6590c`
+  - app version `1.0.0`
+  - Android build version `1`
+- Downloaded the APK locally for validation and recorded its SHA-256 digest.
+
+**Файлове:**
+- [MODIFY] docs/final-release-master-plan.md
+- [MODIFY] docs/mobile-release-checklist.md
+- [MODIFY] docs/security-release-readiness.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `eas env:list preview --format long` -> confirmed production API URL, Google web client ID, Expo web redirect URI, public Sentry DSN, and `SENTRY_DISABLE_AUTO_UPLOAD`
+- `eas build --platform android --profile preview --non-interactive` -> pass
+- Preview APK SHA-256 -> `A3A5A4D8F677CD3AF40297FBC38DDB7E57D531B63AD218DAE0857BC8BF7B8C32`
+- `adb devices` -> unavailable in this terminal because `adb` is not installed
+
+**Решения:**
+- Do not publish a final GitHub Release or README APK link before a real Android phone validates the native release flow.
+- Keep the APK deliverable moving with the preview artifact, but leave Google Console confirmation and physical-device rows as the remaining release gates.
+- Next exact step: install the preview APK on a real Android phone, run the production/mobile validation flow including `SMK-21`..`SMK-23`, then publish the accepted APK in GitHub Releases and add the README link.
+
+### Session 391 — Release APK launch-crash fix and rebuild
+
+**Какво направихме:**
+- Investigated the first real-device install attempt after the user reported that the preview APK opened briefly and then disappeared.
+- Confirmed the initial accepted-looking artifact was not release-safe:
+  - the mobile workspace manifest had already been upgraded to Expo SDK 54-compatible package versions
+  - but the root monorepo lock/install graph still mixed Expo SDK 54 with SDK 55 and kept stale `expo-application@6.1.5` / `expo-auth-session@6.2.1` entries
+- Repaired the dependency graph end-to-end:
+  - aligned the mobile Expo package family with SDK 54 via `expo install`
+  - added root `overrides` so the workspace graph stays on one SDK 54 family
+  - rebuilt the root install and regenerated the root lockfile from a clean state
+- Verified the corrected graph locally and in the EAS archive snapshot before rebuilding:
+  - one Expo family (`54.0.34`)
+  - `expo-application@7.0.8`
+  - `expo-auth-session@7.0.11`
+  - no duplicate native-module failures from `expo-doctor`
+- Incremented Android `versionCode` from `1` to `3` across the rejected rebuild attempt and the accepted replacement build.
+- Built the replacement preview APK candidate:
+  - build ID `402d871f-8555-4e7a-9a10-7485f67509a6`
+  - app version `1.0.0`
+  - Android build version `3`
+- Downloaded the replacement APK locally and recorded its SHA-256 digest.
+- Updated the release docs so the rejected artifact is no longer presented as the current APK candidate.
+
+**Файлове:**
+- [MODIFY] apps/mobile/app.json
+- [MODIFY] apps/mobile/package.json
+- [MODIFY] apps/mobile/package-lock.json
+- [MODIFY] package.json
+- [MODIFY] package-lock.json
+- [MODIFY] docs/final-release-master-plan.md
+- [MODIFY] docs/mobile-release-checklist.md
+- [MODIFY] docs/mobile-smoke-test-matrix.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd ls expo expo-application expo-auth-session expo-constants expo-crypto expo-linking expo-web-browser @expo/fingerprint @react-native-community/netinfo --workspaces` -> pass; one SDK 54 family resolved
+- `npx expo-doctor` -> `16/17` pass; only the existing custom Metro-config warning remains
+- `npx expo install --check` -> pass
+- `npm.cmd run typecheck:mobile` -> pass
+- `eas build:inspect --platform android --profile preview --stage archive --output .eas-inspect-preview-v3` -> pass; archive lockfiles show the corrected SDK 54 family
+- `eas build --platform android --profile preview --non-interactive` -> pass
+- Replacement preview APK SHA-256 -> `2742C60A7A27ED3C10345F405FF4D4CADDBC544E34770A6B9CE21B57843C3AE0`
+- `npm.cmd run check:mojibake` -> pass
+
+**Решения:**
+- Treat preview build `054ba9f8-89e9-4ba0-89b7-42ddddc6590c` as rejected; do not publish or retest it further.
+- Keep preview build `402d871f-8555-4e7a-9a10-7485f67509a6` as the only current physical-device candidate until validation completes.
+- Leave GitHub Release + README APK publication blocked until the corrected build passes a real Android launch and the remaining production-device checks.
+- Next exact step: install build `402d871f-8555-4e7a-9a10-7485f67509a6` on the Android phone, confirm it stays open, then continue the pending physical-device validation flow.
+
+### Session 392 — Branded launcher icon rebuild
+
+**Какво направихме:**
+- Followed up on the user's real-device note that the APK still displayed Android's default green placeholder launcher icon.
+- Confirmed the cause in config: `apps/mobile/app.json` had no top-level `icon` and no Android `adaptiveIcon`.
+- Reused existing StudyHub brand art instead of creating a new visual direction:
+  - added a mobile-local square app icon derived from the existing web `apple-touch-icon`
+  - added a padded transparent Android adaptive foreground derived from the existing `mascot-logo`
+- Wired the new assets into Expo config and incremented Android `versionCode` from `3` to `4`.
+- Built the next preview APK candidate:
+  - build ID `f97b58f3-de1d-4a1f-b756-6af8dc7f7c27`
+  - app version `1.0.0`
+  - Android build version `4`
+- Downloaded the APK locally and recorded its SHA-256 digest.
+- Updated the mobile release docs so build `4` is the only current APK candidate; build `3` is now documented as superseded because it still lacked a branded launcher icon.
+
+**Файлове:**
+- [ADD] apps/mobile/assets/branding/app-icon.png
+- [ADD] apps/mobile/assets/branding/adaptive-icon-foreground.png
+- [MODIFY] apps/mobile/app.json
+- [MODIFY] docs/mobile-release-checklist.md
+- [MODIFY] docs/mobile-smoke-test-matrix.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npx expo config --type public --json` -> pass; config resolves `icon` and Android `adaptiveIcon`
+- Generated asset metadata -> both launcher assets are `1024x1024`
+- `npx expo-doctor` -> `16/17` pass; only the existing custom Metro-config warning remains
+- `npm.cmd run typecheck:mobile` -> pass
+- `eas build --platform android --profile preview --non-interactive` -> pass
+- Preview APK SHA-256 -> `082652272C24FC69EF3B562375AC9909AB9DD2DE6A5459D2A24FDD9417DED0AC`
+- `npm.cmd run check:mojibake` -> pass
+
+**Решения:**
+- Reuse existing brand assets for launcher identity so the mobile release stays visually aligned with the web product.
+- Treat build `402d871f-8555-4e7a-9a10-7485f67509a6` as superseded rather than final because a release APK should not ship with the platform placeholder icon.
+- Keep build `f97b58f3-de1d-4a1f-b756-6af8dc7f7c27` as the only current physical-device candidate.
+- Next exact step: install build `f97b58f3-de1d-4a1f-b756-6af8dc7f7c27`, confirm both launcher icon and app startup behavior, then continue the remaining device validation flow.
+
+### Session 393 — Native Google OAuth release prep
+
+**Какво направихме:**
+- Followed up on the reminder that native Google login also needs Android and iOS client IDs, not only the web client ID.
+- Confirmed the gap in current release prep:
+  - `apps/mobile/.env.example` already documented Android/iOS client IDs
+  - but the auth hooks still passed only the web client ID
+  - and the EAS `preview` environment only contained the web client ID
+- Added shared Google auth request config in `apps/mobile/lib/google-auth.ts` so the provider now receives:
+  - `webClientId`
+  - `androidClientId`
+  - `iosClientId`
+  - the existing platform-specific redirect selection
+- Rewired login and register flows to use the shared config.
+- Added the missing root `.env.example` placeholders for native Google client IDs.
+- Added `EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID` and `EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID` to the EAS `preview` environment.
+- Tightened release docs so native OAuth setup now explicitly requires:
+  - Android OAuth client for package `com.studyhub.mobile`
+  - SHA-1 from the EAS signing keystore used by the APK, not only a local debug keystore
+  - iOS OAuth client for bundle ID `com.studyhub.mobile`
+
+**Файлове:**
+- [MODIFY] apps/mobile/lib/google-auth.ts
+- [MODIFY] apps/mobile/components/login/use-login-screen.ts
+- [MODIFY] apps/mobile/components/register/use-register-screen.ts
+- [MODIFY] .env.example
+- [MODIFY] docs/final-release-master-plan.md
+- [MODIFY] docs/mobile-release-checklist.md
+- [MODIFY] docs/security-release-readiness.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd run typecheck:mobile` -> pass
+- `npx expo export --platform web --output-dir dist-native-google-check` -> pass
+- `eas env:list preview --format long` -> confirmed web, Android, and iOS Google client IDs are now present
+- `npm.cmd run check:mojibake` -> pass
+
+**Решения:**
+- Do not treat native Google login as ready until the Google Console Android client is confirmed against the EAS signing-keystore SHA-1; the historical debug-keystore client is not enough for the preview APK.
+- Build `f97b58f3-de1d-4a1f-b756-6af8dc7f7c27` remains useful for startup/icon validation, but a fresh APK rebuild is required after the native Google OAuth setup is confirmed because build `4` predates this code/env change.
+- Next exact step: confirm/create the Google Console Android and iOS OAuth clients for the release credentials, then increment `versionCode`, rebuild the APK, and run device Google-login smoke before the push-notification rows.
+
+### Session 394 — README judge navigation
+
+**Какво направихме:**
+- Added a concise `Table of Contents` near the top of `README.md`.
+- Linked the judge-facing anchor sections that are most useful during review:
+  - live demo and previews
+  - project overview and roadmap
+  - architecture, auth, roles, schema, screens, and API
+  - security, demo walkthrough, credentials, setup, scalability, and storage
+
+**Файлове:**
+- [MODIFY] README.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Manual anchor review against the existing README headings -> pass
+
+**Решения:**
+- Keep the README index concise instead of mirroring every subsection so reviewers can orient quickly without adding another long block to an already large document.
+- Next exact step: continue the release path from the native Google OAuth credential confirmation before the final APK rebuild.
+
+### Session 395 — README releases placeholder
+
+**Какво направихме:**
+- Added a dedicated `Releases` section near the top of `README.md`.
+- Added the new section to the README table of contents.
+- Left an explicit placeholder for the Android APK GitHub Release link until the final device-validated artifact exists.
+- Clarified the master plan wording so the final APK link must be added specifically in the README `Releases` section.
+
+**Файлове:**
+- [MODIFY] README.md
+- [MODIFY] docs/final-release-master-plan.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Manual README anchor review -> pass
+
+**Решения:**
+- Follow the instructor's requested README structure now, but keep the release URL pending until the accepted APK is actually published in GitHub Releases.
+- Next exact step: after final APK acceptance, create the GitHub Release and replace the placeholder in the README `Releases` section with the public release link.
+
+### Session 396 — EAS signing fingerprint capture
+
+**Какво направихме:**
+- Continued from the first open release-path item in `Phase E`: native Google OAuth production confirmation.
+- Re-checked the current mobile/EAS setup:
+  - local auth config already passes web, Android, and iOS Google client IDs
+  - EAS `preview` env still contains the production API URL plus all three public Google client IDs
+- Queried the current Expo Android credentials metadata and captured the active EAS preview signing fingerprint needed for Google Console verification:
+  - package: `com.studyhub.mobile`
+  - SHA-1: `A5:30:BD:22:16:20:E3:67:B4:26:00:A7:59:ED:9A:9F:30:CB:87:68`
+- Synced the release docs with the exact SHA-1 so the remaining manual console check is explicit instead of generic.
+
+**Файлове:**
+- [MODIFY] docs/final-release-master-plan.md
+- [MODIFY] docs/mobile-release-checklist.md
+- [MODIFY] docs/security-release-readiness.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `eas env:list preview --format long` -> confirmed production API URL plus web/Android/iOS Google client IDs are still present
+- Expo Android credentials query -> current default preview keystore SHA-1 resolves to `A5:30:BD:22:16:20:E3:67:B4:26:00:A7:59:ED:9A:9F:30:CB:87:68`
+- `npm.cmd run typecheck:mobile` -> pass
+
+**Решения:**
+- Keep the Google OAuth gate open until the user confirms that Google Cloud Console contains the Android OAuth client for `com.studyhub.mobile` with the exact EAS signing SHA-1 above.
+- Do not rebuild yet: the next APK must be produced only after the console-side OAuth setup is confirmed, then `versionCode` should advance and the rebuilt APK should be used for device Google-login smoke.
+- Next exact step: compare the Android OAuth client in Google Cloud Console against `com.studyhub.mobile` + `A5:30:BD:22:16:20:E3:67:B4:26:00:A7:59:ED:9A:9F:30:CB:87:68`; once it matches, increment `versionCode`, rebuild the preview APK, and resume physical-device validation.
+
+### Session 397 — Android avatar picker smoke fix
+
+**Какво направихме:**
+- Continued the real-device APK smoke pass item by item after the user clarified that the device checklist was still in progress, not already passed.
+- Confirmed the first live smoke results:
+  - email/password login -> pass
+  - new-account register -> pass
+  - Google login -> pending
+  - avatar upload -> fail on Android because the old crop UI still opened as the same blank/obscured background flow seen earlier in development
+- Reused the already-proven Android workaround from material and community image uploads:
+  - avatar picking now keeps native editing enabled only on iOS
+  - Android camera/gallery selection returns directly to upload instead of entering the broken crop step
+
+**Файлове:**
+- [MODIFY] apps/mobile/components/profile-tab/avatar-upload-button.tsx
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Pending immediate device retest after the next APK rebuild; the failure is in a native release artifact, so terminal-only validation cannot prove the UI fix end-to-end.
+
+**Решения:**
+- Keep the smoke checklist honest: avatar upload is currently a failed physical-device row until the rebuilt APK is retested successfully.
+- Prefer consistent Android picker behavior across avatar, material, and community image uploads instead of reintroducing the same broken crop step on one screen.
+- Next exact step: include this fix in the next APK rebuild, then retest avatar upload before moving further down the device smoke list.
+
+### Session 398 — Mobile community comment keyboard fix
+
+**Какво направихме:**
+- Continued the real-device smoke pass for mobile community flows.
+- Confirmed successful device checks so far for:
+  - post image upload
+  - post like
+  - posting a comment
+- Recorded one current non-blocking parity gap:
+  - mobile community details do not expose post bookmarks like the desktop web UI
+  - this is outside the current final mobile scope, so it is tracked as optional parity rather than a release blocker
+- Fixed the blocking comment-composer UX issue reported on Android:
+  - `PostDetailsScreen` now uses Android `KeyboardAvoidingView` height behavior instead of leaving the composer under the keyboard
+  - comment list taps now persist correctly while the keyboard is open
+
+**Файлове:**
+- [MODIFY] apps/mobile/components/community/post-details-screen.tsx
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Pending physical-device retest after the next APK rebuild; terminal-only checks cannot prove keyboard placement on the release artifact.
+
+**Решения:**
+- Treat missing mobile bookmarks as an optional web/mobile parity improvement, not part of the current release-blocking smoke set.
+- Treat obscured comment input as a real smoke failure because users cannot reliably see what they are typing.
+- Next exact step: include this fix in the next APK rebuild, then retest comment entry on-device before continuing the remaining community/mobile smoke rows.
+
+### Session 399 — Mobile community type filters
+
+**Какво направихме:**
+- Followed up on the real-device smoke observation that mobile community lacked the desktop feed filters for post type.
+- Treated type filtering differently from bookmarks:
+  - bookmarks remain optional parity
+  - post-type filtering is part of the core feed experience because mobile already creates `discussion`, `question`, `resource`, and `article` posts
+- Added a horizontal mobile filter-chip row for:
+  - `All`
+  - `Discussion`
+  - `Question`
+  - `Resource`
+  - `Article`
+- Reused the existing backend `GET /api/posts?type=...` support instead of adding a new API route.
+- Scoped React Query caching/optimistic like updates by active filter so switching tabs does not cross-pollute lists.
+
+**Файлове:**
+- [MODIFY] apps/mobile/components/community/community-screen.tsx
+- [MODIFY] apps/mobile/components/community/use-community-feed.ts
+- [MODIFY] apps/mobile/components/community/community.styles.ts
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Pending mobile typecheck and device retest after the next APK rebuild.
+
+**Решения:**
+- Close the missing type filter before release because it is a small, visible gap in a shipped mobile feature, while leaving bookmarks as a separate optional parity enhancement.
+- Keep the implementation server-backed so filtered feeds stay aligned with the web contract and future pagination behavior.
+- Next exact step: validate the filter chips in the rebuilt APK while continuing the remaining community smoke rows.
+
+### Session 400 — Single-device notification smoke note
+
+**Какво направихме:**
+- Continued real-device smoke testing of the mobile social flows.
+- Confirmed on one physical phone that:
+  - a newly registered user could post a comment
+  - the comment recipient received a mobile notification for that comment
+- Kept the push signoff status conservative because this was still a same-device validation, not the required two-device messaging-push run.
+
+**Файлове:**
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Manual single-device smoke -> comment notification delivered to the recipient account on the tested phone.
+
+**Решения:**
+- Treat this as useful evidence that the notification pipeline is alive, but not as completion of `SMK-21`..`SMK-23`.
+- Keep the remaining push rows blocked until two physical-device sessions can verify foreground, background tap, and killed-app cold-start behavior end-to-end.
+- Next exact step: secure access to a second phone, then run the two-account/two-device messaging push sequence for `SMK-21`, `SMK-22`, and `SMK-23`.
+
+### Session 401 — Material device smoke confirmation
+
+**Какво направихме:**
+- Continued the real-device APK smoke pass.
+- Confirmed that mobile material upload and download both work on the tested device.
+
+**Файлове:**
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Manual physical-device smoke -> material upload + download pass.
+
+**Решения:**
+- Mark the material file-access row as a real device pass.
+- Continue the remaining device smoke sequence with the unresolved avatar retest, comment keyboard retest, Google login, type-filter retest, and two-device push validation.
+
+### Session 402 — Haptics settings smoke check
+
+**Какво направихме:**
+- Reviewed the mobile haptics implementation while checking the installed APK settings flow.
+- Confirmed in the current repo and on the device that:
+  - `Profile` exposes a `Settings` button
+  - `/settings` renders a `Haptics` toggle in the `Interaction` section
+  - the preference is persisted and gates toast/action haptic feedback
+
+**Файлове:**
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Manual physical-device smoke -> `Settings -> Haptics` toggle is present and enabled haptic feedback fires during an action flow.
+
+**Решения:**
+- Treat haptics-toggle visibility and enabled-state behavior as confirmed in the current APK.
+- No further haptics follow-up is needed for the current release path unless a regression appears.
+
+### Session 403 — Native Google OAuth client correction
+
+**Какво направихме:**
+- Continued the native Google-login release setup immediately before the next APK rebuild.
+- Confirmed that the previously configured Android OAuth client used the wrong SHA-1 for the EAS-signed APK:
+  - old Google Console SHA-1: `ED:B9:01:61:F3:48:6F:DE:D5:AF:BE:F7:EE:79:59:C1:36:12:C7:F3`
+  - current EAS preview signing SHA-1: `A5:30:BD:22:16:20:E3:67:B4:26:00:A7:59:ED:9A:9F:30:CB:87:68`
+- The user created a dedicated Android OAuth client for the EAS signing key:
+  - package: `com.studyhub.mobile`
+  - client ID ending in `4j36bet048rhn7pdhrfuvtsu1migbbcl`
+- Prepared the next APK candidate by bumping Android `versionCode` from `4` to `5`.
+- Synced the release docs so the Android OAuth setup is no longer described as only pending discovery; the remaining live OAuth check is the rebuilt APK sign-in smoke itself plus the still-open web/iOS/consent-screen console confirmations.
+
+**Файлове:**
+- [MODIFY] apps/mobile/app.json
+- [MODIFY] docs/final-release-master-plan.md
+- [MODIFY] docs/security-release-readiness.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Google Console visual confirmation from the user -> old Android client was tied to a different SHA-1
+- EAS Android credentials metadata -> active preview signing SHA-1 remains `A5:30:BD:22:16:20:E3:67:B4:26:00:A7:59:ED:9A:9F:30:CB:87:68`
+
+**Решения:**
+- Keep the old Android client intact and use a separate EAS-release Android client rather than mutating an existing credential tied to another signing key.
+- Move the next APK build to `versionCode: 5` so the user can install it cleanly over the older candidate and retest the collected smoke fixes.
+- Next exact step: update the EAS preview Android client env value to the new EAS-release client ID, build the new APK, then test native Google login on-device.
+
+### Session 404 — Preview APK build 5
+
+**Какво направихме:**
+- Updated EAS `preview` env so `EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID` now points to the new EAS-release Android client ID ending in `4j36bet048rhn7pdhrfuvtsu1migbbcl`.
+- Ran the pre-build mobile validation stack:
+  - mobile typecheck
+  - Expo doctor
+  - mojibake scan
+- Built the next Android preview APK candidate with the accumulated smoke fixes and corrected native OAuth config:
+  - EAS build ID `c3f2212c-5a5e-486a-ad58-311201488b01`
+  - app version `1.0.0`
+  - Android build version `5`
+- Synced the release/mobile smoke docs so build `5` is the current physical-device candidate.
+
+**Файлове:**
+- [MODIFY] apps/mobile/app.json
+- [MODIFY] docs/mobile-release-checklist.md
+- [MODIFY] docs/mobile-smoke-test-matrix.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `eas env:list preview --format long` -> confirmed updated Android Google client ID plus the existing production mobile env values
+- `npm.cmd run typecheck:mobile` -> pass
+- `npx expo-doctor` -> `16/17` pass; only the existing custom Metro-config warning remains
+- `npm.cmd run check:mojibake` -> pass
+- `eas build --platform android --profile preview --non-interactive` -> pass
+- Local APK SHA-256 download verification -> still pending because the first artifact download attempt exceeded the local timeout window
+
+**Решения:**
+- Promote build `c3f2212c-5a5e-486a-ad58-311201488b01` to the current device-test candidate because it is the first APK that includes both the corrected native OAuth client and today's smoke fixes.
+- Do not wait on the local SHA-256 download before resuming device testing; the build is available from EAS and hash verification can be completed afterward without blocking live smoke.
+- Next exact step: install build `5`, test native Google login first, then retest avatar upload, comment-input visibility, mobile type filters, and finally the remaining two-device push rows.
+
+### Session 405 — Native Google redirect mismatch fix
+
+**Какво направихме:**
+- Investigated the first on-device native Google-login attempt on build `5` after it failed with:
+  - `Error 400: redirect_uri_mismatch`
+  - `flowName=GeneralOauthFlow`
+- Found that the mobile auth helper still forced the old Expo proxy redirect for all native builds:
+  - old native redirect: `https://auth.expo.io/@mariva/studyhub-v2`
+- Updated standalone/native auth away from the old Expo proxy redirect.
+- A follow-up code review of the installed Expo Google provider showed that Android native auth should use the provider's own package-based redirect instead of a hand-written app-scheme override:
+  - provider-native redirect: `com.studyhub.mobile:/oauthredirect`
+- Kept the hosted Expo web redirect path unchanged:
+  - `https://studyhub-mobile-mariva.netlify.app/login`
+
+**Файлове:**
+- [MODIFY] apps/mobile/lib/google-auth.ts
+- [MODIFY] docs/final-release-master-plan.md
+- [MODIFY] docs/security-release-readiness.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Expo AuthSession documentation review -> standalone/native apps need a native redirect path, and the Google provider supplies a package-based default for Android when no override is passed
+- Local provider source review -> `expo-auth-session/providers/google` defaults native Android redirect to `${Application.applicationId}:/oauthredirect`
+- Google OAuth documentation review -> the submitted redirect URI must exactly match the configured redirect for the client
+
+**Решения:**
+- Treat build `5` as superseded for native Google-login validation because it still contains the proxy redirect bug.
+- Rebuild once more after this fix; no Google Console web redirect entry is needed for native Android auth, but the Android client may still require its custom-URI-scheme advanced setting if Google enforces it for `com.studyhub.mobile:/oauthredirect`.
+- Next exact step: increment `versionCode`, rebuild, and retry Google login on the next APK candidate before continuing the other smoke retests.
+
+### Session 406 — Native Google provider redirect alignment
+
+**Какво направихме:**
+- Re-opened the native Google OAuth failure after build `5` returned `400 redirect_uri_mismatch` on a real Android phone.
+- Verified the installed Expo Google provider's actual Android behavior in `node_modules`:
+  - if `redirectUri` is omitted, it generates `${Application.applicationId}:/oauthredirect`
+  - for StudyHub that resolves to `com.studyhub.mobile:/oauthredirect`
+- Refined the mobile auth helper so only web passes an explicit redirect URI; native Android now lets the provider choose its own package-based redirect.
+- Bumped Android `versionCode` from `5` to `6` for the next APK candidate.
+- Synced release/security/mobile smoke docs so the open Google-login blocker describes the native Android flow accurately.
+
+**Файлове:**
+- [MODIFY] apps/mobile/lib/google-auth.ts
+- [MODIFY] apps/mobile/app.json
+- [MODIFY] docs/final-release-master-plan.md
+- [MODIFY] docs/security-release-readiness.md
+- [MODIFY] docs/mobile-release-checklist.md
+- [MODIFY] docs/mobile-smoke-test-matrix.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `node_modules/expo-auth-session/src/providers/Google.ts` source review -> native default redirect is `${Application.applicationId}:/oauthredirect`
+- Expo AuthSession docs review -> native standalone apps use app-native redirects and the provider-generated redirect must be preserved consistently across auth and token exchange
+- Google OAuth docs review -> `redirect_uri_mismatch` means the request redirect did not match the OAuth client configuration
+
+**Решения:**
+- Prefer the provider's Android-native default over a hand-written `studyhubv2://redirect` override so the app follows the package-based redirect pattern Expo's Google provider already expects.
+- Treat build `5` as superseded; the next physical-device candidate must be a fresh build with `versionCode: 6`.
+- Before or during the next live Google-login retest, verify the Android OAuth client's advanced custom-URI-scheme setting if Google presents a custom-scheme-specific error.
+
+### Session 407 — Mobile smoke retest confirmations
+
+**Какво направихме:**
+- Recorded the user's latest real-device smoke confirmations after the mobile fixes landed:
+  - avatar upload -> pass
+  - comment field remains visible while the keyboard is open -> pass
+  - community post-type filters -> pass
+- Narrowed the remaining mobile release retest set to:
+  - native Google login
+  - two-device push verification rows `SMK-21`..`SMK-23`
+
+**Файлове:**
+- [MODIFY] docs/mobile-smoke-test-matrix.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Real-device user report on the installed APK -> avatar upload, comment keyboard behavior, and community filters all passed
+
+**Решения:**
+- Keep optional mobile bookmark parity out of the blocker list because the current release gate is focused on failed or mandatory smoke items.
+- Continue Google login as the only open blocker from today's direct-device regression pass.
+
+### Session 408 — Android custom URI scheme console check
+
+**Какво направихме:**
+- Confirmed the exact Google Cloud Console location for the new Android OAuth client's native redirect support:
+  - `Clients` -> Android client -> `Advanced settings` -> `Custom URI scheme`
+- Verified from the user's console screenshot that the Android client exposes the `Enable custom URI scheme` toggle needed by the native redirect path.
+- Prepared the next rebuild gate around enabling that setting before retesting Google login on the next APK.
+
+**Файлове:**
+- [MODIFY] docs/mobile-release-checklist.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- User-provided Google Cloud Console screenshot -> Android client contains the `Enable custom URI scheme` advanced setting
+- Google OAuth docs review -> custom URI scheme support is configured on the Android client and can take time to propagate
+
+**Решения:**
+- Require the Android custom-URI-scheme toggle before the next Google-login retest because build `6` will rely on the provider-native Android redirect.
+- Leave time for Google Console propagation if the first retest immediately after saving still behaves inconsistently.
+
+### Session 409 — Preview APK build 6
+
+**Какво направихме:**
+- Confirmed the Android OAuth client's `Enable custom URI scheme` setting was enabled before rebuilding.
+- Re-ran the focused mobile validation stack:
+  - mobile typecheck
+  - Expo doctor
+  - mojibake scan
+  - public Expo config inspection
+  - EAS preview env inspection
+- Built the next Android preview APK candidate with the native Google OAuth redirect alignment:
+  - EAS build ID `8b8e11cb-9043-4673-82c8-f90435d58a04`
+  - app version `1.0.0`
+  - Android build version `6`
+
+**Файлове:**
+- [MODIFY] apps/mobile/app.json
+- [MODIFY] docs/mobile-release-checklist.md
+- [MODIFY] docs/mobile-smoke-test-matrix.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd run typecheck:mobile` -> pass
+- `npm.cmd run check:mojibake` -> pass
+- `npx expo-doctor` -> `16/17` pass; only the existing custom Metro-config warning remains
+- `npx expo config --type public --json` -> confirmed Android `versionCode: 6`
+- `eas env:list preview --format long` -> confirmed the EAS-release Android client ID remains active
+- `eas build --platform android --profile preview --non-interactive` -> pass
+
+**Решения:**
+- Promote build `8b8e11cb-9043-4673-82c8-f90435d58a04` to the current physical-device candidate.
+- Keep the next retest intentionally narrow: verify Google login first, because the other three same-day fixes already passed on device.
+- Next exact step: install build `6` and retry Google login after allowing a short Google Console propagation window if needed.
+
+### Session 410 — Native callback scheme capture fix
+
+**Какво направихме:**
+- Investigated the next real-device Google-login symptom on build `6`:
+  - the flow reached account selection and consent successfully
+  - after `Continue`, the browser landed on the Google homepage instead of returning to the app
+- Downloaded the built APK artifact and inspected its final Android manifest with `aapt`.
+- Confirmed the concrete mismatch:
+  - provider redirect: `com.studyhub.mobile:/oauthredirect`
+  - APK manifest registered scheme: `studyhubv2`
+  - APK manifest did not register `com.studyhub.mobile`
+- Updated `apps/mobile/app.json` so Android explicitly registers `scheme: "com.studyhub.mobile"` in addition to the existing app-wide `studyhubv2` scheme.
+- Bumped Android `versionCode` from `6` to `7` for the next rebuild candidate.
+
+**Файлове:**
+- [MODIFY] apps/mobile/app.json
+- [MODIFY] docs/final-release-master-plan.md
+- [MODIFY] docs/security-release-readiness.md
+- [MODIFY] docs/mobile-release-checklist.md
+- [MODIFY] docs/mobile-smoke-test-matrix.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `aapt dump xmltree studyhub-build-6.apk AndroidManifest.xml` -> build `6` exposed only `android:scheme="studyhubv2"` on `MainActivity`
+- Local Expo Android config-plugin review -> `android.scheme` values are appended to the redirect intent filter
+- Expo linking docs review -> app schemes must be defined at build time so Android can route deep links back into the installed app
+
+**Решения:**
+- Keep the Expo Google provider's native default redirect instead of overriding it again in JS.
+- Add the missing Android callback scheme at the native config layer so the redirect URI accepted by Google is also handled by the installed APK.
+- Treat build `6` as superseded for native Google acceptance; rebuild as `versionCode: 7` and retest only Google login first.
+
+### Session 411 — Preview APK build 7 with callback scheme
+
+**Какво направихме:**
+- Re-ran focused mobile validation after adding Android callback-scheme support:
+  - mobile typecheck
+  - mojibake scan
+  - Expo doctor
+  - public Expo config inspection
+  - EAS preview env inspection
+- Built the next Android preview APK candidate:
+  - EAS build ID `25044af8-9a37-40df-8ab2-8529bb1f30e7`
+  - app version `1.0.0`
+  - Android build version `7`
+- Downloaded the finished APK artifact and inspected its final Android manifest.
+- Confirmed the new APK now exposes both callback-capable schemes:
+  - `studyhubv2`
+  - `com.studyhub.mobile`
+
+**Файлове:**
+- [MODIFY] apps/mobile/app.json
+- [MODIFY] docs/mobile-release-checklist.md
+- [MODIFY] docs/mobile-smoke-test-matrix.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd run typecheck:mobile` -> pass
+- `npm.cmd run check:mojibake` -> pass
+- `npx expo-doctor` -> `16/17` pass; only the existing custom Metro-config warning remains
+- `npx expo config --type public --json` -> confirmed Android `scheme: "com.studyhub.mobile"` and `versionCode: 7`
+- `eas env:list preview --format long` -> confirmed the same EAS-release Android client env remains active
+- `eas build --platform android --profile preview --non-interactive` -> pass
+- `aapt dump xmltree studyhub-build-7.apk AndroidManifest.xml` -> confirmed both `android:scheme="studyhubv2"` and `android:scheme="com.studyhub.mobile"`
+
+**Решения:**
+- Promote build `25044af8-9a37-40df-8ab2-8529bb1f30e7` to the current physical-device candidate.
+- Keep the next manual retest narrow again: Google login only, because build `7` directly addresses the missing callback-handler defect found in build `6`.
+- Next exact step: install build `7` and retry Google login.
+
+### Session 412 — Expo Router native OAuth callback rewrite
+
+**Какво направихме:**
+- Investigated the build `7` Google-login result after the app finally received the OAuth callback.
+- Confirmed from the user's device screenshot that Google now returns into the installed app, but Expo Router tries to render:
+  - `studyhubv2://oauthredirect?...`
+  - which produces the default `Unmatched Route` screen
+- Added top-level `app/+native-intent.tsx` so native OAuth callback links are rewritten to `/login` before Expo Router treats them as user-facing routes.
+- Bumped Android `versionCode` from `7` to `8` for the next candidate.
+
+**Файлове:**
+- [ADD] apps/mobile/app/+native-intent.tsx
+- [MODIFY] apps/mobile/app.json
+- [MODIFY] docs/final-release-master-plan.md
+- [MODIFY] docs/security-release-readiness.md
+- [MODIFY] docs/mobile-release-checklist.md
+- [MODIFY] docs/mobile-smoke-test-matrix.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Real-device screenshot from build `7` -> callback now reaches the APK as `studyhubv2://oauthredirect?...`
+- Expo Router docs review -> `+native-intent.tsx` is the native hook for rewriting third-party deep links that do not map cleanly to app routes
+- Local code review -> no existing `oauthredirect` route existed under `apps/mobile/app`
+
+**Решения:**
+- Do not spend another build changing Google Console or callback schemes; the app is already receiving the callback correctly.
+- Handle the remaining defect at the Router boundary by rewriting OAuth callback URLs to the existing `/login` route.
+- Because EAS free-plan Android builds are now scarce, require local validation before the next rebuild and keep the next retest to Google login only.
+
+### Session 413 — Preview APK build 8
+
+**Какво направихме:**
+- Re-ran focused local validation before spending the next scarce Android build slot:
+  - mobile typecheck
+  - mojibake scan
+  - public Expo config inspection
+  - Expo doctor
+  - EAS preview env inspection
+- Built the next Android preview APK candidate with the Expo Router native-intent rewrite:
+  - EAS build ID `6739a4be-4b61-4d84-a39a-f5694ff2a713`
+  - app version `1.0.0`
+  - Android build version `8`
+- Recorded the updated EAS build-budget reality from the user's dashboard:
+  - `10 / 15` Android build slots used after this build
+  - `5` Android builds remain on the current free-plan allowance
+
+**Файлове:**
+- [ADD] apps/mobile/app/+native-intent.tsx
+- [MODIFY] apps/mobile/app.json
+- [MODIFY] docs/mobile-release-checklist.md
+- [MODIFY] docs/mobile-smoke-test-matrix.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm.cmd run typecheck:mobile` -> pass
+- `npm.cmd run check:mojibake` -> pass
+- `npx expo config --type public --json` -> confirmed Android `versionCode: 8`
+- `npx expo-doctor` -> `16/17` pass; only the existing custom Metro-config warning remains
+- `eas env:list preview --format long` -> confirmed current preview env values
+- `eas build --platform android --profile preview --non-interactive` -> pass
+
+**Решения:**
+- Promote build `6739a4be-4b61-4d84-a39a-f5694ff2a713` to the current physical-device candidate.
+- Keep build usage conservative from here onward; no further rebuild without a concrete reproduced failure plus a locally verified fix.
+- Next exact step: install build `8` and retry Google login only.
+
+### Session 414 — Google login pass and message composer keyboard fix
+
+**Какво направихме:**
+- Recorded the successful real-device Google-login retest on build `8`.
+- Confirmed the earlier Android keyboard fix had covered the community comment composer, not the direct-message thread composer.
+- Found the same root cause still present in the message thread screen:
+  - Android `KeyboardAvoidingView` still used `undefined`
+- Prepared the matching local fix without spending another APK build:
+  - Android now uses `behavior="height"`
+  - thread `ScrollView` now uses `keyboardShouldPersistTaps="handled"`
+
+**Файлове:**
+- [MODIFY] apps/mobile/components/messages/message-thread-screen.tsx
+- [MODIFY] docs/mobile-smoke-test-matrix.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Real-device user report on build `8` -> native Google login passed
+- Code comparison with the already-fixed community comment screen -> message thread still had the pre-fix Android keyboard behavior
+
+**Решения:**
+- Mark native Google login as passed.
+- Do not trigger another APK build for the message-composer keyboard issue by itself while only `5` Android build slots remain.
+- Carry this local fix into the next build only if a separate release blocker already requires one.

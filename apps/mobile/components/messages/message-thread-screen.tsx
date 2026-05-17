@@ -146,7 +146,7 @@ export function MessageThreadScreen({ conversationId }: { conversationId: number
   return (
     <KeyboardAvoidingView
       style={styles.container}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <View style={[styles.header, { paddingTop: Math.max(insets.top + 12, 56) }]}>
         <TouchableOpacity
@@ -172,6 +172,7 @@ export function MessageThreadScreen({ conversationId }: { conversationId: number
         ref={scrollRef}
         style={styles.threadArea}
         contentContainerStyle={styles.threadContent}
+        keyboardShouldPersistTaps="handled"
         refreshControl={
           <RefreshControl
             refreshing={refreshing}

@@ -102,6 +102,34 @@ export function makeCommunityStyles(colors: AppColors) {
       padding: 16,
       paddingBottom: 80,
     },
+    filterRow: {
+      paddingHorizontal: 16,
+      paddingTop: 14,
+      paddingBottom: 4,
+      gap: 8,
+    },
+    filterChip: {
+      minHeight: 34,
+      borderRadius: 999,
+      paddingHorizontal: 14,
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.borderMuted,
+    },
+    filterChipActive: {
+      backgroundColor: colors.brandPrimary,
+      borderColor: colors.brandPrimary,
+    },
+    filterChipText: {
+      color: colors.textSecondary,
+      fontSize: 13,
+      fontWeight: "700",
+    },
+    filterChipTextActive: {
+      color: colors.textOnBrand,
+    },
     card: {
       backgroundColor: colors.surface,
       borderRadius: 16,

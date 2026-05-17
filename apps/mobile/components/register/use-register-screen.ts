@@ -6,7 +6,7 @@ import { useRouter } from "expo-router";
 
 import { useAuth } from "../../lib/auth-context";
 import { ApiError } from "../../lib/api";
-import { getGoogleRedirectUri } from "../../lib/google-auth";
+import { getGoogleAuthRequestConfig } from "../../lib/google-auth";
 import { validateEmail, validateMinLength, validateRequired } from "../../lib/validation";
 
 WebBrowser.maybeCompleteAuthSession();
@@ -139,11 +139,7 @@ function useGoogleRegister(
   setLoading: (value: boolean) => void,
   setError: (value: string) => void
 ) {
-  const redirectUri = getGoogleRedirectUri();
-  const [request, response, promptAsync] = Google.useAuthRequest({
-    clientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
-    redirectUri,
-  });
+  const [request, response, promptAsync] = Google.useAuthRequest(getGoogleAuthRequestConfig());
 
   const handleGoogleLogin = useCallback(
     async (token: string) => {

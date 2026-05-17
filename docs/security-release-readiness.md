@@ -92,6 +92,8 @@ Public client values:
 - `NEXT_PUBLIC_PUSHER_CLUSTER`
 - `EXPO_PUBLIC_API_URL`
 - `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID`
+- `EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID`
+- `EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID`
 - `EXPO_PUBLIC_SENTRY_*`
 
 Release checks:
@@ -99,12 +101,14 @@ Release checks:
 - [x] Vercel/hosting env vars match the deployed web release target.
 - [x] `ALLOWED_ORIGINS` includes only intended web/mobile origins for the target environment.
 - [x] `ALLOW_DEMO_SEED` is not enabled for production.
-- [ ] EAS preview env values still need final confirmation before the APK build:
+- [x] EAS preview env values confirmed before the APK build:
   - `EXPO_PUBLIC_API_URL`
   - `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID`
+  - `EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID`
+  - `EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID`
   - optional `EXPO_PUBLIC_SENTRY_DSN`
 
-Status note: web production env was validated during the 2026-05-12 deploy smoke pass. Expo/EAS env setup is tracked separately in `docs/mobile-release-checklist.md`.
+Status note: web production env was validated during the 2026-05-12 deploy smoke pass. On 2026-05-16, the EAS `preview` environment was confirmed for the production API URL, Google web/Android/iOS client IDs, Expo web redirect URI, and public Sentry DSN; the current EAS Android signing SHA-1 was confirmed as `A5:30:BD:22:16:20:E3:67:B4:26:00:A7:59:ED:9A:9F:30:CB:87:68`, and the Android client ID was moved to the EAS-release client ending in `4j36bet048rhn7pdhrfuvtsu1migbbcl`. Native APK auth now lets the Expo Google provider use its Android package-based redirect `com.studyhub.mobile:/oauthredirect`; `apps/mobile/app.json` registers both the public `studyhubv2` deep-link scheme and Android-only `com.studyhub.mobile` so the APK can receive native callbacks, while `app/+native-intent.tsx` rewrites OAuth callback links back to `/login` instead of exposing them as user-facing routes. Expo web keeps its hosted `/login` redirect. The preview APK build intentionally uses `SENTRY_DISABLE_AUTO_UPLOAD=true` instead of requiring `SENTRY_AUTH_TOKEN` for source-map upload.
 
 ## Dependency Review
 

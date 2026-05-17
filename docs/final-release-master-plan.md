@@ -30,7 +30,6 @@ Before starting a new session, read:
 - Final-assignment scalability proof:
   - true server-side pagination on remaining large admin collections
   - official 10k+ stress validation dataset and results
-- Official Expo web deployment and URL.
 - Android APK build, device validation, GitHub Release upload, and README link.
 - Physical-device message push validation:
   - `SMK-21`
@@ -284,25 +283,33 @@ Exit criteria:
 - [x] Align version metadata if needed:
   - `apps/mobile/app.json`
   - `apps/mobile/package.json`
-- [ ] Confirm `EXPO_PUBLIC_API_URL` points to production.
+- [x] Confirm `EXPO_PUBLIC_API_URL` points to production.
 - [ ] Confirm Google OAuth production setup:
   - consent screen `Published`
-  - Expo redirect URI present
+  - standalone/native Android auth lets the Expo Google provider use its package-based redirect `com.studyhub.mobile:/oauthredirect`
+  - Android app config explicitly registers `android.scheme: "com.studyhub.mobile"` in addition to the user-facing `studyhubv2` scheme so the APK can receive that redirect
+  - Expo Router rewrites native `/oauthredirect` callbacks to `/login` through `app/+native-intent.tsx` so the OAuth callback is not rendered as a user-facing route
   - Expo web origin and `/login` redirect URI present
   - correct Web OAuth client ID
-- [ ] Confirm EAS env vars:
+  - [x] Android OAuth client present for `com.studyhub.mobile` and the EAS signing-certificate SHA-1
+    - confirmed EAS preview signing SHA-1: `A5:30:BD:22:16:20:E3:67:B4:26:00:A7:59:ED:9A:9F:30:CB:87:68`
+    - Android client ID updated to the EAS-release client ending in `4j36bet048rhn7pdhrfuvtsu1migbbcl`
+  - iOS OAuth client present for bundle ID `com.studyhub.mobile`
+- [x] Confirm EAS env vars:
   - `EXPO_PUBLIC_API_URL`
   - `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID`
+  - `EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID`
+  - `EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID`
   - optional `EXPO_PUBLIC_SENTRY_DSN`
-- [ ] Confirm `SENTRY_AUTH_TOKEN` only if source maps are desired.
+- [x] Confirm `SENTRY_AUTH_TOKEN` only if source maps are desired; preview APK build intentionally disables Sentry auto-upload instead.
 
 #### E2. Build and artifact
 
-- [ ] `cd apps/mobile`
-- [ ] `eas whoami`
-- [ ] `eas build --platform android --profile preview`
-- [ ] If rebuilding after fixes, increment Android `versionCode`.
-- [ ] Download APK from EAS.
+- [x] `cd apps/mobile`
+- [x] `eas whoami`
+- [x] `eas build --platform android --profile preview`
+- [x] If rebuilding after fixes, increment Android `versionCode`.
+- [x] Download APK from EAS.
 - [ ] Create GitHub Release and upload APK.
 - [ ] Add APK link to README.
 
@@ -328,7 +335,7 @@ Exit criteria:
 #### F1. README final pass
 
 - [ ] Add Expo web live URL.
-- [ ] Add APK release link.
+- [ ] Add APK release link in the README `Releases` section.
 - [ ] Update commits badge.
 - [ ] Mark Phase 10 `Done` only when all release deliverables are complete.
 - [ ] Replace old 150-post load-test section with official 10k+ validation results.

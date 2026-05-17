@@ -17,13 +17,28 @@ export type Post = {
   isLiked: boolean;
 };
 
-export function useCommunityFeed() {
+export type CommunityPostTypeFilter =
+  | "all"
+  | "discussion"
+  | "question"
+  | "resource"
+  | "article";
+
+export function useCommunityFeed(postType: CommunityPostTypeFilter) {
   const queryClient = useQueryClient();
+  const feedQueryKey = ["community", "feed", postType] as const;
 
   const query = useQuery({
-    queryKey: ["community", "feed"],
+    queryKey: feedQueryKey,
     queryFn: async () => {
-      const resp = await apiFetch<{ posts: Post[] }>("/api/posts?page=1", { cache: false });
+      const params = new URLSearchParams({ page: "1" });
+      if (postType !== "all") {
+        params.set("type", postType);
+      }
+
+      const resp = await apiFetch<{ posts: Post[] }>(`/api/posts?${params}`, {
+        cache: false,
+      });
       return resp.posts;
     },
   });
@@ -34,10 +49,10 @@ export function useCommunityFeed() {
       return { postId, liked: result.liked };
     },
     onMutate: async (postId) => {
-      await queryClient.cancelQueries({ queryKey: ["community", "feed"] });
-      const previous = queryClient.getQueryData<Post[]>(["community", "feed"]);
+      await queryClient.cancelQueries({ queryKey: feedQueryKey });
+      const previous = queryClient.getQueryData<Post[]>(feedQueryKey);
       
-      queryClient.setQueryData<Post[]>(["community", "feed"], (old) => {
+      queryClient.setQueryData<Post[]>(feedQueryKey, (old) => {
         if (!old) return old;
         return old.map(p => 
           p.id === postId 
@@ -49,7 +64,7 @@ export function useCommunityFeed() {
     },
     onError: (err, variables, context) => {
       if (context?.previous) {
-        queryClient.setQueryData(["community", "feed"], context.previous);
+        queryClient.setQueryData(feedQueryKey, context.previous);
       }
     },
     onSettled: () => {
@@ -59,8 +74,8 @@ export function useCommunityFeed() {
 
   useFocusEffect(
     useCallback(() => {
-      void queryClient.invalidateQueries({ queryKey: ["community", "feed"] });
-    }, [queryClient])
+      void queryClient.invalidateQueries({ queryKey: feedQueryKey });
+    }, [feedQueryKey, queryClient])
   );
 
   const refresh = useCallback(() => {

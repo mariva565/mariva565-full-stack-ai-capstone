@@ -36,6 +36,27 @@
 
 ---
 
+## Table of Contents
+
+- [Live Demo](#live-demo)
+- [Releases](#releases)
+- [Product Preview](#product-preview)
+- [Mobile Preview](#mobile-preview)
+- [About the Project](#about-the-project)
+- [Progress Roadmap](#progress-roadmap)
+- [System Architecture](#system-architecture)
+- [Authentication Flow](#authentication-flow)
+- [User Roles](#user-roles)
+- [Database Schema](#database-schema)
+- [Screens](#screens)
+- [API Endpoints](#api-endpoints)
+- [Security Baseline](#security-baseline)
+- [Demo Walkthrough](#demo-walkthrough)
+- [Demo Credentials](#demo-credentials)
+- [Quick Setup](#quick-setup)
+- [Scalability Validation](#scalability-validation-10-000-records)
+- [File Storage](#file-storage--vercel-blob)
+
 ## Live Demo
 
 | Platform | Link |
@@ -45,6 +66,12 @@
 | Mobile APK | `TBD — EAS Build planned` |
 
 Demo credentials: see [Demo Credentials](#demo-credentials)
+
+## Releases
+
+| Artifact | Link |
+|---|---|
+| Android APK | `TBD - GitHub Release after final device validation` |
 
 ## Product Preview
 

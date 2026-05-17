@@ -1,5 +1,13 @@
 import { useState } from "react";
-import { ActivityIndicator, Alert, Image, Text, TouchableOpacity, View } from "react-native";
+import {
+  ActivityIndicator,
+  Alert,
+  Image,
+  Platform,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { uploadFile } from "../../lib/api";
 
@@ -11,6 +19,13 @@ type AvatarUploadButtonProps = {
     avatarCircle: object;
     avatarText: object;
   };
+};
+
+const AVATAR_PICKER_OPTIONS = {
+  mediaTypes: ImagePicker.MediaTypeOptions.Images,
+  allowsEditing: Platform.OS === "ios",
+  aspect: [1, 1] as [number, number],
+  quality: 0.8,
 };
 
 export function AvatarUploadButton({
@@ -48,18 +63,8 @@ export function AvatarUploadButton({
 
     const result =
       source === "camera"
-        ? await ImagePicker.launchCameraAsync({
-            mediaTypes: ["images"],
-            allowsEditing: true,
-            aspect: [1, 1],
-            quality: 0.8,
-          })
-        : await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ["images"],
-            allowsEditing: true,
-            aspect: [1, 1],
-            quality: 0.8,
-          });
+        ? await ImagePicker.launchCameraAsync(AVATAR_PICKER_OPTIONS)
+        : await ImagePicker.launchImageLibraryAsync(AVATAR_PICKER_OPTIONS);
 
     if (result.canceled || !result.assets?.[0]) return;
 

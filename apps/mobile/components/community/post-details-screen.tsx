@@ -115,7 +115,7 @@ export function PostDetailsScreen({ postId }: { postId: number }) {
   return (
     <KeyboardAvoidingView 
       style={styles.container}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       {/* Header */}
       <View style={{ flexDirection: "row", alignItems: "center", padding: 16, paddingTop: Math.max(insets.top + 12, 56), backgroundColor: colors.surface, borderBottomWidth: 1, borderBottomColor: colors.borderMuted }}>
@@ -125,7 +125,10 @@ export function PostDetailsScreen({ postId }: { postId: number }) {
         <Text style={{ fontSize: 18, fontWeight: "700", color: colors.titlePrimary }}>Post Details</Text>
       </View>
 
-      <ScrollView contentContainerStyle={[styles.list, { paddingBottom: 88 + Math.max(insets.bottom, 12) }]}>
+      <ScrollView
+        contentContainerStyle={[styles.list, { paddingBottom: 88 + Math.max(insets.bottom, 12) }]}
+        keyboardShouldPersistTaps="handled"
+      >
         {/* Post Card body */}
         <View style={styles.card}>
           <View style={styles.cardHeader}>

@@ -4,6 +4,7 @@
     "slug": "studyhub-v2",
     "scheme": "studyhubv2",
     "version": "1.0.0",
+    "icon": "./assets/branding/app-icon.png",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
     "ios": {
@@ -17,8 +18,17 @@
     },
     "android": {
       "package": "com.studyhub.mobile",
-      "versionCode": 1,
-      "permissions": ["android.permission.CAMERA", "android.permission.READ_MEDIA_IMAGES", "android.permission.READ_EXTERNAL_STORAGE"]
+      "scheme": "com.studyhub.mobile",
+      "versionCode": 8,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/branding/adaptive-icon-foreground.png",
+        "backgroundColor": "#f8f6ff"
+      },
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.READ_MEDIA_IMAGES",
+        "android.permission.READ_EXTERNAL_STORAGE"
+      ]
     },
     "web": {
       "output": "single"
@@ -27,7 +37,12 @@
       "expo-router",
       "expo-secure-store",
       "expo-notifications",
-      ["expo-image-picker", { "photosPermission": "StudyHub accesses your photos to upload study materials and profile pictures." }],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "StudyHub accesses your photos to upload study materials and profile pictures."
+        }
+      ],
       "expo-document-picker",
       [
         "@sentry/react-native/expo",
@@ -36,7 +51,8 @@
           "organization": "studyhub-project",
           "project": "react-native"
         }
-      ]
+      ],
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true
