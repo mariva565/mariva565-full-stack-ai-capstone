@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { Animated, KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { Stack } from "expo-router";
 
@@ -78,20 +80,41 @@ function EmailField({ viewModel }: RegisterScreenProps) {
 }
 
 function PasswordField({ viewModel }: RegisterScreenProps) {
+  const [passwordVisible, setPasswordVisible] = useState(false);
+
   return (
     <View style={styles.inputGroup}>
       <Text style={styles.inputLabel}>Password</Text>
-      <TextInput
-        style={[styles.input, viewModel.focusedField === "password" && styles.inputFocused]}
-        placeholder="Min. 6 characters"
-        placeholderTextColor={COLORS.textMuted}
-        value={viewModel.password}
-        onChangeText={viewModel.setPassword}
-        onFocus={() => viewModel.onFocusField("password")}
-        onBlur={() => viewModel.onBlurField("password")}
-        secureTextEntry
-        textContentType="newPassword"
-      />
+      <View
+        style={[
+          styles.passwordField,
+          viewModel.focusedField === "password" && styles.inputFocused,
+        ]}
+      >
+        <TextInput
+          style={styles.passwordInput}
+          placeholder="Min. 6 characters"
+          placeholderTextColor={COLORS.textMuted}
+          value={viewModel.password}
+          onChangeText={viewModel.setPassword}
+          onFocus={() => viewModel.onFocusField("password")}
+          onBlur={() => viewModel.onBlurField("password")}
+          secureTextEntry={!passwordVisible}
+          textContentType="newPassword"
+        />
+        <TouchableOpacity
+          style={styles.passwordToggle}
+          onPress={() => setPasswordVisible((current) => !current)}
+          accessibilityRole="button"
+          accessibilityLabel={passwordVisible ? "Hide password" : "Show password"}
+        >
+          <Ionicons
+            name={passwordVisible ? "eye-off-outline" : "eye-outline"}
+            size={20}
+            color={COLORS.textMuted}
+          />
+        </TouchableOpacity>
+      </View>
       {viewModel.touched.password && viewModel.passwordError ? (
         <Text style={styles.fieldErrorText}>{viewModel.passwordError}</Text>
       ) : null}

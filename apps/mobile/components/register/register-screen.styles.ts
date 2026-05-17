@@ -52,6 +52,26 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     color: COLORS.textPrimary,
   },
+  passwordField: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: COLORS.surfaceSoft,
+    borderWidth: 1.5,
+    borderColor: COLORS.borderMuted,
+    borderRadius: 12,
+  },
+  passwordInput: {
+    flex: 1,
+    paddingLeft: 16,
+    paddingVertical: 14,
+    fontSize: 16,
+    color: COLORS.textPrimary,
+  },
+  passwordToggle: {
+    width: 48,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   inputFocused: {
     borderColor: COLORS.brandPrimary,
     backgroundColor: COLORS.surfaceHighlight,

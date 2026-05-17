@@ -111,10 +111,10 @@ Release checks:
 Status note: web production env was validated during the 2026-05-12 deploy smoke pass. On 2026-05-16, the EAS `preview` environment was confirmed for the production API URL, Google web/Android/iOS client IDs, Expo web redirect URI, and public Sentry DSN; the current EAS Android signing SHA-1 was confirmed as `A5:30:BD:22:16:20:E3:67:B4:26:00:A7:59:ED:9A:9F:30:CB:87:68`, and the Android client ID was moved to the EAS-release client ending in `4j36bet048rhn7pdhrfuvtsu1migbbcl`. Native APK auth now lets the Expo Google provider use its Android package-based redirect `com.studyhub.mobile:/oauthredirect`; `apps/mobile/app.json` registers both the public `studyhubv2` deep-link scheme and Android-only `com.studyhub.mobile` so the APK can receive native callbacks, while `app/+native-intent.tsx` rewrites OAuth callback links back to `/login` instead of exposing them as user-facing routes. Expo web keeps its hosted `/login` redirect. The preview APK build intentionally uses `SENTRY_DISABLE_AUTO_UPLOAD=true` instead of requiring `SENTRY_AUTH_TOKEN` for source-map upload.
 
 Mobile push note (2026-05-17):
-- The Android standalone APK is not yet release-ready for native push delivery because Firebase/FCM setup is still incomplete:
-  - `apps/mobile/google-services.json` and `android.googleServicesFile` are now in place
-  - no recorded confirmation yet that the EAS Android app identifier has an attached FCM V1 service-account key
-- This is why `SMK-21`..`SMK-23` remain blocked even though the in-app push code path already exists.
+- Native Android Firebase/FCM setup is now complete for the next standalone APK:
+  - `apps/mobile/google-services.json` and `android.googleServicesFile` are in place
+  - EAS Credentials shows an FCM V1 service-account key for Firebase project `studyhub-56b8a`
+- `SMK-21`..`SMK-23` remain blocked only until a fresh FCM-enabled APK is built and validated on physical devices.
 
 ## Dependency Review
 

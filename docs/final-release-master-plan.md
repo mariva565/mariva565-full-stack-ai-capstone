@@ -301,11 +301,11 @@ Exit criteria:
   - `EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID`
   - `EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID`
   - optional `EXPO_PUBLIC_SENTRY_DSN`
-- [ ] Confirm Android push prerequisites before the next APK rebuild:
+- [x] Confirm Android push prerequisites before the next APK rebuild:
   - [x] Firebase Android app registered for package `com.studyhub.mobile`
   - [x] `apps/mobile/google-services.json` present
   - [x] `apps/mobile/app.json` declares `android.googleServicesFile: "./google-services.json"`
-  - FCM V1 service-account key attached in EAS Credentials for the Android app identifier
+  - [x] FCM V1 service-account key attached in EAS Credentials for the Android app identifier
 - [x] Confirm `SENTRY_AUTH_TOKEN` only if source maps are desired; preview APK build intentionally disables Sentry auto-upload instead.
 
 #### E2. Build and artifact

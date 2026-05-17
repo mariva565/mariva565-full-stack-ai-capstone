@@ -12950,3 +12950,67 @@ Page routes обхождат API guard-ите (зареждат директно
 **Решения:**
 - Commit `google-services.json` with the app because it is the public Android Firebase config file; keep the separate FCM V1 service-account JSON out of git because that one is private.
 - Do not spend EAS build slot `11 / 15` yet; first attach the FCM V1 key in EAS Credentials so the next APK can actually validate `SMK-21`..`SMK-23`.
+
+### Session 426 — FCM V1 EAS credential confirmed
+
+**Какво направихме:**
+- Confirmed the service-account JSON exists locally outside the repo and is the private `service_account` key file for the StudyHub Firebase project.
+- Confirmed from the EAS Credentials screen that Android now has an attached `FCM V1 service account key` for Firebase project:
+  - `studyhub-56b8a`
+- Synced the mobile/release docs so the blocker is no longer described as missing setup:
+  - Android Firebase/FCM configuration is complete
+  - the next open step is one fresh FCM-enabled APK build followed by physical-device validation of `SMK-21`..`SMK-23`
+
+**Файлове:**
+- [MODIFY] docs/final-release-master-plan.md
+- [MODIFY] docs/mobile-release-checklist.md
+- [MODIFY] docs/mobile-execution-checklist.md
+- [MODIFY] docs/mobile-smoke-test-matrix.md
+- [MODIFY] docs/security-release-readiness.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- EAS Credentials screenshot review -> `FCM V1 service account key` present for `studyhub-56b8a`
+- `npx expo config --type public --json` -> still exposes `android.googleServicesFile: "./google-services.json"`
+
+**Решения:**
+- No additional mandatory Firebase/Expo settings remain before the next Android APK build.
+- Keep `SMK-21`..`SMK-23` blocked until a new binary containing the native Firebase config is installed and tested on real devices.
+
+### Session 427 — Launcher label cleanup queued for a future rebuild
+
+**Какво направихме:**
+- Updated the mobile app display name in Expo config from `StudyHub v2` to `StudyHub`.
+- Kept the just-finished Android build `11` / app `versionCode 9` as-is instead of spending another scarce build slot only for launcher-label cleanup.
+
+**Файлове:**
+- [MODIFY] apps/mobile/app.json
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Config-only change; no new Android build triggered for this cosmetic adjustment
+
+**Решения:**
+- Queue the cleaner launcher label for the next genuinely necessary rebuild rather than burning a build slot solely to remove `v2` from the phone label.
+
+### Session 428 — Mobile password visibility toggles
+
+**Какво направихме:**
+- Added show/hide password controls to both mobile auth screens:
+  - login
+  - register
+- Reused the existing auth field styling and added accessible eye-button labels for both states.
+
+**Файлове:**
+- [MODIFY] apps/mobile/components/login/login-screen.tsx
+- [MODIFY] apps/mobile/components/login/login-screen.styles.ts
+- [MODIFY] apps/mobile/components/register/register-screen.tsx
+- [MODIFY] apps/mobile/components/register/register-screen.styles.ts
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm --workspace @studyhub/mobile run typecheck` -> pass
+
+**Решения:**
+- Keep the toggle local to each password field instead of widening the auth view-model surface for a tiny UI-only state.
+- Queue this for the next necessary rebuild rather than spending a fresh Android build slot only for a small auth polish item.

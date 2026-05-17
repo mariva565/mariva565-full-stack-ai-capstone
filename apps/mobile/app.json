@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "StudyHub v2",
+    "name": "StudyHub",
     "slug": "studyhub-v2",
     "scheme": "studyhubv2",
     "version": "1.0.0",
@@ -19,7 +19,7 @@
     "android": {
       "package": "com.studyhub.mobile",
       "scheme": "com.studyhub.mobile",
-      "versionCode": 8,
+      "versionCode": 9,
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/branding/adaptive-icon-foreground.png",

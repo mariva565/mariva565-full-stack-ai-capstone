@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { Animated, KeyboardAvoidingView, Platform, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { Stack } from "expo-router";
 
@@ -56,20 +58,36 @@ function EmailField({ viewModel }: LoginScreenProps) {
 }
 
 function PasswordField({ viewModel }: LoginScreenProps) {
+  const [passwordVisible, setPasswordVisible] = useState(false);
+
   return (
     <View style={styles.inputGroup}>
       <Text style={styles.inputLabel}>Password</Text>
-      <TextInput
-        style={[styles.input, viewModel.passwordFocused && styles.inputFocused]}
-        placeholder="********"
-        placeholderTextColor={COLORS.textMuted}
-        value={viewModel.password}
-        onChangeText={viewModel.setPassword}
-        onFocus={viewModel.onPasswordFocus}
-        onBlur={viewModel.onPasswordBlur}
-        secureTextEntry
-        textContentType="password"
-      />
+      <View style={[styles.passwordField, viewModel.passwordFocused && styles.inputFocused]}>
+        <TextInput
+          style={styles.passwordInput}
+          placeholder="********"
+          placeholderTextColor={COLORS.textMuted}
+          value={viewModel.password}
+          onChangeText={viewModel.setPassword}
+          onFocus={viewModel.onPasswordFocus}
+          onBlur={viewModel.onPasswordBlur}
+          secureTextEntry={!passwordVisible}
+          textContentType="password"
+        />
+        <TouchableOpacity
+          style={styles.passwordToggle}
+          onPress={() => setPasswordVisible((current) => !current)}
+          accessibilityRole="button"
+          accessibilityLabel={passwordVisible ? "Hide password" : "Show password"}
+        >
+          <Ionicons
+            name={passwordVisible ? "eye-off-outline" : "eye-outline"}
+            size={20}
+            color={COLORS.textMuted}
+          />
+        </TouchableOpacity>
+      </View>
       {viewModel.touched.password && viewModel.passwordError ? (
         <Text style={styles.fieldErrorText}>{viewModel.passwordError}</Text>
       ) : null}
