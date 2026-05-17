@@ -56,6 +56,7 @@ export default function TabsLayout() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { colors } = useTheme();
+  const { user } = useAuth();
   const unreadCount = useInboxUnreadCount();
 
   function renderTabLabel(label: string, focused: boolean) {
@@ -70,6 +71,16 @@ export default function TabsLayout() {
         {label}
       </Text>
     );
+  }
+
+  function getProfileTabLabel(): string {
+    const displayName = user?.name.trim();
+    if (!displayName) {
+      return "Profile";
+    }
+
+    const firstName = displayName.split(/\s+/)[0] ?? displayName;
+    return firstName.length > 12 ? `${firstName.slice(0, 11)}...` : firstName;
   }
 
   return (
@@ -159,7 +170,7 @@ export default function TabsLayout() {
         name="profile"
         options={{
           title: "Profile",
-          tabBarLabel: ({ focused }) => renderTabLabel("Profile", focused),
+          tabBarLabel: ({ focused }) => renderTabLabel(getProfileTabLabel(), focused),
           tabBarIcon: ({ focused }) => (
             <TabIcon
               name="user"

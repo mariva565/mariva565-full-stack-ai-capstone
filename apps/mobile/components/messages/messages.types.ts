@@ -30,4 +30,5 @@ export type ConversationMessage = {
 export type ConversationThreadResponse = {
   messages: ConversationMessage[];
   other: ConversationOtherUser | null;
+  otherLastReadAt: string | null;
 };

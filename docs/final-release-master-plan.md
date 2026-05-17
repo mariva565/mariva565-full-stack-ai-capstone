@@ -1,6 +1,6 @@
 # StudyHub v2 — Final Release Master Plan
 
-Last updated: 2026-05-16  
+Last updated: 2026-05-17  
 Owner: release stream  
 Purpose: single source of truth for the final capstone stretch after the 2026-05-16 assignment update
 
@@ -301,6 +301,11 @@ Exit criteria:
   - `EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID`
   - `EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID`
   - optional `EXPO_PUBLIC_SENTRY_DSN`
+- [ ] Confirm Android push prerequisites before the next APK rebuild:
+  - [x] Firebase Android app registered for package `com.studyhub.mobile`
+  - [x] `apps/mobile/google-services.json` present
+  - [x] `apps/mobile/app.json` declares `android.googleServicesFile: "./google-services.json"`
+  - FCM V1 service-account key attached in EAS Credentials for the Android app identifier
 - [x] Confirm `SENTRY_AUTH_TOKEN` only if source maps are desired; preview APK build intentionally disables Sentry auto-upload instead.
 
 #### E2. Build and artifact
@@ -321,7 +326,7 @@ Exit criteria:
 - [ ] Avatar upload.
 - [ ] Material upload/download.
 - [ ] Community post create/like/bookmark.
-- [ ] Run `SMK-21`, `SMK-22`, `SMK-23` with two accounts.
+- [ ] Run `SMK-21`, `SMK-22`, `SMK-23` with two accounts after the Firebase/FCM-enabled APK registers a fresh native push token.
 - [ ] Update:
   - `docs/mobile-smoke-test-matrix.md`
   - `docs/mobile-release-checklist.md`

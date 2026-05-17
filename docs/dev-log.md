@@ -12721,3 +12721,232 @@ Page routes обхождат API guard-ите (зареждат директно
 **Решения:**
 - Prefer obvious icon-plus-label actions over relying on users to remember that chats can only begin from a post or QR handoff.
 - Keep the fix local for now; it belongs in the next build only if another blocker already requires one.
+
+### Session 417 — Mobile release handoff checkpoint
+
+**Какво направихме:**
+- Captured the exact end-of-session mobile release state before handing off to a new chat:
+  - native Google login now passes on preview APK build `8`
+  - current accepted device-test build: `6739a4be-4b61-4d84-a39a-f5694ff2a713`
+  - Android build usage after build `8`: `10 / 15`, with `5` Android build slots remaining
+- Confirmed that the remaining push blocker is no longer speculative:
+  - `testapk@test.test` had `0` push tokens in production DB
+  - production DB contained only one old Expo-Go-era token for `admin@studyhub.dev`
+  - no native Android `google-services.json` / `android.googleServicesFile` setup exists yet
+  - therefore `SMK-21`..`SMK-23` cannot pass until Android Firebase/FCM setup is completed
+- Recorded the local-only, not-yet-built mobile fixes currently waiting behind the build budget:
+  - direct-message composer keyboard avoidance
+  - Community refresh-loop spinner fix
+  - Inbox conversation-start discoverability actions
+- Confirmed unread message badges work after refresh/restart; the direct blocker left is native push registration, not unread-count correctness.
+
+**Файлове:**
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Production DB read for `testapk@test.test` -> `0` push tokens
+- Production DB read for `user_push_tokens` -> only one legacy `app_ownership: "expo"` token remained
+- Real-device testing -> Google login passed on build `8`; unread badges appeared after restart
+
+**Решения:**
+- Next chat should resume from Android Firebase/FCM setup before spending another EAS Android build slot.
+- Do not rebuild merely for the local UX fixes while only `5` Android build slots remain.
+- Suggested next-chat prompt:
+  - `Read docs/dev-log.md, docs/final-release-master-plan.md, docs/implementation-plan.md, docs/performance-guardrails.md, docs/mobile-release-checklist.md, docs/mobile-smoke-test-matrix.md, and docs/security-release-readiness.md, then continue from the Android Firebase/FCM setup blocker for SMK-21 to SMK-23.`
+
+### Session 418 — Android FCM blocker clarification without rebuild
+
+**Какво направихме:**
+- Re-read the release/mobile/security handoff docs and inspected the current push-notification implementation before spending another scarce Android build slot.
+- Confirmed the runtime push code path is already present:
+  - `expo-notifications` is integrated
+  - the app requests permissions, gets an Expo push token with the EAS `projectId`, registers it through `/api/mobile/push-token`, and routes message/comment taps back into the app
+- Confirmed the concrete native Android gap still open in the repo:
+  - no `apps/mobile/google-services.json`
+  - no `android.googleServicesFile` entry in `apps/mobile/app.json`
+  - therefore the next useful release step is Firebase/FCM setup, not another blind rebuild
+- Synced the mobile release docs so they now distinguish:
+  - the already-working JS notification flow
+  - the missing native Android Firebase/FCM prerequisite
+  - the exact no-build-until-ready gate for the next APK candidate
+
+**Файлове:**
+- [MODIFY] docs/mobile-release-checklist.md
+- [MODIFY] docs/mobile-smoke-test-matrix.md
+- [MODIFY] docs/mobile-execution-checklist.md
+- [MODIFY] docs/final-release-master-plan.md
+- [MODIFY] docs/security-release-readiness.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Official Expo/Firebase docs review -> Android Expo push requires both a Firebase Android config file (`google-services.json`) and an FCM V1 service-account setup for EAS push delivery
+- `rg` review over `apps/mobile` / docs -> no existing `google-services.json` or `android.googleServicesFile`
+- `npx expo config --type public --json` -> current public Expo config exposes no `android.googleServicesFile`
+- `npx expo-doctor` -> `16/17` pass; only the existing custom Metro-config warning remains
+
+**Решения:**
+- Do not spend the next EAS Android build slot (`11 / 15`) until Firebase Android config and FCM V1 credentials are in place and locally visible in the Expo config.
+- Keep the next rebuild intentionally purposeful: it should carry both the pending local UX fixes and the Android FCM setup needed for `SMK-21`..`SMK-23`.
+- Next exact step:
+  - register/download the Firebase Android config for package `com.studyhub.mobile`
+  - add `apps/mobile/google-services.json`
+  - wire `android.googleServicesFile`
+  - attach the FCM V1 service-account key in EAS Credentials
+  - only then rebuild and rerun the push smoke rows
+
+### Session 419 — Inbox start-chat discoverability follow-up
+
+**Какво направихме:**
+- Tightened the conversation-start affordance so new users do not land in an inbox that looks read-only.
+- Mobile inbox:
+  - added a visible `+` action in the header that routes to Community as the primary new-chat entry point
+  - kept the already-prepared `Scan QR` and `Community` actions visible below the header for explicit guidance
+- Web inbox:
+  - added a `New message` action in the header
+  - added a `Browse Community` CTA in the empty state
+  - updated the empty-state copy so the next action is explicit instead of implied
+
+**Файлове:**
+- [MODIFY] apps/mobile/components/messages/messages-inbox-screen.tsx
+- [MODIFY] apps/mobile/components/messages/messages.styles.ts
+- [MODIFY] apps/web/components/messages/messages-inbox.tsx
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Code review only in this slice; the next relevant runtime verification belongs with the next mobile build that is already waiting on Android Firebase/FCM setup.
+
+**Решения:**
+- Reuse the existing start-chat paths instead of inventing a new people-directory flow during release hardening.
+- Keep the mobile `+` action and the explicit helper actions together: the icon gives speed for returning users, while the labeled actions teach the flow to first-time users.
+
+### Session 420 — Mobile AI/tool real-device confirmations
+
+**Какво направихме:**
+- Recorded the user's latest real-device mobile confirmations:
+  - AI chatbot works
+  - PDF text extraction into a note works
+  - AI summary generation from that extracted PDF text works
+- Synced the mobile smoke run log so these checks remain visible in the release handoff trail.
+
+**Файлове:**
+- [MODIFY] docs/mobile-smoke-test-matrix.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Real-device user report on the current mobile candidate -> AI chatbot, PDF extract-to-note, and AI summary all passed
+
+**Решения:**
+- Treat these as supplementary passed feature checks; the only open mobile release blocker remains native Android push setup plus `SMK-21`..`SMK-23`.
+
+### Session 421 — Profile tab current-account label
+
+**Какво направихме:**
+- Updated the mobile bottom navigation so the Profile tab shows the current user's first name instead of the generic `Profile` label.
+- Added a compact truncation rule for long first names to preserve the fixed tab-bar layout on smaller screens.
+- Kept the screen title itself as `Profile`; only the bottom-tab label changes.
+
+**Файлове:**
+- [MODIFY] apps/mobile/app/(tabs)/_layout.tsx
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Pending next mobile typecheck pass after the edit batch
+
+**Решения:**
+- Prefer a lightweight current-account cue in the always-visible tab bar over requiring testers to open the profile screen just to confirm which account is active.
+
+### Session 422 — Profile edit label precision
+
+**Какво направихме:**
+- Renamed the mobile profile action from `Edit Profile` to `Edit Name`, because that flow currently edits only the display name.
+- Updated the accessibility label/hint to match the narrower behavior.
+
+**Файлове:**
+- [MODIFY] apps/mobile/components/profile-tab/profile-tab-screen.tsx
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Pending next mobile typecheck pass after the edit batch
+
+**Решения:**
+- Keep the copy truthful to the implemented scope instead of implying avatar/email/settings editing inside the same action.
+
+### Session 423 — Profile edit copy correction
+
+**Какво направихме:**
+- Revisited the previous profile-copy change after confirming avatar upload is also available on the same screen through the profile photo control.
+- Restored the visible button label to `Edit Profile`.
+- Refined the accessibility hint so it explains the actual split interaction:
+  - the button enables display-name editing
+  - the avatar changes from the profile photo above
+
+**Файлове:**
+- [MODIFY] apps/mobile/components/profile-tab/profile-tab-screen.tsx
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Pending next mobile typecheck pass after the correction
+
+**Решения:**
+- Preserve the broader visible label because the profile screen supports more than name editing, while using the hint text to clarify how the two edit affordances are split.
+
+### Session 424 — Direct-message sent/seen receipts
+
+**Какво направихме:**
+- Added direct-message read receipt support without a schema change by reusing the existing `conversation_members.last_read_at` cursor.
+- Extended the conversation thread API to return the other participant's latest read timestamp and emit a `messages-read` Pusher event only when the current user's read cursor actually advances.
+- Added one-check / two-check delivery indicators in both mobile and web message bubbles:
+  - one check for server-accepted sent messages
+  - two checks after the other participant has read through that message
+- Added a `Seen HH:MM` label on the latest own message that the other participant has read.
+- Kept the mobile implementation compatible with the existing 15-second thread polling, while web threads now update read state live through the new Pusher event.
+
+**Файлове:**
+- [MODIFY] apps/web/app/api/conversations/[id]/messages/route.ts
+- [MODIFY] apps/mobile/components/messages/messages.types.ts
+- [MODIFY] apps/mobile/components/messages/use-message-thread.ts
+- [MODIFY] apps/mobile/components/messages/message-thread-screen.tsx
+- [MODIFY] apps/mobile/components/messages/messages.styles.ts
+- [MODIFY] apps/web/components/messages/chat-message-bubble.tsx
+- [MODIFY] apps/web/components/messages/chat-window.tsx
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm --workspace @studyhub/mobile run typecheck` -> pass
+- `npm --workspace @studyhub/web run typecheck` -> pass
+
+**Решения:**
+- Treat "sent" as a message already accepted by the API and persisted in the thread, so no extra message-status table is needed for this release scope.
+- Reuse `last_read_at` instead of introducing a new read-receipts schema, because the product only needs 1:1 direct-message status and the current cursor is sufficient for that.
+- Show the explicit read time only once, on the latest own message read by the other user, so the thread stays informative without repeating the same state under every bubble.
+
+### Session 425 — Firebase Android config wired
+
+**Какво направихме:**
+- Confirmed the newly downloaded Firebase Android config targets the correct StudyHub package:
+  - `com.studyhub.mobile`
+- Copied the public Firebase Android config into:
+  - `apps/mobile/google-services.json`
+- Added the Expo Android config hook:
+  - `android.googleServicesFile: "./google-services.json"`
+- Synced release/mobile docs so the remaining blocker is now precise:
+  - repo-side Firebase Android config is done
+  - only the FCM V1 service-account key attachment in EAS Credentials remains before the next push-capable APK build
+
+**Файлове:**
+- [ADD] apps/mobile/google-services.json
+- [MODIFY] apps/mobile/app.json
+- [MODIFY] docs/final-release-master-plan.md
+- [MODIFY] docs/mobile-release-checklist.md
+- [MODIFY] docs/mobile-execution-checklist.md
+- [MODIFY] docs/mobile-smoke-test-matrix.md
+- [MODIFY] docs/security-release-readiness.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Firebase config inspection -> package name is `com.studyhub.mobile`
+- `npx expo config --type public --json` -> exposes `android.googleServicesFile: "./google-services.json"`
+
+**Решения:**
+- Commit `google-services.json` with the app because it is the public Android Firebase config file; keep the separate FCM V1 service-account JSON out of git because that one is private.
+- Do not spend EAS build slot `11 / 15` yet; first attach the FCM V1 key in EAS Credentials so the next APK can actually validate `SMK-21`..`SMK-23`.

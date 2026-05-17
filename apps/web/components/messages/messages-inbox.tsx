@@ -89,13 +89,30 @@ export function MessagesInbox({ currentUserId, initialConversations }: MessagesI
 
   return (
     <PageBackgroundShell contentClassName="max-w-2xl px-4 py-8 sm:px-6">
-      <div className="mb-6">
-        <h1 className="bg-v1-gradient bg-clip-text font-shantell text-3xl font-black tracking-tight text-transparent">
-          Messages
-        </h1>
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-          Your conversations
-        </p>
+      <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h1 className="bg-v1-gradient bg-clip-text font-shantell text-3xl font-black tracking-tight text-transparent">
+            Messages
+          </h1>
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+            Your conversations
+          </p>
+        </div>
+
+        <Link
+          href="/community"
+          className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-brand-500 via-fuchsia-500 to-cyan-500 px-4 py-2.5 text-sm font-semibold text-white shadow-[0_16px_30px_rgba(99,102,241,0.22)] transition hover:-translate-y-0.5"
+        >
+          <svg
+            className="h-4 w-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v14m7-7H5" />
+          </svg>
+          New message
+        </Link>
       </div>
 
       {conversations.length === 0 ? (
@@ -107,8 +124,14 @@ export function MessagesInbox({ currentUserId, initialConversations }: MessagesI
             No conversations yet
           </p>
           <p className="mt-1 text-sm text-slate-400 dark:text-slate-500">
-            Start a conversation from a community post.
+            Start from Community to open a conversation with someone.
           </p>
+          <Link
+            href="/community"
+            className="mt-5 inline-flex items-center gap-2 rounded-full border border-brand-200 bg-white/85 px-4 py-2.5 text-sm font-semibold text-brand-700 shadow-sm transition hover:-translate-y-0.5 hover:border-brand-300 hover:text-brand-800 dark:border-brand-500/30 dark:bg-slate-950/60 dark:text-brand-200 dark:hover:border-brand-400/50"
+          >
+            Browse Community
+          </Link>
         </div>
       ) : (
         <div className="space-y-2">

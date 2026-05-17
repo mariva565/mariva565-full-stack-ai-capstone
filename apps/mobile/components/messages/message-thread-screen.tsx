@@ -38,13 +38,44 @@ function formatTime(dateIso: string): string {
   });
 }
 
+function getTimeMs(dateIso: string | null): number {
+  return dateIso ? new Date(dateIso).getTime() : 0;
+}
+
+function isSeen(message: ConversationMessage, otherLastReadAt: string | null): boolean {
+  return getTimeMs(message.createdAt) <= getTimeMs(otherLastReadAt);
+}
+
+function getLatestSeenOwnMessageId(
+  messages: ConversationMessage[],
+  currentUserId: number | undefined,
+  otherLastReadAt: string | null
+): number | null {
+  if (!currentUserId || !otherLastReadAt) {
+    return null;
+  }
+
+  for (let index = messages.length - 1; index >= 0; index -= 1) {
+    const message = messages[index];
+    if (message.senderId === currentUserId && isSeen(message, otherLastReadAt)) {
+      return message.id;
+    }
+  }
+
+  return null;
+}
+
 function MessageBubble({
   message,
   ownMessage,
+  seen,
+  seenLabel,
   styles,
 }: {
   message: ConversationMessage;
   ownMessage: boolean;
+  seen: boolean;
+  seenLabel: string | null;
   styles: ReturnType<typeof makeMessagesStyles>;
 }) {
   return (
@@ -63,7 +94,19 @@ function MessageBubble({
         <Text style={ownMessage ? styles.bubbleTextOwn : styles.bubbleTextOther}>
           {message.content}
         </Text>
-        <Text style={styles.bubbleMeta}>{formatTime(message.createdAt)}</Text>
+        <View style={styles.bubbleMetaRow}>
+          <Text style={ownMessage ? styles.bubbleMetaOwn : styles.bubbleMetaOther}>
+            {formatTime(message.createdAt)}
+          </Text>
+          {ownMessage ? (
+            <Ionicons
+              name={seen ? "checkmark-done" : "checkmark"}
+              size={13}
+              color={seen ? "#ffffff" : "rgba(255,255,255,0.8)"}
+            />
+          ) : null}
+        </View>
+        {seenLabel ? <Text style={styles.bubbleSeenLabel}>{seenLabel}</Text> : null}
       </View>
     </View>
   );
@@ -82,6 +125,7 @@ export function MessageThreadScreen({ conversationId }: { conversationId: number
   const {
     messages,
     otherUser,
+    otherLastReadAt,
     loading,
     refreshing,
     error,
@@ -89,6 +133,11 @@ export function MessageThreadScreen({ conversationId }: { conversationId: number
     sendMessage,
     refresh,
   } = useMessageThread(conversationId);
+  const latestSeenOwnMessageId = getLatestSeenOwnMessageId(
+    messages,
+    user?.id,
+    otherLastReadAt
+  );
 
   useEffect(() => {
     if (messages.length === 0) {
@@ -193,6 +242,12 @@ export function MessageThreadScreen({ conversationId }: { conversationId: number
               key={message.id}
               message={message}
               ownMessage={message.senderId === user?.id}
+              seen={isSeen(message, otherLastReadAt)}
+              seenLabel={
+                message.id === latestSeenOwnMessageId && otherLastReadAt
+                  ? `Seen ${formatTime(otherLastReadAt)}`
+                  : null
+              }
               styles={styles}
             />
           ))

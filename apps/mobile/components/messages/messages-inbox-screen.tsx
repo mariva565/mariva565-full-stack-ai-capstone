@@ -59,6 +59,14 @@ export function MessagesInboxScreen() {
             <Ionicons name="arrow-back" size={20} color={colors.textPrimary} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Inbox</Text>
+          <TouchableOpacity
+            style={styles.newChatButton}
+            onPress={() => router.push("/community")}
+            accessibilityRole="button"
+            accessibilityLabel="Start new chat"
+          >
+            <Ionicons name="add" size={22} color="#ffffff" />
+          </TouchableOpacity>
         </View>
 
         <View style={styles.startChatRow}>

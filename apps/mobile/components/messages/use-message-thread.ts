@@ -72,6 +72,7 @@ export function useMessageThread(conversationId: number) {
   return {
     messages: threadQuery.data?.messages ?? [],
     otherUser: threadQuery.data?.other ?? null,
+    otherLastReadAt: threadQuery.data?.otherLastReadAt ?? null,
     loading: threadQuery.isPending && !threadQuery.data,
     refreshing: threadQuery.isRefetching && !threadQuery.isPending,
     error:

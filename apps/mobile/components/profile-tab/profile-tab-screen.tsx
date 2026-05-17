@@ -191,7 +191,7 @@ function ProfileActions({
           onPress={viewModel.startEditing}
           accessibilityRole="button"
           accessibilityLabel="Edit profile"
-          accessibilityHint="Enables profile name editing"
+          accessibilityHint="Enables display name editing; avatar can be changed from the profile photo above"
         >
           <Text style={styles.editBtnText}>Edit Profile</Text>
         </TouchableOpacity>

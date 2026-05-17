@@ -26,6 +26,15 @@ function parseConversationId(rawId: string): number | null {
   return conversationId;
 }
 
+function getTimeMs(value: Date | string | null): number {
+  if (!value) return 0;
+  return new Date(value).getTime();
+}
+
+function toIsoString(value: Date | string | null): string | null {
+  return value ? new Date(value).toISOString() : null;
+}
+
 // GET /api/conversations/[id]/messages — full message history + other participant
 export async function GET(request: NextRequest, { params }: Params) {
   const auth = await requireAuth(request);
@@ -58,28 +67,50 @@ export async function GET(request: NextRequest, { params }: Params) {
       .where(eq(messages.conversationId, conversationId))
       .orderBy(asc(messages.createdAt)),
     db
-      .select({ userId: conversationMembers.userId, name: users.name, avatarUrl: users.avatarUrl })
+      .select({
+        userId: conversationMembers.userId,
+        name: users.name,
+        avatarUrl: users.avatarUrl,
+        lastReadAt: conversationMembers.lastReadAt,
+      })
       .from(conversationMembers)
       .innerJoin(users, eq(conversationMembers.userId, users.id))
       .where(eq(conversationMembers.conversationId, conversationId)),
   ]);
 
-  const lastMessageCreatedAt = rows.at(-1)?.createdAt ?? new Date();
-  await db
-    .update(conversationMembers)
-    .set({ lastReadAt: lastMessageCreatedAt })
-    .where(
-      and(
-        eq(conversationMembers.conversationId, conversationId),
-        eq(conversationMembers.userId, userId)
-      )
+  const currentMember = members.find((member) => member.userId === userId) ?? null;
+  const lastMessageCreatedAt = rows.at(-1)?.createdAt ?? null;
+  const shouldAdvanceReadCursor =
+    lastMessageCreatedAt != null &&
+    getTimeMs(lastMessageCreatedAt) > getTimeMs(currentMember?.lastReadAt ?? null);
+
+  if (shouldAdvanceReadCursor) {
+    await db
+      .update(conversationMembers)
+      .set({ lastReadAt: lastMessageCreatedAt })
+      .where(
+        and(
+          eq(conversationMembers.conversationId, conversationId),
+          eq(conversationMembers.userId, userId)
+        )
+      );
+
+    await pusherServer.trigger(
+      `private-conversation-${conversationId}`,
+      "messages-read",
+      {
+        userId,
+        lastReadAt: toIsoString(lastMessageCreatedAt),
+      }
     );
+  }
 
   const other = members.find((m) => m.userId !== userId) ?? null;
 
   return NextResponse.json({
     messages: rows,
     other: other ? { id: other.userId, name: other.name, avatarUrl: other.avatarUrl } : null,
+    otherLastReadAt: toIsoString(other?.lastReadAt ?? null),
   });
 }
 

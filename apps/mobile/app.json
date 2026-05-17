@@ -20,6 +20,7 @@
       "package": "com.studyhub.mobile",
       "scheme": "com.studyhub.mobile",
       "versionCode": 8,
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/branding/adaptive-icon-foreground.png",
         "backgroundColor": "#f8f6ff"

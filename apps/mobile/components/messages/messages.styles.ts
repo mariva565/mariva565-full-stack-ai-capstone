@@ -18,6 +18,7 @@ export function makeMessagesStyles(colors: AppColors) {
       backgroundColor: colors.surface,
     },
     headerTitle: {
+      flex: 1,
       fontSize: 22,
       fontWeight: "800",
       color: colors.titlePrimary,
@@ -29,6 +30,14 @@ export function makeMessagesStyles(colors: AppColors) {
       alignItems: "center",
       justifyContent: "center",
       backgroundColor: colors.canvas,
+    },
+    newChatButton: {
+      width: 36,
+      height: 36,
+      borderRadius: 18,
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: colors.brandPrimary,
     },
     startChatRow: {
       flexDirection: "row",
@@ -163,10 +172,26 @@ export function makeMessagesStyles(colors: AppColors) {
       fontSize: 14,
       lineHeight: 20,
     },
-    bubbleMeta: {
+    bubbleMetaRow: {
       marginTop: 4,
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 4,
+    },
+    bubbleMetaOwn: {
+      fontSize: 10,
+      color: "rgba(255,255,255,0.82)",
+      fontWeight: "600",
+    },
+    bubbleMetaOther: {
       fontSize: 10,
       color: colors.textMuted,
+      fontWeight: "600",
+    },
+    bubbleSeenLabel: {
+      marginTop: 2,
+      fontSize: 10,
+      color: "rgba(255,255,255,0.82)",
       fontWeight: "600",
     },
     footer: {

@@ -24,6 +24,38 @@ type Props = {
   currentUserId: number;
 };
 
+type ReadReceiptEvent = {
+  userId: number;
+  lastReadAt: string | null;
+};
+
+function getTimeMs(dateIso: string | null): number {
+  return dateIso ? new Date(dateIso).getTime() : 0;
+}
+
+function isSeen(message: ChatMessage, otherLastReadAt: string | null): boolean {
+  return getTimeMs(message.createdAt) <= getTimeMs(otherLastReadAt);
+}
+
+function getLatestSeenOwnMessageId(
+  messages: ChatMessage[],
+  currentUserId: number,
+  otherLastReadAt: string | null
+): number | null {
+  if (!otherLastReadAt) {
+    return null;
+  }
+
+  for (let index = messages.length - 1; index >= 0; index -= 1) {
+    const message = messages[index];
+    if (message.senderId === currentUserId && isSeen(message, otherLastReadAt)) {
+      return message.id;
+    }
+  }
+
+  return null;
+}
+
 function EmptyThreadIcon() {
   return (
     <svg
@@ -46,6 +78,7 @@ export function ChatWindow({ conversationId, currentUserId }: Props) {
   const router = useRouter();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [otherUser, setOtherUser] = useState<OtherUser | null>(null);
+  const [otherLastReadAt, setOtherLastReadAt] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
@@ -80,6 +113,7 @@ export function ChatWindow({ conversationId, currentUserId }: Props) {
       const data = await res.json();
       setMessages(data.messages ?? []);
       if (data.other) setOtherUser(data.other);
+      setOtherLastReadAt(data.otherLastReadAt ?? null);
     } finally {
       setLoading(false);
     }
@@ -106,13 +140,18 @@ export function ChatWindow({ conversationId, currentUserId }: Props) {
         return [...prev, data];
       });
     });
+    channel.bind("messages-read", (data: ReadReceiptEvent) => {
+      if (data.userId !== currentUserId) {
+        setOtherLastReadAt(data.lastReadAt);
+      }
+    });
 
     return () => {
       channel.unbind_all();
       pusher.unsubscribe(`private-conversation-${conversationId}`);
       pusher.disconnect();
     };
-  }, [conversationId]);
+  }, [conversationId, currentUserId]);
 
   const sendMessage = async () => {
     const content = input.trim();
@@ -157,6 +196,12 @@ export function ChatWindow({ conversationId, currentUserId }: Props) {
     });
   }
 
+  const latestSeenOwnMessageId = getLatestSeenOwnMessageId(
+    messages,
+    currentUserId,
+    otherLastReadAt
+  );
+
   return (
     <PageBackgroundShell contentClassName="max-w-4xl px-4 py-4 sm:px-6 lg:px-8">
       <div ref={shellRef} className="flex flex-col overflow-hidden">
@@ -190,6 +235,18 @@ export function ChatWindow({ conversationId, currentUserId }: Props) {
                     message={msg}
                     isOwn={msg.senderId === currentUserId}
                     formatTime={formatTime}
+                    receiptState={
+                      msg.senderId === currentUserId
+                        ? isSeen(msg, otherLastReadAt)
+                          ? "seen"
+                          : "sent"
+                        : null
+                    }
+                    seenLabel={
+                      msg.id === latestSeenOwnMessageId && otherLastReadAt
+                        ? `Seen ${formatTime(otherLastReadAt)}`
+                        : null
+                    }
                   />
                 ))
               )}

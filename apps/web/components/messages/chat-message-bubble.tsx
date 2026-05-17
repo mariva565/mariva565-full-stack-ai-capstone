@@ -52,9 +52,30 @@ type Props = {
   message: ChatMessage;
   isOwn: boolean;
   formatTime: (dateStr: string) => string;
+  receiptState: "sent" | "seen" | null;
+  seenLabel: string | null;
 };
 
-export function ChatMessageBubble({ message, isOwn, formatTime }: Props) {
+function ReceiptIcon({ state }: { state: "sent" | "seen" }) {
+  return state === "seen" ? (
+    <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 16 16" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.7" d="M2.25 8.4 5.4 11.55 10.9 5.7" />
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.7" d="M6.2 8.4 9.35 11.55 14.1 6.4" />
+    </svg>
+  ) : (
+    <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 16 16" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.7" d="M2.5 8.4 5.8 11.55 13.3 4.7" />
+    </svg>
+  );
+}
+
+export function ChatMessageBubble({
+  message,
+  isOwn,
+  formatTime,
+  receiptState,
+  seenLabel,
+}: Props) {
   return (
     <div className={`flex gap-3 ${isOwn ? "flex-row-reverse" : ""}`}>
       {!isOwn ? (
@@ -81,9 +102,15 @@ export function ChatMessageBubble({ message, isOwn, formatTime }: Props) {
         >
           {message.content}
         </div>
-        <span className="mx-1 text-xs text-slate-400 dark:text-slate-500">
+        <span className="mx-1 flex items-center gap-1 text-xs text-slate-400 dark:text-slate-500">
           {formatTime(message.createdAt)}
+          {receiptState ? <ReceiptIcon state={receiptState} /> : null}
         </span>
+        {seenLabel ? (
+          <span className="mx-1 text-xs text-slate-400 dark:text-slate-500">
+            {seenLabel}
+          </span>
+        ) : null}
       </div>
     </div>
   );
