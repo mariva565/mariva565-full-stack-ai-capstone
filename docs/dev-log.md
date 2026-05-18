@@ -13510,3 +13510,63 @@ Page routes обхождат API guard-ите (зареждат директно
 **Решения:**
 - Keep submission logistics in the release master plan rather than leaving them only in memory or scattered notes.
 - Treat GitHub-public visibility and OneDrive-public access as explicit pre-submission gates, not implicit assumptions.
+
+### Session 448 — Focused monolithic-code audit refresh
+
+**Какво направихме:**
+- Re-ran a repo-wide TypeScript/TSX file-size scan against the 300-line guardrail.
+- Re-ran a TypeScript AST function-size pass against the 60-line guardrail and separated true runtime/component hotspots from style/test noise.
+- Compared the live results with the current README exception footnote and identified documentation drift plus newly accumulated 300+ files.
+- Kept this as an audit-only pass; no application code was changed.
+
+**Файлове:**
+- [AUDIT] README.md
+- [AUDIT] drizzle/schema.ts
+- [AUDIT] drizzle/seed-stress.ts
+- [AUDIT] apps/web/components/progress/milestone-timeline-item.tsx
+- [AUDIT] apps/web/components/materials/ai-tools-panel.tsx
+- [AUDIT] apps/web/components/home/hero-3d.tsx
+- [AUDIT] apps/mobile/components/material/ai-tools/ai-tools-screen.tsx
+- [AUDIT] apps/mobile/app/material/[id].tsx
+- [AUDIT] apps/mobile/components/messages/message-thread-screen.tsx
+- [AUDIT] apps/web/components/dashboard/dashboard-client-page.tsx
+- [AUDIT] apps/web/components/modules/module-workspace-client-page.tsx
+- [AUDIT] apps/web/components/admin/users-tab.tsx
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Repo-wide TypeScript/TSX file-size scan -> current 300+ files: `drizzle/schema.ts` 377, `drizzle/seed-stress.ts` 343, `milestone-timeline-item.tsx` 340, `ai-tools-panel.tsx` 320, `ai-tools-screen.tsx` 316, `hero-3d.tsx` 310, `apps/mobile/app/material/[id].tsx` 303, `message-thread-screen.tsx` 302
+- TypeScript AST function-size scan -> 220 functions over 60 lines total; 204 after excluding test/style files
+- `npm run typecheck` -> pass
+- `npm run check:mojibake` -> pass
+
+**Решения:**
+- Treat the new undocumented 300+ mobile/runtime files as the first refactor candidates before broad cleanup.
+- Treat the README exception note as stale until it is resynced with current counts and the no-longer-oversized `members-tab.tsx` entry is removed.
+
+## 2026-05-18
+
+### Session 449 — README reviewer quickstart
+
+**Какво направихме:**
+- Added a new `Reviewer Quickstart` section near the top of `README.md` for fast manual or AI-assisted evaluation.
+- Added a concise presentation narrative, browser smoke checklist, shipped mobile scope boundaries, implementation-evidence links, and the final verification gate in one place.
+- Added a `Reviewer evidence map` that ties major product claims to both live verification paths and exact repo evidence.
+- Added a `Capstone requirement coverage` table that maps the SoftUni rubric areas to exact StudyHub evidence and shows where the project exceeds the minimum.
+- Added a `Suggested hands-on smoke test` path centered on the flows most useful for jury validation: auth, course/module/material CRUD, avatar + file upload, AI, collaboration, authority, and mobile parity.
+- Added compact `Code review entry points` so an external reviewer or AI agent can orient itself in the repository quickly.
+- Renamed the older walkthrough section to `Detailed Demo Walkthrough` so the quickstart and the exhaustive role-by-role script no longer read as competing duplicates.
+- Added a top-of-README badge and table-of-contents link so reviewers can reach the new section immediately.
+
+**Файлове:**
+- [MODIFY] README.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm run check:mojibake` -> pass
+
+**Решения:**
+- Keep the README as the public first stop for jury review instead of requiring a reviewer or AI agent to reconstruct the demo path from scattered internal notes.
+- Make shipped boundaries explicit so reviewers can distinguish deliberate scope choices from missing features, especially on mobile.
+- Add direct evidence mapping because the final submission form exposes only links and credentials, while the README is the only reliable place to guide a reviewer through the whole product.
+- Put the rubric map and the smoke path next to each other so reviewers can move from analysis to live validation without losing context.

@@ -30,7 +30,8 @@
   <a href="#system-architecture"><img src="https://img.shields.io/badge/Architecture-System%20Overview-8B5CF6?style=flat-square" alt="Architecture" /></a>
   <a href="#database-schema"><img src="https://img.shields.io/badge/DB-Schema%20Diagram-6366F1?style=flat-square" alt="DB schema diagram" /></a>
   <a href="#user-roles"><img src="https://img.shields.io/badge/Roles-Visitor%20%2B%20User%20%2B%20Mentor%20%2B%20Admin-06B6D4?style=flat-square" alt="Visitor, user, mentor, and admin roles" /></a>
-  <a href="#demo-walkthrough"><img src="https://img.shields.io/badge/Demo-Walkthrough-8B5CF6?style=flat-square" alt="Demo walkthrough" /></a>
+  <a href="#reviewer-quickstart"><img src="https://img.shields.io/badge/Reviewer-Quickstart-06B6D4?style=flat-square" alt="Reviewer quickstart" /></a>
+  <a href="#detailed-demo-walkthrough"><img src="https://img.shields.io/badge/Demo-Walkthrough-8B5CF6?style=flat-square" alt="Detailed demo walkthrough" /></a>
   <a href="#api-endpoints"><img src="https://img.shields.io/badge/API-Endpoints-6366F1?style=flat-square" alt="API endpoints" /></a>
 </p>
 
@@ -39,6 +40,7 @@
 ## Table of Contents
 
 - [Live Demo](#live-demo)
+- [Reviewer Quickstart](#reviewer-quickstart)
 - [Releases](#releases)
 - [Product Preview](#product-preview)
 - [Mobile Preview](#mobile-preview)
@@ -51,7 +53,7 @@
 - [Screens](#screens)
 - [API Endpoints](#api-endpoints)
 - [Security Baseline](#security-baseline)
-- [Demo Walkthrough](#demo-walkthrough)
+- [Detailed Demo Walkthrough](#detailed-demo-walkthrough)
 - [Demo Credentials](#demo-credentials)
 - [Quick Setup](#quick-setup)
 - [Scalability Validation](#scalability-validation-10-000-records)
@@ -66,6 +68,100 @@
 | Mobile APK | [StudyHub-v1.0.0-android.apk](https://github.com/mariva565/mariva565-full-stack-ai-capstone/releases/download/v1.0.0/StudyHub-v1.0.0-android.apk) |
 
 Demo credentials: see [Demo Credentials](#demo-credentials)
+
+## Reviewer Quickstart
+
+> Use this section for a fast manual or AI-assisted review. It is the shortest reliable path through the shipped product; the full route-by-route detail continues in [Detailed Demo Walkthrough](#detailed-demo-walkthrough).
+
+### Presentation narrative
+
+1. **Public product** - open `/`, `/how-it-works`, and `/api-docs`, then open `/dashboard` while logged out to confirm protected access redirects to `/login`.
+2. **Learner workflow** - sign in as a student and move through dashboard -> course -> module -> material, then verify Material Finder, favorites, AI tools, progress, calendar, and profile.
+3. **Social and authority layers** - verify community posting, comments, bookmarks, direct messages, mentor Q&A, moderation, and admin role controls.
+4. **Cross-platform proof** - inspect the same core product through the Expo web export or Android APK, then use the API contract, Postman collection, and 10k+ validation section as implementation evidence.
+
+### Browser smoke checklist
+
+| Layer | Fast checks |
+|---|---|
+| Public | `/`, `/how-it-works`, `/api-docs`, logged-out `/dashboard` redirect, live `/api/health` |
+| Student | `/dashboard`, course -> module -> material flow, `/dashboard/material-finder`, AI chat, favorites, `/progress`, `/calendar`, `/profile` |
+| Social | `/community`, post detail, comment, like/bookmark, `/messages` |
+| Mentor / Admin | `/mentor-inbox`, `/admin`, `/moderation` |
+| Mobile | Expo web or APK: courses, favorites, community, messages, profile, AI tools, push-notification deep links |
+
+### Scope boundaries
+
+- The web app is the complete product surface.
+- The shipped mobile scope includes auth, courses/modules/materials CRUD, favorites, community, direct messages, push notifications, profile/settings basics, and AI tools.
+- Progress, calendar, and full admin are intentionally web-first in the final mobile scope.
+- Demo credentials are provided separately with the capstone submission package.
+
+### Reviewer evidence map
+
+| What to verify | Fast live check | Repo evidence |
+|---|---|---|
+| Authentication and role guards | Logged-out `/dashboard`, mentor `/mentor-inbox`, admin `/admin` / `/moderation` | [`apps/web/middleware.ts`](apps/web/middleware.ts), [`apps/web/lib/auth.ts`](apps/web/lib/auth.ts), [Security Baseline](#security-baseline) |
+| Core LMS CRUD | `/dashboard` -> course -> module -> material | [`apps/web/app/api/courses`](apps/web/app/api/courses), [`apps/web/app/api/modules`](apps/web/app/api/modules), [`apps/web/app/api/materials`](apps/web/app/api/materials), [Database Schema](#database-schema) |
+| AI features | Material AI tools, Material Finder, floating StudyHub Mentor chat | [`apps/web/app/api/ai`](apps/web/app/api/ai), [`apps/web/app/api/assistant/material-finder`](apps/web/app/api/assistant/material-finder), [`apps/web/app/api/materials/[id]/extract-text`](apps/web/app/api/materials/[id]/extract-text) |
+| Social, mentor, and messaging flows | `/community`, `/mentor-inbox`, `/messages` | [`apps/web/app/api/posts`](apps/web/app/api/posts), [`apps/web/app/api/mentor`](apps/web/app/api/mentor), [`apps/web/app/api/conversations`](apps/web/app/api/conversations) |
+| Mobile delivery | Expo web link or Android APK | [`apps/mobile`](apps/mobile), [Mobile Preview](#mobile-preview), [Mobile Demo](#mobile-demo) |
+| Database design and migrations | Schema diagram in this README | [`drizzle/schema.ts`](drizzle/schema.ts), [`drizzle/migrations`](drizzle/migrations) |
+| Large-data readiness | [Scalability Validation](#scalability-validation-10-000-records) | [`drizzle/seed-stress.ts`](drizzle/seed-stress.ts), server-side paginated admin/course endpoints |
+| Deployment and private file handling | Live URLs, avatar/material upload and protected material download | [Live Demo](#live-demo), [File Storage](#file-storage--vercel-blob), [`apps/web/app/api/materials/[id]/file`](apps/web/app/api/materials/[id]/file) |
+
+### Capstone requirement coverage
+
+| Assignment area | StudyHub coverage | Where to verify |
+|---|---|---|
+| Monorepo + client-server architecture | Next.js web/backend app, Expo mobile app, shared package, one authenticated REST boundary | [System Architecture](#system-architecture), [`apps/web`](apps/web), [`apps/mobile`](apps/mobile), [`packages/shared`](packages/shared) |
+| Backend API | 73 REST routes with shared auth, validation, and error contract | [API Endpoints](#api-endpoints), [`docs/api-contract.md`](docs/api-contract.md) |
+| Web screens | 28 responsive web pages | [Screens](#screens) |
+| Mobile app | 23 Expo screens connected to the same backend API | [Mobile Preview](#mobile-preview), [Screens](#screens) |
+| Database | 21 related PostgreSQL tables, Drizzle schema, committed migrations | [Database Schema](#database-schema), [`drizzle/schema.ts`](drizzle/schema.ts), [`drizzle/migrations`](drizzle/migrations) |
+| Authentication and authorization | JWT auth, Google OAuth, protected routes, `user` / `mentor` / `admin` roles | [Authentication Flow](#authentication-flow), [User Roles](#user-roles), [Security Baseline](#security-baseline) |
+| Admin capability | User management, mentor assignments, moderation, materials view, activity logs | `/admin`, `/moderation`, [User Roles](#user-roles) |
+| Object storage | Avatar upload, private material upload, protected material download, public post images | [File Storage](#file-storage--vercel-blob) |
+| Deployment | Live Vercel web app, live Expo web export, Android APK release | [Live Demo](#live-demo), [Releases](#releases) |
+| Documentation | README, architecture diagrams, API contract, Postman collection, setup guide | This README, [`docs/api-contract.md`](docs/api-contract.md), [`docs/StudyHub.postman_collection.json`](docs/StudyHub.postman_collection.json) |
+| GitHub history | 346+ commits across many days, plus `AGENTS.md` | Repository history, [`AGENTS.md`](AGENTS.md) |
+| Beyond the minimum | AI tools, social layer, direct messaging, push notifications, 10k+ scalability validation | [Progress Roadmap](#progress-roadmap), [Scalability Validation](#scalability-validation-10-000-records) |
+
+### Suggested hands-on smoke test
+
+This is the shortest practical flow for verifying the product end to end after the reviewer quickstart:
+
+1. **Create or use a demo account** - register or sign in, then confirm `/dashboard` opens only after authentication.
+2. **Create real study content** - create a course, add a module, then add a note material and a file material.
+3. **Verify uploads** - upload an avatar in `/profile`, upload a PDF/DOCX/file material, and open the protected material file again.
+4. **Exercise product value** - favorite the material, run an AI summary or quiz, and use Material Finder to search saved content.
+5. **Check collaboration** - create a community post, add a comment, and start a direct message from a profile or post.
+6. **Check authority** - with mentor/admin credentials, open `/mentor-inbox`, `/admin`, and `/moderation`.
+7. **Check mobile delivery** - repeat a short path in Expo web or the APK: login, open courses, open favorites, open messages, and confirm the shared backend data is visible.
+
+Implementation evidence:
+- [API Endpoints](#api-endpoints)
+- [`docs/api-contract.md`](docs/api-contract.md)
+- [`docs/StudyHub.postman_collection.json`](docs/StudyHub.postman_collection.json)
+- [Scalability Validation](#scalability-validation-10-000-records)
+
+### Code review entry points
+
+- [`apps/web/app/api`](apps/web/app/api) - authenticated REST backend shared by web and mobile
+- [`apps/web/middleware.ts`](apps/web/middleware.ts) - protected-route JWT enforcement
+- [`drizzle/schema.ts`](drizzle/schema.ts) and [`drizzle/migrations`](drizzle/migrations) - database contract and schema history
+- [`apps/web/components`](apps/web/components) - modular web UI by feature area
+- [`apps/mobile/app`](apps/mobile/app) and [`apps/mobile/lib`](apps/mobile/lib) - Expo screens, API client, auth, and push flows
+- [`packages/shared`](packages/shared) - shared types, utilities, and API client contracts
+
+### Final verification gate
+
+```bash
+npm run check:mojibake
+npm run typecheck
+npm run build:web
+npm run deps:audit:runtime
+```
 
 ## Releases
 
@@ -694,9 +790,9 @@ Mobile intentionally ships only the student-facing flows. Mentor (`/mentor-inbox
 
 ---
 
-## Demo Walkthrough
+## Detailed Demo Walkthrough
 
-> Step-by-step guide for testing the app (for jury review).
+> Full step-by-step guide for testing the app after the quick review pass above.
 
 ### As a Visitor (no account)
 
