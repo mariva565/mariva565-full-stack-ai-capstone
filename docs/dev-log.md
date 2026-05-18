@@ -13555,6 +13555,7 @@ Page routes обхождат API guard-ите (зареждат директно
 - Added a `Capstone requirement coverage` table that maps the SoftUni rubric areas to exact StudyHub evidence and shows where the project exceeds the minimum.
 - Added a `Suggested hands-on smoke test` path centered on the flows most useful for jury validation: auth, course/module/material CRUD, avatar + file upload, AI, collaboration, authority, and mobile parity.
 - Added compact `Code review entry points` so an external reviewer or AI agent can orient itself in the repository quickly.
+- Expanded the final verification gate with the root-safe web unit-test command and documented where the dedicated integration coverage lives.
 - Renamed the older walkthrough section to `Detailed Demo Walkthrough` so the quickstart and the exhaustive role-by-role script no longer read as competing duplicates.
 - Added a top-of-README badge and table-of-contents link so reviewers can reach the new section immediately.
 
@@ -13570,3 +13571,42 @@ Page routes обхождат API guard-ите (зареждат директно
 - Make shipped boundaries explicit so reviewers can distinguish deliberate scope choices from missing features, especially on mobile.
 - Add direct evidence mapping because the final submission form exposes only links and credentials, while the README is the only reliable place to guide a reviewer through the whole product.
 - Put the rubric map and the smoke path next to each other so reviewers can move from analysis to live validation without losing context.
+- Keep integration tests visible as evidence while leaving them outside the quick gate because they require dedicated test infrastructure.
+
+### Session 450 — Messaging polish backlog sync
+
+**Какво направихме:**
+- Added direct-message image and file attachments to the optional post-core messaging backlog.
+- Kept the item scoped as a future polish task with explicit secure upload/download handling across web and mobile.
+
+**Файлове:**
+- [MODIFY] docs/final-release-master-plan.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm run check:mojibake` -> pass
+
+**Решения:**
+- Treat attachments as a future direct-messaging enhancement, not as part of the already shipped release scope.
+
+### Session 451 — README guardrail sync and post-release refactor backlog
+
+**Какво направихме:**
+- Updated the README 300-line footnote so it matches the latest audit instead of the older stale exception list.
+- Removed the outdated `members-tab.tsx` reference from the README exception note and added the current bounded exceptions / tracked candidates from the refresh audit.
+- Added focused post-release refactor tasks for:
+  - `message-thread-screen.tsx`
+  - `ai-tools-screen.tsx`
+  - `ai-tools-panel.tsx`
+
+**Файлове:**
+- [MODIFY] README.md
+- [MODIFY] docs/final-release-master-plan.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `npm run check:mojibake` -> pass
+
+**Решения:**
+- Keep accepted structural exceptions (`schema.ts`, `seed-stress.ts`, `hero-3d.tsx`) documented instead of creating cleanup work only to satisfy a numeric threshold.
+- Track only the files where future feature growth is likely to benefit from decomposition, especially messaging before edit/delete/attachment work.

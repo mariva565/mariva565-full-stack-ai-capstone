@@ -159,9 +159,12 @@ Implementation evidence:
 ```bash
 npm run check:mojibake
 npm run typecheck
+npm --workspace @studyhub/web run test:unit
 npm run build:web
 npm run deps:audit:runtime
 ```
+
+Additional integration coverage exists for auth, posts, courses, materials, and admin pagination flows. Those tests use a dedicated test database and local test server, so they are intentionally kept outside the quick reviewer gate; see [`apps/web/lib/__tests__/integration`](apps/web/lib/__tests__/integration) and [`apps/web/scripts/dev-test-server.js`](apps/web/scripts/dev-test-server.js).
 
 ## Releases
 
@@ -1022,7 +1025,7 @@ Builds the Next.js app and starts it in production mode on `http://localhost:300
 | Deployment | Netlify + Vercel (dual) | Vercel web + Netlify Expo web + EAS Build APK |
 | Security | RLS + CSP + MFA (partial) | JWT guards + middleware + role-based endpoints |
 
-> **\*** A few files intentionally exceed 300 lines: `drizzle/schema.ts` (367 — single-file FK contract), `milestone-timeline-item.tsx` (340 — AnimatePresence context), `ai-tools-panel.tsx` (320 — tightly coupled AI tool tabs), `hero-3d.tsx` (310 — Three.js scene), `members-tab.tsx` (309 — admin data table). All other files stay under 300 LOC.
+> **\*** A few files intentionally exceed 300 lines or are tracked as bounded post-release refactor candidates: `drizzle/schema.ts` (377 — single-file FK contract), `drizzle/seed-stress.ts` (343 — operational stress-seed script), `milestone-timeline-item.tsx` (340 — tightly coupled timeline interaction), `ai-tools-panel.tsx` (320 — candidate for later hook/subcomponent extraction), `ai-tools-screen.tsx` (316 — mobile AI tools composition candidate), `hero-3d.tsx` (310 — Three.js scene), `apps/mobile/app/material/[id].tsx` (303 — only slightly above the limit), and `message-thread-screen.tsx` (302 — messaging screen candidate before future attachment/edit growth).
 
 ---
 

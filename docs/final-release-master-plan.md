@@ -430,8 +430,15 @@ Only after Phases B through F are complete:
 
 - [ ] Add owner-only message deletion with a clear deleted-state treatment.
 - [ ] Add owner-only message editing with an `edited` indicator.
+- [ ] Add image and file attachments to direct messages with secure upload/download handling across web and mobile.
 - [ ] Wire the message actions end-to-end across API, realtime updates, web, and mobile before considering them shipped.
 - [ ] Fix the mobile empty-thread composer layout so the input stays above the keyboard even before the first message is sent.
+
+### Post-release refactor candidates
+
+- [ ] Split `apps/mobile/components/messages/message-thread-screen.tsx` before future messaging growth, especially edit/delete actions and file attachments.
+- [ ] Split `apps/mobile/components/material/ai-tools/ai-tools-screen.tsx` into smaller rendering/style units when doing the next mobile AI-tools pass.
+- [ ] Extract reusable logic/subcomponents from `apps/web/components/materials/ai-tools-panel.tsx` during a future web AI-tools cleanup pass.
 
 ## Session Handoff Template
 At the end of every session, append to `docs/dev-log.md`:
