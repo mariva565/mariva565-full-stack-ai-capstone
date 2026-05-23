@@ -30,8 +30,7 @@ Before starting a new session, read:
 
 ### Still open
 - Final release review, tag/release hygiene, and demo-freeze checks.
-- Make the GitHub repository public after the final secret/artifact review and before capstone submission.
-- Complete the official capstone submission form, upload it to OneDrive, and make the OneDrive share link public.
+- Add final reviewer credentials to the official capstone submission form, upload it to OneDrive, and make the OneDrive share link public.
 
 ## Priority Model
 ### Mandatory for the updated assignment
@@ -48,10 +47,9 @@ Before starting a new session, read:
 
 ### Optional / post-core
 1. GitHub Actions test workflow.
-2. Tiny contact-form Server Action experiment on a separate branch.
-3. Automated backups.
-4. CSP enforcement beyond report-only rollout.
-5. Admin 2FA.
+2. Automated backups.
+3. CSP enforcement beyond report-only rollout.
+4. Admin 2FA.
 
 ## Non-Negotiable Safety Rules
 - Do not run heavy seeds against Neon `production`.
@@ -279,7 +277,7 @@ Exit criteria:
   - `apps/mobile/app.json`
   - `apps/mobile/package.json`
 - [x] Confirm `EXPO_PUBLIC_API_URL` points to production.
-- [ ] Confirm Google OAuth production setup:
+- [x] Confirm Google OAuth production setup:
   - consent screen `Published`
   - standalone/native Android auth lets the Expo Google provider use its package-based redirect `com.studyhub.mobile:/oauthredirect`
   - Android app config explicitly registers `android.scheme: "com.studyhub.mobile"` in addition to the user-facing `studyhubv2` scheme so the APK can receive that redirect
@@ -359,7 +357,7 @@ Exit criteria:
 - [x] `git status` review.
 - [x] `git diff` review.
 - [x] Verify no secrets, logs, or scratch artifacts are staged.
-- [ ] After the final secret/artifact review and before capstone submission, make the GitHub repository public so the examiners can inspect it.
+- [x] After the final secret/artifact review and before capstone submission, make the GitHub repository public so the examiners can inspect it.
 - [x] Run:
   - `npm run check:mojibake`
   - `npm run typecheck`
@@ -367,17 +365,17 @@ Exit criteria:
   - `npm run deps:audit:runtime`
 - [x] Confirm live web health endpoint.
 - [x] Confirm live security headers remain present.
-- [ ] Review final release notes / demo notes.
+- [x] Review final release notes / demo notes.
 
 Exit criteria:
 - The repository tells the exact truth about the delivered project.
 
 #### F4. Capstone submission handoff
 
-- [ ] Fill in the official capstone submission form.
+- [ ] Fill in the official capstone submission form, including final reviewer credentials.
 - [ ] Upload the completed submission form to OneDrive.
 - [ ] Set the OneDrive share link to public / anyone with the link before submission.
-- [ ] Re-check that the GitHub repository is public before sending the final submission.
+- [x] Re-check that the GitHub repository is public before sending the final submission.
 
 Exit criteria:
 - The final submission package is accessible to the reviewers without extra permission requests.
@@ -386,7 +384,7 @@ Exit criteria:
 
 Before freeze:
 
-- [ ] Create/verify demo credentials.
+- [x] Create/verify demo credentials.
 - [ ] Ensure demo user has useful content.
 - [ ] Rehearse student, mentor, admin, mobile, and scalability demo paths.
 - [ ] Check Neon usage after final validation.
@@ -406,17 +404,6 @@ Exit criteria:
 
 ## Optional Tail After Mandatory Work
 
-### Contact Server Action experiment
-
-Only after Phases B through F are complete:
-
-- [ ] Create separate Git branch, e.g. `experiment/contact-server-action`.
-- [ ] Keep the change contact-only.
-- [ ] Reuse the existing SMTP helper.
-- [ ] Do not weaken rate limiting.
-- [ ] Run local + build + real email verification.
-- [ ] Merge only if it remains low-risk and clearly useful for defense.
-
 ### GitHub Actions
 
 - [ ] Optional workflow for typecheck/tests on push.
@@ -432,6 +419,7 @@ Only after Phases B through F are complete:
 - [ ] Add owner-only message editing with an `edited` indicator.
 - [ ] Add image and file attachments to direct messages with secure upload/download handling across web and mobile.
 - [ ] Wire the message actions end-to-end across API, realtime updates, web, and mobile before considering them shipped.
+- [ ] Show the chat partner's avatar in the conversations inbox, with a graceful initials fallback when the user has no avatar image.
 - [ ] Fix the mobile empty-thread composer layout so the input stays above the keyboard even before the first message is sent.
 
 ### Post-release refactor candidates

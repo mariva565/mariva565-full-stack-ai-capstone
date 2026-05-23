@@ -10000,7 +10000,7 @@ Page routes обхождат API guard-ите (зареждат директно
 ### Session 318 — Verify R1 API authz results and close residual module/course API IDOR
 
 **Какво направихме:**
-- Валидирахме live `localhost:3000` R1 authz smoke checks с demo user JWT flow (`user@studyhub.dev / user123`) вместо само да четем кода.
+- Валидирахме live `localhost:3000` R1 authz smoke checks с demo user JWT flow, без да разчитаме само на code review.
 - Потвърдихме, че оставащите Sonnet проверки минават на работещия сървър:
   - `GET /api/courses/5` -> `404 {"code":"NOT_FOUND","message":"Course not found"}`
   - `POST /api/courses/5/modules` -> `403 {"code":"FORBIDDEN","message":"Course mentor access required"}`
@@ -13610,3 +13610,83 @@ Page routes обхождат API guard-ите (зареждат директно
 **Решения:**
 - Keep accepted structural exceptions (`schema.ts`, `seed-stress.ts`, `hero-3d.tsx`) documented instead of creating cleanup work only to satisfy a numeric threshold.
 - Track only the files where future feature growth is likely to benefit from decomposition, especially messaging before edit/delete/attachment work.
+
+### Session 452 — Native Google OAuth release checklist sync
+
+**Какво направихме:**
+- Synced the final release docs with the already-confirmed native mobile Google OAuth production setup.
+- Marked the umbrella OAuth setup item complete in the release master plan.
+- Marked the remaining iOS OAuth client and published consent-screen checks complete in the mobile release checklist.
+
+**Файлове:**
+- [MODIFY] docs/final-release-master-plan.md
+- [MODIFY] docs/mobile-release-checklist.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Manual documentation review -> the OAuth release items now reflect the confirmed production setup.
+
+**Решения:**
+- Keep confirmed release gates closed in the source-of-truth docs so future review focuses only on genuinely open submission and demo-readiness work.
+
+### Session 453 — Contact experiment removed from active release plan
+
+**Какво направихме:**
+- Removed the optional contact-form Server Action experiment from the active final release master plan.
+- Kept the shipped `/contact` page intact; only the future experiment/backlog item was dropped.
+
+**Файлове:**
+- [MODIFY] docs/final-release-master-plan.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Manual documentation review -> the active release plan no longer lists the contact-form experiment as remaining work.
+
+**Решения:**
+- Do not carry speculative contact-form work into the final stretch when it is no longer wanted or needed for the submission.
+
+### Session 454 — Conversation inbox avatar backlog
+
+**Какво направихме:**
+- Added a future messaging-polish task for showing the chat partner's avatar in the conversations inbox.
+- Scoped the later fix to include a graceful initials fallback when the other user has no avatar image.
+
+**Файлове:**
+- [MODIFY] docs/final-release-master-plan.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- Manual documentation review -> the messaging backlog now includes the inbox avatar gap.
+
+**Решения:**
+- Keep the inbox avatar issue as post-release polish instead of treating it as a final submission blocker.
+
+### Session 455 — Final submission package check
+
+**Какво направихме:**
+- Extracted the official capstone assignment DOCX and compared the required submission fields against the shipped project evidence.
+- Confirmed the public deliverables are live: Vercel web health endpoint, Netlify Expo web, GitHub repository, and GitHub Release APK.
+- Found the GitHub repository was still private, ran a focused secret/artifact sanity check, made it public with `gh repo edit`, and confirmed unauthenticated access.
+- Verified production demo login availability without committing reviewer credentials.
+- Created an ignored local submission draft: `docs/Full-Stack-Apps-with-AI-Capstone-Project-Maria-FILLED.docx`; final credentials remain for the owner to add before upload.
+- Updated the final release master plan so the repo-public, demo-credentials, release-notes, and form-filled gates reflect the current state.
+
+**Файлове:**
+- [MODIFY] docs/final-release-master-plan.md
+- [MODIFY] docs/dev-log.md
+- [LOCAL/IGNORED] docs/Full-Stack-Apps-with-AI-Capstone-Project-Maria-FILLED.docx
+
+**Verification:**
+- `npm run check:mojibake` -> pass.
+- `gh repo view mariva565/mariva565-full-stack-ai-capstone --json visibility,isPrivate` -> `PUBLIC`, `isPrivate: false`.
+- `curl https://github.com/mariva565/mariva565-full-stack-ai-capstone` -> `200`.
+- `curl -L https://github.com/mariva565/mariva565-full-stack-ai-capstone/releases/download/v1.0.0/StudyHub-v1.0.0-android.apk` -> `200`.
+- `curl https://mariva565-full-stack-ai-capstone-we.vercel.app/api/health` -> `200`.
+- `curl https://studyhub-mobile-mariva.netlify.app` -> `200`.
+- Production `POST /api/auth/login` via Node fetch -> `200` for the checked reviewer accounts; invalid credentials still return `401`.
+- Filled DOCX extraction shows Author, Email, GitHub Repo, and live URLs populated; credentials are intentionally left for owner fill-in.
+- `git check-ignore -v docs/Full-Stack-Apps-with-AI-Capstone-Project-Maria-FILLED.docx` -> ignored by `docs/*.docx`.
+
+**Решения:**
+- Keep reviewer credentials in the separate submission document instead of adding passwords to the public README.
+- Leave only OneDrive upload/share as the remaining external submission step.
