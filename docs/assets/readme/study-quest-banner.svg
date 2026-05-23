@@ -1,58 +1,98 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="980" height="180" viewBox="0 0 980 180" role="img" aria-labelledby="title desc">
-  <title id="title">StudyHub v2 study quest banner</title>
-  <desc id="desc">Comic-style banner for the StudyHub full-stack AI learning platform capstone.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="164" viewBox="0 0 980 164" role="img" aria-labelledby="title desc">
+  <title id="title">StudyHub v2 premium study quest banner</title>
+  <desc id="desc">Premium anime-inspired banner for the StudyHub full-stack AI LMS capstone.</desc>
   <defs>
-    <linearGradient id="panelGradient" x1="0" x2="1" y1="0" y2="1">
-      <stop offset="0%" stop-color="#ff3dc8"/>
-      <stop offset="38%" stop-color="#7c3aed"/>
-      <stop offset="72%" stop-color="#0ea5e9"/>
-      <stop offset="100%" stop-color="#22d3ee"/>
+    <linearGradient id="rim" x1="70" x2="910" y1="26" y2="138" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f472b6"/>
+      <stop offset="0.28" stop-color="#a78bfa"/>
+      <stop offset="0.58" stop-color="#38bdf8"/>
+      <stop offset="0.82" stop-color="#34d399"/>
+      <stop offset="1" stop-color="#fde68a"/>
     </linearGradient>
-    <radialGradient id="burstGradient" cx="50%" cy="50%" r="70%">
-      <stop offset="0%" stop-color="#ffffff"/>
-      <stop offset="44%" stop-color="#fef08a"/>
-      <stop offset="100%" stop-color="#fb7185"/>
+    <linearGradient id="panel" x1="100" x2="880" y1="34" y2="132" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#111827"/>
+      <stop offset="0.45" stop-color="#1e1b4b"/>
+      <stop offset="1" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="shine" x1="150" x2="820" y1="38" y2="136" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.42"/>
+      <stop offset="0.34" stop-color="#ffffff" stop-opacity="0.08"/>
+      <stop offset="0.7" stop-color="#ffffff" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0.02"/>
+    </linearGradient>
+    <radialGradient id="glowLeft" cx="24%" cy="42%" r="55%">
+      <stop offset="0" stop-color="#f0abfc" stop-opacity="0.58"/>
+      <stop offset="0.45" stop-color="#60a5fa" stop-opacity="0.24"/>
+      <stop offset="1" stop-color="#0f172a" stop-opacity="0"/>
     </radialGradient>
-    <filter id="shadow" x="-8%" y="-18%" width="116%" height="140%">
-      <feDropShadow dx="0" dy="12" stdDeviation="7" flood-color="#111827" flood-opacity="0.22"/>
+    <radialGradient id="glowRight" cx="76%" cy="54%" r="50%">
+      <stop offset="0" stop-color="#22d3ee" stop-opacity="0.46"/>
+      <stop offset="0.52" stop-color="#34d399" stop-opacity="0.2"/>
+      <stop offset="1" stop-color="#0f172a" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="softShadow" x="-8%" y="-24%" width="116%" height="156%">
+      <feDropShadow dx="0" dy="12" stdDeviation="10" flood-color="#020617" flood-opacity="0.24"/>
     </filter>
-    <pattern id="dots" width="22" height="22" patternUnits="userSpaceOnUse">
-      <circle cx="5" cy="5" r="3" fill="#ffffff" opacity="0.28"/>
+    <filter id="textGlow" x="-6%" y="-40%" width="112%" height="180%">
+      <feDropShadow dx="0" dy="0" stdDeviation="2.5" flood-color="#67e8f9" flood-opacity="0.55"/>
+    </filter>
+    <pattern id="halftone" width="20" height="20" patternUnits="userSpaceOnUse">
+      <circle cx="4" cy="4" r="1.8" fill="#ffffff" opacity="0.12"/>
+      <circle cx="14" cy="14" r="1.2" fill="#ffffff" opacity="0.08"/>
     </pattern>
   </defs>
 
-  <rect width="980" height="180" fill="none"/>
+  <rect width="980" height="164" fill="none"/>
 
-  <g opacity="0.9">
-    <path d="M55 28 L4 54 L58 64 L16 104 L82 91 L61 151 L126 108 L145 171 L174 110 L234 153 L215 92 L281 103 L237 64 L291 51 L235 28 L260 0 L190 22 L174 0 L145 22 L96 2 L112 30 Z" fill="url(#burstGradient)" stroke="#111827" stroke-width="5"/>
-    <text x="145" y="78" text-anchor="middle" font-family="Impact, Haettenschweiler, 'Arial Black', sans-serif" font-size="34" fill="#111827" transform="rotate(-8 145 78)">LEVEL</text>
-    <text x="145" y="118" text-anchor="middle" font-family="Impact, Haettenschweiler, 'Arial Black', sans-serif" font-size="45" fill="#111827" transform="rotate(-8 145 118)">UP!</text>
+  <g opacity="0.72" stroke-linecap="round">
+    <path d="M86 72 H196" stroke="#f9a8d4" stroke-width="4"/>
+    <path d="M118 98 H248" stroke="#93c5fd" stroke-width="3"/>
+    <path d="M760 62 H898" stroke="#67e8f9" stroke-width="4"/>
+    <path d="M720 104 H872" stroke="#86efac" stroke-width="3"/>
   </g>
 
-  <g filter="url(#shadow)">
-    <path d="M176 26 H884 C917 26 944 52 944 84 C944 116 918 142 884 142 H374 L326 170 L338 142 H176 C143 142 116 116 116 84 C116 52 143 26 176 26 Z" fill="#ffffff" stroke="#111827" stroke-width="6"/>
-    <path d="M184 37 H876 C904 37 927 58 927 84 C927 110 904 131 876 131 H355 L342 139 L346 131 H184 C156 131 133 110 133 84 C133 58 156 37 184 37 Z" fill="url(#panelGradient)" opacity="0.95"/>
-    <path d="M184 37 H876 C904 37 927 58 927 84 C927 110 904 131 876 131 H355 L342 139 L346 131 H184 C156 131 133 110 133 84 C133 58 156 37 184 37 Z" fill="url(#dots)" opacity="0.72"/>
+  <g filter="url(#softShadow)">
+    <path d="M128 24 H846 C880 24 908 52 908 86 C908 120 880 148 846 148 H318 L267 162 L287 148 H128 C94 148 66 120 66 86 C66 52 94 24 128 24 Z" fill="url(#rim)"/>
+    <path d="M136 32 H838 C868 32 892 56 892 86 C892 116 868 140 838 140 H302 L285 145 L293 140 H136 C106 140 82 116 82 86 C82 56 106 32 136 32 Z" fill="url(#panel)"/>
+    <path d="M136 32 H838 C868 32 892 56 892 86 C892 116 868 140 838 140 H302 L285 145 L293 140 H136 C106 140 82 116 82 86 C82 56 106 32 136 32 Z" fill="url(#glowLeft)"/>
+    <path d="M136 32 H838 C868 32 892 56 892 86 C892 116 868 140 838 140 H302 L285 145 L293 140 H136 C106 140 82 116 82 86 C82 56 106 32 136 32 Z" fill="url(#glowRight)"/>
+    <path d="M136 32 H838 C868 32 892 56 892 86 C892 116 868 140 838 140 H302 L285 145 L293 140 H136 C106 140 82 116 82 86 C82 56 106 32 136 32 Z" fill="url(#halftone)"/>
+    <path d="M118 41 C256 25 447 35 548 48 C672 64 775 48 872 42 C860 34 849 32 838 32 H136 C128 32 119 35 111 39 Z" fill="url(#shine)" opacity="0.72"/>
+    <path d="M132 42 H840 C864 42 882 61 882 85" fill="none" stroke="#ffffff" stroke-width="2" opacity="0.35"/>
   </g>
 
-  <g opacity="0.42" stroke="#ffffff" stroke-width="4" stroke-linecap="round">
-    <path d="M180 54 H286"/>
-    <path d="M146 82 H272"/>
-    <path d="M184 112 H312"/>
-    <path d="M738 52 H902"/>
-    <path d="M772 82 H918"/>
-    <path d="M708 112 H884"/>
+  <g transform="translate(134 57)">
+    <rect x="0" y="0" width="114" height="32" rx="16" fill="#ffffff" opacity="0.12" stroke="#ffffff" stroke-opacity="0.34"/>
+    <circle cx="19" cy="16" r="7" fill="#67e8f9"/>
+    <path d="M18 10 L21 16 L18 22 L27 16 Z" fill="#0f172a"/>
+    <text x="40" y="21" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="12" font-weight="800" letter-spacing="1.6" fill="#ffffff">AI LMS</text>
   </g>
 
-  <text x="530" y="78" text-anchor="middle" font-family="Impact, Haettenschweiler, 'Arial Black', sans-serif" font-size="44" letter-spacing="1.4" fill="#ffffff" stroke="#111827" stroke-width="4" paint-order="stroke fill">
-    STUDY QUEST MODE: ON
+  <text x="534" y="78" text-anchor="middle" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="800" letter-spacing="4" fill="#a5f3fc">
+    STUDYHUB V2
   </text>
-  <text x="530" y="113" text-anchor="middle" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="19" font-weight="800" fill="#ffffff" stroke="#111827" stroke-width="2" paint-order="stroke fill">
-    Full-stack AI LMS capstone | Next.js Web | Expo Mobile | Neon + Drizzle
+  <text x="534" y="111" text-anchor="middle" font-family="Impact, Haettenschweiler, 'Arial Black', sans-serif" font-size="43" letter-spacing="1.1" fill="#ffffff" filter="url(#textGlow)">
+    STUDY QUEST MODE
+  </text>
+  <text x="534" y="132" text-anchor="middle" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="750" fill="#e0f2fe">
+    Full-stack capstone with Next.js Web, Expo Mobile, Neon PostgreSQL, Drizzle ORM and AI study tools
   </text>
 
-  <g fill="#ffffff" stroke="#111827" stroke-width="4">
-    <path d="M902 18 L911 36 L930 38 L916 51 L920 70 L902 61 L884 70 L888 51 L874 38 L893 36 Z"/>
-    <path d="M81 117 L89 132 L106 134 L94 146 L97 163 L81 155 L65 163 L68 146 L56 134 L73 132 Z"/>
+  <g transform="translate(820 56)">
+    <path d="M38 0 L47 25 L74 25 L52 40 L60 66 L38 50 L16 66 L24 40 L2 25 L29 25 Z" fill="#ffffff" opacity="0.94"/>
+    <path d="M38 11 L43 29 L62 29 L46 39 L52 56 L38 45 L24 56 L30 39 L14 29 L33 29 Z" fill="#fde68a"/>
+  </g>
+
+  <g fill="none" stroke="#ffffff" stroke-width="2" opacity="0.46">
+    <path d="M80 26 C96 10 119 8 138 20"/>
+    <path d="M876 142 C900 142 918 128 924 108"/>
+    <path d="M54 112 C36 102 32 82 44 66"/>
+  </g>
+
+  <g fill="#ffffff">
+    <circle cx="101" cy="40" r="3" opacity="0.7"/>
+    <circle cx="923" cy="80" r="3" opacity="0.65"/>
+    <circle cx="66" cy="136" r="2.5" opacity="0.7"/>
+    <circle cx="892" cy="28" r="2.5" opacity="0.6"/>
   </g>
 </svg>

@@ -13738,3 +13738,21 @@ Page routes обхождат API guard-ите (зареждат директно
 
 **Решения:**
 - Keep the visual playful while preserving the reviewer-facing tech summary in the banner text and alt text.
+
+### Session 458 — Premium README banner refinement
+
+**Какво направихме:**
+- Refined the README mascot banner from loud comic styling into a cleaner premium anime/glass treatment.
+- Reworked `docs/assets/readme/study-quest-banner.svg` with a darker holographic panel, softer rim lighting, smaller decorative accents, and clearer text hierarchy.
+- Kept the same local asset path so the README render updates without changing the surrounding README structure.
+
+**Файлове:**
+- [MODIFY] docs/assets/readme/study-quest-banner.svg
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- SVG XML parse -> pass.
+- `npm run check:mojibake` -> pass.
+
+**Решения:**
+- Prefer a polished capstone/reviewer first impression over a very loud comic badge while keeping a subtle anime/quest identity.
