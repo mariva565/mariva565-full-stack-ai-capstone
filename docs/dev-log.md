@@ -13774,3 +13774,20 @@ Page routes обхождат API guard-ите (зареждат директно
 
 **Решения:**
 - Use an asset rename instead of another same-path SVG edit because GitHub can cache README images aggressively.
+
+### Session 460 — README comic banner subtitle cleanup
+
+**Какво направихме:**
+- Updated the comic README banner subtitle so it no longer repeats the technology badges shown underneath.
+- Changed the banner copy to: `Learn faster. Organize smarter. Build your study world.`
+
+**Файлове:**
+- [MODIFY] docs/assets/readme/study-quest-comic-premium-banner.svg
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- SVG XML parse -> pass.
+- `npm run check:mojibake` -> pass.
+
+**Решения:**
+- Keep the banner as a product/brand moment and leave the technology details to the badges below it.
