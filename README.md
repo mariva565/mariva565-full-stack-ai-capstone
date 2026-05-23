@@ -4,9 +4,9 @@
   <img src="docs/assets/readme/mascot.gif" width="200" style="border-radius: 12%" alt="Study Hub mascot animation" />
 </div>
 
-<p align="center">
-  <b>Full-stack LMS capstone for SoftUni "Full Stack Apps with AI"</b>
-</p>
+<div align="center">
+  <img src="docs/assets/readme/study-quest-banner.svg" width="760" alt="Study Quest Mode On - full-stack AI LMS capstone for Next.js web, Expo mobile, Neon and Drizzle" />
+</div>
 
 <p align="center">
   <a href="https://nextjs.org/"><img src="https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=nextdotjs" alt="Next.js" /></a>

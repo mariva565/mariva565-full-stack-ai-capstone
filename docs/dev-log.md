@@ -13719,3 +13719,22 @@ Page routes обхождат API guard-ите (зареждат директно
 **Решения:**
 - Keep final reviewer credentials only in the submitted course document, not in public GitHub files.
 - Preserve the seed script and Postman collection as reusable local tools by using safe placeholder values instead of deleting them.
+
+### Session 457 — README mascot tagline polish
+
+**Какво направихме:**
+- Replaced the plain centered README tagline under the mascot with a local comic/anime-inspired SVG banner.
+- Added `docs/assets/readme/study-quest-banner.svg` with a speech-bubble panel, halftone dots, speed lines, and a "Study Quest Mode: ON" capstone tagline.
+- Kept the README dependency-free by using a committed local asset instead of a third-party dynamic badge generator.
+
+**Файлове:**
+- [MODIFY] README.md
+- [ADD] docs/assets/readme/study-quest-banner.svg
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- SVG XML parse -> pass.
+- `npm run check:mojibake` -> pass.
+
+**Решения:**
+- Keep the visual playful while preserving the reviewer-facing tech summary in the banner text and alt text.
