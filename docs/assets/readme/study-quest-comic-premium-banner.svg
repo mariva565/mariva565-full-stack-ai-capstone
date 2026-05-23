@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="178" viewBox="0 0 980 178" role="img" aria-labelledby="title desc">
+  <title id="title">StudyHub v2 comic-style study quest banner</title>
+  <desc id="desc">A polished comic speech-bubble banner for the StudyHub full-stack AI LMS capstone.</desc>
+  <defs>
+    <linearGradient id="bubbleFill" x1="132" x2="884" y1="42" y2="134" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f23fc2"/>
+      <stop offset="0.34" stop-color="#8b5cf6"/>
+      <stop offset="0.68" stop-color="#2f80ed"/>
+      <stop offset="1" stop-color="#17d5d1"/>
+    </linearGradient>
+    <radialGradient id="burstFill" cx="48%" cy="48%" r="72%">
+      <stop offset="0" stop-color="#fff6a8"/>
+      <stop offset="0.54" stop-color="#fde68a"/>
+      <stop offset="1" stop-color="#f7a3bd"/>
+    </radialGradient>
+    <linearGradient id="bubbleShine" x1="168" x2="820" y1="44" y2="122" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.52"/>
+      <stop offset="0.28" stop-color="#ffffff" stop-opacity="0.12"/>
+      <stop offset="0.58" stop-color="#ffffff" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0.03"/>
+    </linearGradient>
+    <filter id="panelShadow" x="-8%" y="-26%" width="116%" height="158%">
+      <feDropShadow dx="0" dy="10" stdDeviation="7" flood-color="#0f172a" flood-opacity="0.24"/>
+    </filter>
+    <filter id="inkLift" x="-5%" y="-32%" width="110%" height="168%">
+      <feDropShadow dx="3" dy="4" stdDeviation="0" flood-color="#111827" flood-opacity="0.65"/>
+    </filter>
+    <pattern id="benDay" width="20" height="20" patternUnits="userSpaceOnUse">
+      <circle cx="4" cy="4" r="2" fill="#ffffff" opacity="0.22"/>
+      <circle cx="14" cy="14" r="1.25" fill="#ffffff" opacity="0.13"/>
+    </pattern>
+    <pattern id="fineLines" width="16" height="16" patternUnits="userSpaceOnUse">
+      <path d="M0 15 L15 0" stroke="#ffffff" stroke-width="1" opacity="0.08"/>
+    </pattern>
+  </defs>
+
+  <rect width="980" height="178" fill="none"/>
+
+  <g opacity="0.96">
+    <path d="M80 44 L117 19 L143 43 L185 22 L175 62 L229 67 L187 94 L211 134 L158 121 L140 169 L113 126 L68 153 L77 107 L25 103 L67 78 L42 40 Z" fill="url(#burstFill)" stroke="#111827" stroke-width="5" stroke-linejoin="round"/>
+    <path d="M86 53 L116 33 L141 55 L171 40 L164 72 L205 76 L173 96 L191 123 L153 114 L139 151 L116 117 L82 136 L89 101 L51 98 L81 79 L62 54 Z" fill="#fff7cc" opacity="0.6"/>
+    <path d="M76 60 L114 82 L79 102" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" opacity="0.42"/>
+  </g>
+
+  <g filter="url(#panelShadow)">
+    <path d="M170 30 H842 C878 30 906 57 906 90 C906 123 878 150 842 150 H380 L326 174 L346 150 H170 C134 150 106 123 106 90 C106 57 134 30 170 30 Z" fill="#ffffff" stroke="#111827" stroke-width="6" stroke-linejoin="round"/>
+    <path d="M178 42 H834 C864 42 887 63 887 90 C887 117 864 138 834 138 H360 L345 145 L350 138 H178 C148 138 125 117 125 90 C125 63 148 42 178 42 Z" fill="url(#bubbleFill)"/>
+    <path d="M178 42 H834 C864 42 887 63 887 90 C887 117 864 138 834 138 H360 L345 145 L350 138 H178 C148 138 125 117 125 90 C125 63 148 42 178 42 Z" fill="url(#benDay)"/>
+    <path d="M178 42 H834 C864 42 887 63 887 90 C887 117 864 138 834 138 H360 L345 145 L350 138 H178 C148 138 125 117 125 90 C125 63 148 42 178 42 Z" fill="url(#fineLines)"/>
+    <path d="M160 55 C298 36 520 39 662 57 C750 68 824 58 875 50 C865 45 852 42 834 42 H178 C171 42 165 43 159 45 Z" fill="url(#bubbleShine)"/>
+    <path d="M178 42 H834 C864 42 887 63 887 90" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" opacity="0.45"/>
+  </g>
+
+  <g stroke="#ffffff" stroke-linecap="round" opacity="0.46">
+    <path d="M180 65 H300" stroke-width="4"/>
+    <path d="M158 89 H286" stroke-width="3"/>
+    <path d="M704 65 H858" stroke-width="4"/>
+    <path d="M728 113 H846" stroke-width="3"/>
+  </g>
+
+  <text x="526" y="83" text-anchor="middle" font-family="Impact, Haettenschweiler, 'Arial Black', sans-serif" font-size="43" letter-spacing="1.15" fill="#ffffff" stroke="#111827" stroke-width="4.2" paint-order="stroke fill" filter="url(#inkLift)">
+    STUDY QUEST MODE: ON
+  </text>
+  <text x="526" y="116" text-anchor="middle" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16.5" font-weight="850" fill="#ffffff" stroke="#111827" stroke-width="1.8" paint-order="stroke fill">
+    Full-stack AI LMS capstone • Next.js Web • Expo Mobile • Neon + Drizzle
+  </text>
+
+  <g fill="#ffffff" stroke="#111827" stroke-width="4" stroke-linejoin="round">
+    <path d="M883 21 L895 49 L924 51 L901 68 L909 97 L883 80 L858 97 L866 68 L843 51 L872 49 Z"/>
+    <path d="M86 111 L94 130 L115 132 L98 145 L103 165 L86 153 L69 165 L74 145 L57 132 L78 130 Z"/>
+  </g>
+  <path d="M883 37 L890 55 L909 57 L894 68 L900 85 L883 74 L867 85 L873 68 L858 57 L877 55 Z" fill="#fde68a"/>
+
+  <g fill="#ffffff">
+    <circle cx="144" cy="49" r="3" opacity="0.84"/>
+    <circle cx="921" cy="120" r="2.8" opacity="0.78"/>
+    <circle cx="61" cy="132" r="2.6" opacity="0.74"/>
+    <circle cx="910" cy="38" r="2" opacity="0.62"/>
+  </g>
+</svg>
