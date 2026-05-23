@@ -84,7 +84,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"{{duplicateEmail}}\",\n  \"name\": \"Duplicate User\",\n  \"password\": \"student123\"\n}",
+              "raw": "{\n  \"email\": \"{{duplicateEmail}}\",\n  \"name\": \"Duplicate User\",\n  \"password\": \"Student123!\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1100,15 +1100,15 @@
     },
     {
       "key": "userEmail",
-      "value": "user@studyhub.dev"
+      "value": "reviewer@example.com"
     },
     {
       "key": "userPassword",
-      "value": "user123"
+      "value": "replace-before-running"
     },
     {
       "key": "duplicateEmail",
-      "value": "user@studyhub.dev"
+      "value": "reviewer@example.com"
     },
     {
       "key": "courseId",

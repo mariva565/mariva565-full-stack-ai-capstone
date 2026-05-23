@@ -71,7 +71,7 @@ Request:
 {
   "email": "student@example.com",
   "name": "Demo Student",
-  "password": "student123"
+  "password": "Student123!"
 }
 ```
 
@@ -101,7 +101,7 @@ Request:
 ```json
 {
   "email": "student@example.com",
-  "password": "student123"
+  "password": "Student123!"
 }
 ```
 

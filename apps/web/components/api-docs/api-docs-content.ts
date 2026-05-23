@@ -50,7 +50,7 @@ export const apiDocsSections: ApiSectionDoc[] = [
         requestExample: `{
   "email": "student@example.com",
   "name": "Demo Student",
-  "password": "student123"
+  "password": "Student123!"
 }`,
         responseExample: `{
   "message": "Registration successful",

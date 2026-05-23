@@ -13690,3 +13690,32 @@ Page routes обхождат API guard-ите (зареждат директно
 **Решения:**
 - Keep reviewer credentials in the separate submission document instead of adding passwords to the public README.
 - Leave only OneDrive upload/share as the remaining external submission step.
+
+### Session 456 — Public repository cleanup audit
+
+**Какво направихме:**
+- Audited tracked files after the GitHub repository became public.
+- Removed `docs/dashboard.txt`, which was a raw PageSpeed HTML dump with embedded screenshot data and no repo references.
+- Replaced hardcoded demo account values in tracked seed/Postman/script/docs examples with placeholders or environment-driven seed settings.
+- Added optional demo seed variables to `.env.example` so local non-production seeding still works without publishing reviewer credentials.
+- Adjusted `community_demo.sql` to pick the first available admin/user roles instead of depending on fixed demo emails.
+
+**Файлове:**
+- [MODIFY] .env.example
+- [MODIFY] apps/web/components/api-docs/api-docs-content.ts
+- [MODIFY] docs/StudyHub.postman_collection.json
+- [MODIFY] docs/api-contract.md
+- [DELETE] docs/dashboard.txt
+- [MODIFY] drizzle/seed.ts
+- [MODIFY] drizzle/seeds/community_demo.sql
+- [MODIFY] scripts/list-milestones.mjs
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- `git grep` for old tracked demo credential values outside `docs/dev-log.md` -> no matches.
+- Secret-pattern scan on tracked files -> only `.env.example` placeholder keys matched.
+- `docs/dashboard.txt` had no repo references before deletion.
+
+**Решения:**
+- Keep final reviewer credentials only in the submitted course document, not in public GitHub files.
+- Preserve the seed script and Postman collection as reusable local tools by using safe placeholder values instead of deleting them.

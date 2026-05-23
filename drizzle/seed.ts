@@ -6,15 +6,15 @@ import { users } from "./schema";
 
 const DEMO_USERS = [
   {
-    email: "admin@studyhub.dev",
-    name: "Admin",
-    password: "admin123",
+    email: process.env.DEMO_ADMIN_EMAIL ?? "demo-admin@example.local",
+    name: process.env.DEMO_ADMIN_NAME ?? "Demo Admin",
+    password: process.env.DEMO_ADMIN_PASSWORD ?? "ChangeMe123!",
     role: "admin",
   },
   {
-    email: "user@studyhub.dev",
-    name: "Demo User",
-    password: "user123",
+    email: process.env.DEMO_USER_EMAIL ?? "demo-user@example.local",
+    name: process.env.DEMO_USER_NAME ?? "Demo User",
+    password: process.env.DEMO_USER_PASSWORD ?? "ChangeMe123!",
     role: "user",
   },
 ];
@@ -68,7 +68,10 @@ async function seed() {
       });
   }
 
-  console.log("Seed complete: admin@studyhub.dev / admin123, user@studyhub.dev / user123");
+  console.log("Seed complete. Demo emails:");
+  for (const demoUser of DEMO_USERS) {
+    console.log(`- ${demoUser.role}: ${demoUser.email}`);
+  }
 }
 
 seed().catch((err) => {

@@ -323,11 +323,11 @@ DECLARE
 
 BEGIN
   -- Get user IDs
-  SELECT id INTO admin_id FROM users WHERE email = 'admin@studyhub.dev' LIMIT 1;
-  SELECT id INTO user_id  FROM users WHERE email = 'user@studyhub.dev'  LIMIT 1;
+  SELECT id INTO admin_id FROM users WHERE role = 'admin' ORDER BY id LIMIT 1;
+  SELECT id INTO user_id  FROM users WHERE role = 'user' ORDER BY id LIMIT 1;
 
   IF admin_id IS NULL THEN
-    RAISE NOTICE 'Admin user not found — check email admin@studyhub.dev';
+    RAISE NOTICE 'Admin user not found — run the demo seed first';
     RETURN;
   END IF;
 

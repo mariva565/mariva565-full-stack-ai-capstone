@@ -8,7 +8,12 @@ config({ path: resolve(__dirname, "../.env") });
 
 const sql = neon(process.env.DATABASE_URL);
 
-const email = process.argv[2] ?? "admin@studyhub.dev";
+const email = process.argv[2];
+
+if (!email) {
+  console.error("Usage: node scripts/list-milestones.mjs <user-email>");
+  process.exit(1);
+}
 
 const users = await sql`SELECT id, email FROM users WHERE email = ${email}`;
 if (users.length === 0) {
