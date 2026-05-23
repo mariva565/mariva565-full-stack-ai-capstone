@@ -5,7 +5,7 @@
 </div>
 
 <div align="center">
-  <img src="docs/assets/readme/study-quest-banner.svg" width="760" alt="Study Quest Mode On - full-stack AI LMS capstone for Next.js web, Expo mobile, Neon and Drizzle" />
+  <img src="docs/assets/readme/study-quest-premium-banner.svg" width="760" alt="Study Quest Mode On - full-stack AI LMS capstone for Next.js web, Expo mobile, Neon and Drizzle" />
 </div>
 
 <p align="center">

@@ -13756,3 +13756,21 @@ Page routes обхождат API guard-ите (зареждат директно
 
 **Решения:**
 - Prefer a polished capstone/reviewer first impression over a very loud comic badge while keeping a subtle anime/quest identity.
+
+### Session 459 — README banner cache-busting rename
+
+**Какво направихме:**
+- Renamed the premium README banner asset from `study-quest-banner.svg` to `study-quest-premium-banner.svg`.
+- Updated the README image path so GitHub stops serving the previously cached comic banner from the old asset URL.
+
+**Файлове:**
+- [MOVE] docs/assets/readme/study-quest-banner.svg -> docs/assets/readme/study-quest-premium-banner.svg
+- [MODIFY] README.md
+- [MODIFY] docs/dev-log.md
+
+**Verification:**
+- SVG XML parse -> pass.
+- `npm run check:mojibake` -> pass.
+
+**Решения:**
+- Use an asset rename instead of another same-path SVG edit because GitHub can cache README images aggressively.
